@@ -1,5 +1,6 @@
+import unittest
 import time
-from censys.censys import *
+from censys import *
 
 class CensysExport(CensysAPIBase):
 
@@ -13,10 +14,10 @@ class CensysExport(CensysAPIBase):
             "flatten":flatten,
             "compress":compress,
         }
-        return self._post("export", body=body)
+        return self._post("export", data=data)
 
     def check_job(self, export_id):
-        path = "/".join("export", export_id)
+        path = "/".join(("export", export_id))
         return self._get(path)
 
     def check_job_loop(self, export_id):
@@ -26,3 +27,21 @@ class CensysExport(CensysAPIBase):
                 return res
             time.sleep(1)
           
+
+class CensysExportTests(unittest.TestCase):
+
+    VALID_QUERY = "select * from ipv4.20150902 limit 1000"
+    INVALID_QUERY = "select dne from ipv4.20150902 limit 1000"
+
+    def setUp(self):
+        self._api = CensysExport()
+
+    def test_query(self):
+        j = self._api.new_job(self.VALID_QUERY) 
+        print j
+        export_id = j["export_id"]
+        r = self._api.check_job_loop(export_id)
+        print r
+
+if __name__ == "__main__":
+    unittest.main()
