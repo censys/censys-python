@@ -1,7 +1,7 @@
 import unittest
 from censys import *
 
-class CensysIPv4(CensysAPIBase):
+class CensysWebsites(CensysAPIBase):
 
     def search(self, query, page=1, fields=[]):
         data = {
@@ -9,23 +9,22 @@ class CensysIPv4(CensysAPIBase):
             "page":page,
             "fields":fields
         }
-        return self._get("ipv4", data=data)
+        return self._post("search/websites", data=data)
 
-
-    def get(self, ip):
-        return self._get("/".join(("ipv4", str(ip))))
+    def view(self, domain):
+        return self._get("/".join(("view", "websites", domain)))
 
     def report(self, query, field, buckets):
         pass
 
 
-class CensysIPv4Tests(unittest.TestCase):
+class CensysWebsitesTests(unittest.TestCase):
 
     def setUp(self):
-        self._api = CensysIPv4()
+        self._api = CensysWebsites()
 
     def testGet(self):
-        print self._api.get("23.202.141.251")
+        print self._api.view("google.com")
 
     def testSearch(self):
         print self._api.search("*")

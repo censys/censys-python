@@ -27,7 +27,7 @@ class CensysUnauthorizedException(CensysException):
 
 class CensysAPIBase(object):
 
-    DEFAULT_URL = "https://www.censys.io/api"
+    DEFAULT_URL = "https://www.censys.io/api/v1"
     DEFAULT_TIMEOUT = 30
 
     EXCEPTIONS = {
@@ -58,8 +58,6 @@ class CensysAPIBase(object):
     # wrapper functions that handle making all our REST calls to the API,
     # checking for errors, and decoding the results
     def _make_call(self, method, endpoint, args=None, data=None):
-        assert not endpoint.startswith("api")
-        assert not endpoint.startswith("/api")
         if endpoint.startswith("/"):
             url = "".join((self._api_url, endpoint))
         else:

@@ -38,10 +38,8 @@ class CensysExportTests(unittest.TestCase):
 
     def test_query(self):
         j = self._api.new_job(self.VALID_QUERY) 
-        print j
         export_id = j["export_id"]
         r = self._api.check_job_loop(export_id)
-        print r
 
 if __name__ == "__main__":
     unittest.main()
