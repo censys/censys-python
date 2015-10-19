@@ -14,8 +14,13 @@ class CensysCertificates(CensysAPIBase):
     def view(self, sha256fp):
         return self._get("/".join(("view", "certificates", sha256fp)))
 
-    def report(self, query, field, buckets):
-        pass
+    def report(self, query, field, buckets=50):
+        data = {
+            "query":query,
+            "field":field,
+            "buckets":int(buckets)
+        }
+        return self._post("report/certificates", data=data)
 
 
 
@@ -30,6 +35,8 @@ class CensysCertificatesTests(unittest.TestCase):
     def testSearch(self):
         print self._api.search("*")
 
+    def testReport(self):
+        print self._api.report("*", "parsed.subject_key_info.key_algorithm.name")
 
 if __name__ == "__main__":
     unittest.main()

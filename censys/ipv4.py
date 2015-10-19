@@ -46,9 +46,9 @@ class CensysIPv4Tests(unittest.TestCase):
         print json.dumps(self._api.search("*"))
         print "\n\n\n"
 
-    def testInvalidSearch(self):
-        print json.dumps(self._api.search('"'))
-        print "\n\n\n"
+    #def testInvalidSearch(self):
+    #    print json.dumps(self._api.search('"'))
+    #    print "\n\n\n"
 
 
     def testReport(self):
