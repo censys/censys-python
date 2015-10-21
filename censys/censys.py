@@ -4,22 +4,26 @@ import unittest
 import requests
 
 class CensysException(Exception):
-    def __init__(self, status_code, message, headers=None, body=None):
+    def __init__(self, status_code, message, headers=None, body=None, const=None):
         self.status_code = status_code
         self.message = message
         self.headers = headers or {}
         self.body = body
+        self.const = const
 
     def __repr__(self):
-        return "%i %s" % (self.status_code, self.message or self.body)
+        return "%i (%s): %s" % (self.status_code, self.const, self.message or self.body)
 
     __str__ = __repr__
+
 
 class CensysRateLimitExceededException(CensysException):
     pass
 
+
 class CensysNotFoundException(CensysException):
     pass
+
 
 class CensysUnauthorizedException(CensysException):
     pass
@@ -73,14 +77,17 @@ class CensysAPIBase(object):
         else:
             try:
                message = res.json()["error"]
+               const = res.json()["error_type"]
             except:
                message = None
+               const = "unknown"
             e = self._get_exception_class(res.status_code)
             raise e(
                     status_code=res.status_code,
                     message=message,
                     headers=res.headers,
-                    body=res.text)
+                    body=res.text,
+                    const=const)
 
     def _get(self, endpoint, args=None):
         return self._make_call(self._session.get, endpoint, args)

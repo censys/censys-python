@@ -1,3 +1,4 @@
 *.pyc
+censys.egg-info/*
 build/*
 dist/*
