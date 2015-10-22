@@ -26,7 +26,7 @@ class CensysExport(CensysAPIBase):
             if res["status"] != "pending":
                 return res
             time.sleep(1)
-          
+
 
 class CensysExportTests(unittest.TestCase):
 
@@ -37,9 +37,10 @@ class CensysExportTests(unittest.TestCase):
         self._api = CensysExport()
 
     def test_query(self):
-        j = self._api.new_job(self.VALID_QUERY) 
+        j = self._api.new_job(self.VALID_QUERY)
         export_id = j["export_id"]
         r = self._api.check_job_loop(export_id)
+        print r
 
 if __name__ == "__main__":
     unittest.main()
