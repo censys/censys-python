@@ -1,10 +1,12 @@
+import sys
 import unittest
 import time
 from censys import *
 
 class CensysExport(CensysAPIBase):
 
-    def new_job(self, query, format="json", flatten=False, compress=False):
+    def new_job(self, query, format="json", flatten=False, compress=False,
+            delimiter=None, headers=None):
         assert format in ("json", "csv")
         assert flatten in (True, False)
         assert compress in (True, False)
@@ -13,16 +15,18 @@ class CensysExport(CensysAPIBase):
             "format":format,
             "flatten":flatten,
             "compress":compress,
+            "delimiter":delimiter,
+            "headers":headers
         }
         return self._post("export", data=data)
 
-    def check_job(self, export_id):
-        path = "/".join(("export", export_id))
+    def check_job(self, job_id):
+        path = "/".join(("export", job_id))
         return self._get(path)
 
-    def check_job_loop(self, export_id):
+    def check_job_loop(self, job_id):
         while True:
-            res = self.check_job(export_id)
+            res = self.check_job(job_id)
             if res["status"] != "pending":
                 return res
             time.sleep(1)
@@ -38,8 +42,11 @@ class CensysExportTests(unittest.TestCase):
 
     def test_query(self):
         j = self._api.new_job(self.VALID_QUERY)
-        export_id = j["export_id"]
-        r = self._api.check_job_loop(export_id)
+        if j["status"] not in ("success", "pending"):
+            print j
+            sys.exit(1)
+        job_id = j["job_id"]
+        r = self._api.check_job_loop(job_id)
         print r
 
 if __name__ == "__main__":
