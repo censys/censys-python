@@ -1,3 +1,4 @@
+import json
 import sys
 import unittest
 import time
@@ -47,7 +48,8 @@ class CensysExportTests(unittest.TestCase):
             sys.exit(1)
         job_id = j["job_id"]
         r = self._api.check_job_loop(job_id)
-        print r
+        print json.dumps(r)
+
 
 if __name__ == "__main__":
     unittest.main()

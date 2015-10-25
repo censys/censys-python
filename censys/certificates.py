@@ -1,5 +1,5 @@
 import json
-from censys import * 
+from censys import *
 
 class CensysCertificates(CensysAPIBase):
 
@@ -23,7 +23,6 @@ class CensysCertificates(CensysAPIBase):
         return self._post("report/certificates", data=data)
 
 
-
 class CensysCertificatesTests(unittest.TestCase):
 
     def setUp(self):
@@ -37,6 +36,7 @@ class CensysCertificatesTests(unittest.TestCase):
 
     def testReport(self):
         print self._api.report("*", "parsed.subject_key_info.key_algorithm.name")
+
 
 if __name__ == "__main__":
     unittest.main()

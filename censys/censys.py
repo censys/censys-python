@@ -44,7 +44,7 @@ class CensysAPIBase(object):
         self.api_id = api_id or os.environ.get("CENSYS_API_ID", None)
         self.api_secret = api_secret or os.environ.get("CENSYS_API_SECRET", None)
         if not self.api_id or not self.api_secret:
-            raise Exception("No API ID or API secret configured.") 
+            raise Exception("No API ID or API secret configured.")
         timeout = timeout or self.DEFAULT_TIMEOUT
         self._api_url = url or os.environ.get("CENSYS_API_URL", None) \
                 or self.DEFAULT_URL
@@ -57,7 +57,7 @@ class CensysAPIBase(object):
         self.account()
 
     def _get_exception_class(self, i):
-        return self.EXCEPTIONS.get(i, CensysException) 
+        return self.EXCEPTIONS.get(i, CensysException)
 
     # wrapper functions that handle making all our REST calls to the API,
     # checking for errors, and decoding the results
@@ -93,17 +93,17 @@ class CensysAPIBase(object):
         return self._make_call(self._session.get, endpoint, args)
 
     def _post(self, endpoint, args=None, data=None):
-        return self._make_call(self._session.post, endpoint, args, data) 
+        return self._make_call(self._session.post, endpoint, args, data)
 
     def _delete(self, endpoint, args=None):
-        return self._make_call(self._session.delete, endpoint, args) 
+        return self._make_call(self._session.delete, endpoint, args)
 
     def account(self):
         return self._get("account")
 
 
 class CensysAPIBaseTests(unittest.TestCase):
-    
+
     def setUp(self):
         self._api = CensysAPIBase()
 
@@ -111,14 +111,6 @@ class CensysAPIBaseTests(unittest.TestCase):
         res = self._api.account()
         self.assertEqual(res["api_id"], self._api.api_id)
         self.assertEqual(res["api_secret"], self._api.api_secret)
-
-    #def test_token_buckets(self):
-    #    try:
-    #        for i in range(0,10000):
-    #            print self._api.account()
-    #        raise Exception("no rate limit exceeded exception")
-    #    except CensysRateLimitExceededException:
-    #        pass
 
 
 if __name__ == "__main__":

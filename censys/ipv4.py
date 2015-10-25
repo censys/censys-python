@@ -32,7 +32,6 @@ class CensysIPv4(CensysAPIBase):
         return self._post("report/ipv4", data=data)
 
 
-
 class CensysIPv4Tests(unittest.TestCase):
 
     def setUp(self):
@@ -49,11 +48,6 @@ class CensysIPv4Tests(unittest.TestCase):
     def testSearch(self):
         print json.dumps(self._api.search("*"))
         print "\n\n\n"
-
-    #def testInvalidSearch(self):
-    #    print json.dumps(self._api.search('"'))
-    #    print "\n\n\n"
-
 
     def testReport(self):
         print json.dumps(self._api.report("*", "protocols", 5))
