@@ -5,9 +5,9 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 setup(
   name='censys',
-  version='0.0.0',
+  version='0.0.2',
   description='Python library for interacting with Censys Search Engine (censys.io)',
-  long_description=open(os.path.join(here, 'README.md')).read(),
+  long_description='Python library for interacting with Censys Search Engine (censys.io)',
   classifiers=[
     "Programming Language :: Python",
   ],
