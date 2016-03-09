@@ -1,6 +1,6 @@
 import unittest
 
-from censys import CensysAPIBase
+from censys.base import CensysAPIBase
 
 
 class CensysCertificates(CensysAPIBase):

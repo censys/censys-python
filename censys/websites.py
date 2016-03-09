@@ -1,7 +1,7 @@
 from __future__ import print_function
 import unittest
 
-from censys import CensysAPIBase
+from censys.base import CensysAPIBase
 
 
 class CensysWebsites(CensysAPIBase):

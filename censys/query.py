@@ -2,7 +2,7 @@ from __future__ import print_function
 import unittest
 import time
 
-from censys import CensysAPIBase
+from censys.base import CensysAPIBase
 
 
 class CensysQuery(CensysAPIBase):

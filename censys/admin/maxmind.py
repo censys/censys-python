@@ -4,7 +4,7 @@ import sys
 
 import netaddr
 
-from censys import CensysAPIBase
+from censys.base import CensysAPIBase
 
 
 class CensysAdminMaxmind(CensysAPIBase):
