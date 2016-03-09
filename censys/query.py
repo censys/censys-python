@@ -1,3 +1,4 @@
+from __future__ import print_function
 import unittest
 import time
 
@@ -50,10 +51,10 @@ class CensysQueryTests(unittest.TestCase):
     #        print json.dumps(self._api.get_results(job_id, 2))
     #
     def test_get_series(self):
-        print self._api.get_series()
+        print(self._api.get_series())
 
     def test_get_series_details(self):
-        print self._api.get_series_details("ipv4")
+        print(self._api.get_series_details("ipv4"))
 
 
 if __name__ == "__main__":

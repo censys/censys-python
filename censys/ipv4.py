@@ -1,7 +1,8 @@
+from __future__ import print_function
 import json
 import unittest
 
-from censys import CensysAPIBase
+from censys import CensysAPIBase, CensysException
 
 
 class CensysIPv4(CensysAPIBase):
@@ -44,20 +45,17 @@ class CensysIPv4Tests(unittest.TestCase):
         cls._api = CensysIPv4()
 
     def testGet(self):
-        print json.dumps(self._api.view("84.206.102.184"))
-        print "\n\n\n"
+        print(self._api.view("84.206.102.184"))
 
     def testEmptySearch(self):
-        print json.dumps(self._api._post("search/ipv4", data={"query1":"query"}))
-        print "\n\n\n"
+        with self.assertRaises(CensysException):
+            self._api._post("search/ipv4", data={"query1": "query"})
 
     def testSearch(self):
-        print json.dumps(self._api.search("*"))
-        print "\n\n\n"
+        print(json.dumps(self._api.search("*")))
 
     def testReport(self):
-        print json.dumps(self._api.report("*", "protocols", 5))
-        print "\n\n\n"
+        print(self._api.report("*", "protocols", 5))
 
 
 if __name__ == "__main__":

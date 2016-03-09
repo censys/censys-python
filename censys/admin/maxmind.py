@@ -1,3 +1,4 @@
+from __future__ import print_function
 import csv
 import sys
 
@@ -67,7 +68,7 @@ def main():
             rec = {"ip_begin": first, "ip_end": last}
             rec.update(ipdetails)
             rec.update(details)
-            print rec
+            print(rec)
             to_upload.append(rec)
             if len(to_upload) > 10000:
                 censys.upload(collection, version, to_upload)

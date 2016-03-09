@@ -1,3 +1,4 @@
+from __future__ import print_function
 import json
 import sys
 import unittest
@@ -45,11 +46,11 @@ class CensysExportTests(unittest.TestCase):
     def test_query(self):
         j = self._api.new_job(self.VALID_QUERY)
         if j["status"] not in ("success", "pending"):
-            print j
+            print(j)
             sys.exit(1)
         job_id = j["job_id"]
         r = self._api.check_job_loop(job_id)
-        print json.dumps(r)
+        print(json.dumps(r))
 
 
 if __name__ == "__main__":
