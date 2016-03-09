@@ -6,22 +6,27 @@ from censys import *
 
 class CensysIPv4(CensysAPIBase):
 
-    def search(self, query, page=1, fields=[]):
+    def search(self, query, fields=None):
+        if fields is None:
+            fields = []
+        page = 1
+        pages = float('inf')
         data = {
-            "query":query,
-            "page":page,
-            "fields":fields
+            "query": query,
+            "page": page,
+            "fields": fields
         }
-        return self._post("search/ipv4", data=data)
 
-    @staticmethod
-    def convert_ip(ip):
-        return int(socket.inet_aton(ip).encode('hex'),16)
+        while page <= pages:
+            payload = self._post("search/ipv4", data=data)
+            pages = payload['metadata']['pages']
+            page += 1
+
+            for result in payload["results"]:
+                yield result
 
     def view(self, ip):
-        if type(ip) in (str, unicode):
-            ip = self.convert_ip(ip)
-        return self._get("/".join(("view", "ipv4", str(ip))))
+        return self._get("/".join(("view", "ipv4", ip)))
 
     def report(self, query, field, buckets=50):
         data = {

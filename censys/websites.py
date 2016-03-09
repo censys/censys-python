@@ -3,13 +3,24 @@ from censys import *
 
 class CensysWebsites(CensysAPIBase):
 
-    def search(self, query, page=1, fields=[]):
+    def search(self, query, fields=None):
+        if fields is None:
+            fields = []
+        page = 1
+        pages = float('inf')
         data = {
             "query":query,
             "page":page,
             "fields":fields
         }
-        return self._post("search/websites", data=data)
+
+        while page <= pages:
+            payload = self._post("search/websites", data=data)
+            pages = payload['metadata']['pages']
+            page += 1
+
+            for result in payload["results"]:
+                yield result
 
     def view(self, domain):
         return self._get("/".join(("view", "websites", domain)))
