@@ -52,7 +52,9 @@ class CensysIPv4Tests(unittest.TestCase):
             self._api._post("search/ipv4", data={"query1": "query"})
 
     def testSearch(self):
-        print(json.dumps(self._api.search("*")))
+        hosts = self._api.search("*")
+        print(next(hosts))
+        print(next(hosts))
 
     def testReport(self):
         print(self._api.report("*", "protocols", 5))
