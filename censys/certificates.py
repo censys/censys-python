@@ -1,6 +1,7 @@
-import pprint
-import json
-from censys import *
+import unittest
+
+from censys import CensysAPIBase
+
 
 class CensysCertificates(CensysAPIBase):
 
@@ -10,9 +11,9 @@ class CensysCertificates(CensysAPIBase):
         page = 1
         pages = float('inf')
         data = {
-            "query":query,
-            "page":page,
-            "fields":fields
+            "query": query,
+            "page": page,
+            "fields": fields
         }
 
         while page <= pages:
@@ -28,9 +29,9 @@ class CensysCertificates(CensysAPIBase):
 
     def report(self, query, field, buckets=50):
         data = {
-            "query":query,
-            "field":field,
-            "buckets":int(buckets)
+            "query": query,
+            "field": field,
+            "buckets": int(buckets)
         }
         return self._post("report/certificates", data=data)
 

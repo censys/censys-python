@@ -1,5 +1,7 @@
 import unittest
-from censys import *
+
+from censys import CensysAPIBase
+
 
 class CensysWebsites(CensysAPIBase):
 
@@ -9,9 +11,9 @@ class CensysWebsites(CensysAPIBase):
         page = 1
         pages = float('inf')
         data = {
-            "query":query,
-            "page":page,
-            "fields":fields
+            "query": query,
+            "page": page,
+            "fields": fields
         }
 
         while page <= pages:
@@ -27,9 +29,9 @@ class CensysWebsites(CensysAPIBase):
 
     def report(self, query, field, buckets=50):
         data = {
-            "query":query,
-            "field":field,
-            "buckets":int(buckets)
+            "query": query,
+            "field": field,
+            "buckets": int(buckets)
         }
         return self._post("report/websites", data=data)
 
@@ -52,4 +54,3 @@ class CensysWebsitesTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

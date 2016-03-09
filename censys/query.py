@@ -1,13 +1,13 @@
-import json
-import sys
 import unittest
 import time
-from censys import *
+
+from censys import CensysAPIBase
+
 
 class CensysQuery(CensysAPIBase):
 
     def new_job(self, query):
-        data ={"query":query}
+        data = {"query": query}
         return self._post("query", data=data)
 
     def get_series(self):
@@ -35,7 +35,6 @@ class CensysQuery(CensysAPIBase):
 
 
 class CensysQueryTests(unittest.TestCase):
-
     VALID_QUERY = "select ip,updated_at, zdb_version, ipint from ipv4.20150902 limit 5300"
 
     @classmethod

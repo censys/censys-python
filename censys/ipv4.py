@@ -1,8 +1,8 @@
 import json
-import struct
-import socket
 import unittest
-from censys import *
+
+from censys import CensysAPIBase
+
 
 class CensysIPv4(CensysAPIBase):
 
@@ -30,9 +30,9 @@ class CensysIPv4(CensysAPIBase):
 
     def report(self, query, field, buckets=50):
         data = {
-            "query":query,
-            "field":field,
-            "buckets":int(buckets)
+            "query": query,
+            "field": field,
+            "buckets": int(buckets)
         }
         return self._post("report/ipv4", data=data)
 

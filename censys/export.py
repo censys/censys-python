@@ -2,22 +2,24 @@ import json
 import sys
 import unittest
 import time
-from censys import *
+
+from censys import CensysAPIBase
+
 
 class CensysExport(CensysAPIBase):
 
     def new_job(self, query, format="json", flatten=False, compress=False,
-            delimiter=None, headers=None):
+                delimiter=None, headers=None):
         assert format in ("json", "csv")
         assert flatten in (True, False)
         assert compress in (True, False)
         data = {
-            "query":query,
-            "format":format,
-            "flatten":flatten,
-            "compress":compress,
-            "delimiter":delimiter,
-            "headers":headers
+            "query": query,
+            "format": format,
+            "flatten": flatten,
+            "compress": compress,
+            "delimiter": delimiter,
+            "headers": headers
         }
         return self._post("export", data=data)
 
@@ -34,7 +36,6 @@ class CensysExport(CensysAPIBase):
 
 
 class CensysExportTests(unittest.TestCase):
-
     VALID_QUERY = "select * from ipv4.20150902 limit 1000"
     INVALID_QUERY = "select dne from ipv4.20150902 limit 1000"
 
