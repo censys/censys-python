@@ -104,8 +104,9 @@ class CensysAPIBase(object):
 
 class CensysAPIBaseTests(unittest.TestCase):
 
-    def setUp(self):
-        self._api = CensysAPIBase()
+    @classmethod
+    def setUpClass(cls):
+        cls._api = CensysAPIBase()
 
     def test_my_account(self):
         res = self._api.account()

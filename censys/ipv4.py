@@ -39,8 +39,9 @@ class CensysIPv4(CensysAPIBase):
 
 class CensysIPv4Tests(unittest.TestCase):
 
-    def setUp(self):
-        self._api = CensysIPv4()
+    @classmethod
+    def setUpClass(cls):
+        cls._api = CensysIPv4()
 
     def testGet(self):
         print json.dumps(self._api.view("84.206.102.184"))

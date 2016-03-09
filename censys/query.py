@@ -38,17 +38,18 @@ class CensysQueryTests(unittest.TestCase):
 
     VALID_QUERY = "select ip,updated_at, zdb_version, ipint from ipv4.20150902 limit 5300"
 
-    def setUp(self):
-        self._api = CensysQuery()
+    @classmethod
+    def setUpClass(cls):
+        cls._api = CensysQuery()
 
-#    def test_query(self):
-#        j = self._api.new_job(self.VALID_QUERY)
-#        print json.dumps(j)
-#        job_id = j["job_id"]
-#        r = self._api.check_job_loop(job_id)
-#        print json.dumps(r)
-#        print json.dumps(self._api.get_results(job_id, 2))
-#
+    #    def test_query(self):
+    #        j = self._api.new_job(self.VALID_QUERY)
+    #        print json.dumps(j)
+    #        job_id = j["job_id"]
+    #        r = self._api.check_job_loop(job_id)
+    #        print json.dumps(r)
+    #        print json.dumps(self._api.get_results(job_id, 2))
+    #
     def test_get_series(self):
         print self._api.get_series()
 

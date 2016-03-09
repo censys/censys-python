@@ -35,9 +35,10 @@ class CensysWebsites(CensysAPIBase):
 
 
 class CensysWebsitesTests(unittest.TestCase):
-
-    def setUp(self):
-        self._api = CensysWebsites()
+    
+    @classmethod
+    def setUpClass(cls):
+        cls._api = CensysWebsites()
 
     def testGet(self):
         print self._api.view("google.com")
