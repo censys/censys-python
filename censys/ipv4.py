@@ -1,7 +1,7 @@
 from __future__ import print_function
 import unittest
 
-from censys.base import CensysAPIBase, CensysException
+from .base import CensysAPIBase, CensysException
 
 
 class CensysIPv4(CensysAPIBase):

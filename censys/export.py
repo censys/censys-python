@@ -4,7 +4,7 @@ import sys
 import unittest
 import time
 
-from censys.base import CensysAPIBase
+from .base import CensysAPIBase
 
 
 class CensysExport(CensysAPIBase):

@@ -1,7 +1,7 @@
 from __future__ import print_function
 import unittest
 
-from censys.base import CensysAPIBase
+from .base import CensysAPIBase
 
 
 class CensysWebsites(CensysAPIBase):
@@ -38,7 +38,7 @@ class CensysWebsites(CensysAPIBase):
 
 
 class CensysWebsitesTests(unittest.TestCase):
-    
+
     @classmethod
     def setUpClass(cls):
         cls._api = CensysWebsites()

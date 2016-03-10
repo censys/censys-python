@@ -78,8 +78,8 @@ class CensysAPIBase(object):
         else:
             try:
                 message = res.json()["error"]
-                const = res.json()["error_type"]
-            except ValueError:
+                const = res.json().get("error_type", None)
+            except KeyError:
                 message = None
                 const = "unknown"
             censys_exception = self._get_exception_class(res.status_code)
