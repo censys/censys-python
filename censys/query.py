@@ -1,13 +1,14 @@
-import json
-import sys
+from __future__ import print_function
 import unittest
 import time
-from censys import *
+
+from censys.base import CensysAPIBase
+
 
 class CensysQuery(CensysAPIBase):
 
     def new_job(self, query):
-        data ={"query":query}
+        data = {"query": query}
         return self._post("query", data=data)
 
     def get_series(self):
@@ -35,25 +36,25 @@ class CensysQuery(CensysAPIBase):
 
 
 class CensysQueryTests(unittest.TestCase):
-
     VALID_QUERY = "select ip,updated_at, zdb_version, ipint from ipv4.20150902 limit 5300"
 
-    def setUp(self):
-        self._api = CensysQuery()
+    @classmethod
+    def setUpClass(cls):
+        cls._api = CensysQuery()
 
-#    def test_query(self):
-#        j = self._api.new_job(self.VALID_QUERY)
-#        print json.dumps(j)
-#        job_id = j["job_id"]
-#        r = self._api.check_job_loop(job_id)
-#        print json.dumps(r)
-#        print json.dumps(self._api.get_results(job_id, 2))
-#
+    #    def test_query(self):
+    #        j = self._api.new_job(self.VALID_QUERY)
+    #        print json.dumps(j)
+    #        job_id = j["job_id"]
+    #        r = self._api.check_job_loop(job_id)
+    #        print json.dumps(r)
+    #        print json.dumps(self._api.get_results(job_id, 2))
+    #
     def test_get_series(self):
-        print self._api.get_series()
+        print(self._api.get_series())
 
     def test_get_series_details(self):
-        print self._api.get_series_details("ipv4")
+        print(self._api.get_series_details("ipv4"))
 
 
 if __name__ == "__main__":
