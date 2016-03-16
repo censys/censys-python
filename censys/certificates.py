@@ -20,6 +20,7 @@ class CensysCertificates(CensysAPIBase):
             payload = self._post("search/certificates", data=data)
             pages = payload['metadata']['pages']
             page += 1
+            data["page"] = page
 
             for result in payload["results"]:
                 yield result

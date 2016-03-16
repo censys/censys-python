@@ -21,6 +21,7 @@ class CensysWebsites(CensysAPIBase):
             payload = self._post("search/websites", data=data)
             pages = payload['metadata']['pages']
             page += 1
+            data["page"] = page
 
             for result in payload["results"]:
                 yield result
