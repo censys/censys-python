@@ -37,7 +37,7 @@ class CensysExport(CensysAPIBase):
 
 
 class CensysExportTests(unittest.TestCase):
-    VALID_QUERY = "select * from ipv4.20150902 limit 1000"
+    VALID_QUERY = "select * from certificates.certificates limit 1000"
     INVALID_QUERY = "select dne from ipv4.20150902 limit 1000"
 
     def setUp(self):

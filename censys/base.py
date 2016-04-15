@@ -33,6 +33,7 @@ class CensysUnauthorizedException(CensysException):
 
 
 class CensysAPIBase(object):
+
     DEFAULT_URL = "https://www.censys.io/api/v1"
     DEFAULT_TIMEOUT = 30
 

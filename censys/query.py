@@ -1,6 +1,7 @@
 from __future__ import print_function
 import unittest
 import time
+import json
 
 from .base import CensysAPIBase
 
@@ -36,20 +37,37 @@ class CensysQuery(CensysAPIBase):
 
 
 class CensysQueryTests(unittest.TestCase):
-    VALID_QUERY = "select ip,updated_at, zdb_version, ipint from ipv4.20150902 limit 5300"
+
+    VALID_QUERY = "SELECT ip FROM ipv4.20151012 LIMIT 100"
+    EMPTY_QUERY = "SELECT valid_nss FROM certificates.certificates where 1=0"
+    INVALID_QUERY = "SELECT nvalid FROM certificates.certificates where 1=0"
 
     @classmethod
     def setUpClass(cls):
         cls._api = CensysQuery()
 
-    #    def test_query(self):
-    #        j = self._api.new_job(self.VALID_QUERY)
-    #        print json.dumps(j)
-    #        job_id = j["job_id"]
-    #        r = self._api.check_job_loop(job_id)
-    #        print json.dumps(r)
-    #        print json.dumps(self._api.get_results(job_id, 2))
-    #
+    def test_query(self):
+        j = self._api.new_job(self.VALID_QUERY)
+        print(json.dumps(j))
+        job_id = j["job_id"]
+        r = self._api.check_job_loop(job_id)
+        print(json.dumps(r))
+        print(json.dumps(self._api.get_results(job_id, 1)))
+
+    def test_empty_query(self):
+        j = self._api.new_job(self.EMPTY_QUERY)
+        job_id = j["job_id"]
+        r = self._api.check_job_loop(job_id)
+        print(json.dumps(r))
+        print(json.dumps(self._api.get_results(job_id, 1)))
+
+    def test_invalid_query(self):
+        j = self._api.new_job(self.INVALID_QUERY)
+        job_id = j["job_id"]
+        r = self._api.check_job_loop(job_id)
+        print(json.dumps(r))
+
+
     def test_get_series(self):
         print(self._api.get_series())
 
