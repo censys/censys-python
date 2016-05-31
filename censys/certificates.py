@@ -5,10 +5,11 @@ from .base import CensysAPIBase
 
 class CensysCertificates(CensysAPIBase):
 
-    def search(self, query, fields=None):
+    def search(self, query, fields=None, page=None):
         if fields is None:
             fields = []
-        page = 1
+        if page is None:
+            page = 1
         pages = float('inf')
         data = {
             "query": query,
