@@ -104,6 +104,54 @@ class CensysAPIBase(object):
         return self._get("account")
 
 
+class CensysIndex(CensysAPIBase):
+
+    INDEX_NAME = None
+
+    def __init__(self, *args, **kwargs):
+        CensysAPIBase.__init__(self, *args, **kwargs)
+        # generate concrete paths to be called
+        self.search_path = "search/%s" % self.INDEX_NAME
+        self.view_path   = "view/%s" % self.INDEX_NAME
+        self.report_path = "report/%s" % self.INDEX_NAME
+
+
+    def search(self, query, fields=None, page=1, max_records=None):
+        if fields is None:
+            fields = []
+        page = int(page)
+        pages = float('inf')
+        data = {
+            "query": query,
+            "page": page,
+            "fields": fields
+        }
+
+        count = 0
+        while page <= pages:
+            payload = self._post(self.search_path, data=data)
+            pages = payload['metadata']['pages']
+            page += 1
+            data["page"] = page
+
+            for result in payload["results"]:
+                yield result
+                count += 1
+                if max_records and count >= max_records:
+                    return
+
+    def view(self, ip):
+        return self._get("/".join((self.view_path, ip)))
+
+    def report(self, query, field, buckets=50):
+        data = {
+            "query": query,
+            "field": field,
+            "buckets": int(buckets)
+        }
+        return self._post(self.report_path, data=data)
+
+
 class CensysAPIBaseTests(unittest.TestCase):
 
     @classmethod
@@ -118,3 +166,4 @@ class CensysAPIBaseTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

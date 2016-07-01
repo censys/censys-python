@@ -1,40 +1,10 @@
 import unittest
 
-from .base import CensysAPIBase
+from .base import CensysAPIBase, CensysIndex, CensysException
 
+class CensysCertificates(CensysIndex):
 
-class CensysCertificates(CensysAPIBase):
-
-    def search(self, query, fields=None):
-        if fields is None:
-            fields = []
-        page = 1
-        pages = float('inf')
-        data = {
-            "query": query,
-            "page": page,
-            "fields": fields
-        }
-
-        while page <= pages:
-            payload = self._post("search/certificates", data=data)
-            pages = payload['metadata']['pages']
-            page += 1
-            data["page"] = page
-
-            for result in payload["results"]:
-                yield result
-
-    def view(self, sha256fp):
-        return self._get("/".join(("view", "certificates", sha256fp)))
-
-    def report(self, query, field, buckets=50):
-        data = {
-            "query": query,
-            "field": field,
-            "buckets": int(buckets)
-        }
-        return self._post("report/certificates", data=data)
+    INDEX_NAME = "certificates"
 
 
 class CensysCertificatesTests(unittest.TestCase):
@@ -78,7 +48,8 @@ class CensysCertificatesTests(unittest.TestCase):
 
     def testSearch(self):
         x = self._api.search("censys.io", fields=["parsed.subject_dn",
-                                                  "parsed.fingerprint_sha256"])
+                                                  "parsed.fingerprint_sha256"],
+                            max_records=10)
         result = list(x)
         self.assertEquals(result[0], self.correct_search_result)
         self.assertEqual(len(result), 1)

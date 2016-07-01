@@ -1,42 +1,12 @@
 from __future__ import print_function
 import unittest
 
-from .base import CensysAPIBase, CensysException
+from .base import CensysAPIBase, CensysIndex, CensysException
 
 
-class CensysIPv4(CensysAPIBase):
+class CensysIPv4(CensysIndex):
 
-    def search(self, query, fields=None):
-        if fields is None:
-            fields = []
-        page = 1
-        pages = float('inf')
-        data = {
-            "query": query,
-            "page": page,
-            "fields": fields
-        }
-
-        while page <= pages:
-            payload = self._post("search/ipv4", data=data)
-            pages = payload['metadata']['pages']
-            page += 1
-            data["page"] = page
-
-            for result in payload["results"]:
-                yield result
-
-    def view(self, ip):
-        return self._get("/".join(("view", "ipv4", ip)))
-
-    def report(self, query, field, buckets=50):
-        data = {
-            "query": query,
-            "field": field,
-            "buckets": int(buckets)
-        }
-        return self._post("report/ipv4", data=data)
-
+    INDEX_NAME = "ipv4"
 
 class CensysIPv4Tests(unittest.TestCase):
 
@@ -45,19 +15,28 @@ class CensysIPv4Tests(unittest.TestCase):
         cls._api = CensysIPv4()
 
     def testGet(self):
-        print(self._api.view("84.206.102.184"))
+        self._api.view("84.206.102.184")
 
     def testEmptySearch(self):
         with self.assertRaises(CensysException):
             self._api._post("search/ipv4", data={"query1": "query"})
 
     def testSearch(self):
-        hosts = self._api.search("*")
-        print(next(hosts))
-        print(next(hosts))
+        list(self._api.search("*", max_records=10))
 
-    def testReport(self):
-        print(self._api.report("*", "protocols", 5))
+    def testSearchExplicitPage(self):
+        list(self._api.search("*", page=3, max_records=10))
+
+    def testBadPageSearch(self):
+        with self.assertRaises(Exception):
+            list(self._api.search("*", page="x", max_records=10))
+
+    def testBadFieldsSearch(self):
+        with self.assertRaises(CensysException):
+            list(self._api.search("*", fields="test",  max_records=10))
+
+    #def testReport(self):
+    #    self._api.report("*", "protocols", 5)
 
 
 if __name__ == "__main__":
