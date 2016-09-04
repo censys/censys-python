@@ -79,5 +79,13 @@ The Export API allows exporting large subsets of data using SQL.
 import censys.export
 
 c = censys.export.CensysExport(api_id="XXX", api_secret="XXX")
+
+# Start new Job
+job_id = c.new_job("select count(*) from certificates.certificates")
+
+# Wait for job to finish and fetch results
+print c.check_job_loop(job_id)
+
 ```
+
 
