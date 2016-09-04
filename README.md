@@ -31,7 +31,8 @@ c = censys.certificates.CensysCertificates(api_id="XXX", api_secret="XXX")
 print c.view("a762bf68f167f6fbdf2ab00fdefeb8b96f91335ad6b483b482dfd42c179be076")
 
 # iterate over certificates that match a search
-for cert in c.search("github.com and valid_nss: true", fields=["parsed.subject_dn", parsed.fingerprint_sha256]):
+fields = ["parsed.subject_dn", "parsed.fingerprint_sha256"]
+for cert in c.search("github.com and valid_nss: true", fields=fields):
 	print cert
 
 ```
