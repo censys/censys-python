@@ -35,6 +35,9 @@ fields = ["parsed.subject_dn", "parsed.fingerprint_sha256"]
 for cert in c.search("github.com and valid_nss: true", fields=fields):
 	print cert
 
+# aggregate report on key types used by trusted certificates
+print c.report(query="valid_nss: true", field="parsed.subject_key_info.key_algorithm.name")
+
 ```
 
 Query API
