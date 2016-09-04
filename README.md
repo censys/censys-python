@@ -11,7 +11,9 @@ The egg can be installed using Pip or easy_install (e.g., `sudo pip install cens
 Usage
 =====
 
-There are three API endpoints that the library provides access to:
+There are three API endpoints that the library provides access to: Index,
+Query, and Export. More details about each can be found in the Censys API
+documentation: https://censys.io/api.
 
 
 Index API
@@ -59,8 +61,8 @@ print c.get_series_details("ipv4")
 # Start SQL job
 job_id = c.new_job("select count(*) from certificates.certificates")
 
-# Wait for job to finish
-c.check_job_loop(job_id)
+# Wait for job to finish and get job metadata
+print c.check_job_loop(job_id)
 
 # Iterate over the results from that job
 print c.get_results(job_id, page=1)
