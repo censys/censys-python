@@ -16,8 +16,8 @@ Query, and Export. More details about each can be found in the Censys API
 documentation: https://censys.io/api.
 
 
-Index API
----------
+Search/View/Report API
+----------------------
 
 The index APIs allow you to perform full-text searches, view specific records,
 and generate aggregate reports about the IPv4, Websites, and Certificates
@@ -42,8 +42,8 @@ print c.report(query="valid_nss: true", field="parsed.subject_key_info.key_algor
 
 ```
 
-Query API
----------
+SQL Query API
+-------------
 
 The Query endpoint allows running SQL against the indices.
 
