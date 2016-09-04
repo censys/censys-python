@@ -6,7 +6,7 @@ This is a light weight Python wrapper to the Censys REST API.
 Install
 -------
 
-The egg can be installed using Pip or easy_install (e.g., `sudo pip install censys`). Once installed, you can
+The egg can be installed using Pip or easy_install (e.g., `sudo pip install censys`).
 
 Usage
 =====
@@ -19,7 +19,7 @@ Index API
 
 The index APIs allow you to perform full-text searches, view specific records,
 and generate aggregate reports about the IPv4, Websites, and Certificates
-endpoints. There is a python class for each index: `CensysIPv4`,
+endpoints. There is a Python class for each index: `CensysIPv4`,
 `CensysWebsites`, and `CensysCertificates`. Below, we show an example for
 certificates, but the same methods exist for each of the three indices.
 ```python
@@ -43,10 +43,32 @@ print c.report(query="valid_nss: true", field="parsed.subject_key_info.key_algor
 Query API
 ---------
 
+The Query endpoint allows running SQL against the indices.
+
+```python
+import censys.query
+
+c = censys.query.CensysQuery(api_id="XXX", api_secret="XXX")
+
+# find datasets (e.g., ipv4) that have exposed data
+print c.get_series()
+
+# get schema and tables for a given dataset
+print c.get_series_details("ipv4")
+
+# Start SQL job
+job_id = c.new_job("select count(*) from certificates.certificates")
+
+# Wait for job to finish
+c.check_job_loop(job_id)
+
+# Iterate over the results from that job
+print c.get_results(job_id, page=1)
+
+```
+
+
+
+
 Export API
 ----------
-
-
-
-
-Index APIs
