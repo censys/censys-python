@@ -45,7 +45,7 @@ print c.report(query="valid_nss: true", field="parsed.subject_key_info.key_algor
 SQL Query API
 -------------
 
-The Query endpoint allows running SQL against the indices.
+The SQL Query endpoint allows running SQL against the indices.
 
 ```python
 import censys.query
@@ -70,10 +70,10 @@ print c.get_results(job_id, page=1)
 ```
 
 
-Export API
-----------
+SQL Export API
+--------------
 
-The Export API allows exporting large subsets of data using SQL.
+The SQL Export API allows exporting large subsets of data using SQL.
 
 ```python
 import censys.export
