@@ -115,6 +115,14 @@ class CensysIndex(CensysAPIBase):
         self.view_path   = "view/%s" % self.INDEX_NAME
         self.report_path = "report/%s" % self.INDEX_NAME
 
+    def metadata(self, query):
+        data = {
+            "query": query,
+            "page": 1,
+            "fields":[]
+        }
+        return self._post(self.search_path, data=data).get("metadata", {})
+
 
     def search(self, query, fields=None, page=1, max_records=None):
         if fields is None:
