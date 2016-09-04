@@ -35,7 +35,7 @@ print c.view("a762bf68f167f6fbdf2ab00fdefeb8b96f91335ad6b483b482dfd42c179be076")
 # iterate over certificates that match a search
 fields = ["parsed.subject_dn", "parsed.fingerprint_sha256"]
 for cert in c.search("github.com and valid_nss: true", fields=fields):
-	print cert
+	print cert["parsed.subject_dn"]
 
 # aggregate report on key types used by trusted certificates
 print c.report(query="valid_nss: true", field="parsed.subject_key_info.key_algorithm.name")
@@ -70,7 +70,14 @@ print c.get_results(job_id, page=1)
 ```
 
 
-
-
 Export API
 ----------
+
+The Export API allows exporting large subsets of data using SQL.
+
+```python
+import censys.export
+
+c = censys.export.CensysExport(api_id="XXX", api_secret="XXX")
+```
+
