@@ -27,6 +27,10 @@ class CensysIPv4Tests(unittest.TestCase):
     def testSearchExplicitPage(self):
         list(self._api.search("*", page=3, max_records=10))
 
+    def testBeyondMaxPages(self):
+        with self.assertRaises(CensysException):
+            list(self._api.search("*", page=250))
+
     def testBadPageSearch(self):
         with self.assertRaises(Exception):
             list(self._api.search("*", page="x", max_records=10))
