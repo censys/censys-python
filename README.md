@@ -59,7 +59,8 @@ print c.get_series()
 print c.get_series_details("ipv4")
 
 # Start SQL job
-job_id = c.new_job("select count(*) from certificates.certificates")
+res = c.new_job("select count(*) from certificates.certificates")
+job_id = res["job_id"]
 
 # Wait for job to finish and get job metadata
 print c.check_job_loop(job_id)
@@ -81,11 +82,10 @@ import censys.export
 c = censys.export.CensysExport(api_id="XXX", api_secret="XXX")
 
 # Start new Job
-job_id = c.new_job("select count(*) from certificates.certificates")
+res = c.new_job("select count(*) from certificates.certificates")
+job_id = res["job_id"]
 
 # Wait for job to finish and fetch results
 print c.check_job_loop(job_id)
 
 ```
-
-
