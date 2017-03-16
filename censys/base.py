@@ -136,18 +136,19 @@ class CensysIndex(CensysAPIBase):
         }
         return self._post(self.search_path, data=data).get("metadata", {})
 
-    def paged_search(self, query, fields=None, page=1):
+    def paged_search(self, query, fields=None, page=1, flatten=True):
         if fields is None:
             fields = []
         page = int(page)
         data = {
             "query": query,
             "page": page,
-            "fields": fields
+            "fields": fields,
+            "flatten": flatten
         }
         return self._post(self.search_path, data=data)
 
-    def search(self, query, fields=None, page=1, max_records=None):
+    def search(self, query, fields=None, page=1, max_records=None, flatten=True):
         """returns iterator over all records that match the given query"""
         if fields is None:
             fields = []
@@ -156,7 +157,8 @@ class CensysIndex(CensysAPIBase):
         data = {
             "query": query,
             "page": page,
-            "fields": fields
+            "fields": fields,
+            "flatten": flatten
         }
 
         count = 0

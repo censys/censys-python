@@ -1,5 +1,6 @@
 from __future__ import print_function
 import unittest
+import pprint
 
 from .base import CensysAPIBase, CensysIndex, CensysException
 
@@ -22,7 +23,8 @@ class CensysIPv4Tests(unittest.TestCase):
             self._api._post("search/ipv4", data={"query1": "query"})
 
     def testSearch(self):
-        list(self._api.search("*", max_records=10))
+        pprint.pprint(list(self._api.search("*", max_records=10,
+            flatten=False)))
 
     def testSearchExplicitPage(self):
         list(self._api.search("*", page=3, max_records=10))

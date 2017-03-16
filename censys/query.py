@@ -41,6 +41,7 @@ class CensysQueryTests(unittest.TestCase):
     VALID_QUERY = "SELECT ip FROM ipv4.20151012 LIMIT 100"
     EMPTY_QUERY = "SELECT valid_nss FROM certificates.certificates where 1=0"
     INVALID_QUERY = "SELECT nvalid FROM certificates.certificates where 1=0"
+    MULTIPLE_QUERY = "SELECT ip FROM ipv4.20151012 LIMIT 100; SELECT ip FROM ipv4.20151012 LIMIT 100"
 
     @classmethod
     def setUpClass(cls):
@@ -63,6 +64,12 @@ class CensysQueryTests(unittest.TestCase):
 
     def test_invalid_query(self):
         j = self._api.new_job(self.INVALID_QUERY)
+        job_id = j["job_id"]
+        r = self._api.check_job_loop(job_id)
+        print(json.dumps(r))
+
+    def test_multiple_query(self):
+        j = self._api.new_job(self.MULTIPLE_QUERY)
         job_id = j["job_id"]
         r = self._api.check_job_loop(job_id)
         print(json.dumps(r))
