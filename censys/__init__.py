@@ -4,4 +4,4 @@ __copyright__ = "Copyright 2015 Regents of the University of Michigan"
 __version__ = "0.0.7"
 __license__ = "Apache License, Version 2.0"
 
-__all__ = ["certificates", "ipv4", "websites", "query", "export"]
+__all__ = ["certificates", "ipv4", "websites", "query", "export", "data"]
