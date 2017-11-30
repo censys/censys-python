@@ -1,5 +1,4 @@
 import json
-import json.decoder
 import os
 import unittest
 
@@ -92,7 +91,7 @@ class CensysAPIBase(object):
             try:
                 message = res.json()["error"]
                 const = res.json().get("error_type", None)
-            except json.decoder.JSONDecodeError:
+            except ValueError:
                 raise CensysJSONDecodeException(
                         status_code=res.status_code,
                         message="Censys response is not valid JSON and cannot be decoded.",
