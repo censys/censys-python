@@ -47,8 +47,5 @@ class CensysIPv4Tests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    #unittest.main()
+    unittest.main()
 
-    api = CensysIPv4()
-    for r in api.search(r'("var BLANK_URL" OR "Mage.Cookies" OR "js\/varien\/js.js" OR "\/skin\/frontend\/") AND 80.http.get.status_code:200 AND "\\x6F\\x6E\\x65\\x70\\x61\\x67\\x65\\x7C\\x63\\x68\\x65\\x63\\x6B\\x6F\\x75\\x74"'):
-        print(r)
