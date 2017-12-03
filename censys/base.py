@@ -1,9 +1,10 @@
 import json
-import json.decoder
 import os
 import unittest
 
 import requests
+
+from . import __name__, __version__
 
 
 class CensysException(Exception):
@@ -41,6 +42,7 @@ class CensysAPIBase(object):
 
     DEFAULT_URL = "https://www.censys.io/api/v1"
     DEFAULT_TIMEOUT = 30
+    DEFAULT_USER_AGENT = '%s/%s' % (__name__, __version__)
 
     EXCEPTIONS = {
         403: CensysUnauthorizedException,
@@ -48,7 +50,7 @@ class CensysAPIBase(object):
         429: CensysRateLimitExceededException
     }
 
-    def __init__(self, api_id=None, api_secret=None, url=None, timeout=None):
+    def __init__(self, api_id=None, api_secret=None, url=None, timeout=None, user_agent_identifier=None):
         self.api_id = api_id or os.environ.get("CENSYS_API_ID", None)
         self.api_secret = api_secret or os.environ.get("CENSYS_API_SECRET", None)
         if not self.api_id or not self.api_secret:
@@ -59,7 +61,11 @@ class CensysAPIBase(object):
         self._session = requests.Session()
         self._session.auth = (self.api_id, self.api_secret)
         self._session.timeout = timeout
-        self._session.headers.update({"accept": "text/json, application/json, */8"})
+        self._session.headers.update({
+            "accept": "application/json, */8",
+            "User-Agent": ' '.join(
+                [requests.utils.default_user_agent(), user_agent_identifier or self.DEFAULT_USER_AGENT])
+        })
         # test that everything works by requesting the users account information
         self.account()
 

@@ -1,7 +1,8 @@
 __author__ = "Censys Team"
-__email__ = "team@censys.io"
-__copyright__ = "Copyright 2015 Regents of the University of Michigan"
-__version__ = "0.0.9"
+__email__ = "support@censys.io"
+__copyright__ = "Copyright 2017 ZCorp Technology"
+__version__ = "0.0.10"
 __license__ = "Apache License, Version 2.0"
 
 __all__ = ["certificates", "ipv4", "websites", "data"]
+

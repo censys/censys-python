@@ -50,7 +50,7 @@ The Data API allows programatic access to the raw data files.
 ```python
 import censys.data
 
-c = censys.data.CensysDat(api_id="XXX", api_secret="XXX")
+c = censys.data.CensysData(api_id="XXX", api_secret="XXX")
 
 # Get a Series
 ssh_series = c.view_series('22-ssh-banner-full_ipv4')
