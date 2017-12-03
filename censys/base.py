@@ -59,7 +59,7 @@ class CensysAPIBase(object):
         self._session = requests.Session()
         self._session.auth = (self.api_id, self.api_secret)
         self._session.timeout = timeout
-        self._session.headers.update({"accept": "application/json, */8"})
+        self._session.headers.update({"accept": "text/json, application/json, */8"})
         # test that everything works by requesting the users account information
         self.account()
 
@@ -85,7 +85,7 @@ class CensysAPIBase(object):
             try:
                 message = res.json()["error"]
                 const = res.json().get("error_type", None)
-            except json.decoder.JSONDecodeError:
+            except ValueError:
                 raise CensysJSONDecodeException(
                         status_code=res.status_code,
                         message="Censys response is not valid JSON and cannot be decoded.",

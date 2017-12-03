@@ -42,54 +42,6 @@ print c.report(query="valid_nss: true", field="parsed.subject_key_info.key_algor
 
 ```
 
-SQL Query API
--------------
-
-The SQL Query endpoint allows running SQL against the indices.
-
-```python
-import censys.query
-
-c = censys.query.CensysQuery(api_id="XXX", api_secret="XXX")
-
-# find datasets (e.g., ipv4) that have exposed data
-print c.get_series()
-
-# get schema and tables for a given dataset
-print c.get_series_details("ipv4")
-
-# Start SQL job
-res = c.new_job("select count(*) from certificates.certificates")
-job_id = res["job_id"]
-
-# Wait for job to finish and get job metadata
-print c.check_job_loop(job_id)
-
-# Iterate over the results from that job
-print c.get_results(job_id, page=1)
-
-```
-
-
-SQL Export API
---------------
-
-The SQL Export API allows exporting large subsets of data using SQL.
-
-```python
-import censys.export
-
-c = censys.export.CensysExport(api_id="XXX", api_secret="XXX")
-
-# Start new Job
-res = c.new_job("select count(*) from certificates.certificates")
-job_id = res["job_id"]
-
-# Wait for job to finish and fetch results
-print c.check_job_loop(job_id)
-
-```
-
 Data API
 --------
 
