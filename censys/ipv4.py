@@ -41,9 +41,11 @@ class CensysIPv4Tests(unittest.TestCase):
         with self.assertRaises(CensysException):
             list(self._api.search("*", fields="test",  max_records=10))
 
-    #def testReport(self):
-    #    self._api.report("*", "protocols", 5)
+    def testReport(self):
+        pprint.pprint(self._api.report("80.http.get.headers.server: Apache",
+            "location.country", 100))
 
 
 if __name__ == "__main__":
     unittest.main()
+
