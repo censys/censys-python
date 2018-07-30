@@ -57,7 +57,7 @@ series_name = '22-ssh-banner-full_ipv4'
 # Get a Series
 ssh_series = c.view_series(series_name)
 
-# View metadata all the files in each scan
+# View metadata for all the files in each scan
 for scan in ssh_series['results']['historical']:
     print c.view_result(series_name, scan['id'])
 ```
