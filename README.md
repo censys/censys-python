@@ -57,7 +57,7 @@ c.view('8.8.8.8')
 
 # the search method lets you search the index using indexed fields, full text, and 
 # combined predicates
-for result in c.search("80.http.get.headers.server: Apache AND location.country: Japan", max_records=10) ]:
+for result in c.search("80.http.get.headers.server: Apache AND location.country: Japan", max_records=10):
     print result
 
 # you can optionally specify which fields you want to come back for search results
