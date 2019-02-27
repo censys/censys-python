@@ -44,7 +44,7 @@ print c.report(query="valid_nss: true", field="parsed.subject_key_info.key_algor
 ```
 
 Here's how to use the IPv4 index.
-```
+```python
 import censys.ipv4
 c = censys.ipv4.CensysIPv4(api_id="XXX", api_secret="XXX")
 
