@@ -74,8 +74,8 @@ IPV4_FIELDS = ['ip',
 		 '110.pop3.starttls.tls.certificate.parsed.names',
 		 '110.pop3.starttls.tls.certificate.parsed.subject_dn']
 
-data = [ x for x in c.search("80.http.get.headers.server: Apache AND location.country: Japan", 
-                             IPV4_FIELDS, max_records=10) ]		 
+data = list(c.search("80.http.get.headers.server: Apache AND location.country: Japan", 
+                             IPV4_FIELDS, max_records=10))		 
 print data
 ```
 
