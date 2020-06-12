@@ -160,7 +160,7 @@ class CensysDataTest(unittest.TestCase):
         },
         "timestamp": "20170405T185945",
         "id": "20170405T1859",
-        "metadata": {}
+        "metadata": None
     }
 
 
@@ -176,7 +176,7 @@ class CensysDataTest(unittest.TestCase):
     def testViewSeries(self):
         series = "22-ssh-banner-full_ipv4"
         res = self._api.view_series(series)
-        for k, v in self.EXPECTED_VIEW_SERIES.iteritems():
+        for k, v in self.EXPECTED_VIEW_SERIES.items():
             self.assertEqual(res[k], v)
         results = res['results']
         self.assertTrue('latest' in results)

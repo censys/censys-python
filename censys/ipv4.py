@@ -16,7 +16,8 @@ class CensysIPv4Tests(unittest.TestCase):
         cls._api = CensysIPv4()
 
     def testGet(self):
-        self._api.view("84.206.102.184")
+        # hopefully will always be found
+        self._api.view("8.8.8.8")
 
     def testEmptySearch(self):
         with self.assertRaises(CensysException):
