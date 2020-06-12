@@ -218,7 +218,6 @@ class CensysAPIBaseTests(unittest.TestCase):
     def test_my_account(self):
         res = self._api.account()
         self.assertSetEqual(set(res.keys()), self.EXPECTED_MY_ACCOUNT_KEYS) 
-        self.assertTrue("quota" in res.keys())
         self.assertSetEqual(set(res["quota"].keys()), self.EXPECTED_QUOTA_KEYS) 
 
 if __name__ == "__main__":
