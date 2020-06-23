@@ -32,15 +32,15 @@ import censys.certificates
 c = censys.certificates.CensysCertificates(api_id="XXX", api_secret="XXX")
 
 # view specific certificate
-print c.view("a762bf68f167f6fbdf2ab00fdefeb8b96f91335ad6b483b482dfd42c179be076")
+print (c.view("a762bf68f167f6fbdf2ab00fdefeb8b96f91335ad6b483b482dfd42c179be076"))
 
 # iterate over certificates that match a search
 fields = ["parsed.subject_dn", "parsed.fingerprint_sha256"]
 for cert in c.search("github.com and valid_nss: true", fields=fields):
-	print cert["parsed.subject_dn"]
+	print (cert["parsed.subject_dn"])
 
 # aggregate report on key types used by trusted certificates
-print c.report(query="valid_nss: true", field="parsed.subject_key_info.key_algorithm.name")
+print (c.report(query="valid_nss: true", field="parsed.subject_key_info.key_algorithm.name"))
 ```
 
 Here's how to use the IPv4 index.
@@ -58,7 +58,7 @@ c.view('8.8.8.8')
 # the search method lets you search the index using indexed fields, full text, and 
 # combined predicates
 for result in c.search("80.http.get.headers.server: Apache AND location.country: Japan", max_records=10):
-    print result
+    print (result)
 
 # you can optionally specify which fields you want to come back for search results
 IPV4_FIELDS = ['ip',
@@ -76,7 +76,7 @@ IPV4_FIELDS = ['ip',
 
 data = list(c.search("80.http.get.headers.server: Apache AND location.country: Japan", 
                              IPV4_FIELDS, max_records=10))		 
-print data
+print (data)
 ```
 
 Data API
@@ -96,5 +96,5 @@ ssh_series = c.view_series(series_name)
 
 # View metadata for all the files in each scan
 for scan in ssh_series['results']['historical']:
-    print c.view_result(series_name, scan['id'])
+    print (c.view_result(series_name, scan['id']))
 ```

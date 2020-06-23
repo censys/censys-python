@@ -194,15 +194,31 @@ class CensysIndex(CensysAPIBase):
 
 class CensysAPIBaseTests(unittest.TestCase):
 
+    EXPECTED_MY_ACCOUNT_KEYS = set([
+        "login",
+        "first_login",
+        "last_login",
+        "email",
+        "quota",
+    ])
+
+    EXPECTED_QUOTA_KEYS = set([
+        "used",
+        "resets_at",
+        "allowance"
+    ])
+
+
     @classmethod
     def setUpClass(cls):
         cls._api = CensysAPIBase()
 
+    # as mentioned here https://censysio.atlassian.net/browse/DATA-586
+    # this endpoint no longer returns api id / secret 
     def test_my_account(self):
         res = self._api.account()
-        self.assertEqual(res["api_id"], self._api.api_id)
-        self.assertEqual(res["api_secret"], self._api.api_secret)
-
+        self.assertSetEqual(set(res.keys()), self.EXPECTED_MY_ACCOUNT_KEYS) 
+        self.assertSetEqual(set(res["quota"].keys()), self.EXPECTED_QUOTA_KEYS) 
 
 if __name__ == "__main__":
     unittest.main()
