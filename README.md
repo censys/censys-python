@@ -25,7 +25,7 @@ endpoints. There is a Python class for each index: `CensysIPv4`,
 `CensysWebsites`, and `CensysCertificates`. 
 
 Below, we show an example for certificates, but the same methods exist for each 
-of the three indices.
+of the three indices, with the exception of bulk which is only supported by the certificates index.
 ```python
 import censys.certificates
 
@@ -34,10 +34,15 @@ c = censys.certificates.CensysCertificates(api_id="XXX", api_secret="XXX")
 # view specific certificate
 print (c.view("a762bf68f167f6fbdf2ab00fdefeb8b96f91335ad6b483b482dfd42c179be076"))
 
+fingerprints = list()
 # iterate over certificates that match a search
 fields = ["parsed.subject_dn", "parsed.fingerprint_sha256"]
 for cert in c.search("github.com and valid_nss: true", fields=fields):
+	fingerprints.append(cert["parsed.fingerprint_sha256"])
 	print (cert["parsed.subject_dn"])
+
+# get certificates in bulk from a list of fingerprints
+print (c.bulk(fingerprints))
 
 # aggregate report on key types used by trusted certificates
 print (c.report(query="valid_nss: true", field="parsed.subject_key_info.key_algorithm.name"))
