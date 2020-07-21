@@ -10,19 +10,19 @@ from ..base import CensysAPIBase
 class CensysAdminMaxmind(CensysAPIBase):
 
     def upload(self, collection, version, records):
-        url = "/admin/maxmind/%s/%i" % (collection, version)
+        url = f"/admin/maxmind/{collection}/{version}"
+        url = f"/admin/maxmind/{collection}/{version}"
         return self._post(url, data={"records": records})
 
     def delete(self, collection, version):
-        url = "/admin/maxmind/%s/%i" % (collection, version)
+        url = f"/admin/maxmind/{collection}/{version}"
         return self._delete(url)
 
 
 def main():
     if len(sys.argv) < 5:
-        sys.stderr.write("USAGE: %s collection version locations.csv" \
-                         " blocks.csv\n"
-                         % sys.argv[0])
+        sys.stderr.write(f"USAGE: {sys.argv[0]} collection version locations.csv" \
+                         " blocks.csv\n")
         sys.exit(1)
     collection = sys.argv[1]
     version = int(sys.argv[2])

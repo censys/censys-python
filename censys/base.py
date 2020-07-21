@@ -17,7 +17,7 @@ class CensysException(Exception):
         self.const = const
 
     def __repr__(self):
-        return "%i (%s): %s" % (self.status_code, self.const, self.message or self.body)
+        return f"{self.status_code} ({self.const}): {self.message or self.body}"
 
     __str__ = __repr__
 
@@ -42,7 +42,7 @@ class CensysAPIBase(object):
 
     DEFAULT_URL = "https://www.censys.io/api/v1"
     DEFAULT_TIMEOUT = 30
-    DEFAULT_USER_AGENT = '%s/%s' % (__name__, __version__)
+    DEFAULT_USER_AGENT = f'{__name__}/{__version__}'
 
     EXCEPTIONS = {
         403: CensysUnauthorizedException,
@@ -130,9 +130,9 @@ class CensysIndex(CensysAPIBase):
     def __init__(self, *args, **kwargs):
         CensysAPIBase.__init__(self, *args, **kwargs)
         # generate concrete paths to be called
-        self.search_path = "search/%s" % self.INDEX_NAME
-        self.view_path   = "view/%s" % self.INDEX_NAME
-        self.report_path = "report/%s" % self.INDEX_NAME
+        self.search_path = f"search/{self.INDEX_NAME}"
+        self.view_path   = f"view/{self.INDEX_NAME}"
+        self.report_path = f"report/{self.INDEX_NAME}"
 
     def metadata(self, query):
         data = {

@@ -38,11 +38,11 @@ class CensysCertificatesTests(unittest.TestCase):
         res = self._api.view(queriedFp)
         self.assertIsInstance(res, dict)
         self.assertEqual(res["parsed"]["fingerprint_sha256"], queriedFp)
-        
+
 
     def testSearch(self):
         # searching for something that won't change hopefully
-        x = self._api.search("fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70", 
+        x = self._api.search("fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70",
                             fields=["parsed.subject_dn",
                                     "parsed.fingerprint_sha256"],
                             max_records=1)
