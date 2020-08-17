@@ -1,4 +1,4 @@
-# Censys Python Library
+# Censys Python Library ![PyPI](https://img.shields.io/pypi/v/censys) ![PyPI - License](https://img.shields.io/pypi/l/censys)
 
 This is a light weight Python wrapper to the Censys REST API.
 
@@ -16,8 +16,8 @@ documentation: <https://censys.io/api>.
 
 The index APIs allow you to perform full-text searches, view specific records,
 and generate aggregate reports about the IPv4, Websites, and Certificates
-endpoints. There is a Python class for each index: `CensysIPv4`,
-`CensysWebsites`, and `CensysCertificates`.
+endpoints. There is a Python class for each index: `CensysCertificates`,
+`CensysIPv4`, and `CensysWebsites`.
 
 Below, we show an example for certificates, but the same methods exist for each
 of the three indices, with the exception of bulk which is only supported by the certificates index.
