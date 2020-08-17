@@ -46,6 +46,7 @@ setup(
         ]
     },
     classifiers=[
+        "Typing :: Typed",
         "Topic :: Internet",
         "Topic :: Security",
         "Framework :: Pytest",
