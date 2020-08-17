@@ -202,8 +202,8 @@ class CensysIndex(CensysAPIBase):
                 if max_records and count >= max_records:
                     return
 
-    def view(self, ip: str) -> dict:
-        return self._get("/".join((self.view_path, ip)))
+    def view(self, ip_address: str) -> dict:
+        return self._get("/".join((self.view_path, ip_address)))
 
     def report(self, query: str, field: str, buckets: int = 50) -> dict:
         data = {"query": query, "field": field, "buckets": int(buckets)}
