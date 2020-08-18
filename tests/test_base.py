@@ -9,7 +9,6 @@ from censys.base import CensysAPIBase
 class CensysAPIBaseTests(unittest.TestCase):
 
     EXPECTED_MY_ACCOUNT_KEYS = {"email", "first_login", "last_login", "login", "quota"}
-
     EXPECTED_QUOTA_KEYS = {"allowance", "resets_at", "used"}
 
     @classmethod
