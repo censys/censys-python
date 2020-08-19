@@ -1,17 +1,15 @@
 import csv
 import argparse
 from pathlib import Path
-from typing import List, Set, Any
+from typing import List, Set
 
 import netaddr
 
 from censys.base import CensysAPIBase
 
-Records = List[Set[Any]]
-
 
 class CensysAdminMaxmind(CensysAPIBase):
-    def upload(self, collection: str, version: int, records: Records):
+    def upload(self, collection: str, version: int, records: List[Set[dict]]):
         url = "/admin/maxmind/%s/%i" % (collection, version)
         return self._post(url, data={"records": records})
 
@@ -26,7 +24,6 @@ def main():
     parser.add_argument("version", type=int)
     parser.add_argument("locations_path", metavar="locations.csv", type=Path)
     parser.add_argument("blocks_path", metavar="blocks.csv", type=Path)
-
     args = parser.parse_args()
 
     collection = args.collection
