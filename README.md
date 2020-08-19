@@ -1,10 +1,14 @@
-# Censys Python Library ![PyPI](https://img.shields.io/pypi/v/censys) ![PyPI - License](https://img.shields.io/pypi/l/censys)
+# Censys Python Library ![PyPI](https://img.shields.io/pypi/v/censys) ![Python Versions](https://img.shields.io/pypi/pyversions/censys)
 
 This is a light weight Python wrapper to the Censys REST API.
 
 ## Install
 
-The egg can be installed using Pip or easy_install (e.g., `pip install censys`).
+The egg can be installed using `pip` or `easy_install`
+
+```bash
+pip install censys
+```
 
 ## Usage
 
