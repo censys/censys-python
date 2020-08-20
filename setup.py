@@ -11,7 +11,7 @@ URL = "https://github.com/censys/censys-python"
 REQUIRES_PYTHON = ">=3.6.0"
 REQUIRED = ["requests", "netaddr"]
 EXTRAS = {
-    "dev": ["flake8", "black", "pytest", "mypy", "coverage"],
+    "dev": ["flake8", "black", "pytest", "pytest-cov", "mypy"],
 }
 
 here = os.path.abspath(os.path.dirname(__file__))

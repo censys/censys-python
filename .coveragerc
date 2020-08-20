@@ -1,0 +1,5 @@
+[run]
+include = 
+    censys/*
+omit = 
+    censys/admin/*

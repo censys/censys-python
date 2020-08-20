@@ -66,13 +66,16 @@ class CensysAPIBase:
         timeout: Optional[int] = None,
         user_agent_identifier: Optional[str] = None,
     ):
+        # Try to get credentials
         self.api_id = api_id or os.getenv("CENSYS_API_ID")
         self.api_secret = api_secret or os.getenv("CENSYS_API_SECRET")
         if not self.api_id or not self.api_secret:
             raise CensysException(401, "No API ID or API secret configured.")
+
         self.timeout = timeout or self.DEFAULT_TIMEOUT
         self._api_url = url or os.getenv("CENSYS_API_URL") or self.DEFAULT_URL
-        # create a session that we'll use for making requests
+
+        # Create a session and sets credentials
         self._session = requests.Session()
         self._session.auth = (self.api_id, self.api_secret)
         self._session.headers.update(
@@ -86,14 +89,13 @@ class CensysAPIBase:
                 ),
             }
         )
-        # test that everything works by requesting the users account information
+
+        # Confirm setup
         self.account()
 
     def _get_exception_class(self, status_code: int) -> Type[CensysException]:
         return self.EXCEPTIONS.get(status_code, CensysException)
 
-    # wrapper functions that handle making all our REST calls to the API,
-    # checking for errors, and decoding the results
     def _make_call(
         self,
         method: Callable,
@@ -101,6 +103,10 @@ class CensysAPIBase:
         args: Optional[dict] = None,
         data: Optional[str] = None,
     ) -> dict:
+        """
+        wrapper functions for all our REST API calls
+        checking for errors and decoding the response
+        """
         if endpoint.startswith("/"):
             url = "".join((self._api_url, endpoint))
         else:
@@ -117,7 +123,7 @@ class CensysAPIBase:
         try:
             message = res.json()["error"]
             const = res.json().get("error_type", None)
-        except ValueError:
+        except ValueError:  # pragma: no cover
             raise CensysJSONDecodeException(
                 status_code=res.status_code,
                 message="Censys response is not valid JSON and cannot be decoded.",
@@ -125,7 +131,7 @@ class CensysAPIBase:
                 body=res.text,
                 const="badjson",
             )
-        except KeyError:
+        except KeyError:  # pragma: no cover
             message = None
             const = "unknown"
         censys_exception = self._get_exception_class(res.status_code)
@@ -144,7 +150,7 @@ class CensysAPIBase:
         return self._make_call(self._session.post, endpoint, args, data)
 
     def _delete(self, endpoint: str, args: Optional[dict] = None) -> dict:
-        return self._make_call(self._session.delete, endpoint, args)
+        return self._make_call(self._session.delete, endpoint, args)  # pragma: no cover
 
     def account(self) -> dict:
         return self._get("account")
@@ -156,18 +162,18 @@ class CensysIndex(CensysAPIBase):
 
     def __init__(self, *args, **kwargs):
         CensysAPIBase.__init__(self, *args, **kwargs)
-        # generate concrete paths to be called
+        # Generate concrete paths to be called
         self.search_path = f"search/{self.INDEX_NAME}"
         self.view_path = f"view/{self.INDEX_NAME}"
         self.report_path = f"report/{self.INDEX_NAME}"
 
-    def metadata(self, query: str):
+    def metadata(self, query: str):  # pragma: no cover
         data = {"query": query, "page": 1, "fields": []}
         return self._post(self.search_path, data=data).get("metadata", {})
 
     def paged_search(
         self, query: str, fields: Fields = None, page: int = 1, flatten: bool = True,
-    ):
+    ):  # pragma: no cover
         if fields is None:
             fields = []
         page = int(page)
