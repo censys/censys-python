@@ -48,7 +48,7 @@ class CensysJSONDecodeException(CensysException):
 
 class CensysAPIBase:
 
-    DEFAULT_URL: str = "https://www.censys.io/api/v1"
+    DEFAULT_URL: str = "https://censys.io/api/v1"
     DEFAULT_TIMEOUT: int = 30
     DEFAULT_USER_AGENT: str = "%s/%s" % (NAME, VERSION)
 
