@@ -150,3 +150,19 @@ data = list(
 )
 print(data)
 ```
+
+## Developing
+
+Install dev dependencies with:
+
+```bash
+pip install -e .[dev]
+```
+
+### Testing
+
+Testing requires both `CENSYS_API_ID` and `CENSYS_API_SECRET`
+
+```bash
+CENSYS_API_ID=xxx CENSYS_API_SECRET=xxx pytest
+```
