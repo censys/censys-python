@@ -1,6 +1,6 @@
 # Censys Python Library ![PyPI](https://img.shields.io/pypi/v/censys) ![Python Versions](https://img.shields.io/pypi/pyversions/censys)
 
-This is a light weight Python wrapper to the Censys REST API.
+This is a light weight Python wrapper to the Censys REST API. `censys-python` currently supports Python 3.6+.
 
 ## Install
 
@@ -106,9 +106,9 @@ print(data)
 Here's how to use the Website index.
 
 ```python
-import censys.website
+import censys.websites
 
-c = censys.website.CensysWebsites(api_id="XXX", api_secret="XXX")
+c = censys.websites.CensysWebsites(api_id="XXX", api_secret="XXX")
 
 # the report method constructs a report using a query, an aggregation field, and the
 # number of buckets to bin
@@ -119,12 +119,12 @@ c.report(
 )
 
 # the view method lets you see the full JSON for an website
-c.view("google.com)
+c.view("google.com")
 
 # the search method lets you search the index using indexed fields, full text, and
 # combined predicates
 for result in c.search(
-    "80.http.get.headers.server: Apache AND location.country: Japan", max_records=10
+    "80.http.get.headers.server: Apache", max_records=10
 ):
     print(result)
 
@@ -143,7 +143,7 @@ WEBSITE_FIELDS = [
 
 data = list(
     c.search(
-        "80.http.get.headers.server: Apache AND location.country: Japan",
+        "80.http.get.headers.server: Apache",
         WEBSITE_FIELDS,
         max_records=10,
     )
