@@ -124,9 +124,12 @@ class CensysAPIBase:
             message = res.json()["error"]
             const = res.json().get("error_type", None)
         except ValueError:  # pragma: no cover
+            message = (
+                f"Response from {res.url} is not valid JSON and cannot be decoded."
+            )
             raise CensysJSONDecodeException(
                 status_code=res.status_code,
-                message="Censys response is not valid JSON and cannot be decoded.",
+                message=message,
                 headers=res.headers,
                 body=res.text,
                 const="badjson",
