@@ -1,81 +1,63 @@
+from __future__ import print_function
 import csv
-import argparse
-from pathlib import Path
-from typing import List, Set
+import sys
 
 import netaddr
 
-from censys.base import CensysAPIBase
+from ..base import CensysAPIBase
 
 
 class CensysAdminMaxmind(CensysAPIBase):
-    def upload(self, collection: str, version: int, records: List[Set[dict]]):
+
+    def upload(self, collection, version, records):
         url = "/admin/maxmind/%s/%i" % (collection, version)
         return self._post(url, data={"records": records})
 
-    def delete(self, collection: str, version: int):
+    def delete(self, collection, version):
         url = "/admin/maxmind/%s/%i" % (collection, version)
         return self._delete(url)
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("collection")
-    parser.add_argument("version", type=int)
-    parser.add_argument("locations_path", metavar="locations.csv", type=Path)
-    parser.add_argument("blocks_path", metavar="blocks.csv", type=Path)
-    args = parser.parse_args()
-
-    collection = args.collection
-    version = args.version
+    if len(sys.argv) < 5:
+        sys.stderr.write("USAGE: %s collection version locations.csv" \
+                         " blocks.csv\n"
+                         % sys.argv[0])
+        sys.exit(1)
+    collection = sys.argv[1]
+    version = int(sys.argv[2])
+    locations_path = sys.argv[3]
+    blocks_path = sys.argv[4]
 
     censys = CensysAdminMaxmind()
 
     to_upload = []
     # population dictionary with all the details for a geoid
     locations = {}
-    headers = [
-        "geoname_id",
-        "locale_code",
-        "continent_code",
-        "continent_name",
-        "country_iso_code",
-        "country_name",
-        "subdivision_1_iso_code",
-        "subdivision_1_name",
-        "subdivision_2_iso_code",
-        "subdivision_2_name",
-        "city_name",
-        "metro_code",
-        "time_zone",
-    ]
-    with open(args.locations_path, "r") as locations_file:
-        for row in csv.reader(locations_file):
+    headers = "geoname_id,locale_code,continent_code,continent_name," \
+              "country_iso_code,country_name,subdivision_1_iso_code," \
+              "subdivision_1_name,subdivision_2_iso_code,subdivision_2_name," \
+              "city_name,metro_code,time_zone".split(",")
+    with open(locations_path, "r") as fd:
+        for row in csv.reader(fd):
             if not row:
                 continue
             if row[0].startswith("geoname_id"):
                 continue
-            locations[row[0]] = {k: v for (k, v) in zip(headers, row)}
+            d = {k: v for (k, v) in zip(headers, row)}
+            locations[row[0]] = d
     # now that all geoid data is in memory, go through ips, generate full
     # records and then upload them in batches to Censys.
-    headers = [
-        "network",
-        "geoname_id",
-        "registered_country_geoname_id",
-        "represented_country_geoname_id",
-        "is_anonymous_proxy",
-        "is_satellite_provider",
-        "postal_code",
-        "latitude",
-        "longitude",
-    ]
-    with open(args.blocks_path, "r") as blocks_file:
-        for row in csv.reader(blocks_file):
+    headers = "network,geoname_id,registered_country_geoname_id," \
+              "represented_country_geoname_id,is_anonymous_proxy," \
+              "is_satellite_provider,postal_code,latitude,longitude".split(",")
+    with open(blocks_path, "r") as fd:
+        for row in csv.reader(fd):
             if not row:
                 continue
             if row[0].startswith("network"):
                 continue
-            ip_details = {k: v for (k, v) in zip(headers, row)}
+            ipdetails = {k: v for (k, v) in zip(headers, row)}
             geoid = row[1]
             if geoid == "":
                 geoid = row[2]
@@ -84,7 +66,7 @@ def main():
             first = int(cidr[0])
             last = int(cidr[-1])
             rec = {"ip_begin": first, "ip_end": last}
-            rec.update(ip_details)
+            rec.update(ipdetails)
             rec.update(details)
             print(rec)
             to_upload.append(rec)

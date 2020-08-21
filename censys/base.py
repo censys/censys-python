@@ -1,23 +1,15 @@
-import os
 import json
-from typing import Type, Optional, Callable, Dict, List, Generator
+import os
+import unittest
 
 import requests
 
-from censys import __name__ as NAME, __version__ as VERSION
-
-Fields = Optional[List[str]]
+from . import __name__, __version__
 
 
 class CensysException(Exception):
-    def __init__(
-        self,
-        status_code: int,
-        message: str,
-        headers: Optional[dict] = None,
-        body: Optional[str] = None,
-        const: Optional[str] = None,
-    ):
+
+    def __init__(self, status_code, message, headers=None, body=None, const=None):
         self.status_code = status_code
         self.message = message
         self.headers = headers or {}
@@ -46,67 +38,43 @@ class CensysJSONDecodeException(CensysException):
     pass
 
 
-class CensysAPIBase:
+class CensysAPIBase(object):
 
-    DEFAULT_URL: str = "https://censys.io/api/v1"
-    DEFAULT_TIMEOUT: int = 30
-    DEFAULT_USER_AGENT: str = "%s/%s" % (NAME, VERSION)
+    DEFAULT_URL = "https://www.censys.io/api/v1"
+    DEFAULT_TIMEOUT = 30
+    DEFAULT_USER_AGENT = '%s/%s' % (__name__, __version__)
 
-    EXCEPTIONS: Dict[int, Type[CensysException]] = {
+    EXCEPTIONS = {
         403: CensysUnauthorizedException,
         404: CensysNotFoundException,
-        429: CensysRateLimitExceededException,
+        429: CensysRateLimitExceededException
     }
 
-    def __init__(
-        self,
-        api_id: Optional[str] = None,
-        api_secret: Optional[str] = None,
-        url: Optional[str] = None,
-        timeout: Optional[int] = None,
-        user_agent_identifier: Optional[str] = None,
-    ):
-        # Try to get credentials
-        self.api_id = api_id or os.getenv("CENSYS_API_ID")
-        self.api_secret = api_secret or os.getenv("CENSYS_API_SECRET")
+    def __init__(self, api_id=None, api_secret=None, url=None, timeout=None, user_agent_identifier=None):
+        self.api_id = api_id or os.environ.get("CENSYS_API_ID", None)
+        self.api_secret = api_secret or os.environ.get("CENSYS_API_SECRET", None)
         if not self.api_id or not self.api_secret:
             raise CensysException(401, "No API ID or API secret configured.")
-
-        self.timeout = timeout or self.DEFAULT_TIMEOUT
-        self._api_url = url or os.getenv("CENSYS_API_URL") or self.DEFAULT_URL
-
-        # Create a session and sets credentials
+        timeout = timeout or self.DEFAULT_TIMEOUT
+        self._api_url = url or os.environ.get("CENSYS_API_URL", None) or self.DEFAULT_URL
+        # create a session that we'll use for making requests
         self._session = requests.Session()
         self._session.auth = (self.api_id, self.api_secret)
-        self._session.headers.update(
-            {
-                "accept": "application/json, */8",
-                "User-Agent": " ".join(
-                    [
-                        requests.utils.default_user_agent(),
-                        user_agent_identifier or self.DEFAULT_USER_AGENT,
-                    ]
-                ),
-            }
-        )
-
-        # Confirm setup
+        self._session.timeout = timeout
+        self._session.headers.update({
+            "accept": "application/json, */8",
+            "User-Agent": ' '.join(
+                [requests.utils.default_user_agent(), user_agent_identifier or self.DEFAULT_USER_AGENT])
+        })
+        # test that everything works by requesting the users account information
         self.account()
 
-    def _get_exception_class(self, status_code: int) -> Type[CensysException]:
-        return self.EXCEPTIONS.get(status_code, CensysException)
+    def _get_exception_class(self, i):
+        return self.EXCEPTIONS.get(i, CensysException)
 
-    def _make_call(
-        self,
-        method: Callable,
-        endpoint: str,
-        args: Optional[dict] = None,
-        data: Optional[str] = None,
-    ) -> dict:
-        """
-        wrapper functions for all our REST API calls
-        checking for errors and decoding the response
-        """
+    # wrapper functions that handle making all our REST calls to the API,
+    # checking for errors, and decoding the results
+    def _make_call(self, method, endpoint, args=None, data=None):
         if endpoint.startswith("/"):
             url = "".join((self._api_url, endpoint))
         else:
@@ -114,91 +82,95 @@ class CensysAPIBase:
         args = args or {}
         if data:
             data = json.dumps(data or {})
-            res = method(url, params=args, data=data, timeout=self.timeout)
+            res = method(url, params=args, data=data)
         else:
-            res = method(url, params=args, timeout=self.timeout)
+            res = method(url, params=args)
         if res.status_code == 200:
             return res.json()
-
-        try:
-            message = res.json()["error"]
-            const = res.json().get("error_type", None)
-        except ValueError:  # pragma: no cover
-            raise CensysJSONDecodeException(
+        else:
+            try:
+                message = res.json()["error"]
+                const = res.json().get("error_type", None)
+            except ValueError:
+                raise CensysJSONDecodeException(
+                        status_code=res.status_code,
+                        message="Censys response is not valid JSON and cannot be decoded.",
+                        headers=res.headers,
+                        body=res.text,
+                        const="badjson"
+                )
+            except KeyError:
+                message = None
+                const = "unknown"
+            censys_exception = self._get_exception_class(res.status_code)
+            raise censys_exception(
                 status_code=res.status_code,
-                message="Censys response is not valid JSON and cannot be decoded.",
+                message=message,
                 headers=res.headers,
                 body=res.text,
-                const="badjson",
-            )
-        except KeyError:  # pragma: no cover
-            message = None
-            const = "unknown"
-        censys_exception = self._get_exception_class(res.status_code)
-        raise censys_exception(
-            status_code=res.status_code,
-            message=message,
-            headers=res.headers,
-            body=res.text,
-            const=const,
-        )
+                const=const)
 
-    def _get(self, endpoint: str, args: Optional[dict] = None) -> dict:
+    def _get(self, endpoint, args=None):
         return self._make_call(self._session.get, endpoint, args)
 
-    def _post(self, endpoint: str, args: Optional[dict] = None, data=None) -> dict:
+    def _post(self, endpoint, args=None, data=None):
         return self._make_call(self._session.post, endpoint, args, data)
 
-    def _delete(self, endpoint: str, args: Optional[dict] = None) -> dict:
-        return self._make_call(self._session.delete, endpoint, args)  # pragma: no cover
+    def _delete(self, endpoint, args=None):
+        return self._make_call(self._session.delete, endpoint, args)
 
-    def account(self) -> dict:
+    def account(self):
         return self._get("account")
 
 
 class CensysIndex(CensysAPIBase):
 
-    INDEX_NAME: Optional[str] = None
+    INDEX_NAME = None
 
     def __init__(self, *args, **kwargs):
         CensysAPIBase.__init__(self, *args, **kwargs)
-        # Generate concrete paths to be called
-        self.search_path = f"search/{self.INDEX_NAME}"
-        self.view_path = f"view/{self.INDEX_NAME}"
-        self.report_path = f"report/{self.INDEX_NAME}"
+        # generate concrete paths to be called
+        self.search_path = "search/%s" % self.INDEX_NAME
+        self.view_path   = "view/%s" % self.INDEX_NAME
+        self.report_path = "report/%s" % self.INDEX_NAME
 
-    def metadata(self, query: str):  # pragma: no cover
-        data = {"query": query, "page": 1, "fields": []}
+    def metadata(self, query):
+        data = {
+            "query": query,
+            "page": 1,
+            "fields":[]
+        }
         return self._post(self.search_path, data=data).get("metadata", {})
 
-    def paged_search(
-        self, query: str, fields: Fields = None, page: int = 1, flatten: bool = True,
-    ):  # pragma: no cover
+    def paged_search(self, query, fields=None, page=1, flatten=True):
         if fields is None:
             fields = []
         page = int(page)
-        data = {"query": query, "page": page, "fields": fields, "flatten": flatten}
+        data = {
+            "query": query,
+            "page": page,
+            "fields": fields,
+            "flatten": flatten
+        }
         return self._post(self.search_path, data=data)
 
-    def search(
-        self,
-        query: str,
-        fields: Fields = None,
-        page: int = 1,
-        max_records: Optional[int] = None,
-        flatten: bool = True,
-    ) -> Generator[dict, None, None]:
+    def search(self, query, fields=None, page=1, max_records=None, flatten=True):
         """returns iterator over all records that match the given query"""
         if fields is None:
             fields = []
         page = int(page)
-        pages = float("inf")
-        data = {"query": query, "page": page, "fields": fields, "flatten": flatten}
+        pages = float('inf')
+        data = {
+            "query": query,
+            "page": page,
+            "fields": fields,
+            "flatten": flatten
+        }
 
         count = 0
         while page <= pages:
             payload = self._post(self.search_path, data=data)
-            pages = payload["metadata"]["pages"]
+            pages = payload['metadata']['pages']
             page += 1
             data["page"] = page
 
@@ -208,9 +180,46 @@ class CensysIndex(CensysAPIBase):
                 if max_records and count >= max_records:
                     return
 
-    def view(self, ip_address: str) -> dict:
-        return self._get("/".join((self.view_path, ip_address)))
+    def view(self, ip):
+        return self._get("/".join((self.view_path, ip)))
 
-    def report(self, query: str, field: str, buckets: int = 50) -> dict:
-        data = {"query": query, "field": field, "buckets": int(buckets)}
+    def report(self, query, field, buckets=50):
+        data = {
+            "query": query,
+            "field": field,
+            "buckets": int(buckets)
+        }
         return self._post(self.report_path, data=data)
+
+
+class CensysAPIBaseTests(unittest.TestCase):
+
+    EXPECTED_MY_ACCOUNT_KEYS = set([
+        "login",
+        "first_login",
+        "last_login",
+        "email",
+        "quota",
+    ])
+
+    EXPECTED_QUOTA_KEYS = set([
+        "used",
+        "resets_at",
+        "allowance"
+    ])
+
+
+    @classmethod
+    def setUpClass(cls):
+        cls._api = CensysAPIBase()
+
+    # as mentioned here https://censysio.atlassian.net/browse/DATA-586
+    # this endpoint no longer returns api id / secret 
+    def test_my_account(self):
+        res = self._api.account()
+        self.assertSetEqual(set(res.keys()), self.EXPECTED_MY_ACCOUNT_KEYS) 
+        self.assertSetEqual(set(res["quota"].keys()), self.EXPECTED_QUOTA_KEYS) 
+
+if __name__ == "__main__":
+    unittest.main()
+
