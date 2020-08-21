@@ -34,12 +34,21 @@ def main():
     to_upload = []
     # population dictionary with all the details for a geoid
     locations = {}
-    headers = (
-        "geoname_id,locale_code,continent_code,continent_name,"
-        "country_iso_code,country_name,subdivision_1_iso_code,"
-        "subdivision_1_name,subdivision_2_iso_code,subdivision_2_name,"
-        "city_name,metro_code,time_zone".split(",")
-    )
+    headers = [
+        "geoname_id",
+        "locale_code",
+        "continent_code",
+        "continent_name",
+        "country_iso_code",
+        "country_name",
+        "subdivision_1_iso_code",
+        "subdivision_1_name",
+        "subdivision_2_iso_code",
+        "subdivision_2_name",
+        "city_name",
+        "metro_code",
+        "time_zone",
+    ]
     with open(args.locations_path, "r") as locations_file:
         for row in csv.reader(locations_file):
             if not row:
@@ -49,11 +58,17 @@ def main():
             locations[row[0]] = {k: v for (k, v) in zip(headers, row)}
     # now that all geoid data is in memory, go through ips, generate full
     # records and then upload them in batches to Censys.
-    headers = (
-        "network,geoname_id,registered_country_geoname_id,"
-        "represented_country_geoname_id,is_anonymous_proxy,"
-        "is_satellite_provider,postal_code,latitude,longitude".split(",")
-    )
+    headers = [
+        "network",
+        "geoname_id",
+        "registered_country_geoname_id",
+        "represented_country_geoname_id",
+        "is_anonymous_proxy",
+        "is_satellite_provider",
+        "postal_code",
+        "latitude",
+        "longitude",
+    ]
     with open(args.blocks_path, "r") as blocks_file:
         for row in csv.reader(blocks_file):
             if not row:
