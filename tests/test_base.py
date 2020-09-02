@@ -22,8 +22,6 @@ class CensysAPIBaseTests(unittest.TestCase):
     def setUpClass(cls):
         cls._api = CensysAPIBase()
 
-    # as mentioned here https://censysio.atlassian.net/browse/DATA-586
-    # this endpoint no longer returns api id / secret
     def test_my_account(self):
         res = self._api.account()
         self.assertSetEqual(set(res.keys()), self.EXPECTED_MY_ACCOUNT_KEYS)
