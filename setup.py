@@ -41,7 +41,7 @@ setup(
     extras_require=EXTRAS,
     entry_points={
         "console_scripts": [
-            # "censys = censys.__main__:main",
+            "censys = censys.cli:main",
             "censys-maxmind = censys.admin.maxmind:main",
         ]
     },
