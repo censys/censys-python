@@ -1,45 +1,47 @@
 #!/usr/bin/env python
-from __future__ import absolute_import
-
-import argparse
-import csv
-import json
 import os
+import csv
 import time
+import json
+import argparse
+from typing import Union, List
 
 from censys.ipv4 import CensysIPv4
-from censys.certificates import CensysCertificates
 from censys.websites import CensysWebsites
+from censys.certificates import CensysCertificates
+from censys.exceptions import CensysCLIException
+
+Fields = List[str]
+Results = Union[List, dict]
+Index = Union[CensysIPv4, CensysWebsites, CensysCertificates]
 
 
 class CensysAPISearch:
 
-    csv_fields = []
+    csv_fields: Fields = list()
 
     def __init__(self, **kwargs):
         """
-        This class searches the Censys API, taking in options from the command line and returning the results to a CSV or
-        JSON file, or to stdout.
+        This class searches the Censys API, taking in options from the command line and
+        returning the results to a CSV or JSON file, or to stdout.
 
         Args:
             kwargs:
                 format: what format to write the results. CSV, JSON, or stdout.
                 start_page: what page the query should start from.
-                max_pages: adjust the number of results returned by the API. Currently, 100 results per page.
-                censys_api_secret: The API secret provided by Censys. Can also be provided as an environmental variable.
-                censys_api_id: The API id provided by Censys. Can also be provided as an environmental variable.
+                max_pages: adjust the number of results returned by the API.
+                censys_api_secret: The API secret provided by Censys.
+                censys_api_id: The API id provided by Censys.
         """
 
-        self.api_user = os.getenv("CENSYS_API_ID", kwargs.get("censys_api_id", "xxxx"))
-        self.api_pass = os.getenv(
-            "CENSYS_API_SECRET", kwargs.get("censys_api_secret", "xxxx")
-        )
+        self.api_user = kwargs.get("censys_api_id")
+        self.api_pass = kwargs.get("censys_api_secret")
 
         self.output_format = kwargs.get("format", "json")
         self.start_page = kwargs.get("start_page", 1)
         self.max_pages = kwargs.get("max_pages", 10)
 
-    def _write_csv(self, filename, search_results):
+    def _write_csv(self, filename: str, search_results: Results):
         """
         This method writes the search results to a new file in CSV format.
 
@@ -52,7 +54,7 @@ class CensysAPISearch:
             # Open a new file for writing results.
             with open(filename, "w") as output_file:
 
-                if search_results and type(search_results) is list:
+                if search_results and isinstance(search_results, list):
 
                     # Get the header row from the first result
                     fields = self.csv_fields
@@ -60,7 +62,7 @@ class CensysAPISearch:
                     writer.writeheader()
 
                     for result in search_results:
-                        # Use the Dict writer to process the results and write them into CSV
+                        # Use the Dict writer to process and write results to CSV
                         writer.writerow(result)
 
             print("Wrote results to file {}".format(filename))
@@ -68,12 +70,13 @@ class CensysAPISearch:
             # method returns True, if the file has been written successfully.
             return True
 
-        except Exception as e:
-            print("error writing log file. Error: {}".format(e))
+        except Exception as error:
+            print("Error writing log file. Error: {}".format(error))
             # Returns False if the file could not complete the write.
             return False
 
-    def _write_json(self, filename, search_results):
+    @staticmethod
+    def _write_json(filename: str, search_results: Results):
         """
         This method writes the search results to a new file in JSON format.
 
@@ -83,18 +86,18 @@ class CensysAPISearch:
         """
         try:
             with open(filename, "w") as output_file:
-
-                # Since the results are already in JSON format, just write the results to a file.
-                output_file.write(json.dumps(search_results, indent=4))
+                # Since the results are already in JSON, just write them to a file.
+                json.dump(search_results, output_file, indent=4)
 
             print("Wrote results to file {}".format(filename))
             return True
 
-        except Exception as e:
-            print("Error writing JSON. Error: {}".format(e))
+        except Exception as error:
+            print("Error writing JSON. Error: {}".format(error))
             return False
 
-    def _write_screen(self, search_results):
+    @staticmethod
+    def _write_screen(search_results: Results):
         """
         This method writes the search results to screen.
 
@@ -104,9 +107,10 @@ class CensysAPISearch:
         print(json.dumps(search_results, indent=4))
         return True
 
-    def write_file(self, results_list):
+    def write_file(self, results_list: List[Results]):
         """
-        This method just sorts which format will be used to store the results of the query.
+        This method just sorts which format will be used to store
+        the results of the query.
 
         Args:
             results_list: Is a list of results from the API query.
@@ -118,39 +122,41 @@ class CensysAPISearch:
 
         if self.output_format == "csv":
             return self._write_csv(filename, results_list)
-        elif self.output_format == "json":
+        if self.output_format == "json":
             return self._write_json(filename, results_list)
-        else:
-            return self._write_screen(results_list)
+        return self._write_screen(results_list)
 
-    def _combine_fields(self, default_fields, user_fields, append):
+    def _combine_fields(
+        self, default_fields: Fields, user_fields: Fields, overwrite: bool = False,
+    ):
         """
-        This method is used to combine, or exclude fields depending on what the user has requested.
+        This method is used to combine, or exclude fields depending on what
+        the user has requested.
 
         Args:
             default_fields: A list of fields that are returned by default.
             user_fields: A list of fields the user would like back.
-            append: Determines whether user fields are added to default set, or returned on their own.
-
+            overwrite: Overwrite the default list of fields with the given fields
         """
 
-        if append is True:
-            field_list = list(set(user_fields + default_fields))
-        elif append is False:
-            field_list = user_fields
-        else:
-            field_list = default_fields
+        field_list: Fields = default_fields
+
+        if user_fields:
+            if overwrite:
+                field_list = user_fields
+            else:
+                field_list = list(set(user_fields + default_fields))
 
         # This is the hard limit for the number of fields that can be in a query.
-        if len(list(field_list)) <= 20:
-            self.csv_fields = list(field_list)
-            return list(field_list)
-        else:
-            raise Exception(
-                "Two many fields specified. Please limit the number of fields to 20 or less."
+        if len(list(field_list)) > 20:
+            raise CensysCLIException(
+                "Too many fields specified. The maximum number of fields is 20."
             )
 
-    def _process_search(self, query, search_index, fields):
+        self.csv_fields = list(field_list)
+        return list(field_list)
+
+    def _process_search(self, query: str, search_index: Index, fields: Fields):
         """
         This method provides a common way to process searches from the API.
 
@@ -163,20 +169,21 @@ class CensysAPISearch:
         records = []
 
         while True:
-            r = search_index.paged_search(
+            response = search_index.paged_search(
                 query=query, fields=fields, page=self.start_page
             )
 
-            for record in r["results"]:
+            for record in response["results"]:
                 records.append(record)
 
+            # Break while loop when last page is reached
             if (
-                r["metadata"]["page"] >= r["metadata"]["pages"]
-                or r["metadata"]["page"] >= self.max_pages
+                response["metadata"]["page"] >= response["metadata"]["pages"]
+                or response["metadata"]["page"] >= self.max_pages
             ):
                 break
-            else:
-                self.start_page += 1
+
+            self.start_page += 1
 
         return records
 
@@ -187,7 +194,7 @@ class CensysAPISearch:
         Args:
             query: The string search query.
             fields: The fields that should be returned with a query
-            append: Determines user fields are added to the default field list, or returned on their own.
+            overwrite: Overwrite the default list of fields with the given fields
         """
 
         default_fields = [
@@ -195,7 +202,7 @@ class CensysAPISearch:
             "protocols",
             "metadata.description",
             "autonomous_system.name",
-            "23.telnet.banner",
+            "23.telnet.banner.banner",
             "80.http.get.title",
             "80.http.get.metadata.description",
             "8080.http.get.metadata.description",
@@ -210,12 +217,12 @@ class CensysAPISearch:
 
         query = kwargs.get("query", "")
         fields = kwargs.get("fields", [])
-        append = kwargs.get("append", True)
+        overwrite = kwargs.get("overwrite", False)
 
         c = CensysIPv4(api_id=self.api_user, api_secret=self.api_pass)
 
         return self._process_search(
-            query, c, self._combine_fields(default_fields, fields, append)
+            query, c, self._combine_fields(default_fields, fields, overwrite=overwrite),
         )
 
     def search_certificates(self, **kwargs):
@@ -225,7 +232,7 @@ class CensysAPISearch:
         Args:
             query: The string search query.
             fields: The fields that should be returned with a query
-            append: Determines user fields are added to the default field list, or returned on their own.
+            overwrite: Overwrite the default list of fields with the given fields
         """
 
         default_fields = [
@@ -245,12 +252,12 @@ class CensysAPISearch:
 
         query = kwargs.get("query", "")
         fields = kwargs.get("fields", [])
-        append = kwargs.get("append", True)
+        overwrite = kwargs.get("overwrite", False)
 
         c = CensysCertificates(api_id=self.api_user, api_secret=self.api_pass)
 
         return self._process_search(
-            query, c, self._combine_fields(default_fields, fields, append)
+            query, c, self._combine_fields(default_fields, fields, overwrite=overwrite),
         )
 
     def search_websites(self, **kwargs):
@@ -260,7 +267,7 @@ class CensysAPISearch:
         Args:
             query: The string search query.
             fields: The fields that should be returned with a query
-            append: Determines user fields are added to the default field list, or returned on their own.
+            overwrite: Overwrite the default list of fields with the given fields
         """
 
         default_fields = [
@@ -275,52 +282,68 @@ class CensysAPISearch:
 
         query = kwargs.get("query", "")
         fields = kwargs.get("fields", [])
-        append = kwargs.get("append", True)
+        overwrite = kwargs.get("overwrite", False)
 
         c = CensysWebsites(api_id=self.api_user, api_secret=self.api_pass)
 
         return self._process_search(
-            query, c, self._combine_fields(default_fields, fields, append)
+            query, c, self._combine_fields(default_fields, fields, overwrite=overwrite),
         )
 
 
 def main():
     """
-        Argparse - Mistakes were made...
+        Argparse
     """
 
+    def formatter(prog):
+        return argparse.HelpFormatter(prog, max_help_position=50, width=100)
+
     parser = argparse.ArgumentParser(
-        description="Search The Censys Data Set via the command line"
+        description="Query Censys Search via the command line",
+        formatter_class=formatter,
     )
 
     parser.add_argument("query", type=str)
-    parser.add_argument("--fields", nargs="+")
     parser.add_argument(
-        "--query_type",
-        default="ipv4",
-        metavar="ipv4|certs|websites",
-        choices=["ipv4", "certs", "websites"],
-    )
-    parser.add_argument(
-        "--append",
-        help="Append the given list of fields to the default fields",
+        "--query-type",
         type=str,
-        choices=["true", "false"],
-    )
-    parser.add_argument("--output", default="screen", metavar="json|csv|screen")
-    parser.add_argument("--start_page", default=1, type=int)
-    parser.add_argument("--max_pages", default=1, type=int)
-    parser.add_argument(
-        "--censys_api_id",
-        required=False,
-        metavar="XXXXXXXXXX",
-        help="(optional) You must provide your Censys API ID here or as an environmental variable CENSYS_API_ID",
+        default="ipv4",
+        choices=["ipv4", "certs", "websites"],
+        metavar="ipv4|certs|websites",
     )
     parser.add_argument(
-        "--censys_api_secret",
+        "--fields", nargs="+", help="list of fields seperated by a space"
+    )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        default=False,
+        help="overwrite instead of append the default fields \
+            with the given list of fields",
+    )
+    parser.add_argument(
+        "--output",
+        type=str,
+        default="screen",
+        metavar="json|csv|screen",
+        help="format of output",
+    )
+    parser.add_argument("--start-page", default=1, type=int, help="start page number")
+    parser.add_argument("--max-pages", default=1, type=int, help="max number of pages")
+    parser.add_argument(
+        "--censys-api-id",
+        default=os.getenv("CENSYS_API_ID"),
         required=False,
-        metavar="XXXXXXXXXX",
-        help="(optional) You must provide your Censys API SECRET here or as an environmental variable CENSYS_API_SECRET",
+        help="provide a Censys API ID \
+            (alternatively you can use the env variable CENSYS_API_ID)",
+    )
+    parser.add_argument(
+        "--censys-api-secret",
+        default=os.getenv("CENSYS_API_SECRET"),
+        required=False,
+        help="provide a Censys API SECRET \
+            (alternatively you can use the env variable CENSYS_API_SECRET)",
     )
 
     args = parser.parse_args()
@@ -345,25 +368,21 @@ def main():
     if args.censys_api_secret:
         censys_args["censys_api_secret"] = args.censys_api_secret
 
-    if args.append:
-
-        if args.append.lower() == "false":
-            censys_args["append"] = False
-        elif args.append.lower == "true":
-            censys_args["append"] = True
+    if args.overwrite:
+        censys_args["overwrite"] = args.overwrite
 
     censys = CensysAPISearch(**censys_args)
 
-    if args.query_type == "ipv4":
-        censys.write_file(censys.search_ipv4(**censys_args))
+    indexes = {
+        "ipv4": censys.search_ipv4,
+        "certs": censys.search_certificates,
+        "websites": censys.search_websites,
+    }
 
-    if args.query_type == "certs":
-        censys.write_file(censys.search_certificates(**censys_args))
-
-    if args.query_type == "websites":
-        censys.write_file(censys.search_websites(**censys_args))
+    func = indexes[args.query_type]
+    results = func(**censys_args)
+    censys.write_file(results)
 
 
 if __name__ == "__main__":
-
     main()
