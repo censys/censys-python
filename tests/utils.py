@@ -1,4 +1,5 @@
 import os
+import unittest
 
 import pytest
 
@@ -8,3 +9,8 @@ required_env = pytest.mark.skipif(
     not all([os.getenv(env_var) for env_var in REQUIRED_ENV]),
     reason=f"missing required environment variables: {REQUIRED_ENV}",
 )
+
+
+@required_env
+class CensysTestCase(unittest.TestCase):
+    pass

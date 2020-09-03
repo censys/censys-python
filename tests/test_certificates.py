@@ -1,12 +1,11 @@
 import unittest
 
-from utils import required_env
+from utils import CensysTestCase
 
 from censys.certificates import CensysCertificates
 
 
-@required_env
-class CensysCertificatesTests(unittest.TestCase):
+class CensysCertificatesTests(CensysTestCase):
 
     CERT_SHA = "fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70"
 

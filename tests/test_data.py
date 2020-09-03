@@ -1,12 +1,11 @@
 import unittest
 
-from utils import required_env
+from utils import CensysTestCase
 
 from censys.data import CensysData
 
 
-@required_env
-class CensysDataTest(unittest.TestCase):
+class CensysDataTest(CensysTestCase):
 
     EXPECTED_GET_SERIES_KEYS = ["primary_series", "raw_series"]
 
@@ -14,12 +13,12 @@ class CensysDataTest(unittest.TestCase):
     def setUpClass(cls):
         cls._api = CensysData()
 
-    def testGetSeries(self):
+    def test_get_series(self):
         series = self._api.get_series()
         for key in self.EXPECTED_GET_SERIES_KEYS:
             self.assertTrue(key in series)
 
-    def testViewSeries(self):
+    def test_view_series(self):
         series = "ipv4_2018"
         res = self._api.view_series(series)
         self.assertEqual(
@@ -30,7 +29,7 @@ class CensysDataTest(unittest.TestCase):
         self.assertIn("historical", res["results"])
         self.assertIsInstance(res["results"]["historical"], list)
 
-    def testViewResult(self):
+    def test_view_result(self):
         series = "ipv4_2018"
         result = "20200818"
         res = self._api.view_result(series, result)

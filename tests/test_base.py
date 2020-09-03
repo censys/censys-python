@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from utils import required_env
+from utils import CensysTestCase
 
 from censys.base import (
     CensysAPIBase,
@@ -12,8 +12,7 @@ from censys.base import (
 )
 
 
-@required_env
-class CensysAPIBaseTests(unittest.TestCase):
+class CensysAPIBaseTests(CensysTestCase):
 
     EXPECTED_MY_ACCOUNT_KEYS = {"email", "first_login", "last_login", "login", "quota"}
     EXPECTED_QUOTA_KEYS = {"allowance", "resets_at", "used"}
@@ -42,7 +41,7 @@ class CensysAPIBaseTests(unittest.TestCase):
 
 
 @patch.dict("os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""})
-class CensysAPIBaseTestsNoEnv(unittest.TestCase):
+class CensysAPIBaseTestsNoEnv(CensysTestCase):
     def test_no_env(self):
         with self.assertRaises(CensysException) as context:
             CensysAPIBase()

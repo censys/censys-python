@@ -1,13 +1,12 @@
 import unittest
 
-from utils import required_env
+from utils import CensysTestCase
 
 from censys.base import CensysException
 from censys.ipv4 import CensysIPv4
 
 
-@required_env
-class CensysIPv4Tests(unittest.TestCase):
+class CensysIPv4Tests(CensysTestCase):
 
     MAX_RECORDS = 10
     EXPECTED_SEARCH_KEYS = {"ip", "location", "protocols"}
