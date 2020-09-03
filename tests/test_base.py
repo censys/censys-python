@@ -3,12 +3,13 @@ from unittest.mock import patch
 
 from utils import CensysTestCase
 
-from censys.base import (
-    CensysAPIBase,
+from censys.base import CensysAPIBase
+from censys.exceptions import (
     CensysException,
-    CensysUnauthorizedException,
-    CensysNotFoundException,
+    CensysAPIException,
     CensysRateLimitExceededException,
+    CensysNotFoundException,
+    CensysUnauthorizedException,
 )
 
 
@@ -28,6 +29,9 @@ class CensysAPIBaseTests(CensysTestCase):
 
     def test_get_exception_class(self):
         self.assertEqual(
+            self._api._get_exception_class(401), CensysUnauthorizedException
+        )
+        self.assertEqual(
             self._api._get_exception_class(403), CensysUnauthorizedException
         )
         self.assertEqual(self._api._get_exception_class(404), CensysNotFoundException)
@@ -36,12 +40,12 @@ class CensysAPIBaseTests(CensysTestCase):
         )
 
     def test_exception_repr(self):
-        exception = CensysException(404, "Not Found", const="notfound")
+        exception = CensysAPIException(404, "Not Found", const="notfound")
         self.assertEqual(repr(exception), "404 (notfound): Not Found")
 
 
 @patch.dict("os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""})
-class CensysAPIBaseTestsNoEnv(CensysTestCase):
+class CensysAPIBaseTestsNoEnv(unittest.TestCase):
     def test_no_env(self):
         with self.assertRaises(CensysException) as context:
             CensysAPIBase()
