@@ -1,3 +1,10 @@
+"""
+Interact with the Censys' Certificate API.
+
+Classes:
+    CensysCertificates
+"""
+
 from typing import List
 
 from censys.base import CensysIndex

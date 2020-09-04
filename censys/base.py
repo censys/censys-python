@@ -1,3 +1,11 @@
+"""
+Base for interacting with the Censys' API.
+
+Classes:
+    CensysAPIBase
+    CensysIndex
+"""
+
 import os
 import json
 from typing import Type, Optional, Callable, Dict, List, Generator
@@ -101,25 +109,23 @@ class CensysAPIBase:
         try:
             message = res.json()["error"]
             const = res.json().get("error_type", None)
-        except ValueError:
+        except ValueError:  # pragma: no cover
             message = (
                 f"Response from {res.url} is not valid JSON and cannot be decoded."
             )
             raise CensysJSONDecodeException(
                 status_code=res.status_code,
                 message=message,
-                headers=res.headers,
                 body=res.text,
                 const="badjson",
             )
-        except KeyError:
+        except KeyError:  # pragma: no cover
             message = None
             const = "unknown"
         censys_exception = self._get_exception_class(res.status_code)
         raise censys_exception(
             status_code=res.status_code,
             message=message,
-            headers=res.headers,
             body=res.text,
             const=const,
         )

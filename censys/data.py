@@ -1,3 +1,10 @@
+"""
+Interact with the Censys' Data API.
+
+Classes:
+    CensysData
+"""
+
 from censys.base import CensysAPIBase
 
 

@@ -1,3 +1,13 @@
+"""
+Interact with the Censys' Maxmind API.
+
+Classes:
+    CensysAdminMaxmind
+
+Functions:
+    main()
+"""
+
 import csv
 import argparse
 from pathlib import Path
@@ -56,6 +66,7 @@ def main():
             if row[0].startswith("geoname_id"):
                 continue
             locations[row[0]] = dict(zip(headers, row))
+
     # now that all geoid data is in memory, go through ips, generate full
     # records and then upload them in batches to Censys.
     headers = [
@@ -75,17 +86,13 @@ def main():
                 continue
             if row[0].startswith("network"):
                 continue
-            ip_details = dict(zip(headers, row))
             geoid = row[1]
             if geoid == "":
                 geoid = row[2]
-            details = locations[geoid]
             cidr = netaddr.IPNetwork(row[0])
-            first = int(cidr[0])
-            last = int(cidr[-1])
-            rec = {"ip_begin": first, "ip_end": last}
-            rec.update(ip_details)
-            rec.update(details)
+            rec = {"ip_begin": int(cidr[0]), "ip_end": int(cidr[-1])}
+            rec.update(dict(zip(headers, row)))
+            rec.update(locations[geoid])
             print(rec)
             to_upload.append(rec)
             if len(to_upload) > 10000:
