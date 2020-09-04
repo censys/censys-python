@@ -55,7 +55,7 @@ def main():
                 continue
             if row[0].startswith("geoname_id"):
                 continue
-            locations[row[0]] = {k: v for (k, v) in zip(headers, row)}
+            locations[row[0]] = dict(zip(headers, row))
     # now that all geoid data is in memory, go through ips, generate full
     # records and then upload them in batches to Censys.
     headers = [
@@ -75,7 +75,7 @@ def main():
                 continue
             if row[0].startswith("network"):
                 continue
-            ip_details = {k: v for (k, v) in zip(headers, row)}
+            ip_details = dict(zip(headers, row))
             geoid = row[1]
             if geoid == "":
                 geoid = row[2]
@@ -91,6 +91,7 @@ def main():
             if len(to_upload) > 10000:
                 censys.upload(collection, version, to_upload)
                 to_upload = []
+
         censys.upload(collection, version, to_upload)
 
 

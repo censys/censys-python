@@ -1,12 +1,11 @@
 import unittest
 
-from utils import required_env
+from utils import CensysTestCase
 
 from censys.websites import CensysWebsites
 
 
-@required_env
-class CensysWebsitesTests(unittest.TestCase):
+class CensysWebsitesTests(CensysTestCase):
 
     MAX_RECORDS = 10
     EXCEPTED_REPORT_FIELDS = {"metadata", "results", "status"}

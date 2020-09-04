@@ -1,15 +1,16 @@
 import unittest
 
-from utils import required_env
+from utils import CensysTestCase
 
-from censys.base import CensysException
+from censys.exceptions import CensysAPIException
 from censys.ipv4 import CensysIPv4
 
 
-@required_env
-class CensysIPv4Tests(unittest.TestCase):
+class CensysIPv4Tests(CensysTestCase):
 
+    SAMPLE_IPV4 = "8.8.8.8"
     MAX_RECORDS = 10
+    EXPECTED_METADATA_KEYS = {"backend_time", "count", "page", "pages", "query"}
     EXPECTED_SEARCH_KEYS = {"ip", "location", "protocols"}
     EXCEPTED_SEARCH_FIELDS = {"ip", "updated_at"}
     EXCEPTED_REPORT_FIELDS = {"metadata", "results", "status"}
@@ -18,9 +19,14 @@ class CensysIPv4Tests(unittest.TestCase):
     def setUpClass(cls):
         cls._api = CensysIPv4()
 
+    def test_metadata(self):
+        response = self._api.metadata(self.SAMPLE_IPV4)
+        self.assertSetEqual(set(response.keys()), self.EXPECTED_METADATA_KEYS)
+        self.assertEqual(response.get("page"), 1)
+        self.assertEqual(response.get("query"), self.SAMPLE_IPV4)
+
     def test_view(self):
-        # hopefully will always be found
-        response = self._api.view("8.8.8.8")
+        response = self._api.view(self.SAMPLE_IPV4)
         self.assertIn("ip", response)
         self.assertIn("updated_at", response)
         self.assertIn("location", response)
@@ -50,11 +56,11 @@ class CensysIPv4Tests(unittest.TestCase):
         self.assertLessEqual(len(response), self.MAX_RECORDS)
 
     def test_empty_search(self):
-        with self.assertRaises(CensysException):
+        with self.assertRaises(CensysAPIException):
             self._api._post("search/ipv4", data={"query1": "query"})
 
     def test_beyond_max_pages(self):
-        with self.assertRaises(CensysException):
+        with self.assertRaises(CensysAPIException):
             list(self._api.search("*", page=250))
 
     def test_bad_page_search(self):
@@ -62,7 +68,7 @@ class CensysIPv4Tests(unittest.TestCase):
             list(self._api.search("*", page="x", max_records=self.MAX_RECORDS))
 
     def test_bad_fields_search(self):
-        with self.assertRaises(CensysException):
+        with self.assertRaises(CensysAPIException):
             list(self._api.search("*", fields="test", max_records=self.MAX_RECORDS))
 
     def test_report(self):

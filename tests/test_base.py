@@ -1,19 +1,19 @@
 import unittest
 from unittest.mock import patch
 
-from utils import required_env
+from utils import CensysTestCase
 
-from censys.base import (
-    CensysAPIBase,
+from censys.base import CensysAPIBase
+from censys.exceptions import (
     CensysException,
-    CensysUnauthorizedException,
-    CensysNotFoundException,
+    CensysAPIException,
     CensysRateLimitExceededException,
+    CensysNotFoundException,
+    CensysUnauthorizedException,
 )
 
 
-@required_env
-class CensysAPIBaseTests(unittest.TestCase):
+class CensysAPIBaseTests(CensysTestCase):
 
     EXPECTED_MY_ACCOUNT_KEYS = {"email", "first_login", "last_login", "login", "quota"}
     EXPECTED_QUOTA_KEYS = {"allowance", "resets_at", "used"}
@@ -22,14 +22,15 @@ class CensysAPIBaseTests(unittest.TestCase):
     def setUpClass(cls):
         cls._api = CensysAPIBase()
 
-    # as mentioned here https://censysio.atlassian.net/browse/DATA-586
-    # this endpoint no longer returns api id / secret
     def test_my_account(self):
         res = self._api.account()
         self.assertSetEqual(set(res.keys()), self.EXPECTED_MY_ACCOUNT_KEYS)
         self.assertSetEqual(set(res["quota"].keys()), self.EXPECTED_QUOTA_KEYS)
 
     def test_get_exception_class(self):
+        self.assertEqual(
+            self._api._get_exception_class(401), CensysUnauthorizedException
+        )
         self.assertEqual(
             self._api._get_exception_class(403), CensysUnauthorizedException
         )
@@ -39,7 +40,7 @@ class CensysAPIBaseTests(unittest.TestCase):
         )
 
     def test_exception_repr(self):
-        exception = CensysException(404, "Not Found", const="notfound")
+        exception = CensysAPIException(404, "Not Found", const="notfound")
         self.assertEqual(repr(exception), "404 (notfound): Not Found")
 
 
