@@ -84,17 +84,12 @@ class CensysAPISearch:
             filename: Is the name of the file to write to on the disk.
             search_results: Is a list of results from the API query.
         """
-        try:
-            with open(filename, "w") as output_file:
-                # Since the results are already in JSON, just write them to a file.
-                json.dump(search_results, output_file, indent=4)
+        with open(filename, "w") as output_file:
+            # Since the results are already in JSON, just write them to a file.
+            json.dump(search_results, output_file, indent=4)
 
-            print("Wrote results to file {}".format(filename))
-            return True
-
-        except Exception as error:
-            print("Error writing JSON. Error: {}".format(error))
-            return False
+        print("Wrote results to file {}".format(filename))
+        return True
 
     @staticmethod
     def _write_screen(search_results: Results):
