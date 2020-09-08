@@ -5,13 +5,13 @@ from setuptools import setup, find_packages
 import censys
 
 NAME = "censys"
-DESCRIPTION = "Python library for interacting with Censys Search Engine (censys.io)"
+DESCRIPTION = censys.__doc__
 URL = "https://github.com/censys/censys-python"
 
 REQUIRES_PYTHON = ">=3.6.0"
 REQUIRED = ["requests", "netaddr"]
 EXTRAS = {
-    "dev": ["flake8", "black", "pytest", "pytest-cov", "mypy"],
+    "dev": ["flake8", "black", "pytest", "pytest-cov", "mypy", "pdoc3"],
 }
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -42,7 +42,6 @@ setup(
     entry_points={
         "console_scripts": [
             "censys = censys.cli:main",
-            "censys-maxmind = censys.admin.maxmind:main",
         ]
     },
     classifiers=[

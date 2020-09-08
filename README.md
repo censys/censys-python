@@ -1,6 +1,6 @@
 # Censys Python Library ![PyPI](https://img.shields.io/pypi/v/censys) ![Python Versions](https://img.shields.io/pypi/pyversions/censys)
 
-This is a lightweight Python wrapper to the Censys REST API. `censys-python` currently supports Python 3.6+.
+An easy to use and lightweight API wrapper for the Censys Search Engine (censys.io). Python 3.6+ is currently supported.
 
 ## Install
 
