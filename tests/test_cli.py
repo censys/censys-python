@@ -13,6 +13,16 @@ from censys.exceptions import CensysException, CensysCLIException
 
 
 class CensysCliTest(unittest.TestCase):
+    @patch("argparse._sys.argv", ["censys"])
+    def test_default_help(self):
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            with self.assertRaises(SystemExit) as exit_event:
+                cli_main()
+
+        self.assertEqual(exit_event.exception.code, 0)
+        self.assertTrue(temp_stdout.getvalue().strip().startswith("usage: censys"))
+
     @patch("argparse._sys.argv", ["censys", "--help"])
     def test_help(self):
         temp_stdout = StringIO()
@@ -21,7 +31,9 @@ class CensysCliTest(unittest.TestCase):
                 cli_main()
 
         self.assertEqual(exit_event.exception.code, 0)
-        self.assertTrue(temp_stdout.getvalue().strip().startswith("usage: censys"))
+        stdout = temp_stdout.getvalue().strip()
+        self.assertTrue(stdout.startswith("usage: censys"))
+        self.assertIn("search,hnri", stdout)
 
     @patch("argparse._sys.argv", ["censys", "search", "--help"])
     def test_search_help(self):

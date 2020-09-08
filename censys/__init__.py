@@ -1,5 +1,5 @@
 """
-An easy to use and lightweight API wrapper for the Censys Search Engine (censys.io).
+An easy-to-use and lightweight API wrapper for the Censys Search Engine (censys.io).
 """
 
 __author__ = "Censys Team"

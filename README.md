@@ -1,6 +1,6 @@
 # Censys Python Library ![PyPI](https://img.shields.io/pypi/v/censys) ![Python Versions](https://img.shields.io/pypi/pyversions/censys)
 
-An easy to use and lightweight API wrapper for the Censys Search Engine (censys.io). Python 3.6+ is currently supported.
+An easy-to-use and lightweight API wrapper for the Censys Search Engine (censys.io). Python 3.6+ is currently supported.
 
 ## Install
 
@@ -33,8 +33,6 @@ Python class objects must be initialized for each resource index (IPv4 addresses
 - `CensysCertificates`
 
 ### `search`
-
-**Available in all indexes**
 
 Below we show an example using the `CensysIPv4` index.
 
@@ -75,8 +73,6 @@ print(data)
 
 ### `view`
 
-**Available in all indexes**
-
 Below we show an example using the `CensysCertificates` index.
 
 ```python
@@ -91,7 +87,7 @@ print(cert)
 
 ### `report`
 
-**Available in all indexes**
+Below we show an example using the `CensysWebsites` index.
 
 ```python
 import censys.websites
@@ -110,148 +106,65 @@ print(websites)
 
 ### `data`
 
-**Available in all indexes**
-
 ### `account`
-
-**Available in all indexes**
 
 ### `bulk`
 
-**Available only in the certificate index**
+**Available only for the certificate index**
 
-<!-- PROGRESS TO HERE -->
+## CLI Usage
 
-The index APIs allow you to perform full-text searches, view specific records,
-and generate aggregate reports about the IPv4, Websites, and Certificates
-endpoints.
+### Search
 
-Below, we show an example for certificates, but the same methods exist for each
-of the three indices, with the exception of bulk which is only supported by the certificates index.
+```help
+$ censys search --help
 
-```python
-import censys.certificates
+usage: censys search [-h] [--api-id API_ID] [--api-secret API_SECRET]
+                     [-q QUERY] [--index-type ipv4|certs|websites]
+                     [--fields FIELDS [FIELDS ...]] [--overwrite]
+                     [--output json|csv|screen] [--start-page START_PAGE]
+                     [--max-pages MAX_PAGES]
 
-c = censys.certificates.CensysCertificates(api_id="XXX", api_secret="XXX")
+Query Censys Search for resource data by providing a query string, the
+resource index, and the fields to be returned
 
-# view specific certificate
-print(c.view("a762bf68f167f6fbdf2ab00fdefeb8b96f91335ad6b483b482dfd42c179be076"))
-
-fingerprints = list()
-# iterate over certificates that match a search
-fields = ["parsed.subject_dn", "parsed.fingerprint_sha256"]
-for cert in c.search("github.com and valid_nss: true", fields=fields):
-    fingerprints.append(cert["parsed.fingerprint_sha256"])
-    print(cert["parsed.subject_dn"])
-
-# get certificates in bulk from a list of fingerprints
-print(c.bulk(fingerprints))
-
-# aggregate report on key types used by trusted certificates
-print(
-    c.report(
-        query="valid_nss: true", field="parsed.subject_key_info.key_algorithm.name"
-    )
-)
+optional arguments:
+  -h, --help            show this help message and exit
+  --api-id API_ID       a Censys API ID (alternatively you can use the env
+                        variable CENSYS_API_ID)
+  --api-secret API_SECRET
+                        a Censys API SECRET (alternatively you can use the env
+                        variable CENSYS_API_SECRET)
+  -q QUERY, --query QUERY
+                        a string written in censys search syntax
+  --index-type ipv4|certs|websites
+                        which resource index to query
+  --fields FIELDS [FIELDS ...]
+                        list of index-specific fields
+  --overwrite           overwrite instead of append fields returned by default
+                        with fields provided in the fields argument
+  --output json|csv|screen
+                        format of output
+  --start-page START_PAGE
+                        start page number
+  --max-pages MAX_PAGES
+                        max number of pages
 ```
 
-Here's how to use the IPv4 index.
+### HNRI
 
-```python
-import censys.ipv4
+```help
+$ censys hnri --help
 
-c = censys.ipv4.CensysIPv4(api_id="XXX", api_secret="XXX")
+usage: censys hnri [-h] [--api-id API_ID] [--api-secret API_SECRET]
 
-# the report method constructs a report using a query, an aggregation field, and the
-# number of buckets to bin
-c.report(
-    """ "welcome to" AND tags.raw: "http" """,
-    field="80.http.get.headers.server.raw",
-    buckets=5,
-)
-
-# the view method lets you see the full JSON for an IP address
-c.view("8.8.8.8")
-
-# the search method lets you search the index using indexed fields, full text, and
-# combined predicates
-for result in c.search(
-    "80.http.get.headers.server: Apache AND location.country: Japan", max_records=10
-):
-    print(result)
-
-# you can optionally specify which fields you want to come back for search results
-IPV4_FIELDS = [
-    "ip",
-    "updated_at",
-    "80.http.get.title",
-    "443.https.get.title",
-    "443.https.tls.certificate.parsed.subject_dn",
-    "443.https.tls.certificate.parsed.names",
-    "443.https.tls.certificate.parsed.subject.common_name",
-    "443.https.tls.certificate.parsed.extensions.subject_alt_name.dns_names",
-    "25.smtp.starttls.tls.certificate.parsed.names",
-    "25.smtp.starttls.tls.certificate.parsed.subject_dn",
-    "110.pop3.starttls.tls.certificate.parsed.names",
-    "110.pop3.starttls.tls.certificate.parsed.subject_dn",
-]
-
-data = list(
-    c.search(
-        "80.http.get.headers.server: Apache AND location.country: Japan",
-        IPV4_FIELDS,
-        max_records=10,
-    )
-)
-print(data)
-```
-
-Here's how to use the Website index.
-
-```python
-import censys.websites
-
-c = censys.websites.CensysWebsites(api_id="XXX", api_secret="XXX")
-
-# the report method constructs a report using a query, an aggregation field, and the
-# number of buckets to bin
-c.report(
-    """ "welcome to" AND tags.raw: "http" """,
-    field="80.http.get.headers.server.raw",
-    buckets=5,
-)
-
-# the view method lets you see the full JSON for an website
-c.view("google.com")
-
-# the search method lets you search the index using indexed fields, full text, and
-# combined predicates
-for result in c.search(
-    "80.http.get.headers.server: Apache", max_records=10
-):
-    print(result)
-
-# you can optionally specify which fields you want to come back for search results
-WEBSITE_FIELDS = [
-    "ip",
-    "domain",
-    "updated_at",
-    "80.http.get.title",
-    "443.https.get.title",
-    "443.https.tls.certificate.parsed.subject_dn",
-    "443.https.tls.certificate.parsed.names",
-    "443.https.tls.certificate.parsed.subject.common_name",
-    "443.https.tls.certificate.parsed.extensions.subject_alt_name.dns_names",
-]
-
-data = list(
-    c.search(
-        "80.http.get.headers.server: Apache",
-        WEBSITE_FIELDS,
-        max_records=10,
-    )
-)
-print(data)
+optional arguments:
+  -h, --help            show this help message and exit
+  --api-id API_ID       a Censys API ID (alternatively you can use the env
+                        variable CENSYS_API_ID)
+  --api-secret API_SECRET
+                        a Censys API SECRET (alternatively you can use the env
+                        variable CENSYS_API_SECRET)
 ```
 
 ## Developing

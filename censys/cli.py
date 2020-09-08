@@ -8,12 +8,14 @@ import csv
 import time
 import json
 import argparse
-from typing import Union, List
+from typing import Union, List, Tuple
+
+import requests
 
 from censys.ipv4 import CensysIPv4
 from censys.websites import CensysWebsites
 from censys.certificates import CensysCertificates
-from censys.exceptions import CensysCLIException
+from censys.exceptions import CensysCLIException, CensysNotFoundException
 
 Fields = List[str]
 Results = List[dict]
@@ -29,16 +31,16 @@ class CensysAPISearch:
         format (str): What format to write the results. CSV, JSON, or stdout.
         start_page (int): What page the query should start from.
         max_pages (int): Adjust the number of results returned by the API.
-        censys_api_secret (str): The API secret provided by Censys.
-        censys_api_id (str): The API id provided by Censys.
+        api_secret (str): A API secret provided by Censys.
+        api_id (str): A API ID provided by Censys.
     """
 
     csv_fields: Fields = list()
     """A list of fields to be used by the CSV writer."""
 
     def __init__(self, **kwargs):
-        self.api_user = kwargs.get("censys_api_id")
-        self.api_pass = kwargs.get("censys_api_secret")
+        self.api_user = kwargs.get("api_id")
+        self.api_pass = kwargs.get("api_secret")
 
         self.output_format = kwargs.get("format", "json")
         self.start_page = kwargs.get("start_page", 1)
@@ -207,11 +209,10 @@ class CensysAPISearch:
         """
         A method to search the IPv4 data set via the API.
 
-        Args:
-            kwargs:
-                query: The string search query.
-                fields: The fields that should be returned with a query.
-                overwrite: Overwrite the default list of fields with the given fields.
+        Kwargs:
+            query: The string search query.
+            fields: The fields that should be returned with a query.
+            overwrite: Overwrite the default list of fields with the given fields.
 
         Returns:
             Results: A list of search results from an API query.
@@ -324,68 +325,100 @@ class CensysAPISearch:
         )
 
 
-def main():
-    """main cli function"""
+class CensysHNRI:
+    HIGH_RISK_DEFINITION: List[str] = ["telnet", "redis", "postgres", "vnc"]
+    MEDIUM_RISK_DEFINITION: List[str] = ["ssh", "http"]
 
-    def formatter(prog):
-        return argparse.HelpFormatter(prog, max_help_position=50, width=100)
+    def __init__(self, api_id, api_secret):
+        self.api_id = api_id
+        self.api_secret = api_secret
 
-    parser = argparse.ArgumentParser(
-        description="Query Censys Search via the command line",
-        formatter_class=formatter,
-    )
+        self.index = CensysIPv4(self.api_id, self.api_secret)
 
-    parser.add_argument("query", type=str)
-    parser.add_argument(
-        "--query-type",
-        type=str,
-        default="ipv4",
-        choices=["ipv4", "certs", "websites"],
-        metavar="ipv4|certs|websites",
-    )
-    parser.add_argument(
-        "--fields", nargs="+", help="list of fields seperated by a space"
-    )
-    parser.add_argument(
-        "--overwrite",
-        action="store_true",
-        default=False,
-        help="overwrite instead of append the default fields \
-            with the given list of fields",
-    )
-    parser.add_argument(
-        "--output",
-        type=str,
-        default="screen",
-        metavar="json|csv|screen",
-        help="format of output",
-    )
-    parser.add_argument("--start-page", default=1, type=int, help="start page number")
-    parser.add_argument("--max-pages", default=1, type=int, help="max number of pages")
-    parser.add_argument(
-        "--censys-api-id",
-        default=os.getenv("CENSYS_API_ID"),
-        required=False,
-        help="provide a Censys API ID \
-            (alternatively you can use the env variable CENSYS_API_ID)",
-    )
-    parser.add_argument(
-        "--censys-api-secret",
-        default=os.getenv("CENSYS_API_SECRET"),
-        required=False,
-        help="provide a Censys API SECRET \
-            (alternatively you can use the env variable CENSYS_API_SECRET)",
-    )
+    @staticmethod
+    def get_current_ip() -> str:
+        response = requests.get("https://api.ipify.org?format=json")
+        current_ip = response.json().get("ip")
+        return current_ip
 
-    args = parser.parse_args()
+    def translate_risk(self, protocols) -> Tuple[list, list]:
+        high_risk = []
+        medium_risk = []
 
+        for protocol in protocols:
+            port, protocol = protocol.split("/")
+            if protocol in self.HIGH_RISK_DEFINITION:
+                high_risk.append({"port": port, "protocol": protocol})
+            elif protocol in self.MEDIUM_RISK_DEFINITION:
+                medium_risk.append({"port": port, "protocol": protocol})
+            elif protocol == "banner":
+                medium_risk.append({"port": port, "protocol": "unknown protocol"})
+            else:
+                medium_risk.append({"port": port, "protocol": protocol})
+
+        return high_risk, medium_risk
+
+    @staticmethod
+    def risk_protocols_to_string(protocols):
+        response = ""
+        for protocol in protocols:
+            port = protocol.get("port")
+            protocol = protocol.get("protocol")
+            response = response + f"{protocol} on {port}\n"
+        return response.strip()
+
+    def risks_to_string(self, high_risk: list, medium_risk: list) -> str:
+        len_high_risk = len(high_risk)
+        len_medium_risk = len(medium_risk)
+
+        if len_high_risk + len_medium_risk == 0:
+            raise CensysNotFoundException
+
+        response = ""
+        if len_high_risk > 0:
+            response = (
+                response
+                + "High Risks Found: \n"
+                + self.risk_protocols_to_string(high_risk)
+            )
+        else:
+            response = response + "You don't have any High Risks in your network\n"
+        if len_medium_risk > 0:
+            response = (
+                response
+                + "Medium Risks Found: \n"
+                + self.risk_protocols_to_string(medium_risk)
+            )
+        else:
+            response = response + "You don't have any Medium Risks in your network\n"
+        return response
+
+    def view_current_ip_risks(self) -> str:
+        current_ip = self.get_current_ip()
+
+        try:
+            results = self.index.view(current_ip)
+            protocols = results.get("protocols")
+            high_risk, medium_risk = self.translate_risk(protocols)
+            return self.risks_to_string(high_risk, medium_risk)
+        except CensysNotFoundException:
+            return "No Risks were found on your network"
+
+
+def search(args):
+    """
+    search subcommand
+
+    Args:
+        args (Namespace): Argparse Namespace
+    """
     censys_args = {"query": args.query}
 
     if args.fields:
         censys_args["fields"] = args.fields
 
     if args.output:
-        censys_args["format"] = args.output
+        censys_args["format"] = args.output.lower()
 
     if args.start_page:
         censys_args["start_page"] = args.start_page
@@ -393,11 +426,11 @@ def main():
     if args.max_pages:
         censys_args["max_pages"] = args.max_pages
 
-    if args.censys_api_id:
-        censys_args["censys_api_id"] = args.censys_api_id
+    if args.api_id:
+        censys_args["api_id"] = args.api_id
 
-    if args.censys_api_secret:
-        censys_args["censys_api_secret"] = args.censys_api_secret
+    if args.api_secret:
+        censys_args["api_secret"] = args.api_secret
 
     if args.overwrite:
         censys_args["overwrite"] = args.overwrite
@@ -410,13 +443,107 @@ def main():
         "websites": censys.search_websites,
     }
 
-    func = indexes[args.query_type]
+    func = indexes[args.index_type]
     results = func(**censys_args)
 
     try:
         censys.write_file(results)
     except ValueError as error:  # pragma: no cover
         print("Error writing log file. Error: {}".format(error))
+
+
+def hnri(args):
+    """
+    search subcommand
+
+    Args:
+        args (Namespace): Argparse Namespace
+    """
+
+    client = CensysHNRI(args.api_id, args.api_secret)
+
+    risks = client.view_current_ip_risks()
+
+    print(risks)
+
+
+def main():
+    """main cli function"""
+
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument(
+        "--api-id",
+        default=os.getenv("CENSYS_API_ID"),
+        required=False,
+        help="a Censys API ID \
+            (alternatively you can use the env variable CENSYS_API_ID)",
+    )
+    common.add_argument(
+        "--api-secret",
+        default=os.getenv("CENSYS_API_SECRET"),
+        required=False,
+        help="a Censys API SECRET \
+            (alternatively you can use the env variable CENSYS_API_SECRET)",
+    )
+
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+
+    # Search Specific Args
+    search_parser = subparsers.add_parser(
+        "search",
+        description="Query Censys Search for resource data by providing a query \
+            string, the resource index, and the fields to be returned",
+        parents=[common],
+    )
+    search_parser.add_argument(
+        "-q", "--query", type=str, help="a string written in censys search syntax",
+    )
+    search_parser.add_argument(
+        "--index-type",
+        type=str,
+        default="ipv4",
+        choices=["ipv4", "certs", "websites"],
+        metavar="ipv4|certs|websites",
+        help="which resource index to query",
+    )
+    search_parser.add_argument(
+        "--fields", nargs="+", help="list of index-specific fields"
+    )
+    search_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        default=False,
+        help="overwrite instead of append fields returned by default \
+            with fields provided in the fields argument",
+    )
+    search_parser.add_argument(
+        "--output",
+        type=str,
+        default="screen",
+        metavar="json|csv|screen",
+        help="format of output",
+    )
+    search_parser.add_argument(
+        "--start-page", default=1, type=int, help="start page number"
+    )
+    search_parser.add_argument(
+        "--max-pages", default=1, type=int, help="max number of pages"
+    )
+    search_parser.set_defaults(func=search)
+
+    # HNRI Specific Args
+    hnri_parser = subparsers.add_parser("hnri", parents=[common])
+    hnri_parser.set_defaults(func=hnri)
+
+    # Executes by subcommand
+    args = parser.parse_args()
+
+    try:
+        args.func(args)
+    except AttributeError:
+        parser.print_help()
+        parser.exit()
 
 
 if __name__ == "__main__":  # pragma: no cover
