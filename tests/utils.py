@@ -10,9 +10,8 @@ required_env = pytest.mark.skipif(
     reason=f"missing required environment variables: {REQUIRED_ENV}",
 )
 
-PRIMARY_DATA_ENV = "PRIMARY_DATA"
-primary_data_env = pytest.mark.skipif(
-    not os.getenv(PRIMARY_DATA_ENV),
+permissions_env = pytest.mark.skipif(
+    not os.getenv("PERMISSIONS"),
     reason="(optional) enterprise permissions required",
 )
 

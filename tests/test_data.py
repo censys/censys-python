@@ -1,6 +1,6 @@
 import unittest
 
-from utils import CensysTestCase, primary_data_env
+from utils import CensysTestCase, permissions_env
 
 from censys.data import CensysData
 
@@ -18,7 +18,7 @@ class CensysDataTest(CensysTestCase):
         for key in self.EXPECTED_GET_SERIES_KEYS:
             self.assertTrue(key in series)
 
-    @primary_data_env
+    @permissions_env
     def test_view_series(self):
         series = "ipv4_2018"
         res = self._api.view_series(series)
@@ -27,7 +27,7 @@ class CensysDataTest(CensysTestCase):
         self.assertIn("historical", res["results"])
         self.assertIsInstance(res["results"]["historical"], list)
 
-    @primary_data_env
+    @permissions_env
     def test_view_result(self):
         series = "ipv4_2018"
         result = "20200818"

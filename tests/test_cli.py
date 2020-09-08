@@ -23,7 +23,19 @@ class CensysCliTest(unittest.TestCase):
         self.assertEqual(exit_event.exception.code, 0)
         self.assertTrue(temp_stdout.getvalue().strip().startswith("usage: censys"))
 
-    @patch("argparse._sys.argv", ["censys", "test"])
+    @patch("argparse._sys.argv", ["censys", "search", "--help"])
+    def test_search_help(self):
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            with self.assertRaises(SystemExit) as exit_event:
+                cli_main()
+
+        self.assertEqual(exit_event.exception.code, 0)
+        self.assertTrue(
+            temp_stdout.getvalue().strip().startswith("usage: censys search")
+        )
+
+    @patch("argparse._sys.argv", ["censys", "search", "--query", "test"])
     @patch.dict("os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""})
     def test_no_creds(self):
         with self.assertRaises(CensysException) as exit_event:
@@ -38,8 +50,10 @@ class CensysCliTest(unittest.TestCase):
         "argparse._sys.argv",
         [
             "censys",
+            "search",
+            "--query",
             "parsed.names: censys.io",
-            "--query-type",
+            "--index-type",
             "certs",
             "--fields",
             "parsed.issuer.country",
@@ -78,8 +92,10 @@ class CensysCliTest(unittest.TestCase):
         "argparse._sys.argv",
         [
             "censys",
+            "search",
+            "--query",
             "8.8.8.8",
-            "--query-type",
+            "--index-type",
             "ipv4",
             "--fields",
             "protocols",
@@ -118,8 +134,10 @@ class CensysCliTest(unittest.TestCase):
         "argparse._sys.argv",
         [
             "censys",
+            "search",
+            "--query",
             "censys.io",
-            "--query-type",
+            "--index-type",
             "websites",
             "--fields",
             "443.https.get.headers.server",
@@ -144,8 +162,10 @@ class CensysCliTest(unittest.TestCase):
         "argparse._sys.argv",
         [
             "censys",
+            "search",
+            "--query",
             "domain: censys.io AND ports: 443",
-            "--query-type",
+            "--index-type",
             "websites",
             "--overwrite",
             "--fields",
@@ -187,8 +207,10 @@ class CensysCliTest(unittest.TestCase):
         "argparse._sys.argv",
         [
             "censys",
+            "search",
+            "--query",
             "parsed.names: censys.io",
-            "--query-type",
+            "--index-type",
             "certs",
             "--fields",
             "fingerprint_sha256",
