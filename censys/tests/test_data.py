@@ -22,10 +22,7 @@ class CensysDataTest(CensysTestCase):
     def test_view_series(self):
         series = "ipv4_2018"
         res = self._api.view_series(series)
-        self.assertEqual(
-            res["description"],
-            "The Censys IPv4 dataset provides data about the services (e.g., HTTP, SMTP, MySQL) running on all publicly-accessible IPv4 hosts. This data series is produced by our newer data infrastructure and will replace the (deprecated) 'ipv4' series.",
-        )
+        self.assertIn("description", res)
         self.assertIn("results", res)
         self.assertIn("historical", res["results"])
         self.assertIsInstance(res["results"]["historical"], list)
