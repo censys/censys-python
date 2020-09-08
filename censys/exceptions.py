@@ -1,24 +1,21 @@
 """
 Exceptions for Censys.
-
-Classes:
-    CensysException
-    CensysAPIException
-    CensysRateLimitExceededException
-    CensysNotFoundException
-    CensysUnauthorizedException
-    CensysJSONDecodeException
-    CensysCLIException
 """
 
 from typing import Optional
 
 
 class CensysException(Exception):
-    pass
+    """
+    Base Exception for Censys.
+    """
 
 
 class CensysAPIException(CensysException):
+    """
+    Base Exception for the Censys API.
+    """
+
     def __init__(
         self,
         status_code: int,
@@ -39,20 +36,31 @@ class CensysAPIException(CensysException):
 
 
 class CensysRateLimitExceededException(CensysAPIException):
-    pass
+    """
+    Exception raised when your Censys rate limit has been exceeded.
+    """
 
 
 class CensysNotFoundException(CensysAPIException):
-    pass
+    """
+    Exception raised when the resource requested is not found.
+    """
 
 
 class CensysUnauthorizedException(CensysAPIException):
-    pass
+    """
+    Exception raised when your Censys account doesn't have
+    access to the requested resource.
+    """
 
 
 class CensysJSONDecodeException(CensysAPIException):
-    pass
+    """
+    Exception raised when the resource requested is not valid JSON.
+    """
 
 
-class CensysCLIException(Exception):
-    pass
+class CensysCLIException(CensysException):
+    """
+    Exception raised when the CLI is passed invalid arguments.
+    """

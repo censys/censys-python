@@ -1,11 +1,5 @@
 """
-Interact with the Censys' Maxmind API.
-
-Classes:
-    CensysAdminMaxmind
-
-Functions:
-    main()
+Interact with the Censys Maxmind API.
 """
 
 import csv

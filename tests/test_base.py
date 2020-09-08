@@ -15,17 +15,23 @@ from censys.exceptions import (
 
 class CensysAPIBaseTests(CensysTestCase):
 
-    EXPECTED_MY_ACCOUNT_KEYS = {"email", "first_login", "last_login", "login", "quota"}
+    EXPECTED_ACCOUNT_KEYS = {"email", "first_login", "last_login", "login", "quota"}
     EXPECTED_QUOTA_KEYS = {"allowance", "resets_at", "used"}
 
     @classmethod
     def setUpClass(cls):
         cls._api = CensysAPIBase()
 
-    def test_my_account(self):
+    def test_account(self):
         res = self._api.account()
-        self.assertSetEqual(set(res.keys()), self.EXPECTED_MY_ACCOUNT_KEYS)
-        self.assertSetEqual(set(res["quota"].keys()), self.EXPECTED_QUOTA_KEYS)
+        self.assertSetEqual(set(res.keys()), self.EXPECTED_ACCOUNT_KEYS)
+
+    def test_quota(self):
+        res = self._api.quota()
+        self.assertSetEqual(set(res.keys()), self.EXPECTED_QUOTA_KEYS)
+        self.assertTrue(
+            all(isinstance(value, int) for value in [res["allowance"], res["used"]])
+        )
 
     def test_get_exception_class(self):
         self.assertEqual(

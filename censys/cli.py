@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 """
 Interact with the Censys API through the command line.
-
-Classes:
-    CensysAPISearch
-
-Functions:
-    main()
 """
 
 import os
@@ -31,19 +25,16 @@ class CensysAPISearch:
     This class searches the Censys API, taking in options from the command line and
     returning the results to a CSV or JSON file, or to stdout.
 
-    Args:
-        kwargs:
-            format: What format to write the results. CSV, JSON, or stdout.
-            start_page: What page the query should start from.
-            max_pages: Adjust the number of results returned by the API.
-            censys_api_secret: The API secret provided by Censys.
-            censys_api_id: The API id provided by Censys.
-
-    Attributes:
-        csv_fields (Fields): A list of fields to be used by the CSV writer.
+    Kwargs:
+        format (str): What format to write the results. CSV, JSON, or stdout.
+        start_page (int): What page the query should start from.
+        max_pages (int): Adjust the number of results returned by the API.
+        censys_api_secret (str): The API secret provided by Censys.
+        censys_api_id (str): The API id provided by Censys.
     """
 
     csv_fields: Fields = list()
+    """A list of fields to be used by the CSV writer."""
 
     def __init__(self, **kwargs):
         self.api_user = kwargs.get("censys_api_id")
