@@ -106,11 +106,54 @@ print(websites)
 
 ### `data`
 
+Below we show an example using the `CensysData` index.
+
+```python
+import censys.data
+
+c = censys.data.CensysData(api_id="XXX", api_secret="XXX")
+
+# View a specific result from a specific series
+result = c.view_result("ipv4_2018", "20200818")
+print(result)
+```
+
 ### `account`
+
+Below we show an example using the `CensysIPv4` index.
+
+```python
+import censys.ipv4
+
+c = censys.ipv4.CensysIPv4(api_id="XXX", api_secret="XXX")
+
+# Gets account data
+c.account()
+
+# Gets account quota
+c.quota()
+```
 
 ### `bulk`
 
-**Available only for the certificate index**
+**Please note this method is only available only for the certificate index**
+
+Below we show an example using the `CensysCertificates` index.
+
+```python
+import censys.certificates
+
+c = censys.certificates.CensysCertificates(api_id="XXX", api_secret="XXX")
+
+fingerprints = [
+    "fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70",
+    "a762bf68f167f6fbdf2ab00fdefeb8b96f91335ad6b483b482dfd42c179be076"
+]
+
+# Get bulk certificate data
+certs = c.bulk(fingerprints)
+print(certs)
+```
 
 ## CLI Usage
 
