@@ -1,6 +1,7 @@
 """
 Base for interacting with the Censys API.
 """
+# pylint: disable=too-many-arguments
 
 import os
 import json
