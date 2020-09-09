@@ -207,6 +207,16 @@ class CensysIndex(CensysAPIBase):
         self.report_path = f"report/{self.INDEX_NAME}"
 
     def metadata(self, query: str) -> dict:
+        """
+        Returns metadata of a given search query.
+
+        Args:
+            query (str): The query to be executed.
+
+        Returns:
+            dict: The metadata of the result set returned.
+        """
+
         data = {"query": query, "page": 1, "fields": []}
         return self._post(self.search_path, data=data).get("metadata", {})
 
@@ -225,6 +235,7 @@ class CensysIndex(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
+
         page = int(page)
         data = {
             "query": query,
@@ -256,6 +267,7 @@ class CensysIndex(CensysAPIBase):
         Yields:
             dict: The result set returned.
         """
+
         if fields is None:
             fields = []
         page = int(page)
@@ -286,6 +298,7 @@ class CensysIndex(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
+
         return self._get("/".join((self.view_path, document_id)))
 
     def report(self, query: str, field: str, buckets: int = 50) -> dict:
@@ -301,5 +314,6 @@ class CensysIndex(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
+
         data = {"query": query, "field": field, "buckets": int(buckets)}
         return self._post(self.report_path, data=data)

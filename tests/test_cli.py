@@ -9,10 +9,15 @@ from unittest.mock import patch
 from utils import required_env
 
 from censys.cli import main as cli_main
-from censys.exceptions import CensysException, CensysCLIException
+from censys.cli import CensysHNRI
+from censys.exceptions import (
+    CensysException,
+    CensysCLIException,
+    CensysNotFoundException,
+)
 
 
-class CensysCliTest(unittest.TestCase):
+class CensysCliSearchTest(unittest.TestCase):
     @patch("argparse._sys.argv", ["censys"])
     def test_default_help(self):
         temp_stdout = StringIO()
@@ -256,6 +261,92 @@ class CensysCliTest(unittest.TestCase):
             str(exit_event.exception),
             "Too many fields specified. The maximum number of fields is 20.",
         )
+
+
+class CensysCliHNRITest(unittest.TestCase):
+    @patch("argparse._sys.argv", ["censys", "hnri"])
+    @patch.dict("os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""})
+    def test_hnri_no_creds(self):
+        with self.assertRaises(CensysException) as exit_event:
+            cli_main()
+
+        self.assertEqual(
+            str(exit_event.exception), "No API ID or API secret configured."
+        )
+
+    @required_env
+    @patch(
+        "argparse._sys.argv", ["censys", "hnri"],
+    )
+    @patch("censys.cli.CensysHNRI.get_current_ip", lambda _: "8.8.8.8")
+    def test_hnri_medium(self):
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        stdout = temp_stdout.getvalue().strip()
+        self.assertIn("Medium Risks Found:", stdout)
+        self.assertIn("https on 443", stdout)
+        self.assertIn("dns on 53", stdout)
+
+    @required_env
+    @patch(
+        "argparse._sys.argv", ["censys", "hnri"],
+    )
+    @patch("censys.cli.CensysHNRI.get_current_ip", lambda _: "94.142.241.111")
+    def test_hnri_high(self):
+        # Using towel.blinkenlights.nl/94.142.241.111
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        stdout = temp_stdout.getvalue().strip()
+        self.assertIn("High Risks Found:", stdout)
+        self.assertIn("telnet on 23", stdout)
+
+    @required_env
+    @patch(
+        "argparse._sys.argv", ["censys", "hnri"],
+    )
+    @patch("censys.ipv4.CensysIPv4.view", lambda _, ip: {"protocols": ["23/telnet"]})
+    def test_hnri_no_medium(self):
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        stdout = temp_stdout.getvalue().strip()
+        self.assertIn("High Risks Found:", stdout)
+        self.assertIn("telnet on 23", stdout)
+        self.assertIn("You don't have any Medium Risks in your network", stdout)
+
+    @required_env
+    @patch(
+        "argparse._sys.argv", ["censys", "hnri"],
+    )
+    @patch("censys.cli.CensysHNRI.get_current_ip", lambda _: "8.8.8.8")
+    @patch(
+        "censys.ipv4.CensysIPv4.view",
+        side_effect=CensysNotFoundException(
+            404, "The requested record does not exist."
+        ),
+    )
+    def test_hnri_not_found(self, view):
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        view.assert_called_with("8.8.8.8")
+
+        stdout = temp_stdout.getvalue().strip()
+        self.assertIn("No Risks were found on your network", stdout)
+
+    def test_get_current_ip(self):
+        ip_address = CensysHNRI.get_current_ip()
+        self.assertIsInstance(ip_address, str)
+
+    def test_no_risks(self):
+        with self.assertRaises(CensysCLIException):
+            CensysHNRI.risks_to_string([], [])
 
 
 if __name__ == "__main__":

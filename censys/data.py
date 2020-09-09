@@ -21,6 +21,7 @@ class CensysData(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
+
         return self._get(self._PREFIX)
 
     def view_series(self, series_id: str) -> dict:
@@ -33,11 +34,13 @@ class CensysData(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
+
         path = "/".join([self._PREFIX, series_id])
         return self._get(path)
 
     def view_result(self, series_id: str, result_id: str) -> dict:
-        """[summary]
+        """
+        View a specific result of a specific series
 
         Args:
             series_id (str): The ID of the series.
@@ -46,5 +49,6 @@ class CensysData(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
+
         path = "/".join([self._PREFIX, series_id, result_id])
         return self._get(path)
