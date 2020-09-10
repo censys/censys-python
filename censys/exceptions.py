@@ -11,6 +11,12 @@ class CensysException(Exception):
     """
 
 
+class CensysCLIException(CensysException):
+    """
+    Exception raised when the CLI is passed invalid arguments.
+    """
+
+
 class CensysAPIException(CensysException):
     """
     Base Exception for the Censys API.
@@ -57,10 +63,4 @@ class CensysUnauthorizedException(CensysAPIException):
 class CensysJSONDecodeException(CensysAPIException):
     """
     Exception raised when the resource requested is not valid JSON.
-    """
-
-
-class CensysCLIException(CensysException):
-    """
-    Exception raised when the CLI is passed invalid arguments.
     """
