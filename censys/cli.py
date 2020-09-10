@@ -9,7 +9,8 @@ import csv
 import time
 import json
 import argparse
-from typing import Union, List, Tuple
+from pathlib import Path
+from typing import Union, Optional, List, Tuple
 
 import requests
 
@@ -49,17 +50,16 @@ class CensysAPISearch:
         self.api_user = kwargs.get("api_id")
         self.api_pass = kwargs.get("api_secret")
 
-        self.output_format = kwargs.get("format", "json")
         self.start_page = kwargs.get("start_page", 1)
         self.max_pages = kwargs.get("max_pages", 10)
 
     @staticmethod
-    def _write_csv(filename: str, search_results: Results, fields: Fields) -> bool:
+    def _write_csv(file_path: str, search_results: Results, fields: Fields) -> bool:
         """
         This method writes the search results to a new file in CSV format.
 
         Args:
-            filename (str): The name of the file to write to on the disk.
+            file_path (str): The name of the file to write to on the disk.
             search_results (Results): A list of search results from an API query.
             fields (Fields): A list of fields to write as headers.
 
@@ -67,7 +67,7 @@ class CensysAPISearch:
             bool: True if wrote to file successfully.
         """
 
-        with open(filename, "w") as output_file:
+        with open(file_path, "w") as output_file:
             if search_results and isinstance(search_results, list):
                 # Get the header row from the first result
                 writer = csv.DictWriter(output_file, fieldnames=fields)
@@ -77,29 +77,29 @@ class CensysAPISearch:
                     # Use the Dict writer to process and write results to CSV
                     writer.writerow(result)
 
-        print("Wrote results to file {}".format(filename))
+        print("Wrote results to file {}".format(file_path))
 
         # method returns True, if the file has been written successfully.
         return True
 
     @staticmethod
-    def _write_json(filename: str, search_results: Results) -> bool:
+    def _write_json(file_path: str, search_results: Results) -> bool:
         """
         This method writes the search results to a new file in JSON format.
 
         Args:
-            filename (str): name of the file to write to on the disk.
+            file_path (str): name of the file to write to on the disk.
             search_results (Results): list of search results from API query.
 
         Returns:
             bool: True if wrote to file successfully.
         """
 
-        with open(filename, "w") as output_file:
+        with open(file_path, "w") as output_file:
             # Since the results are already in JSON, just write them to a file.
             json.dump(search_results, output_file, indent=4)
 
-        print("Wrote results to file {}".format(filename))
+        print("Wrote results to file {}".format(file_path))
         return True
 
     @staticmethod
@@ -117,26 +117,37 @@ class CensysAPISearch:
         print(json.dumps(search_results, indent=4))
         return True
 
-    def write_file(self, results_list: Results) -> bool:
+    def write_file(
+        self,
+        results_list: Results,
+        file_format: str = "screen",
+        file_path: Optional[str] = None,
+    ) -> bool:
         """
         This method just sorts which format will be used to store
         the results of the query.
 
         Args:
-            results_list: Is a list of results from the API query.
+            results_list (Results): A list of results from the API query.
+            file_format (str, optional): The format of the output.
+            file_path (str optional): A path to write results to.
 
         Returns:
             bool: True if wrote out successfully.
         """
 
-        # This method just creates some dynamic file names
-        file_name_ext = "{}.{}".format(time.time(), self.output_format)
-        filename = "{}.{}".format("censys-query-output", file_name_ext)
+        if file_format and isinstance(file_format, str):
+            file_format = file_format.lower()
 
-        if self.output_format == "csv":
-            return self._write_csv(filename, results_list, fields=self.csv_fields)
-        if self.output_format == "json":
-            return self._write_json(filename, results_list)
+        if not file_path:
+            # This method just creates some dynamic file names
+            file_name_ext = "{}.{}".format(time.time(), file_format)
+            file_path = "{}.{}".format("censys-query-output", file_name_ext)
+
+        if file_format == "json":
+            return self._write_json(file_path, results_list)
+        if file_format == "csv":
+            return self._write_csv(file_path, results_list, fields=self.csv_fields)
         return self._write_screen(results_list)
 
     def _combine_fields(
@@ -472,9 +483,6 @@ def search(args):
     if args.fields:
         censys_args["fields"] = args.fields
 
-    if args.output:
-        censys_args["format"] = args.output.lower()
-
     if args.start_page:
         censys_args["start_page"] = args.start_page
 
@@ -500,11 +508,11 @@ def search(args):
 
     index_type = args.index_type or args.query_type
 
-    func = indexes[index_type]
-    results = func(**censys_args)
+    index_func = indexes[index_type]
+    results = index_func(**censys_args)
 
     try:
-        censys.write_file(results)
+        censys.write_file(results, file_format=args.format, file_path=args.output)
     except ValueError as error:  # pragma: no cover
         print("Error writing log file. Error: {}".format(error))
 
@@ -638,11 +646,15 @@ def main():
             with fields provided in the fields argument",
     )
     search_parser.add_argument(
-        "--output",
+        "-f",
+        "--format",
         type=str,
         default="screen",
         metavar="json|csv|screen",
         help="format of output",
+    )
+    search_parser.add_argument(
+        "-o", "--output", type=Path, help="output file path",
     )
     search_parser.add_argument(
         "--start-page", default=1, type=int, help="start page number"

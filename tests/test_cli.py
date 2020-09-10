@@ -78,7 +78,7 @@ class CensysCliSearchTest(unittest.TestCase):
             "certs",
             "--fields",
             "parsed.issuer.country",
-            "--output",
+            "--format",
             "json",
             "--max-pages",
             "2",
@@ -120,10 +120,8 @@ class CensysCliSearchTest(unittest.TestCase):
             "ipv4",
             "--fields",
             "protocols",
-            "--output",
+            "--format",
             "csv",
-            "--max-pages",
-            "1",
         ],
     )
     def test_write_csv(self):
@@ -157,15 +155,47 @@ class CensysCliSearchTest(unittest.TestCase):
             "censys",
             "search",
             "--query",
+            "parsed.names: censys.io",
+            "--index-type",
+            "certs",
+            "--fields",
+            "parsed.issuer.country",
+            "--format",
+            "json",
+            "--output",
+            "censys-certs.json",
+        ],
+    )
+    def test_write_output_path(self):
+        output_path = "censys-certs.json"
+
+        cli_main()
+
+        self.assertTrue(os.path.isfile(output_path))
+
+        with open(output_path) as json_file:
+            json_response = json.load(json_file)
+
+        self.assertGreaterEqual(len(json_response), 1)
+        self.assertIn("parsed.issuer.country", json_response[0].keys())
+
+        # Cleanup
+        os.remove(output_path)
+
+    @required_env
+    @patch(
+        "argparse._sys.argv",
+        [
+            "censys",
+            "search",
+            "--query",
             "censys.io",
             "--index-type",
             "websites",
             "--fields",
             "443.https.get.headers.server",
-            "--output",
+            "--format",
             "screen",
-            "--max-pages",
-            "1",
         ],
     )
     def test_write_screen(self):
@@ -197,10 +227,8 @@ class CensysCliSearchTest(unittest.TestCase):
             "443.https.tls.cipher_suite.name",
             "443.https.get.title",
             "443.https.get.headers.server",
-            "--output",
+            "--format",
             "screen",
-            "--max-pages",
-            "1",
         ],
     )
     def test_overwrite(self):

@@ -178,8 +178,8 @@ $ censys search --help
 usage: censys search [-h] [--api-id API_ID] [--api-secret API_SECRET]
                      [-q QUERY] [--index-type ipv4|certs|websites]
                      [--fields FIELDS [FIELDS ...]] [--overwrite]
-                     [--output json|csv|screen] [--start-page START_PAGE]
-                     [--max-pages MAX_PAGES]
+                     [-f json|csv|screen] [-o OUTPUT]
+                     [--start-page START_PAGE] [--max-pages MAX_PAGES]
 
 Query Censys Search for resource data by providing a query string, the
 resource index, and the fields to be returned
@@ -199,8 +199,10 @@ optional arguments:
                         list of index-specific fields
   --overwrite           overwrite instead of append fields returned by default
                         with fields provided in the fields argument
-  --output json|csv|screen
+  -f json|csv|screen, --format json|csv|screen
                         format of output
+  -o OUTPUT, --output OUTPUT
+                        output file path
   --start-page START_PAGE
                         start page number
   --max-pages MAX_PAGES
