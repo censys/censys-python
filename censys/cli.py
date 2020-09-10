@@ -562,7 +562,7 @@ def cli_config(_):  # pragma: no cover
         config.set(DEFAULT, "api_secret", api_secret)
 
         write_config(config)
-        print(f"Successfully authenticated for {email}")
+        print(f"\nSuccessfully authenticated for {email}")
         sys.exit(0)
     except CensysUnauthorizedException:
         print("Failed to authenticate")
@@ -574,15 +574,15 @@ def main():
 
     config = get_config()
 
-    common = argparse.ArgumentParser(add_help=False)
-    common.add_argument(
+    auth = argparse.ArgumentParser(add_help=False)
+    auth.add_argument(
         "--api-id",
         default=os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id"),
         required=False,
         help="a Censys API ID \
             (alternatively you can use the env variable CENSYS_API_ID)",
     )
-    common.add_argument(
+    auth.add_argument(
         "--api-secret",
         default=os.getenv("CENSYS_API_SECRET") or config.get(DEFAULT, "api_secret"),
         required=False,
@@ -600,7 +600,7 @@ def main():
         description="Query Censys Search for resource data by providing a query \
             string, the resource index, and the fields to be returned",
         help="query Censys search",
-        parents=[common],
+        parents=[auth],
     )
     search_parser.add_argument(
         "-q", "--query", type=str, help="a string written in censys search syntax",
@@ -657,7 +657,7 @@ def main():
         "hnri",
         description="Home Network Risk Identifier (H.N.R.I.)",
         help="home network risk identifier",
-        parents=[common],
+        parents=[auth],
     )
     hnri_parser.set_defaults(func=hnri)
 

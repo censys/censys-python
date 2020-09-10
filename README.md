@@ -157,9 +157,22 @@ print(certs)
 
 ## CLI Usage
 
+### Config
+
+To configure your credentials run `censys config` or set both `CENSYS_API_ID` and `CENSYS_API_SECRET` environment variables.
+
+```bash
+$ censys config
+
+Censys API ID: XXX
+Censys API Secret: XXX
+
+Successfully authenticated for your@email.com
+```
+
 ### Search
 
-```help
+```bash
 $ censys search --help
 
 usage: censys search [-h] [--api-id API_ID] [--api-secret API_SECRET]
@@ -196,10 +209,12 @@ optional arguments:
 
 ### HNRI
 
-```help
+```bash
 $ censys hnri --help
 
 usage: censys hnri [-h] [--api-id API_ID] [--api-secret API_SECRET]
+
+Home Network Risk Identifier (H.N.R.I.)
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -220,8 +235,8 @@ pip install -e .[dev]
 
 ## Testing
 
-Testing requires both `CENSYS_API_ID` and `CENSYS_API_SECRET` environment variables
+Testing requires credentials to be set.
 
 ```bash
-CENSYS_API_ID=xxx CENSYS_API_SECRET=xxx pytest
+pytest
 ```
