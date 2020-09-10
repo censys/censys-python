@@ -9,7 +9,7 @@ DESCRIPTION = censys.__doc__.strip()
 URL = "https://github.com/censys/censys-python"
 
 REQUIRES_PYTHON = ">=3.6.0"
-REQUIRED = ["requests", "netaddr"]
+REQUIRED = ["requests"]
 EXTRAS = {
     "dev": ["flake8", "black", "pytest", "pytest-cov", "mypy", "twine"],
 }
@@ -39,7 +39,7 @@ setup(
     zip_safe=False,
     install_requires=REQUIRED,
     extras_require=EXTRAS,
-    entry_points={"console_scripts": ["censys = censys.cli:main",]},
+    entry_points={"console_scripts": ["censys = censys.cli:main"]},
     classifiers=[
         "Typing :: Typed",
         "Topic :: Internet",
