@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 import censys
 
 NAME = "censys"
-DESCRIPTION = censys.__doc__
+DESCRIPTION = censys.__doc__.strip()
 URL = "https://github.com/censys/censys-python"
 
 REQUIRES_PYTHON = ">=3.6.0"
