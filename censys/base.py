@@ -10,6 +10,7 @@ from typing import Type, Optional, Callable, Dict, List, Generator, Any
 import requests
 
 from censys import __name__ as NAME, __version__ as VERSION
+from censys.config import get_config, DEFAULT
 from censys.exceptions import (
     CensysException,
     CensysAPIException,
@@ -59,9 +60,18 @@ class CensysAPIBase:
         timeout: Optional[int] = None,
         user_agent_identifier: Optional[str] = None,
     ):
+        # Gets config file
+        config = get_config()
+
         # Try to get credentials
-        self.api_id = api_id or os.getenv("CENSYS_API_ID")
-        self.api_secret = api_secret or os.getenv("CENSYS_API_SECRET")
+        self.api_id = (
+            api_id or os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id")
+        )
+        self.api_secret = (
+            api_secret
+            or os.getenv("CENSYS_API_SECRET")
+            or config.get(DEFAULT, "api_secret")
+        )
         if not self.api_id or not self.api_secret:
             raise CensysException("No API ID or API secret configured.")
 

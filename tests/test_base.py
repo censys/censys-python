@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, mock_open
 
 from utils import CensysTestCase
 
@@ -52,7 +52,8 @@ class CensysAPIBaseTests(CensysTestCase):
 
 @patch.dict("os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""})
 class CensysAPIBaseTestsNoEnv(unittest.TestCase):
-    def test_no_env(self):
+    @patch("builtins.open", new_callable=mock_open, read_data="[DEFAULT]")
+    def test_no_env(self, mock_file):
         with self.assertRaises(CensysException) as context:
             CensysAPIBase()
 

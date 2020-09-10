@@ -3,16 +3,19 @@ import unittest
 
 import pytest
 
+from censys.config import DEFAULT, get_config
 
-REQUIRED_ENV = ["CENSYS_API_ID", "CENSYS_API_SECRET"]
+config = get_config()
+api_id = config.get(DEFAULT, "api_id") or os.getenv("CENSYS_API_ID")
+api_secret = config.get(DEFAULT, "api_secret") or os.getenv("CENSYS_API_SECRET")
+
+
 required_env = pytest.mark.skipif(
-    not all([os.getenv(env_var) for env_var in REQUIRED_ENV]),
-    reason=f"missing required environment variables: {REQUIRED_ENV}",
+    not (api_id and api_secret), reason="API credentials not found",
 )
 
 permissions_env = pytest.mark.skipif(
-    not os.getenv("PERMISSIONS"),
-    reason="(optional) enterprise permissions required",
+    not os.getenv("PERMISSIONS"), reason="(optional) enterprise permissions required",
 )
 
 

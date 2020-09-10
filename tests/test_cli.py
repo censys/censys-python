@@ -4,7 +4,7 @@ import json
 import unittest
 import contextlib
 from io import StringIO
-from unittest.mock import patch
+from unittest.mock import patch, mock_open
 
 from utils import required_env
 
@@ -15,6 +15,7 @@ from censys.exceptions import (
     CensysCLIException,
     CensysNotFoundException,
 )
+from censys.config import config_path
 
 
 class CensysCliSearchTest(unittest.TestCase):
@@ -38,7 +39,7 @@ class CensysCliSearchTest(unittest.TestCase):
         self.assertEqual(exit_event.exception.code, 0)
         stdout = temp_stdout.getvalue().strip()
         self.assertTrue(stdout.startswith("usage: censys"))
-        self.assertIn("search,hnri", stdout)
+        self.assertIn("search,hnri,config", stdout)
 
     @patch("argparse._sys.argv", ["censys", "search", "--help"])
     def test_search_help(self):
@@ -53,10 +54,13 @@ class CensysCliSearchTest(unittest.TestCase):
         )
 
     @patch("argparse._sys.argv", ["censys", "search", "--query", "test"])
+    @patch("builtins.open", new_callable=mock_open, read_data="[DEFAULT]")
     @patch.dict("os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""})
-    def test_no_creds(self):
+    def test_no_creds(self, mock_file):
         with self.assertRaises(CensysException) as exit_event:
             cli_main()
+
+        mock_file.assert_called_with(config_path, "w")
 
         self.assertEqual(
             str(exit_event.exception), "No API ID or API secret configured."
@@ -264,16 +268,6 @@ class CensysCliSearchTest(unittest.TestCase):
 
 
 class CensysCliHNRITest(unittest.TestCase):
-    @patch("argparse._sys.argv", ["censys", "hnri"])
-    @patch.dict("os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""})
-    def test_hnri_no_creds(self):
-        with self.assertRaises(CensysException) as exit_event:
-            cli_main()
-
-        self.assertEqual(
-            str(exit_event.exception), "No API ID or API secret configured."
-        )
-
     @required_env
     @patch(
         "argparse._sys.argv", ["censys", "hnri"],

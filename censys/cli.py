@@ -4,6 +4,7 @@ Interact with the Censys API through the command line.
 """
 
 import os
+import sys
 import csv
 import time
 import json
@@ -12,10 +13,16 @@ from typing import Union, List, Tuple
 
 import requests
 
+from censys.base import CensysAPIBase
+from censys.config import get_config, write_config, DEFAULT
 from censys.ipv4 import CensysIPv4
 from censys.websites import CensysWebsites
 from censys.certificates import CensysCertificates
-from censys.exceptions import CensysCLIException, CensysNotFoundException
+from censys.exceptions import (
+    CensysCLIException,
+    CensysNotFoundException,
+    CensysUnauthorizedException,
+)
 
 Fields = List[str]
 Results = List[dict]
@@ -290,7 +297,8 @@ class CensysAPISearch:
         )
 
     def search_websites(self, **kwargs) -> Results:
-        """A method to search the Websites (Alexa Top 1M) data set via the API
+        """
+        A method to search the Websites (Alexa Top 1M) data set via the API.
 
         Args:
             kwargs:
@@ -349,7 +357,7 @@ class CensysHNRI:
         Uses ipify.org to get the current IP address.
 
         Returns:
-            str: IP address
+            str: IP address.
         """
 
         response = requests.get("https://api.ipify.org?format=json")
@@ -393,17 +401,17 @@ class CensysHNRI:
     @staticmethod
     def risks_to_string(high_risk: list, medium_risk: list) -> str:
         """
-        Risks to printable string
+        Risks to printable string.
 
         Args:
             high_risk (list): Lists of high risks.
             medium_risk (list): Lists of medium risks.
 
         Raises:
-            CensysCLIException: No information/risks found
+            CensysCLIException: No information/risks found.
 
         Returns:
-            str: Printable string for CLI
+            str: Printable string for CLI.
         """
 
         len_high_risk = len(high_risk)
@@ -453,10 +461,10 @@ class CensysHNRI:
 
 def search(args):
     """
-    search subcommand
+    search subcommand.
 
     Args:
-        args (Namespace): Argparse Namespace
+        args (Namespace): Argparse Namespace.
     """
 
     censys_args = {"query": args.query}
@@ -490,7 +498,9 @@ def search(args):
         "websites": censys.search_websites,
     }
 
-    func = indexes[args.index_type]
+    index_type = args.index_type or args.query_type
+
+    func = indexes[index_type]
     results = func(**censys_args)
 
     try:
@@ -501,10 +511,10 @@ def search(args):
 
 def hnri(args):
     """
-    hnri subcommand
+    hnri subcommand.
 
     Args:
-        args (Namespace): Argparse Namespace
+        args (Namespace): Argparse Namespace.
     """
 
     client = CensysHNRI(args.api_id, args.api_secret)
@@ -514,26 +524,74 @@ def hnri(args):
     print(risks)
 
 
+def cli_config(_):  # pragma: no cover
+    """
+    config subcommand.
+
+    Args:
+        _: Argparse Namespace.
+    """
+
+    api_id_prompt = "Censys API ID"
+    api_secret_prompt = "Censys API Secret"
+
+    config = get_config()
+    api_id = config.get(DEFAULT, "api_id")
+    api_secret = config.get(DEFAULT, "api_secret")
+
+    if api_id and api_secret:
+        redacted_id = api_id.replace(api_id[:32], 32 * "*")
+        redacted_secret = api_secret.replace(api_secret[:28], 28 * "*")
+        api_id_prompt = f"{api_id_prompt} [{redacted_id}]"
+        api_secret_prompt = f"{api_secret_prompt} [{redacted_secret}]"
+
+    api_id = input(api_id_prompt + ": ").strip() or api_id
+    api_secret = input(api_secret_prompt + ": ").strip() or api_secret
+
+    if not (api_id and api_secret):
+        print("Please enter valid credentials")
+        sys.exit(1)
+
+    try:
+        client = CensysAPIBase(api_id, api_secret)
+        account = client.account()
+        email = account.get("email")
+
+        # Assumes that login was successfully
+        config.set(DEFAULT, "api_id", api_id)
+        config.set(DEFAULT, "api_secret", api_secret)
+
+        write_config(config)
+        print(f"Successfully authenticated for {email}")
+        sys.exit(0)
+    except CensysUnauthorizedException:
+        print("Failed to authenticate")
+        sys.exit(1)
+
+
 def main():
     """main cli function"""
+
+    config = get_config()
 
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument(
         "--api-id",
-        default=os.getenv("CENSYS_API_ID"),
+        default=os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id"),
         required=False,
         help="a Censys API ID \
             (alternatively you can use the env variable CENSYS_API_ID)",
     )
     common.add_argument(
         "--api-secret",
-        default=os.getenv("CENSYS_API_SECRET"),
+        default=os.getenv("CENSYS_API_SECRET") or config.get(DEFAULT, "api_secret"),
         required=False,
         help="a Censys API SECRET \
             (alternatively you can use the env variable CENSYS_API_SECRET)",
     )
 
     parser = argparse.ArgumentParser()
+    parser.set_defaults()
     subparsers = parser.add_subparsers()
 
     # Search Specific Args
@@ -541,19 +599,34 @@ def main():
         "search",
         description="Query Censys Search for resource data by providing a query \
             string, the resource index, and the fields to be returned",
+        help="query Censys search",
         parents=[common],
     )
     search_parser.add_argument(
         "-q", "--query", type=str, help="a string written in censys search syntax",
     )
+
+    index_types = ["ipv4", "certs", "websites"]
+    index_metavar = "ipv4|certs|websites"
+    index_default = "ipv4"
     search_parser.add_argument(
         "--index-type",
         type=str,
-        default="ipv4",
-        choices=["ipv4", "certs", "websites"],
-        metavar="ipv4|certs|websites",
+        default=index_default,
+        choices=index_types,
+        metavar=index_metavar,
         help="which resource index to query",
     )
+    # Backwards compatibility
+    search_parser.add_argument(
+        "--query_type",
+        type=str,
+        default=index_default,
+        choices=index_types,
+        metavar=index_metavar,
+        help=argparse.SUPPRESS,
+    )
+
     search_parser.add_argument(
         "--fields", nargs="+", help="list of index-specific fields"
     )
@@ -580,8 +653,21 @@ def main():
     search_parser.set_defaults(func=search)
 
     # HNRI Specific Args
-    hnri_parser = subparsers.add_parser("hnri", parents=[common])
+    hnri_parser = subparsers.add_parser(
+        "hnri",
+        description="Home Network Risk Identifier (H.N.R.I.)",
+        help="home network risk identifier",
+        parents=[common],
+    )
     hnri_parser.set_defaults(func=hnri)
+
+    # Config Specific Args
+    config_parser = subparsers.add_parser(
+        "config",
+        description="Configure Censys API Settings",
+        help="configure Censys API settings",
+    )
+    config_parser.set_defaults(func=cli_config)
 
     # Executes by subcommand
     args = parser.parse_args()
@@ -591,6 +677,8 @@ def main():
     except AttributeError:
         parser.print_help()
         parser.exit()
+    except KeyboardInterrupt:  # pragma: no cover
+        sys.exit(1)
 
 
 if __name__ == "__main__":  # pragma: no cover
