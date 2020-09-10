@@ -1,5 +1,5 @@
 """
-Interact with the Censys Website API.
+Interact with the Censys Search Website API.
 """
 
 from censys.base import CensysIndex

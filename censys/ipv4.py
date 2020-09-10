@@ -1,5 +1,5 @@
 """
-Interact with the Censys IPv4 API.
+Interact with the Censys Search IPv4 API.
 """
 
 from censys.base import CensysIndex

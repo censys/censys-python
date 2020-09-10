@@ -30,7 +30,7 @@ class CensysAPIBase:
     Args:
         api_id (str, optional): The API ID provided by Censys.
         api_secret (str, optional): The API secret provided by Censys.
-        url (str, optional): The url to make API requests.
+        url (str, optional): The URL to make API requests.
         timeout (int, optional): Timeout for API requests in seconds.
         user_agent_identifier (str, optional): Override User-Agent string.
 
@@ -39,7 +39,7 @@ class CensysAPIBase:
     """
 
     DEFAULT_URL: str = "https://censys.io/api/v1"
-    """Default API base url."""
+    """Default API base URL."""
     DEFAULT_TIMEOUT: int = 30
     """Default API timeout."""
     DEFAULT_USER_AGENT: str = "%s/%s" % (NAME, VERSION)
@@ -193,10 +193,10 @@ class CensysAPIBase:
 
     def quota(self) -> dict:
         """
-        Returns current account information, including email address and query quota.
+        Gets the current account's query quota.
 
         Returns:
-            dict: Quota response from account.
+            dict: Quota response.
         """
 
         return self.account()["quota"]
