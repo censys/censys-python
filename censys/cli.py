@@ -609,7 +609,7 @@ def main():
         parents=[auth],
     )
     search_parser.add_argument(
-        "-q", "--query", type=str, help="a string written in censys search syntax",
+        "-q", "--query", type=str, help="a string written in Censys Search syntax",
     )
 
     index_types = ["ipv4", "certs", "websites"]
@@ -661,7 +661,7 @@ def main():
         "--max-pages",
         default=1,
         type=int,
-        help="maximum number of pages of results to return.",
+        help="maximum number of pages of results to return",
     )
     search_parser.set_defaults(func=search)
 

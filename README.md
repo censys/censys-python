@@ -1,6 +1,6 @@
 # Censys Python Library ![PyPI](https://img.shields.io/pypi/v/censys) ![Python Versions](https://img.shields.io/pypi/pyversions/censys)
 
-An easy-to-use and lightweight API wrapper for the Censys Search Engine (censys.io). Python 3.6+ is currently supported.
+An easy-to-use and lightweight API wrapper for the Censys Search Engine ([censys.io](https://censys.io/)). Python 3.6+ is currently supported.
 
 ## Install
 
@@ -18,7 +18,7 @@ There are six API options that this library provides access to:
 
 - `search` - Allows searches against the IPv4 addresses, Websites, and Certificates indexes using the same search syntax as the [web app](https://censys.io/ipv4).
 - `view` - Returns the structured data we have about a specific IPv4 address, Website, or Certificate, given the resource's natural ID.
-- `report` - Allows you view resources as a spectrum based on attributes of the resource, similar to the [Report Builder page](https://censys.io/ipv4/report) on the web app.
+- `report` - Allows you to view resources as a spectrum based on attributes of the resource, similar to the [Report Builder page](https://censys.io/ipv4/report) on the web app.
 - `data` - Returns collections of scan series whose metadata includes a description of the data collected in the series and links to the individual scan results.
 - `account` - Returns information about your Censys account, including your current query quota usage. This function is available for all index types.
 - `bulk` - Returns the structured data for certificates in bulk, given the certificates' SHA-256 fingerprints.
@@ -192,7 +192,7 @@ optional arguments:
                         a Censys API SECRET (alternatively you can use the env
                         variable CENSYS_API_SECRET)
   -q QUERY, --query QUERY
-                        a string written in censys search syntax
+                        a string written in Censys Search syntax
   --index-type ipv4|certs|websites
                         which resource index to query
   --fields FIELDS [FIELDS ...]
@@ -204,9 +204,9 @@ optional arguments:
   -o OUTPUT, --output OUTPUT
                         output file path
   --start-page START_PAGE
-                        start page number
+                        page number to start from
   --max-pages MAX_PAGES
-                        max number of pages
+                        maximum number of pages of results to return
 ```
 
 ### HNRI
