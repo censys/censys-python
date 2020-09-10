@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Interact with the Censys API through the command line.
+Interact with the Censys Search API through the command line.
 """
 
 import os
@@ -36,11 +36,11 @@ class CensysAPISearch:
     returning the results to a CSV or JSON file, or to stdout.
 
     Kwargs:
-        format (str): What format to write the results. CSV, JSON, or stdout.
-        start_page (int): What page the query should start from.
-        max_pages (int): Adjust the number of results returned by the API.
-        api_secret (str): A API secret provided by Censys.
-        api_id (str): A API ID provided by Censys.
+        format (str): Format of results: CSV, JSON, or stdout.
+        start_page (int): Page number to start from.
+        max_pages (int): The maximum number of pages of results to return.
+        api_secret (str): An API secret provided by Censys.
+        api_id (str): An API ID provided by Censys.
     """
 
     csv_fields: Fields = list()
@@ -59,8 +59,8 @@ class CensysAPISearch:
         This method writes the search results to a new file in CSV format.
 
         Args:
-            file_path (str): The name of the file to write to on the disk.
-            search_results (Results): A list of search results from an API query.
+            file_path (str): Name of the file to write to on the disk.
+            search_results (Results): A list of results from the query.
             fields (Fields): A list of fields to write as headers.
 
         Returns:
@@ -108,7 +108,7 @@ class CensysAPISearch:
         This method writes the search results to screen.
 
         Args:
-            search_results (Results): list of search results from API query.
+            search_results (Results): A list of results from the query.
 
         Returns:
             bool: True if wrote to file successfully.
@@ -154,14 +154,13 @@ class CensysAPISearch:
         self, default_fields: Fields, user_fields: Fields, overwrite: bool = False,
     ) -> Fields:
         """
-        This method is used to combine, or exclude fields depending on what
-        the user has requested.
+        This method is used to specify which fields will be returned in the results.
 
         Args:
             default_fields (Fields): A list of fields that are returned by default.
-            user_fields (Fields): A list of user provided fields.
-            overwrite (bool, optional): Overwrite the default list of fields with the
-                                        given fields. Defaults to False.
+            user_fields (Fields): A list of user-specified fields. Max 20.
+            overwrite (bool, optional): Whether to overwrite or append default fields
+                                        with user fields. Defaults to False.
 
         Raises:
             CensysCLIException: Too many fields specified.
@@ -196,10 +195,10 @@ class CensysAPISearch:
         Args:
             query: The string to send to the API as a query.
             search_index: The data set to be queried - IPv4, Website, or Certificates.
-            fields: A list of fields that should be returned.
+            fields: A list of fields to be returned for each result.
 
         Returns:
-            Results: A list of search results from an API query.
+            Results: A list of results from the query.
         """
 
         records = []
@@ -233,7 +232,7 @@ class CensysAPISearch:
             overwrite: Overwrite the default list of fields with the given fields.
 
         Returns:
-            Results: A list of search results from an API query.
+            Results: A list of results from the query.
         """
 
         default_fields = [
@@ -277,7 +276,7 @@ class CensysAPISearch:
                 overwrite: Overwrite the default list of fields with the given fields.
 
         Returns:
-            Results: A list of search results from an API query.
+            Results: A list of results from the query.
         """
 
         default_fields = [
@@ -318,7 +317,7 @@ class CensysAPISearch:
                 overwrite: Overwrite the default list of fields with the given fields.
 
         Returns:
-            Results: A list of search results from an API query.
+            Results: A list of results from the query.
         """
 
         default_fields = [
@@ -349,8 +348,8 @@ class CensysHNRI:
     This class searches the Censys API, check the user's current IP for risks.
 
     Kwargs:
-        api_secret (str): A API secret provided by Censys.
-        api_id (str): A API ID provided by Censys.
+        api_secret (str): An API secret provided by Censys.
+        api_id (str): An API ID provided by Censys.
     """
 
     HIGH_RISK_DEFINITION: List[str] = ["telnet", "redis", "postgres", "vnc"]
@@ -452,8 +451,7 @@ class CensysHNRI:
 
     def view_current_ip_risks(self) -> str:
         """
-        Gets current IP, searches in against IPv4 data, gets protocols,
-        and interpret risk.
+        Gets protocol information for the current IP and returns any risks.
 
         Returns:
             str: Printable
@@ -657,10 +655,13 @@ def main():
         "-o", "--output", type=Path, help="output file path",
     )
     search_parser.add_argument(
-        "--start-page", default=1, type=int, help="start page number"
+        "--start-page", default=1, type=int, help="page number to start from"
     )
     search_parser.add_argument(
-        "--max-pages", default=1, type=int, help="max number of pages"
+        "--max-pages",
+        default=1,
+        type=int,
+        help="maximum number of pages of results to return.",
     )
     search_parser.set_defaults(func=search)
 

@@ -1,5 +1,5 @@
 """
-Interact with the Censys Certificate API.
+Interact with the Censys Search Certificate API.
 """
 
 from typing import List

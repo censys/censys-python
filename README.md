@@ -17,7 +17,7 @@ The Censys Search API provides functionality for interacting with Censys resourc
 There are six API options that this library provides access to:
 
 - `search` - Allows searches against the IPv4 addresses, Websites, and Certificates indexes using the same search syntax as the [web app](https://censys.io/ipv4).
-- `view` - Returns the structured data we have about a specific IPv4 address, Website, or Certificate, given the resource's natural id.
+- `view` - Returns the structured data we have about a specific IPv4 address, Website, or Certificate, given the resource's natural ID.
 - `report` - Allows you view resources as a spectrum based on attributes of the resource, similar to the [Report Builder page](https://censys.io/ipv4/report) on the web app.
 - `data` - Returns collections of scan series whose metadata includes a description of the data collected in the series and links to the individual scan results.
 - `account` - Returns information about your Censys account, including your current query quota usage. This function is available for all index types.

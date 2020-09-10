@@ -1,5 +1,5 @@
 """
-Base for interacting with the Censys API.
+Base for interacting with the Censys Search API.
 """
 # pylint: disable=too-many-arguments
 
@@ -28,11 +28,11 @@ class CensysAPIBase:
     This class is the base for API queries.
 
     Args:
-        api_id (str): The API id provided by Censys.
-        api_secret (str): The API secret provided by Censys.
-        url (str): Adjust the number of results returned by the API.
-        timeout (int): Timeout for API requests.
-        user_agent_identifier (str): User agent string to send.
+        api_id (str, optional): The API ID provided by Censys.
+        api_secret (str, optional): The API secret provided by Censys.
+        url (str, optional): The url to make API requests.
+        timeout (int, optional): Timeout for API requests in seconds.
+        user_agent_identifier (str, optional): Override User-Agent string.
 
     Raises:
         CensysAPIException: Base Exception Class for the Censys API.
@@ -193,7 +193,7 @@ class CensysAPIBase:
 
     def quota(self) -> dict:
         """
-        Gets the current account's quota.
+        Returns current account information, including email address and query quota.
 
         Returns:
             dict: Quota response from account.
@@ -239,9 +239,9 @@ class CensysIndex(CensysAPIBase):
 
         Args:
             query (str): The query to be executed.
-            fields (Fields, optional): The fields you would like in the result set.
+            fields (Fields, optional): Fields to be returned in the result set.
             page (int, optional): The page of the result set. Defaults to 1.
-            flatten (bool, optional): Format of the returned results. Defaults to True.
+            flatten (bool, optional): Flattens fields to dot notation. Defaults to True.
 
         Returns:
             dict: The result set returned.
@@ -266,14 +266,14 @@ class CensysIndex(CensysAPIBase):
     ) -> Generator[dict, None, None]:
         """
         Searches the given index for all records that match the given query.
-        For more details see our documentation: https://censys.io/api/v1/docs/search
+        For more details, see our documentation: https://censys.io/api/v1/docs/search
 
         Args:
             query (str): The query to be executed.
-            fields (Fields, optional): The fields you would like in the result set.
+            fields (Fields, optional): Fields to be returned in the result set.
             page (int, optional): The page of the result set. Defaults to 1.
             max_records (Optional[int], optional): The maximum number of records.
-            flatten (bool, optional): Format of the returned results. Defaults to True.
+            flatten (bool, optional): Flattens fields to dot notation. Defaults to True.
 
         Yields:
             dict: The result set returned.
@@ -301,7 +301,7 @@ class CensysIndex(CensysAPIBase):
     def view(self, document_id: str) -> dict:
         """
         View the current structured data we have on a specific document.
-        For more details see our documentation: https://censys.io/api/v1/docs/view
+        For more details, see our documentation: https://censys.io/api/v1/docs/view
 
         Args:
             document_id (str): The ID of the document you are requesting.
@@ -314,8 +314,8 @@ class CensysIndex(CensysAPIBase):
 
     def report(self, query: str, field: str, buckets: int = 50) -> dict:
         """
-        Aggregate reports on the breakdown of a field in a result set.
-        For more details see our documentation: https://censys.io/api/v1/docs/report
+        Creates a report on the breakdown of the values of a field in a result set.
+        For more details, see our documentation: https://censys.io/api/v1/docs/report
 
         Args:
             query (str): The query to be executed.

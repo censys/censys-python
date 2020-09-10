@@ -8,7 +8,7 @@ from censys.websites import CensysWebsites
 class CensysWebsitesTests(CensysTestCase):
 
     MAX_RECORDS = 10
-    EXCEPTED_REPORT_FIELDS = {"metadata", "results", "status"}
+    EXPECTED_REPORT_FIELDS = {"metadata", "results", "status"}
 
     @classmethod
     def setUpClass(cls):
@@ -24,7 +24,7 @@ class CensysWebsitesTests(CensysTestCase):
 
     def test_report(self):
         res = self._api.report("*", "80.http.get.headers.server.raw")
-        self.assertSetEqual(set(res.keys()), self.EXCEPTED_REPORT_FIELDS)
+        self.assertSetEqual(set(res.keys()), self.EXPECTED_REPORT_FIELDS)
 
 
 if __name__ == "__main__":

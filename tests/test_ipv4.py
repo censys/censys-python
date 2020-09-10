@@ -12,8 +12,8 @@ class CensysIPv4Tests(CensysTestCase):
     MAX_RECORDS = 10
     EXPECTED_METADATA_KEYS = {"backend_time", "count", "page", "pages", "query"}
     EXPECTED_SEARCH_KEYS = {"ip", "location", "protocols"}
-    EXCEPTED_SEARCH_FIELDS = {"ip", "updated_at"}
-    EXCEPTED_REPORT_FIELDS = {"metadata", "results", "status"}
+    EXPECTED_SEARCH_FIELDS = {"ip", "updated_at"}
+    EXPECTED_REPORT_FIELDS = {"metadata", "results", "status"}
 
     @classmethod
     def setUpClass(cls):
@@ -43,13 +43,13 @@ class CensysIPv4Tests(CensysTestCase):
         res = list(
             self._api.search(
                 "*",
-                fields=list(self.EXCEPTED_SEARCH_FIELDS),
+                fields=list(self.EXPECTED_SEARCH_FIELDS),
                 max_records=self.MAX_RECORDS,
                 flatten=False,
             )
         )
         self.assertLessEqual(len(res), self.MAX_RECORDS)
-        self.assertSetEqual(set(res[0].keys()), self.EXCEPTED_SEARCH_FIELDS)
+        self.assertSetEqual(set(res[0].keys()), self.EXPECTED_SEARCH_FIELDS)
 
     def test_search_explicit_page(self):
         res = list(self._api.search("*", page=3, max_records=self.MAX_RECORDS))
@@ -76,7 +76,7 @@ class CensysIPv4Tests(CensysTestCase):
         res = self._api.report(
             "80.http.get.headers.server: Apache", "location.country", bucket_count
         )
-        self.assertSetEqual(set(res.keys()), self.EXCEPTED_REPORT_FIELDS)
+        self.assertSetEqual(set(res.keys()), self.EXPECTED_REPORT_FIELDS)
         self.assertEqual(len(res["results"]), bucket_count)
 
 

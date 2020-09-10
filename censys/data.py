@@ -1,5 +1,5 @@
 """
-Interact with the Censys Data API.
+Interact with the Censys Search Data API.
 """
 
 from censys.base import CensysAPIBase
@@ -8,7 +8,7 @@ from censys.base import CensysAPIBase
 class CensysData(CensysAPIBase):
     """
     Interacts with the Data index.
-    For more details see our documentation: https://censys.io/api/v1/docs/data
+    For more details, see our documentation: https://censys.io/api/v1/docs/data
     """
 
     _PREFIX = "/data"
@@ -16,7 +16,7 @@ class CensysData(CensysAPIBase):
 
     def get_series(self) -> dict:
         """
-        Get data on the types of scans we regularly preform (series).
+        Get data on the types of scans we regularly perform (series).
 
         Returns:
             dict: The result set returned.
@@ -40,7 +40,7 @@ class CensysData(CensysAPIBase):
 
     def view_result(self, series_id: str, result_id: str) -> dict:
         """
-        View a specific result of a specific series
+        View a specific result of a specific series.
 
         Args:
             series_id (str): The ID of the series.
