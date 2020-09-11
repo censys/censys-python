@@ -12,6 +12,7 @@ REQUIRES_PYTHON = ">=3.6.0"
 REQUIRED = ["requests"]
 EXTRAS = {
     "dev": ["flake8", "black", "pytest", "pytest-cov", "mypy", "twine"],
+    "docs": ["sphinx"]
 }
 
 here = os.path.abspath(os.path.dirname(__file__))
