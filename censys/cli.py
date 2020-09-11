@@ -77,7 +77,7 @@ class CensysAPISearch:
                     # Use the Dict writer to process and write results to CSV
                     writer.writerow(result)
 
-        print("Wrote results to file {}".format(file_path))
+        print(f"Wrote results to file {file_path}")
 
         # method returns True, if the file has been written successfully.
         return True
@@ -99,7 +99,7 @@ class CensysAPISearch:
             # Since the results are already in JSON, just write them to a file.
             json.dump(search_results, output_file, indent=4)
 
-        print("Wrote results to file {}".format(file_path))
+        print(f"Wrote results to file {file_path}")
         return True
 
     @staticmethod
@@ -141,8 +141,8 @@ class CensysAPISearch:
 
         if not file_path:
             # This method just creates some dynamic file names
-            file_name_ext = "{}.{}".format(time.time(), file_format)
-            file_path = "{}.{}".format("censys-query-output", file_name_ext)
+            file_name_ext = f"{time.time()}.{file_format}"
+            file_path = f"censys-query-output.{file_name_ext}"
 
         if file_format == "json":
             return self._write_json(file_path, results_list)
@@ -512,7 +512,7 @@ def search(args):
     try:
         censys.write_file(results, file_format=args.format, file_path=args.output)
     except ValueError as error:  # pragma: no cover
-        print("Error writing log file. Error: {}".format(error))
+        print(f"Error writing log file. Error: {error}")
 
 
 def hnri(args):
@@ -609,7 +609,11 @@ def main():
         parents=[auth],
     )
     search_parser.add_argument(
-        "-q", "--query", type=str, help="a string written in Censys Search syntax",
+        "-q",
+        "--query",
+        type=str,
+        required=True,
+        help="a string written in Censys Search syntax",
     )
 
     index_types = ["ipv4", "certs", "websites"]

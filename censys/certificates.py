@@ -19,7 +19,7 @@ class CensysCertificates(CensysIndex):
 
     def __init__(self, *args, **kwargs):
         CensysIndex.__init__(self, *args, **kwargs)
-        self.bulk_path = "/bulk/{}".format(self.INDEX_NAME)
+        self.bulk_path = f"/bulk/{self.INDEX_NAME}"
 
     def bulk(self, fingerprints: List[str]) -> dict:
         """
