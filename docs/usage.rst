@@ -32,7 +32,8 @@ Below we show an example using the ``CensysIPv4`` index.
     c = censys.ipv4.CensysIPv4(api_id="XXX", api_secret="XXX")
 
     for page in c.search(
-        "443.https.get.headers.server: Apache AND location.country: Japan", max_records=10
+        "443.https.get.headers.server: Apache AND location.country: Japan", 
+        max_records=10
     ):
         print(page)
 
@@ -120,10 +121,12 @@ Below we show an example using the ``CensysIPv4`` index.
     c = censys.ipv4.CensysIPv4(api_id="XXX", api_secret="XXX")
 
     # Gets account data
-    c.account()
+    account = c.account()
+    print(account)
 
     # Gets account quota
-    c.quota()
+    quota = c.quota()
+    print(quota)
 
 ``bulk``
 --------
