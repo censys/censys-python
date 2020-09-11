@@ -1,4 +1,4 @@
 [flake8]
 max-line-length = 88
-per-file-ignores =
-    tests/*.py:E501
+exclude = docs/*.py
+per-file-ignores = tests/*.py:E501

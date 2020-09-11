@@ -1,0 +1,5 @@
+sphinxcontrib-napoleon
+sphinx-rtd-theme
+sphinx-prompt
+sphinx-tabs
+sphinx-copybutton

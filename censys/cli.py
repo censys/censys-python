@@ -575,8 +575,13 @@ def cli_config(_):  # pragma: no cover
         sys.exit(1)
 
 
-def main():
-    """main cli function"""
+def get_parser() -> argparse.ArgumentParser:
+    """
+    Gets ArgumentParser for CLI.
+
+    Returns:
+        argparse.ArgumentParser
+    """
 
     config = get_config()
 
@@ -685,6 +690,14 @@ def main():
         help="configure Censys API settings",
     )
     config_parser.set_defaults(func=cli_config)
+
+    return parser
+
+
+def main():
+    """main cli function"""
+
+    parser = get_parser()
 
     # Executes by subcommand
     args = parser.parse_args()
