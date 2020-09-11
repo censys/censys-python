@@ -1,13 +1,24 @@
-# Censys Python Library ![PyPI](https://img.shields.io/pypi/v/censys) ![Python Versions](https://img.shields.io/pypi/pyversions/censys)
+# Censys Python Library ![PyPI](https://img.shields.io/pypi/v/censys) ![Python Versions](https://img.shields.io/pypi/pyversions/censys) [![License](https://img.shields.io/github/license/censys/censys-python)](LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 An easy-to-use and lightweight API wrapper for the Censys Search Engine ([censys.io](https://censys.io/)). Python 3.6+ is currently supported.
 
-## Install
+## Getting Started
 
-The library can be installed using `pip`
+The library can be installed using `pip`.
 
 ```bash
-pip install censys
+$ pip install censys
+```
+
+To configure your credentials run `censys config` or set both `CENSYS_API_ID` and `CENSYS_API_SECRET` environment variables.
+
+```bash
+$ censys config
+
+Censys API ID: XXX
+Censys API Secret: XXX
+
+Successfully authenticated for your@email.com
 ```
 
 ## Usage
@@ -41,10 +52,10 @@ import censys.ipv4
 
 c = censys.ipv4.CensysIPv4(api_id="XXX", api_secret="XXX")
 
-for result in c.search(
+for page in c.search(
     "443.https.get.headers.server: Apache AND location.country: Japan", max_records=10
 ):
-    print(result)
+    print(page)
 
 # You can optionally restrict the (resource-specific) fields to be
 # returned in the matching results. Default behavior is to return a map
@@ -61,14 +72,12 @@ fields = [
     "443.https.tls.certificate.parsed.subject.common_name",
 ]
 
-data = list(
-    c.search(
+for page in c.search(
         "443.https.get.headers.server: Apache AND location.country: Japan",
         fields,
         max_records=10,
-    )
-)
-print(data)
+    ):
+    print(page)
 ```
 
 ### `view`
@@ -157,26 +166,13 @@ print(certs)
 
 ## CLI Usage
 
-### Config
-
-To configure your credentials run `censys config` or set both `CENSYS_API_ID` and `CENSYS_API_SECRET` environment variables.
-
-```bash
-$ censys config
-
-Censys API ID: XXX
-Censys API Secret: XXX
-
-Successfully authenticated for your@email.com
-```
-
 ### Search
 
 ```bash
 $ censys search --help
 
-usage: censys search [-h] [--api-id API_ID] [--api-secret API_SECRET]
-                     [-q QUERY] [--index-type ipv4|certs|websites]
+usage: censys search [-h] [--api-id API_ID] [--api-secret API_SECRET] -q QUERY
+                     [--index-type ipv4|certs|websites]
                      [--fields FIELDS [FIELDS ...]] [--overwrite]
                      [-f json|csv|screen] [-o OUTPUT]
                      [--start-page START_PAGE] [--max-pages MAX_PAGES]
@@ -227,18 +223,27 @@ optional arguments:
                         variable CENSYS_API_SECRET)
 ```
 
-## Developing
+## Resources
 
-Install dev dependencies with:
+- [Official Website](https://censys.io/)
+<!-- - [Documentation]() -->
+- [Issue Tracker](https://github.com/censys/censys-python/issues)
+
+## Contributing
+
+All contributions (no matter if small) are always welcome.
+
+### Getting started
 
 ```bash
-pip install -e .[dev]
+$ git clone git@github.com:censys/censys-python.git
+$ pip install -e .[dev]
 ```
 
-## Testing
+### Testing
 
 Testing requires credentials to be set.
 
 ```bash
-pytest
+$ pytest
 ```
