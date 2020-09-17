@@ -10,7 +10,8 @@ from censys import __version__
 
 DEFAULT = "DEFAULT"
 
-censys_path = os.path.join(str(Path.home()), ".censys")
+xdg_config_path = os.path.join(str(Path.home()), ".config")
+censys_path = os.path.join(xdg_config_path, "censys")
 config_path = os.path.join(censys_path, "censys.cfg")
 
 default_config = {
@@ -38,6 +39,8 @@ def get_config():
     """
 
     config = ConfigParser()
+    if not os.path.isdir(xdg_config_path):
+        os.mkdir(xdg_config_path)
     if not os.path.isdir(censys_path):
         os.mkdir(censys_path)
     if not os.path.exists(config_path):

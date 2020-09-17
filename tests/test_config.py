@@ -14,15 +14,7 @@ os = MagicMock()
 os.path = MagicMock()
 os.path.isdir = Mock(return_value=False)
 os.path.exists = Mock(return_value=False)
-mkdir = Mock()
-
-
-def update_status(*args):
-    mkdir(args[0])
-    os.path.isdir.return_value = True
-
-
-os.mkdir = Mock(side_effect=update_status)
+os.mkdir = Mock()
 
 test_config = ConfigParser()
 test_config[DEFAULT] = default_config
