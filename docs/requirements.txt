@@ -1,5 +1,6 @@
 sphinx>=3.2.1
 sphinxcontrib-napoleon
+sphinxcontrib-autoprogram
 sphinx-rtd-theme
 sphinx-prompt
 sphinx-tabs
