@@ -86,8 +86,8 @@ class CensysAPISearch:
         This method writes the search results to a new file in JSON format.
 
         Args:
-            file_path (str): name of the file to write to on the disk.
-            search_results (Results): list of search results from API query.
+            file_path (str): Name of the file to write to on the disk.
+            search_results (Results): A list of results from the query.
 
         Returns:
             bool: True if wrote to file successfully.
@@ -191,9 +191,9 @@ class CensysAPISearch:
         This method provides a common way to process searches from the API.
 
         Args:
-            query: The string to send to the API as a query.
-            search_index: The data set to be queried - IPv4, Website, or Certificates.
-            fields: A list of fields to be returned for each result.
+            query (str): The string to send to the API as a query.
+            search_index (Index): The data set to be queried.
+            fields (Fields): A list of fields to be returned for each result.
 
         Returns:
             Results: A list of results from the query.
@@ -225,9 +225,10 @@ class CensysAPISearch:
         A method to search the IPv4 data set via the API.
 
         Args:
-            query: The string search query.
-            fields: The fields that should be returned with a query.
-            overwrite: Overwrite the default list of fields with the given fields.
+            query (str): The string search query.
+            fields (list, optional): The fields that should be returned with a query.
+            overwrite (bool, optional): Whether to overwrite or append default fields
+                                        with user fields. Defaults to False.
 
         Returns:
             Results: A list of results from the query.
@@ -268,9 +269,10 @@ class CensysAPISearch:
         A method to search the Certificates data set via the API.
 
         Args:
-            query: The string search query.
-            fields: The fields that should be returned with a query.
-            overwrite: Overwrite the default list of fields with the given fields.
+            query (str): The string search query.
+            fields (list, optional): The fields that should be returned with a query.
+            overwrite (bool, optional): Whether to overwrite or append default fields
+                                        with user fields. Defaults to False.
 
         Returns:
             Results: A list of results from the query.
@@ -308,9 +310,10 @@ class CensysAPISearch:
         A method to search the Websites (Alexa Top 1M) data set via the API.
 
         Args:
-            query: The string search query.
-            fields: The fields that should be returned with a query.
-            overwrite: Overwrite the default list of fields with the given fields.
+            query (str): The string search query.
+            fields (list, optional): The fields that should be returned with a query.
+            overwrite (bool, optional): Whether to overwrite or append default fields
+                                        with user fields. Defaults to False.
 
         Returns:
             Results: A list of results from the query.
