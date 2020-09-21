@@ -35,12 +35,11 @@ class CensysAPISearch:
     This class searches the Censys API, taking in options from the command line and
     returning the results to a CSV or JSON file, or to stdout.
 
-    Kwargs:
-        format (str): Format of results: CSV, JSON, or stdout.
-        start_page (int): Page number to start from.
-        max_pages (int): The maximum number of pages of results to return.
-        api_secret (str): An API secret provided by Censys.
-        api_id (str): An API ID provided by Censys.
+    Args:
+        api_id (str, optional): The API ID provided by Censys.
+        api_secret (str, optional): The API secret provided by Censys.
+        start_page (int, optional): Page number to start from. Defaults to 1.
+        max_pages (int, optional): The maximum number of pages. Defaults to 10.
     """
 
     csv_fields: Fields = list()
@@ -49,7 +48,6 @@ class CensysAPISearch:
     def __init__(self, **kwargs):
         self.api_user = kwargs.get("api_id")
         self.api_pass = kwargs.get("api_secret")
-
         self.start_page = kwargs.get("start_page", 1)
         self.max_pages = kwargs.get("max_pages", 10)
 
@@ -226,7 +224,7 @@ class CensysAPISearch:
         """
         A method to search the IPv4 data set via the API.
 
-        Kwargs:
+        Args:
             query: The string search query.
             fields: The fields that should be returned with a query.
             overwrite: Overwrite the default list of fields with the given fields.
@@ -270,10 +268,9 @@ class CensysAPISearch:
         A method to search the Certificates data set via the API.
 
         Args:
-            kwargs:
-                query: The string search query.
-                fields: The fields that should be returned with a query.
-                overwrite: Overwrite the default list of fields with the given fields.
+            query: The string search query.
+            fields: The fields that should be returned with a query.
+            overwrite: Overwrite the default list of fields with the given fields.
 
         Returns:
             Results: A list of results from the query.
@@ -311,10 +308,9 @@ class CensysAPISearch:
         A method to search the Websites (Alexa Top 1M) data set via the API.
 
         Args:
-            kwargs:
-                query: The string search query.
-                fields: The fields that should be returned with a query.
-                overwrite: Overwrite the default list of fields with the given fields.
+            query: The string search query.
+            fields: The fields that should be returned with a query.
+            overwrite: Overwrite the default list of fields with the given fields.
 
         Returns:
             Results: A list of results from the query.
@@ -347,9 +343,9 @@ class CensysHNRI:
     """
     This class searches the Censys API, check the user's current IP for risks.
 
-    Kwargs:
-        api_secret (str): An API secret provided by Censys.
-        api_id (str): An API ID provided by Censys.
+    Args:
+        api_id (str, optional): The API ID provided by Censys.
+        api_secret (str, optional): The API secret provided by Censys.
     """
 
     HIGH_RISK_DEFINITION: List[str] = ["telnet", "redis", "postgres", "vnc"]
@@ -476,10 +472,7 @@ def search(args):
         args (Namespace): Argparse Namespace.
     """
 
-    censys_args = {"query": args.query}
-
-    if args.fields:
-        censys_args["fields"] = args.fields
+    censys_args = {}
 
     if args.start_page:
         censys_args["start_page"] = args.start_page
@@ -493,10 +486,15 @@ def search(args):
     if args.api_secret:
         censys_args["api_secret"] = args.api_secret
 
-    if args.overwrite:
-        censys_args["overwrite"] = args.overwrite
-
     censys = CensysAPISearch(**censys_args)
+
+    search_args = {"query": args.query}
+
+    if args.fields:
+        search_args["fields"] = args.fields
+
+    if args.overwrite:
+        search_args["overwrite"] = args.overwrite
 
     indexes = {
         "ipv4": censys.search_ipv4,
@@ -507,7 +505,7 @@ def search(args):
     index_type = args.index_type or args.query_type
 
     index_func = indexes[index_type]
-    results = index_func(**censys_args)
+    results = index_func(**search_args)
 
     try:
         censys.write_file(results, file_format=args.format, file_path=args.output)
