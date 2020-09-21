@@ -24,7 +24,7 @@ Successfully authenticated for your@email.com
 ## Resources
 
 - [Official Website](https://censys.io/)
-- [Documentation](censys-python.rtfd.io)
+- [Documentation](https://censys-python.rtfd.io)
 - [Issue Tracker](https://github.com/censys/censys-python/issues)
 
 ## Contributing
