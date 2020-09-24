@@ -35,12 +35,11 @@ class CensysAPISearch:
     This class searches the Censys API, taking in options from the command line and
     returning the results to a CSV or JSON file, or to stdout.
 
-    Kwargs:
-        format (str): Format of results: CSV, JSON, or stdout.
-        start_page (int): Page number to start from.
-        max_pages (int): The maximum number of pages of results to return.
-        api_secret (str): An API secret provided by Censys.
-        api_id (str): An API ID provided by Censys.
+    Args:
+        api_id (str, optional): The API ID provided by Censys.
+        api_secret (str, optional): The API secret provided by Censys.
+        start_page (int, optional): Page number to start from. Defaults to 1.
+        max_pages (int, optional): The maximum number of pages. Defaults to 10.
     """
 
     csv_fields: Fields = list()
@@ -49,7 +48,6 @@ class CensysAPISearch:
     def __init__(self, **kwargs):
         self.api_user = kwargs.get("api_id")
         self.api_pass = kwargs.get("api_secret")
-
         self.start_page = kwargs.get("start_page", 1)
         self.max_pages = kwargs.get("max_pages", 10)
 
@@ -88,8 +86,8 @@ class CensysAPISearch:
         This method writes the search results to a new file in JSON format.
 
         Args:
-            file_path (str): name of the file to write to on the disk.
-            search_results (Results): list of search results from API query.
+            file_path (str): Name of the file to write to on the disk.
+            search_results (Results): A list of results from the query.
 
         Returns:
             bool: True if wrote to file successfully.
@@ -193,9 +191,9 @@ class CensysAPISearch:
         This method provides a common way to process searches from the API.
 
         Args:
-            query: The string to send to the API as a query.
-            search_index: The data set to be queried - IPv4, Website, or Certificates.
-            fields: A list of fields to be returned for each result.
+            query (str): The string to send to the API as a query.
+            search_index (Index): The data set to be queried.
+            fields (Fields): A list of fields to be returned for each result.
 
         Returns:
             Results: A list of results from the query.
@@ -226,10 +224,11 @@ class CensysAPISearch:
         """
         A method to search the IPv4 data set via the API.
 
-        Kwargs:
-            query: The string search query.
-            fields: The fields that should be returned with a query.
-            overwrite: Overwrite the default list of fields with the given fields.
+        Args:
+            query (str): The string search query.
+            fields (list, optional): The fields that should be returned with a query.
+            overwrite (bool, optional): Whether to overwrite or append default fields
+                                        with user fields. Defaults to False.
 
         Returns:
             Results: A list of results from the query.
@@ -270,10 +269,10 @@ class CensysAPISearch:
         A method to search the Certificates data set via the API.
 
         Args:
-            kwargs:
-                query: The string search query.
-                fields: The fields that should be returned with a query.
-                overwrite: Overwrite the default list of fields with the given fields.
+            query (str): The string search query.
+            fields (list, optional): The fields that should be returned with a query.
+            overwrite (bool, optional): Whether to overwrite or append default fields
+                                        with user fields. Defaults to False.
 
         Returns:
             Results: A list of results from the query.
@@ -311,10 +310,10 @@ class CensysAPISearch:
         A method to search the Websites (Alexa Top 1M) data set via the API.
 
         Args:
-            kwargs:
-                query: The string search query.
-                fields: The fields that should be returned with a query.
-                overwrite: Overwrite the default list of fields with the given fields.
+            query (str): The string search query.
+            fields (list, optional): The fields that should be returned with a query.
+            overwrite (bool, optional): Whether to overwrite or append default fields
+                                        with user fields. Defaults to False.
 
         Returns:
             Results: A list of results from the query.
@@ -347,9 +346,9 @@ class CensysHNRI:
     """
     This class searches the Censys API, check the user's current IP for risks.
 
-    Kwargs:
-        api_secret (str): An API secret provided by Censys.
-        api_id (str): An API ID provided by Censys.
+    Args:
+        api_id (str, optional): The API ID provided by Censys.
+        api_secret (str, optional): The API secret provided by Censys.
     """
 
     HIGH_RISK_DEFINITION: List[str] = ["telnet", "redis", "postgres", "vnc"]
@@ -476,10 +475,7 @@ def search(args):
         args (Namespace): Argparse Namespace.
     """
 
-    censys_args = {"query": args.query}
-
-    if args.fields:
-        censys_args["fields"] = args.fields
+    censys_args = {}
 
     if args.start_page:
         censys_args["start_page"] = args.start_page
@@ -493,10 +489,15 @@ def search(args):
     if args.api_secret:
         censys_args["api_secret"] = args.api_secret
 
-    if args.overwrite:
-        censys_args["overwrite"] = args.overwrite
-
     censys = CensysAPISearch(**censys_args)
+
+    search_args = {"query": args.query}
+
+    if args.fields:
+        search_args["fields"] = args.fields
+
+    if args.overwrite:
+        search_args["overwrite"] = args.overwrite
 
     indexes = {
         "ipv4": censys.search_ipv4,
@@ -507,7 +508,7 @@ def search(args):
     index_type = args.index_type or args.query_type
 
     index_func = indexes[index_type]
-    results = index_func(**censys_args)
+    results = index_func(**search_args)
 
     try:
         censys.write_file(results, file_format=args.format, file_path=args.output)

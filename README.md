@@ -35,7 +35,7 @@ All contributions (no matter how small) are always welcome.
 
 ```bash
 $ git clone git@github.com:censys/censys-python.git
-$ pip install -e .[dev]
+$ pip install -e ".[dev]"
 ```
 
 ## Testing

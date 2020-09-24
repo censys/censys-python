@@ -8,7 +8,7 @@ To run the full test suite against your changes, simply run ``pytest``.
 
 .. note::
 
-   Tests currently require credentials to be setup. More information about credentials is available at :ref:`index:Quick start`.
+   Tests currently require credentials to be setup. More information about credentials is available at :ref:`quick-start:Quick Start`.
 
 .. prompt:: bash
 
