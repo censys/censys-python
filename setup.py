@@ -6,18 +6,13 @@ import censys
 
 NAME = "censys"
 DESCRIPTION = censys.__doc__.strip()
-URL = "https://github.com/censys/censys-python"
+GIT_URL = "https://github.com/censys/censys-python"
+ISSUE_URL = GIT_URL + "/issues"
+DOC_URL = "https://censys-python.rtfd.io"
 
-REQUIRES_PYTHON = ">=3.6.0"
-REQUIRED = ["requests"]
-EXTRAS = {
-    "dev": ["flake8", "black", "pytest", "pytest-cov", "mypy", "twine"],
-    "docs": ["sphinx"]
-}
-
-here = os.path.abspath(os.path.dirname(__file__))
 
 try:
+    here = os.path.abspath(os.path.dirname(__file__))
     with io.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
         long_description = "\n" + f.read()
 except FileNotFoundError:
@@ -32,14 +27,17 @@ setup(
     author=censys.__author__,
     author_email=censys.__email__,
     license=censys.__license__,
-    url=URL,
+    url=GIT_URL,
     keywords=NAME,
-    python_requires=REQUIRES_PYTHON,
+    python_requires=">=3.6.0",
     packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
     include_package_data=True,
     zip_safe=False,
-    install_requires=REQUIRED,
-    extras_require=EXTRAS,
+    install_requires=["requests"],
+    extras_require={
+        "dev": ["flake8", "black", "pytest", "pytest-cov", "mypy", "twine"],
+        "docs": ["sphinx"],
+    },
     entry_points={"console_scripts": ["censys = censys.cli:main"]},
     classifiers=[
         "Typing :: Typed",
@@ -53,6 +51,10 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: PyPy",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "Operating System :: OS Independent",
         "License :: OSI Approved :: Apache Software License",
     ],
+    project_urls={"Documentation": DOC_URL, "Source": GIT_URL, "Tracker": ISSUE_URL},
 )
