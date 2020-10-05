@@ -1,7 +1,7 @@
 Contributing 
 ============
 
-All contributions (no matter if small) are always welcome.
+All contributions (no matter how small) are always welcome.
 
 Working on your first Pull Request?
 -----------------------------------
