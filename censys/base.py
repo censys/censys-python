@@ -35,8 +35,6 @@ class CensysAPIBase:
         timeout (int, optional): Timeout for API requests in seconds.
         user_agent (str, optional): Override User-Agent string.
         proxies (dict, optional): Configure HTTP proxies.
-            See https://requests.readthedocs.io/en/latest/user/advanced/#proxies for
-            more information.
 
     Raises:
         CensysAPIException: Base Exception Class for the Censys API.
