@@ -29,7 +29,7 @@ Below we show an example using the ``CensysIPv4`` index.
 
     import censys.ipv4
 
-    c = censys.ipv4.CensysIPv4(api_id="XXX", api_secret="XXX")
+    c = censys.ipv4.CensysIPv4()
 
     for page in c.search(
         "443.https.get.headers.server: Apache AND location.country: Japan", 
@@ -68,7 +68,7 @@ Below we show an example using the ``CensysCertificates`` index.
 
     import censys.certificates
 
-    c = censys.certificates.CensysCertificates(api_id="XXX", api_secret="XXX")
+    c = censys.certificates.CensysCertificates()
 
     # View specific certificate
     cert = c.view("a762bf68f167f6fbdf2ab00fdefeb8b96f91335ad6b483b482dfd42c179be076")
@@ -83,7 +83,7 @@ Below we show an example using the ``CensysWebsites`` index.
 
     import censys.websites
 
-    c = censys.websites.CensysWebsites(api_id="XXX", api_secret="XXX")
+    c = censys.websites.CensysWebsites()
 
     # The report method constructs a report using a query, an aggregation field, and the
     # number of buckets to bin.
@@ -103,7 +103,7 @@ Below we show an example using the ``CensysData`` index.
 
     import censys.data
 
-    c = censys.data.CensysData(api_id="XXX", api_secret="XXX")
+    c = censys.data.CensysData()
 
     # View a specific result from a specific series
     result = c.view_result("ipv4_2018", "20200818")
@@ -118,7 +118,7 @@ Below we show an example using the ``CensysIPv4`` index.
 
     import censys.ipv4
 
-    c = censys.ipv4.CensysIPv4(api_id="XXX", api_secret="XXX")
+    c = censys.ipv4.CensysIPv4()
 
     # Gets account data
     account = c.account()
@@ -139,7 +139,7 @@ Below we show an example using the ``CensysCertificates`` index.
 
     import censys.certificates
 
-    c = censys.certificates.CensysCertificates(api_id="XXX", api_secret="XXX")
+    c = censys.certificates.CensysCertificates()
 
     fingerprints = [
         "fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70",
