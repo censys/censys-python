@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import patch, mock_open
 
+import requests_mock
+
 from utils import CensysTestCase
 
 from censys.base import CensysAPIBase
@@ -58,6 +60,29 @@ class CensysAPIBaseTestsNoEnv(unittest.TestCase):
             CensysAPIBase()
 
         self.assertIn("No API ID or API secret configured.", str(context.exception))
+
+
+class CensysAPIBaseProxyTests(CensysTestCase):
+    @requests_mock.Mocker(kw="mock")
+    def test_proxies(self, mock=None):
+        mock.get(
+            "https://censys.io/api/v1/account",
+            json={
+                "email": "support@censys.io",
+                "first_login": None,
+                "last_login": None,
+                "login": "support@censys.io",
+                "quota": {},
+            },
+        )
+
+        proxies = {
+            "http": "http://10.10.1.10:3128",
+            "https": "http://10.10.1.10:1080",
+        }
+        api = CensysAPIBase(proxies=proxies)
+        api.account()
+        self.assertEqual(proxies, mock.last_request.proxies)
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ Base for interacting with the Censys Search API.
 
 import os
 import json
-from typing import Type, Optional, Callable, Dict, List, Generator, Any
+from typing import Type, Optional, Callable, Dict, List, Generator, MutableMapping, Any
 
 import requests
 
@@ -32,7 +32,10 @@ class CensysAPIBase:
         api_secret (str, optional): The API secret provided by Censys.
         url (str, optional): The URL to make API requests.
         timeout (int, optional): Timeout for API requests in seconds.
-        user_agent_identifier (str, optional): Override User-Agent string.
+        user_agent (str, optional): Override User-Agent string.
+        proxies (dict, optional): Configure HTTP proxies.
+            See https://requests.readthedocs.io/en/latest/user/advanced/#proxies for
+            more information.
 
     Raises:
         CensysAPIException: Base Exception Class for the Censys API.
@@ -58,7 +61,8 @@ class CensysAPIBase:
         api_secret: Optional[str] = None,
         url: Optional[str] = None,
         timeout: Optional[int] = None,
-        user_agent_identifier: Optional[str] = None,
+        user_agent: Optional[str] = None,
+        proxies: Optional[MutableMapping[str, str]] = None,
     ):
         # Gets config file
         config = get_config()
@@ -80,6 +84,8 @@ class CensysAPIBase:
 
         # Create a session and sets credentials
         self._session = requests.Session()
+        if proxies:
+            self._session.proxies = proxies
         self._session.auth = (self.api_id, self.api_secret)
         self._session.headers.update(
             {
@@ -87,7 +93,7 @@ class CensysAPIBase:
                 "User-Agent": " ".join(
                     [
                         requests.utils.default_user_agent(),
-                        user_agent_identifier or self.DEFAULT_USER_AGENT,
+                        user_agent or self.DEFAULT_USER_AGENT,
                     ]
                 ),
             }
