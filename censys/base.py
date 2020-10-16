@@ -6,7 +6,7 @@ Base for interacting with the Censys Search API.
 import os
 import json
 import warnings
-from typing import Type, Optional, Callable, Dict, List, Generator, MutableMapping, Any
+from typing import Type, Optional, Callable, Dict, List, Generator, Any
 
 import requests
 
@@ -56,35 +56,32 @@ class CensysAPIBase:
     }
     """Map of status code to Exception."""
 
-    def __init__(
-        self,
-        api_id: Optional[str] = None,
-        api_secret: Optional[str] = None,
-        url: Optional[str] = None,
-        timeout: Optional[int] = None,
-        user_agent: Optional[str] = None,
-        proxies: Optional[MutableMapping[str, str]] = None,
-    ):
+    def __init__(self, *args, **kwargs):
         # Gets config file
         config = get_config()
 
         # Try to get credentials
         self.api_id = (
-            api_id or os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id")
+            kwargs.get("api_id")
+            or os.getenv("CENSYS_API_ID")
+            or config.get(DEFAULT, "api_id")
         )
         self.api_secret = (
-            api_secret
+            kwargs.get("api_secret")
             or os.getenv("CENSYS_API_SECRET")
             or config.get(DEFAULT, "api_secret")
         )
         if not self.api_id or not self.api_secret:
             raise CensysException("No API ID or API secret configured.")
 
-        self.timeout = timeout or self.DEFAULT_TIMEOUT
-        self._api_url = url or os.getenv("CENSYS_API_URL") or self.DEFAULT_URL
+        self.timeout = kwargs.get("timeout") or self.DEFAULT_TIMEOUT
+        self._api_url = (
+            kwargs.get("url") or os.getenv("CENSYS_API_URL") or self.DEFAULT_URL
+        )
 
         # Create a session and sets credentials
         self._session = requests.Session()
+        proxies = kwargs.get("proxies")
         if proxies:
             if "http" in proxies.keys():
                 warnings.warn("HTTP proxies will not be used.")
@@ -97,7 +94,9 @@ class CensysAPIBase:
                 "User-Agent": " ".join(
                     [
                         requests.utils.default_user_agent(),
-                        user_agent or self.DEFAULT_USER_AGENT,
+                        kwargs.get("user_agent")
+                        or kwargs.get("user_agent_identifier")
+                        or self.DEFAULT_USER_AGENT,
                     ]
                 ),
             }
