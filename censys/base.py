@@ -56,22 +56,22 @@ class CensysAPIBase:
     }
     """Map of status code to Exception."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
+    ):
         # Gets config file
         config = get_config()
 
         # Try to get credentials
-        self.api_id = (
-            kwargs.get("api_id")
-            or os.getenv("CENSYS_API_ID")
-            or config.get(DEFAULT, "api_id")
+        self._api_id = (
+            api_id or os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id")
         )
-        self.api_secret = (
-            kwargs.get("api_secret")
+        self._api_secret = (
+            api_secret
             or os.getenv("CENSYS_API_SECRET")
             or config.get(DEFAULT, "api_secret")
         )
-        if not self.api_id or not self.api_secret:
+        if not self._api_id or not self._api_secret:
             raise CensysException("No API ID or API secret configured.")
 
         self.timeout = kwargs.get("timeout") or self.DEFAULT_TIMEOUT
@@ -87,7 +87,7 @@ class CensysAPIBase:
                 warnings.warn("HTTP proxies will not be used.")
                 proxies.pop("http", None)
             self._session.proxies = proxies
-        self._session.auth = (self.api_id, self.api_secret)
+        self._session.auth = (self._api_id, self._api_secret)
         self._session.headers.update(
             {
                 "accept": "application/json, */8",

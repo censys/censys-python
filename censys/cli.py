@@ -355,10 +355,7 @@ class CensysHNRI:
     MEDIUM_RISK_DEFINITION: List[str] = ["ssh", "http", "https"]
 
     def __init__(self, api_id: str, api_secret: str):
-        self.api_id = api_id
-        self.api_secret = api_secret
-
-        self.index = CensysIPv4(self.api_id, self.api_secret)
+        self.index = CensysIPv4(api_id, api_secret)
 
     @staticmethod
     def get_current_ip() -> str:
