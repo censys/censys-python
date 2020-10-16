@@ -301,6 +301,10 @@ class CensysCliHNRITest(unittest.TestCase):
         "argparse._sys.argv", ["censys", "hnri"],
     )
     @patch("censys.cli.CensysHNRI.get_current_ip", lambda _: "8.8.8.8")
+    @patch(
+        "censys.ipv4.CensysIPv4.view",
+        lambda _, ip: {"protocols": ["443/https", "53/dns", "21/banner"]},
+    )
     def test_hnri_medium(self):
         temp_stdout = StringIO()
         with contextlib.redirect_stdout(temp_stdout):
@@ -316,6 +320,7 @@ class CensysCliHNRITest(unittest.TestCase):
         "argparse._sys.argv", ["censys", "hnri"],
     )
     @patch("censys.cli.CensysHNRI.get_current_ip", lambda _: "94.142.241.111")
+    @patch("censys.ipv4.CensysIPv4.view", lambda _, ip: {"protocols": ["23/telnet"]})
     def test_hnri_high(self):
         # Using towel.blinkenlights.nl/94.142.241.111
         temp_stdout = StringIO()
