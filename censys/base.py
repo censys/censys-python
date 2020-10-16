@@ -5,6 +5,7 @@ Base for interacting with the Censys Search API.
 
 import os
 import json
+import warnings
 from typing import Type, Optional, Callable, Dict, List, Generator, MutableMapping, Any
 
 import requests
@@ -85,6 +86,9 @@ class CensysAPIBase:
         # Create a session and sets credentials
         self._session = requests.Session()
         if proxies:
+            if "http" in proxies.keys():
+                warnings.warn("HTTP proxies will not be used.")
+                proxies.pop("http", None)
             self._session.proxies = proxies
         self._session.auth = (self.api_id, self.api_secret)
         self._session.headers.update(
