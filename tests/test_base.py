@@ -64,50 +64,43 @@ class CensysAPIBaseTestsNoEnv(unittest.TestCase):
 
 class CensysAPIBaseProxyTests(CensysTestCase):
 
-    HTTPS_ONLY_PROXIES = {
-        "https": "http://10.10.1.10:1080",
+    HTTP_PROXY = "http://10.10.1.10:3128"
+    HTTPS_PROXY = "http://10.10.1.10:1080"
+    PROXIES = {
+        "http": HTTP_PROXY,
+        "https": HTTPS_PROXY,
     }
-
-    HTTP_PROXIES = {
-        "http": "http://10.10.1.10:3128",
-        "https": "http://10.10.1.10:1080",
+    ACCOUNT_URL = "https://censys.io/api/v1/account"
+    ACCOUNT_JSON = {
+        "email": "support@censys.io",
+        "first_login": None,
+        "last_login": None,
+        "login": "support@censys.io",
+        "quota": {},
     }
 
     @requests_mock.Mocker(kw="mock")
     def test_proxies(self, mock=None):
         mock.get(
-            "https://censys.io/api/v1/account",
-            json={
-                "email": "support@censys.io",
-                "first_login": None,
-                "last_login": None,
-                "login": "support@censys.io",
-                "quota": {},
-            },
+            self.ACCOUNT_URL, json=self.ACCOUNT_JSON,
         )
 
-        api = CensysAPIBase(proxies=self.HTTPS_ONLY_PROXIES)
+        proxies = {"https": self.HTTPS_PROXY}
+        api = CensysAPIBase(proxies=proxies)
         api.account()
-        self.assertEqual(self.HTTPS_ONLY_PROXIES, mock.last_request.proxies)
+        self.assertDictEqual(proxies, mock.last_request.proxies)
 
     @requests_mock.Mocker(kw="mock")
     def test_warn_http_proxies(self, mock=None):
         mock.get(
-            "https://censys.io/api/v1/account",
-            json={
-                "email": "support@censys.io",
-                "first_login": None,
-                "last_login": None,
-                "login": "support@censys.io",
-                "quota": {},
-            },
+            self.ACCOUNT_URL, json=self.ACCOUNT_JSON,
         )
 
         with self.assertWarns(UserWarning):
-            api = CensysAPIBase(proxies=self.HTTP_PROXIES)
+            api = CensysAPIBase(proxies=self.PROXIES)
             api.account()
 
-        self.assertEqual(self.HTTPS_ONLY_PROXIES, mock.last_request.proxies)
+        self.assertDictEqual({"https": self.HTTPS_PROXY}, mock.last_request.proxies)
 
 
 if __name__ == "__main__":
