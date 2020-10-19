@@ -73,8 +73,8 @@ class CensysAPIBaseProxyTests(CensysTestCase):
     ACCOUNT_URL = "https://censys.io/api/v1/account"
     ACCOUNT_JSON = {
         "email": "support@censys.io",
-        "first_login": None,
-        "last_login": None,
+        "first_login": "",
+        "last_login": "",
         "login": "support@censys.io",
         "quota": {},
     }
