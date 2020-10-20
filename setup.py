@@ -35,7 +35,15 @@ setup(
     zip_safe=False,
     install_requires=["requests"],
     extras_require={
-        "dev": ["flake8", "black", "pytest", "pytest-cov", "mypy", "twine"],
+        "dev": [
+            "flake8",
+            "black",
+            "pytest",
+            "pytest-cov",
+            "requests-mock",
+            "mypy",
+            "twine",
+        ],
         "docs": ["sphinx"],
     },
     entry_points={"console_scripts": ["censys = censys.cli:main"]},
