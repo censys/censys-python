@@ -4,7 +4,7 @@ Interact with the Censys Search Certificate API.
 
 from typing import List
 
-from censys.base import CensysIndex
+from censys.client import CensysIndex
 
 
 class CensysCertificates(CensysIndex):

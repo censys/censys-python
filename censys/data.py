@@ -2,10 +2,10 @@
 Interact with the Censys Search Data API.
 """
 
-from censys.base import CensysAPIBase
+from censys.client import CensysIndex
 
 
-class CensysData(CensysAPIBase):
+class CensysData(CensysIndex):
     """
     Interacts with the Data index.
     For more details, see our documentation: https://censys.io/api/v1/docs/data

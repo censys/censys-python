@@ -2,7 +2,7 @@
 Interact with the Censys Search IPv4 API.
 """
 
-from censys.base import CensysIndex
+from censys.client import CensysIndex
 
 
 class CensysIPv4(CensysIndex):

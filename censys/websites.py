@@ -2,7 +2,7 @@
 Interact with the Censys Search Website API.
 """
 
-from censys.base import CensysIndex
+from censys.client import CensysIndex
 
 
 class CensysWebsites(CensysIndex):
