@@ -43,6 +43,7 @@ setup(
             "requests-mock",
             "mypy",
             "twine",
+            "parameterized",
         ],
         "docs": ["sphinx"],
     },
