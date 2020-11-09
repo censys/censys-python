@@ -21,6 +21,7 @@ class CensysAPIException(CensysException):
     """
     Base Exception for Censys API's.
     """
+
     def __init__(
         self,
         status_code: int,
@@ -28,7 +29,7 @@ class CensysAPIException(CensysException):
         body: Optional[str] = None,
         const: Optional[str] = None,
         error_code: Optional[int] = None,
-        details: Optional[str] = None
+        details: Optional[str] = None,
     ):
         self.status_code = status_code
         self.message = message
@@ -56,7 +57,11 @@ class CensysAsmException(CensysAPIException):
     """
 
     def __repr__(self):
-        return "%i (Error Code: %i), %s" % (self.status_code, self.error_code, self.details)
+        return "%i (Error Code: %i), %s" % (
+            self.status_code,
+            self.error_code,
+            self.details,
+        )
 
     __str__ = __repr__
 

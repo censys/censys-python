@@ -6,7 +6,7 @@ import os
 
 from censys.base import CensysAPIBase
 from censys.config import get_config, DEFAULT
-from typing import Type, Dict, List, Generator
+from typing import Type, Dict, List, Generator, Optional
 from requests.models import Response
 from censys.exceptions import *
 
@@ -31,10 +31,11 @@ class CensysIndex(CensysAPIBase):
     """Name of Censys Index."""
 
     def __init__(
-            self, api_id: Optional[str] = None,
-            api_secret: Optional[str] = None,
-            url: Optional[str] = DEFAULT_URL,
-            **kwargs
+        self,
+        api_id: Optional[str] = None,
+        api_secret: Optional[str] = None,
+        url: Optional[str] = DEFAULT_URL,
+        **kwargs,
     ):
         CensysAPIBase.__init__(self, url, **kwargs)
 

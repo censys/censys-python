@@ -11,7 +11,7 @@ class Seeds:
 
     def __init__(self, client):
         self.client = client
-        self.base_path = 'seeds'
+        self.base_path = "seeds"
 
     def get_seeds(self, seed_type: Optional[str] = None) -> dict:
         """
@@ -24,9 +24,9 @@ class Seeds:
             dict: Seed search results.
         """
 
-        args = {'type': seed_type}
+        args = {"type": seed_type}
 
-        return self.client._get(self.base_path, args=args)['seeds']
+        return self.client._get(self.base_path, args=args)["seeds"]
 
     def get_seed_by_id(self, seed_id: int) -> dict:
         """
@@ -39,7 +39,7 @@ class Seeds:
             dict: Seed search result.
         """
 
-        path = f'{self.base_path}/{seed_id}'
+        path = f"{self.base_path}/{seed_id}"
 
         return self.client._get(path)
 
@@ -56,11 +56,13 @@ class Seeds:
         """
 
         data = {"seeds": seeds}
-        args = {'force': force}
+        args = {"force": force}
 
         return self.client._post(self.base_path, args=args, data=data)
 
-    def replace_seeds_by_label(self, label: str, seeds: list, force: Optional[bool] = False) -> dict:
+    def replace_seeds_by_label(
+        self, label: str, seeds: list, force: Optional[bool] = False
+    ) -> dict:
         """
         Replace seeds in the ASM platform by label.
 
@@ -74,7 +76,7 @@ class Seeds:
         """
 
         data = {"seeds": seeds}
-        args = {'label': label, 'force': force}
+        args = {"label": label, "force": force}
 
         return self.client._put(self.base_path, args=args, data=data)
 
@@ -86,7 +88,7 @@ class Seeds:
             label (str): Label name to delete by.
         """
 
-        args = {'label': label}
+        args = {"label": label}
 
         return self.client._delete(self.base_path, args=args)
 
@@ -98,6 +100,6 @@ class Seeds:
             seed_id (int): Seed ID to delete by.
         """
 
-        path = f'{self.base_path}/{seed_id}'
+        path = f"{self.base_path}/{seed_id}"
 
         return self.client._delete(path)

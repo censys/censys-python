@@ -12,9 +12,11 @@ class Events:
 
     def __init__(self, client):
         self.client = client
-        self.base_path = 'logbook'
+        self.base_path = "logbook"
 
-    def get_cursor(self, start: Optional[datetime] = None, filters: Optional[List[str]] = None) -> str:
+    def get_cursor(
+        self, start: Optional[datetime] = None, filters: Optional[List[str]] = None
+    ) -> str:
         """
         Requests a logbook cursor.
 
@@ -26,10 +28,10 @@ class Events:
             str: Cursor result.
         """
 
-        path = f'{self.base_path}-cursor'
+        path = f"{self.base_path}-cursor"
         data = format_data(start=start, filters=filters)
 
-        return self.client._post(path, data=data)['cursor']
+        return self.client._post(path, data=data)["cursor"]
 
     def get_events(self, cursor: Optional[str] = None) -> Generator[dict, None, None]:
         """
@@ -42,7 +44,7 @@ class Events:
             generator: Logbook events results.
         """
 
-        args = {'cursor': cursor}
+        args = {"cursor": cursor}
 
         return self.client._get_logbook_page(self.base_path, args)
 
@@ -52,25 +54,27 @@ class Filters:
     Logbook filters class
     """
 
-    CERT = 'CERT'
-    CERT_RISK = 'CERT_RISK'
-    DOMAIN = 'DOMAIN'
-    DOMAIN_EXPIRATION_DATE = 'DOMAIN_EXPIRATION_DATE'
-    DOMAIN_MAIL_EXCHANGE_SERVER = 'DOMAIN_MAIL_EXCHANGE_SERVER'
-    DOMAIN_NAME_SERVER = 'DOMAIN_NAME_SERVER'
-    DOMAIN_REGISTRAR = 'DOMAIN_REGISTRAR'
-    DOMAIN_RISK = 'DOMAIN_RISK'
-    DOMAIN_SUBDOMAIN = 'DOMAIN_SUBDOMAIN'
-    HOST = 'HOST'
-    HOST_CERT = 'HOST_CERT'
-    HOST_PORT = 'HOST_PORT'
-    HOST_PROTOCOL = 'HOST_PROTOCOL'
-    HOST_RISK = 'HOST_RISK'
-    HOST_SOFTWARE = 'HOST_SOFTWARE'
-    HOST_VULNERABILITY = 'HOST_VULNERABILITY'
+    CERT = "CERT"
+    CERT_RISK = "CERT_RISK"
+    DOMAIN = "DOMAIN"
+    DOMAIN_EXPIRATION_DATE = "DOMAIN_EXPIRATION_DATE"
+    DOMAIN_MAIL_EXCHANGE_SERVER = "DOMAIN_MAIL_EXCHANGE_SERVER"
+    DOMAIN_NAME_SERVER = "DOMAIN_NAME_SERVER"
+    DOMAIN_REGISTRAR = "DOMAIN_REGISTRAR"
+    DOMAIN_RISK = "DOMAIN_RISK"
+    DOMAIN_SUBDOMAIN = "DOMAIN_SUBDOMAIN"
+    HOST = "HOST"
+    HOST_CERT = "HOST_CERT"
+    HOST_PORT = "HOST_PORT"
+    HOST_PROTOCOL = "HOST_PROTOCOL"
+    HOST_RISK = "HOST_RISK"
+    HOST_SOFTWARE = "HOST_SOFTWARE"
+    HOST_VULNERABILITY = "HOST_VULNERABILITY"
 
 
-def format_data(start: Optional[datetime] = None, filters: Optional[str] = None) -> dict:
+def format_data(
+    start: Optional[datetime] = None, filters: Optional[str] = None
+) -> dict:
     """
     Formats cursor request data into a start date/id and filter list
 
@@ -85,10 +89,10 @@ def format_data(start: Optional[datetime] = None, filters: Optional[str] = None)
     data = {}
 
     if filters:
-        data['filter'] = {'type': filters}
+        data["filter"] = {"type": filters}
     if type(start) == int:
-        data['idFrom'] = start
+        data["idFrom"] = start
     elif start:
-        data['dateFrom'] = start
+        data["dateFrom"] = start
 
     return data

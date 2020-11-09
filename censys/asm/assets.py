@@ -11,10 +11,10 @@ class Assets:
 
     def __init__(self, client, asset_type):
         self.client = client
-        self.base_path = f'assets/{asset_type}'
+        self.base_path = f"assets/{asset_type}"
 
     def get_assets(
-            self, page_number: Optional[int] = 1, page_size: Optional[int] = None
+        self, page_number: Optional[int] = 1, page_size: Optional[int] = None
     ) -> Generator[dict, None, None]:
         """
         Requests assets data.
@@ -27,7 +27,9 @@ class Assets:
             generator: Asset search results.
         """
 
-        return self.client._get_page(self.base_path, page_number=page_number, page_size=page_size)
+        return self.client._get_page(
+            self.base_path, page_number=page_number, page_size=page_size
+        )
 
     def get_asset_by_id(self, asset_id: str) -> dict:
         """
@@ -40,12 +42,15 @@ class Assets:
             dict: Asset search result.
         """
 
-        path = f'{self.base_path}/{asset_id}'
+        path = f"{self.base_path}/{asset_id}"
 
         return self.client._get(path)
 
     def get_comments(
-            self, asset_id: str, page_number: Optional[int] = 1, page_size: Optional[int] = None
+        self,
+        asset_id: str,
+        page_number: Optional[int] = 1,
+        page_size: Optional[int] = None,
     ) -> Generator[dict, None, None]:
         """
         Requests comments on a specified asset.
@@ -59,7 +64,7 @@ class Assets:
             generator: Comment search results.
         """
 
-        path = f'{self.base_path}/{asset_id}/comments'
+        path = f"{self.base_path}/{asset_id}/comments"
 
         return self.client._get_page(path, page_number=page_number, page_size=page_size)
 
@@ -75,7 +80,7 @@ class Assets:
             dict: Comment search result.
         """
 
-        path = f'{self.base_path}/{asset_id}/comments/{comment_id}'
+        path = f"{self.base_path}/{asset_id}/comments/{comment_id}"
 
         return self.client._get(path)
 
@@ -91,8 +96,8 @@ class Assets:
             dict: Added comment results.
         """
 
-        path = f'{self.base_path}/{asset_id}/comments'
-        data = {'markdown': str(comment)}
+        path = f"{self.base_path}/{asset_id}/comments"
+        data = {"markdown": str(comment)}
 
         return self.client._post(path, data=data)
 
@@ -106,7 +111,7 @@ class Assets:
             color (str, optional): New tag color.
         """
 
-        path = f'{self.base_path}/{asset_id}/tags'
+        path = f"{self.base_path}/{asset_id}/tags"
         data = format_tag(name, color)
 
         return self.client._post(path, data=data)
@@ -120,7 +125,7 @@ class Assets:
             name (str): Tag name to delete.
         """
 
-        path = f'{self.base_path}/{asset_id}/tags/{name}'
+        path = f"{self.base_path}/{asset_id}/tags/{name}"
 
         return self.client._delete(path)
 
@@ -138,6 +143,6 @@ def format_tag(name: str, color: Optional[str] = None) -> dict:
     """
 
     if color:
-        return {'name': str(name), 'color': str(color)}
+        return {"name": str(name), "color": str(color)}
 
-    return {'name': str(name)}
+    return {"name": str(name)}

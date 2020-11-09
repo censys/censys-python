@@ -4,16 +4,16 @@ Base for interacting with the Censys Search API.
 # pylint: disable=too-many-arguments
 import os
 
+from math import inf
+from typing import Type, Dict, Generator, Optional
+from requests.models import Response
+from censys.exceptions import *
+
 from censys.base import CensysAPIBase
 from censys.asm.seeds import Seeds
 from censys.asm.assets import Assets
 from censys.asm.events import Events
 from censys.config import get_config, DEFAULT
-
-from math import inf
-from typing import Type, Dict, Generator
-from requests.models import Response
-from censys.exceptions import *
 
 
 class CensysAsmAPI(CensysAPIBase):
@@ -23,7 +23,7 @@ class CensysAsmAPI(CensysAPIBase):
 
     DEFAULT_URL: str = "https://app.censys.io/api/v1"
     """Default ASM API base URL."""
-    EXCEPTIONS: Dict[int, Type[CensysAPIException]] = {
+    EXCEPTIONS: Dict[int, Type[CensysAsmException]] = {
         10000: CensysMissingApiKeyException,
         10008: CensysInvalidRequestException,
         10002: CensysInvalidAuthTokenException,
@@ -55,14 +55,12 @@ class CensysAsmAPI(CensysAPIBase):
         10035: CensysCannotCreateTagWithNewColorException,
         10036: CensysTagColorHasTrailingOrLeadingWhitespaceException,
         10020: CensysCertificateNotFoundException,
-        10019: CensysDomainNotFoundException
+        10019: CensysDomainNotFoundException,
     }
     """Map of status code to Exception."""
 
     def __init__(
-            self, api_key: Optional[str] = None,
-            url: Optional[str] = DEFAULT_URL,
-            **kwargs
+        self, api_key: Optional[str] = None, url: Optional[str] = DEFAULT_URL, **kwargs
     ):
         CensysAPIBase.__init__(self, url, **kwargs)
 
@@ -71,29 +69,30 @@ class CensysAsmAPI(CensysAPIBase):
 
         # Try to get credentials
         self._api_key = (
-            api_key or os.getenv("CENSYS_API_KEY") or config.get(DEFAULT, "api_key")
+            api_key
+            or os.getenv("CENSYS_ASM_API_KEY")
+            or config.get(DEFAULT, "asm_api_key")
         )
 
         if not self._api_key:
             raise CensysAsmException("No API key configured.")
 
-        self._session.headers.update({
-            'Content-Type': 'application/json',
-            'Censys-Api-Key': self._api_key
-        })
+        self._session.headers.update(
+            {"Content-Type": "application/json", "Censys-Api-Key": self._api_key}
+        )
 
         # Instantiate endpoint handlers
         self.seeds = Seeds(self)
-        self.hosts = Assets(self, 'hosts')
-        self.certificates = Assets(self, 'certificates')
-        self.domains = Assets(self, 'domains')
+        self.hosts = Assets(self, "hosts")
+        self.certificates = Assets(self, "certificates")
+        self.domains = Assets(self, "domains")
         self.events = Events(self)
 
     def _get_exception_class(self, res: Response) -> Type[CensysAsmException]:
-        return self.EXCEPTIONS.get(res.json()['errorCode'], CensysAsmException)
+        return self.EXCEPTIONS.get(res.json()["errorCode"], CensysAsmException)
 
     def _get_page(
-            self, path: str, page_number: Optional[int] = 1, page_size: Optional[int] = None
+        self, path: str, page_number: Optional[int] = 1, page_size: Optional[int] = None
     ) -> Generator[dict, None, None]:
         """
         Fetches paginated ASM resource API results.
@@ -110,23 +109,22 @@ class CensysAsmAPI(CensysAPIBase):
         total_pages = inf
 
         while page_number <= total_pages:
-            args = {
-                'pageNumber': page_number,
-                'pageSize': page_size or 500
-            }
+            args = {"pageNumber": page_number, "pageSize": page_size or 500}
 
             res = self._get(path, args=args)
-            page_number = int(res['pageNumber']) + 1
-            total_pages = int(res['totalPages'])
+            page_number = int(res["pageNumber"]) + 1
+            total_pages = int(res["totalPages"])
 
-            if 'comments' in path:
-                for comment in res['comments']:
+            if "comments" in path:
+                for comment in res["comments"]:
                     yield comment
             else:
-                for asset in res['assets']:
+                for asset in res["assets"]:
                     yield asset
 
-    def _get_logbook_page(self, path: str, args: Optional[dict] = None) -> Generator[dict, None, None]:
+    def _get_logbook_page(
+        self, path: str, args: Optional[dict] = None
+    ) -> Generator[dict, None, None]:
         """
         Fetches paginated ASM logbook API events.
 
@@ -142,7 +140,7 @@ class CensysAsmAPI(CensysAPIBase):
 
         while not end_of_events:
             res = self._get(path, args=args)
-            end_of_events = res['endOfEvents']
+            end_of_events = res["endOfEvents"]
 
-            for event in res['events']:
+            for event in res["events"]:
                 yield event

@@ -134,7 +134,7 @@ class CensysAPIBase(ABC):
 
         try:
             json_data = res.json()
-            message = json_data.get("error") or json_data['message']
+            message = json_data.get("error") or json_data["message"]
             const = json_data.get("error_type", None)
             error_code = json_data.get("errorCode", None)
             details = json_data.get("details", None)
@@ -161,16 +161,20 @@ class CensysAPIBase(ABC):
             const=const,
             message=message,
             error_code=error_code,
-            details=details
+            details=details,
         )
 
     def _get(self, endpoint: str, args: Optional[dict] = None) -> dict:
         return self._make_call(self._session.get, endpoint, args)
 
-    def _post(self, endpoint: str, args: Optional[dict] = None, data: Optional[dict] = None) -> dict:
+    def _post(
+        self, endpoint: str, args: Optional[dict] = None, data: Optional[dict] = None
+    ) -> dict:
         return self._make_call(self._session.post, endpoint, args, data)
 
-    def _put(self, endpoint: str, args: Optional[dict] = None, data: Optional[dict] = None) -> dict:
+    def _put(
+        self, endpoint: str, args: Optional[dict] = None, data: Optional[dict] = None
+    ) -> dict:
         return self._make_call(self._session.put, endpoint, args, data)
 
     def _delete(self, endpoint: str, args: Optional[dict] = None) -> dict:

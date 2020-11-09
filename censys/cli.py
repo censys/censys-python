@@ -553,7 +553,7 @@ def cli_config(_):  # pragma: no cover
             print("Please enter a valid API key")
             sys.exit(1)
 
-        # TODO find a way to authenticate valid API key
+        # TODO: find a way to authenticate valid API key
         config.set(DEFAULT, "api_key", api_key)
 
         write_config(config)
