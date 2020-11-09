@@ -2,23 +2,24 @@ import json
 import unittest
 from unittest.mock import patch
 
-from censys.asm.client import CensysAsmAPI
-from censys.asm.events import Filters
-from censys.asm.tests.utils import (
+from asm.utils import (
     CensysAsmTestCase,
     MockResponse,
     RESOURCE_PAGING_RESULTS,
     TEST_SUCCESS_CODE,
     TEST_TIMEOUT,
-    BASE_URL
+    BASE_URL,
 )
 
-EVENTS_URL = f'{BASE_URL}/logbook'
-EVENTS_CURSOR_URL = f'{BASE_URL}/logbook-cursor'
-EVENTS_RESOURCE_TYPE = 'events'
+from censys.asm.client import CensysAsmAPI
+from censys.asm.events import Filters
 
-TEST_CURSOR = 'eyJmaWx0ZXIiOnt9LCJzdGFydCI6MH0'
-TEST_START_DATE = '2020-10-29T19:26:34.371Z'
+EVENTS_URL = f"{BASE_URL}/logbook"
+EVENTS_CURSOR_URL = f"{BASE_URL}/logbook-cursor"
+EVENTS_RESOURCE_TYPE = "events"
+
+TEST_CURSOR = "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MH0"
+TEST_START_DATE = "2020-10-29T19:26:34.371Z"
 TEST_START_ID = 20712
 
 
@@ -26,35 +27,42 @@ class EventsUnitTests(CensysAsmTestCase):
     """
     Unit tests for Events API
     """
+
     def setUp(self):
         self.client = CensysAsmAPI()
 
-    @patch('censys.base.requests.Session.post')
+    @patch("censys.base.requests.Session.post")
     def test_get_logbook_cursor_no_args(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, None)
         self.client.events.get_cursor()
 
         mock.assert_called_with(EVENTS_CURSOR_URL, params={}, timeout=TEST_TIMEOUT)
 
-    @patch('censys.base.requests.Session.post')
+    @patch("censys.base.requests.Session.post")
     def test_get_logbook_cursor_with_start_date(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, None)
         self.client.events.get_cursor(start=TEST_START_DATE)
 
         mock.assert_called_with(
-            EVENTS_CURSOR_URL, params={}, timeout=TEST_TIMEOUT, data=json.dumps({'dateFrom': TEST_START_DATE})
+            EVENTS_CURSOR_URL,
+            params={},
+            timeout=TEST_TIMEOUT,
+            data=json.dumps({"dateFrom": TEST_START_DATE}),
         )
 
-    @patch('censys.base.requests.Session.post')
+    @patch("censys.base.requests.Session.post")
     def test_get_logbook_cursor_with_start_id(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, None)
         self.client.events.get_cursor(start=TEST_START_ID)
 
         mock.assert_called_with(
-            EVENTS_CURSOR_URL, params={}, timeout=TEST_TIMEOUT, data=json.dumps({'idFrom': TEST_START_ID})
+            EVENTS_CURSOR_URL,
+            params={},
+            timeout=TEST_TIMEOUT,
+            data=json.dumps({"idFrom": TEST_START_ID}),
         )
 
-    @patch('censys.base.requests.Session.post')
+    @patch("censys.base.requests.Session.post")
     def test_get_logbook_cursor_with_filters(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, None)
         filters = [Filters.HOST, Filters.DOMAIN]
@@ -64,10 +72,10 @@ class EventsUnitTests(CensysAsmTestCase):
             EVENTS_CURSOR_URL,
             params={},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({'filter': {'type': filters}})
+            data=json.dumps({"filter": {"type": filters}}),
         )
 
-    @patch('censys.base.requests.Session.post')
+    @patch("censys.base.requests.Session.post")
     def test_get_logbook_cursor_with_filters_and_start_date(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, None)
         filters = [Filters.HOST, Filters.HOST_CERT]
@@ -77,10 +85,10 @@ class EventsUnitTests(CensysAsmTestCase):
             EVENTS_CURSOR_URL,
             params={},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({'filter': {'type': filters}, 'dateFrom': TEST_START_DATE})
+            data=json.dumps({"filter": {"type": filters}, "dateFrom": TEST_START_DATE}),
         )
 
-    @patch('censys.base.requests.Session.post')
+    @patch("censys.base.requests.Session.post")
     def test_get_logbook_cursor_with_filters_and_start_id(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, None)
         filters = [Filters.HOST, Filters.HOST_CERT]
@@ -90,26 +98,30 @@ class EventsUnitTests(CensysAsmTestCase):
             EVENTS_CURSOR_URL,
             params={},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({'filter': {'type': filters}, 'idFrom': TEST_START_ID})
+            data=json.dumps({"filter": {"type": filters}, "idFrom": TEST_START_ID}),
         )
 
-    @patch('censys.base.requests.Session.get')
+    @patch("censys.base.requests.Session.get")
     def test_get_all_events(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, EVENTS_RESOURCE_TYPE)
         events = self.client.events.get_events()
         res = [event for event in events]
 
         self.assertEqual(RESOURCE_PAGING_RESULTS, res)
-        mock.assert_called_with(EVENTS_URL, params={'cursor': None}, timeout=TEST_TIMEOUT)
+        mock.assert_called_with(
+            EVENTS_URL, params={"cursor": None}, timeout=TEST_TIMEOUT
+        )
 
-    @patch('censys.base.requests.Session.get')
+    @patch("censys.base.requests.Session.get")
     def test_get_events_with_cursor(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, EVENTS_RESOURCE_TYPE)
         events = self.client.events.get_events(TEST_CURSOR)
         res = [event for event in events]
 
         self.assertEqual(RESOURCE_PAGING_RESULTS, res)
-        mock.assert_called_with(EVENTS_URL, params={'cursor': TEST_CURSOR}, timeout=TEST_TIMEOUT)
+        mock.assert_called_with(
+            EVENTS_URL, params={"cursor": TEST_CURSOR}, timeout=TEST_TIMEOUT
+        )
 
 
 if __name__ == "__main__":
