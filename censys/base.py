@@ -11,7 +11,6 @@ from typing import Type, Optional, Callable, List, Any
 from requests.models import Response
 
 import requests
-from requests import utils
 
 from censys import __name__ as NAME, __version__ as VERSION
 from censys.exceptions import (
@@ -74,7 +73,9 @@ class CensysAPIBase(ABC):
 
     @abstractmethod
     def _get_exception_class(self, res: Response) -> Type[CensysAPIException]:
-        """Maps HTTP status code or ASM error code to exception. Must be implemented by child class.
+        """
+        Maps HTTP status code or ASM error code to exception.
+        Must be implemented by child class.
 
         Args:
             res (Response): HTTP requests response object.
