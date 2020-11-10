@@ -92,7 +92,7 @@ class CensysAsmAPI(CensysAPIBase):
         return self.EXCEPTIONS.get(res.json()["errorCode"], CensysAsmException)
 
     def _get_page(
-        self, path: str, page_number: Optional[int] = 1, page_size: Optional[int] = None
+        self, path: str, page_number: int = 1, page_size: Optional[int] = None
     ) -> Generator[dict, None, None]:
         """
         Fetches paginated ASM resource API results.

@@ -557,7 +557,7 @@ def cli_config(_):  # pragma: no cover
         config.set(DEFAULT, "api_key", api_key)
 
         write_config(config)
-        print(f"\nSuccessfully updated config for ASM API key")
+        print("\nSuccessfully updated config for ASM API key")
         sys.exit(0)
 
     elif api_choice.lower() == "search":

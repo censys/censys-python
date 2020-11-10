@@ -22,6 +22,7 @@ class CensysAPIException(CensysException):
     Base Exception for Censys API's.
     """
 
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         status_code: int,

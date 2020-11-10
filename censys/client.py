@@ -1,14 +1,17 @@
 """
 Base for interacting with the Censys Search API.
 """
-# pylint: disable=too-many-arguments
 import os
+from typing import Dict, Generator, List, Optional, Type
+
+from requests.models import Response
 
 from censys.base import CensysAPIBase
-from censys.config import get_config, DEFAULT
-from typing import Type, Dict, List, Generator, Optional
-from requests.models import Response
-from censys.exceptions import *
+from censys.config import DEFAULT, get_config
+from censys.exceptions import (CensysException, CensysNotFoundException,
+                               CensysRateLimitExceededException,
+                               CensysSearchException,
+                               CensysUnauthorizedException)
 
 Fields = Optional[List[str]]
 
@@ -20,7 +23,7 @@ class CensysIndex(CensysAPIBase):
 
     DEFAULT_URL: str = "https://censys.io/api/v1"
     """Default Search API base URL."""
-    EXCEPTIONS: Dict[int, Type[CensysAPIException]] = {
+    EXCEPTIONS: Dict[int, Type[CensysSearchException]] = {
         401: CensysUnauthorizedException,
         403: CensysUnauthorizedException,
         404: CensysNotFoundException,
@@ -126,6 +129,7 @@ class CensysIndex(CensysAPIBase):
         }
         return self._post(self.search_path, data=data)
 
+    # pylint: disable=too-many-arguments
     def search(
         self,
         query: str,
