@@ -6,7 +6,7 @@ import contextlib
 from io import StringIO
 from unittest.mock import patch, mock_open
 
-from utils import required_env
+from tests.utils import required_env
 
 from censys.cli import main as cli_main
 from censys.cli import CensysHNRI
@@ -298,7 +298,8 @@ class CensysCliSearchTest(unittest.TestCase):
 class CensysCliHNRITest(unittest.TestCase):
     @required_env
     @patch(
-        "argparse._sys.argv", ["censys", "hnri"],
+        "argparse._sys.argv",
+        ["censys", "hnri"],
     )
     @patch("censys.cli.CensysHNRI.get_current_ip", lambda _: "8.8.8.8")
     @patch(
@@ -317,7 +318,8 @@ class CensysCliHNRITest(unittest.TestCase):
 
     @required_env
     @patch(
-        "argparse._sys.argv", ["censys", "hnri"],
+        "argparse._sys.argv",
+        ["censys", "hnri"],
     )
     @patch("censys.cli.CensysHNRI.get_current_ip", lambda _: "94.142.241.111")
     @patch("censys.ipv4.CensysIPv4.view", lambda _, ip: {"protocols": ["23/telnet"]})
@@ -333,7 +335,8 @@ class CensysCliHNRITest(unittest.TestCase):
 
     @required_env
     @patch(
-        "argparse._sys.argv", ["censys", "hnri"],
+        "argparse._sys.argv",
+        ["censys", "hnri"],
     )
     @patch("censys.ipv4.CensysIPv4.view", lambda _, ip: {"protocols": ["23/telnet"]})
     def test_hnri_no_medium(self):
@@ -348,7 +351,8 @@ class CensysCliHNRITest(unittest.TestCase):
 
     @required_env
     @patch(
-        "argparse._sys.argv", ["censys", "hnri"],
+        "argparse._sys.argv",
+        ["censys", "hnri"],
     )
     @patch("censys.cli.CensysHNRI.get_current_ip", lambda _: "8.8.8.8")
     @patch(

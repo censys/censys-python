@@ -2,7 +2,7 @@ import json
 import unittest
 from unittest.mock import patch
 
-from asm.utils import (
+from tests.asm.utils import (
     CensysAsmTestCase,
     MockResponse,
     RESOURCE_PAGING_RESULTS,
@@ -11,7 +11,7 @@ from asm.utils import (
     BASE_URL,
 )
 
-from censys.asm.client import CensysAsmAPI
+from censys.asm.client import AsmClient
 from censys.asm.events import Filters
 
 EVENTS_URL = f"{BASE_URL}/logbook"
@@ -29,7 +29,7 @@ class EventsUnitTests(CensysAsmTestCase):
     """
 
     def setUp(self):
-        self.client = CensysAsmAPI()
+        self.client = AsmClient()
 
     @patch("censys.base.requests.Session.post")
     def test_get_logbook_cursor_no_args(self, mock):

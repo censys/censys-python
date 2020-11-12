@@ -4,9 +4,9 @@ from unittest.mock import patch, mock_open
 import requests_mock
 from requests.models import Response
 
-from utils import CensysTestCase
+from tests.utils import CensysTestCase
 
-from censys.client import CensysIndex
+from censys.api import CensysSearchAPI
 from censys.exceptions import (
     CensysException,
     CensysSearchException,
@@ -23,7 +23,7 @@ class CensysAPIBaseTests(CensysTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls._api = CensysIndex()
+        cls._api = CensysSearchAPI()
         cls.response = Response()
 
     def test_account(self):
@@ -49,11 +49,14 @@ class CensysAPIBaseTests(CensysTestCase):
         )
 
         self.response.status_code = 404
-        self.assertEqual(self._api._get_exception_class(self.response), CensysNotFoundException)
+        self.assertEqual(
+            self._api._get_exception_class(self.response), CensysNotFoundException
+        )
 
         self.response.status_code = 429
         self.assertEqual(
-            self._api._get_exception_class(self.response), CensysRateLimitExceededException
+            self._api._get_exception_class(self.response),
+            CensysRateLimitExceededException,
         )
 
     def test_exception_repr(self):
@@ -66,7 +69,7 @@ class CensysAPIBaseTestsNoEnv(unittest.TestCase):
     @patch("builtins.open", new_callable=mock_open, read_data="[DEFAULT]")
     def test_no_env(self, mock_file):
         with self.assertRaises(CensysException) as context:
-            CensysIndex()
+            CensysSearchAPI()
 
         self.assertIn("No API ID or API secret configured.", str(context.exception))
 
@@ -91,22 +94,24 @@ class CensysAPIBaseProxyTests(CensysTestCase):
     @requests_mock.Mocker(kw="mock")
     def test_proxies(self, mock=None):
         mock.get(
-            self.ACCOUNT_URL, json=self.ACCOUNT_JSON,
+            self.ACCOUNT_URL,
+            json=self.ACCOUNT_JSON,
         )
 
         proxies = {"https": self.HTTPS_PROXY}
-        api = CensysIndex(proxies=proxies)
+        api = CensysSearchAPI(proxies=proxies)
         api.account()
         self.assertDictEqual(proxies, mock.last_request.proxies)
 
     @requests_mock.Mocker(kw="mock")
     def test_warn_http_proxies(self, mock=None):
         mock.get(
-            self.ACCOUNT_URL, json=self.ACCOUNT_JSON,
+            self.ACCOUNT_URL,
+            json=self.ACCOUNT_JSON,
         )
 
         with self.assertWarns(UserWarning):
-            api = CensysIndex(proxies=self.PROXIES)
+            api = CensysSearchAPI(proxies=self.PROXIES)
             api.account()
 
         self.assertDictEqual({"https": self.HTTPS_PROXY}, mock.last_request.proxies)

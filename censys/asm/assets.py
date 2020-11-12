@@ -1,33 +1,35 @@
 """
 Class for interfacing with the Censys Assets API.
 """
+
+from censys.asm.api import CensysAsmAPI
 from typing import Optional, Generator
 
 
-class Assets:
+class Assets(CensysAsmAPI):
     """
     Assets API class
     """
 
-    def __init__(self, client, asset_type):
-        self.client = client
+    def __init__(self, asset_type, **kwargs):
+        super().__init__(**kwargs)
         self.base_path = f"assets/{asset_type}"
 
     def get_assets(
-        self, page_number: Optional[int] = 1, page_size: Optional[int] = None
+        self, page_number: int = 1, page_size: Optional[int] = None
     ) -> Generator[dict, None, None]:
         """
         Requests assets data.
 
         Args:
-            page_number (int, optional): Page number to begin searching for asset results.
+            page_number (int, optional): Page number to begin at when searching.
             page_size (int, optional): Page size for retrieving assets.
 
         Returns:
             generator: Asset search results.
         """
 
-        return self.client._get_page(
+        return self._get_page(
             self.base_path, page_number=page_number, page_size=page_size
         )
 
@@ -44,12 +46,12 @@ class Assets:
 
         path = f"{self.base_path}/{asset_id}"
 
-        return self.client._get(path)
+        return self._get(path)
 
     def get_comments(
         self,
         asset_id: str,
-        page_number: Optional[int] = 1,
+        page_number: int = 1,
         page_size: Optional[int] = None,
     ) -> Generator[dict, None, None]:
         """
@@ -57,7 +59,7 @@ class Assets:
 
         Args:
             asset_id (str): Asset ID for requested comments.
-            page_number (int, optional): Page number to begin searching for comment results.
+            page_number (int, optional): Page number to begin at when searching.
             page_size (int, optional): Page size for retrieving comments.
 
         Returns:
@@ -66,7 +68,7 @@ class Assets:
 
         path = f"{self.base_path}/{asset_id}/comments"
 
-        return self.client._get_page(path, page_number=page_number, page_size=page_size)
+        return self._get_page(path, page_number=page_number, page_size=page_size)
 
     def get_comment_by_id(self, asset_id: str, comment_id: int) -> dict:
         """
@@ -82,7 +84,7 @@ class Assets:
 
         path = f"{self.base_path}/{asset_id}/comments/{comment_id}"
 
-        return self.client._get(path)
+        return self._get(path)
 
     def add_comment(self, asset_id: str, comment: str) -> dict:
         """
@@ -99,9 +101,9 @@ class Assets:
         path = f"{self.base_path}/{asset_id}/comments"
         data = {"markdown": str(comment)}
 
-        return self.client._post(path, data=data)
+        return self._post(path, data=data)
 
-    def add_tag(self, asset_id: str, name: str, color: Optional[str] = None) -> None:
+    def add_tag(self, asset_id: str, name: str, color: Optional[str] = None) -> dict:
         """
         Adds a tag to a specified asset on the ASM platform.
 
@@ -114,9 +116,9 @@ class Assets:
         path = f"{self.base_path}/{asset_id}/tags"
         data = format_tag(name, color)
 
-        return self.client._post(path, data=data)
+        return self._post(path, data=data)
 
-    def delete_tag(self, asset_id: str, name: str) -> None:
+    def delete_tag(self, asset_id: str, name: str) -> dict:
         """
         Deletes a tag from a specified asset on the ASM platform by tag name.
 
@@ -127,7 +129,7 @@ class Assets:
 
         path = f"{self.base_path}/{asset_id}/tags/{name}"
 
-        return self.client._delete(path)
+        return self._delete(path)
 
 
 def format_tag(name: str, color: Optional[str] = None) -> dict:

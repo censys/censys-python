@@ -1,16 +1,18 @@
 """
 Class for interfacing with the Censys Seeds API.
 """
+
+from censys.asm.api import CensysAsmAPI
 from typing import Optional
 
 
-class Seeds:
+class Seeds(CensysAsmAPI):
     """
     Seeds API class
     """
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.base_path = "seeds"
 
     def get_seeds(self, seed_type: Optional[str] = None) -> dict:
@@ -18,7 +20,8 @@ class Seeds:
         Requests seed data.
 
         Args:
-            seed_type (str, optional): Seed type ['IP_ADDRESS', 'DOMAIN_NAME', 'CIDR', 'ASN'].
+            seed_type (str, optional): Seed type
+                ['IP_ADDRESS', 'DOMAIN_NAME', 'CIDR', 'ASN'].
 
         Returns:
             dict: Seed search results.
@@ -26,7 +29,7 @@ class Seeds:
 
         args = {"type": seed_type}
 
-        return self.client._get(self.base_path, args=args)["seeds"]
+        return self._get(self.base_path, args=args)["seeds"]
 
     def get_seed_by_id(self, seed_id: int) -> dict:
         """
@@ -41,7 +44,7 @@ class Seeds:
 
         path = f"{self.base_path}/{seed_id}"
 
-        return self.client._get(path)
+        return self._get(path)
 
     def add_seeds(self, seeds: list, force: Optional[bool] = False) -> dict:
         """
@@ -49,7 +52,7 @@ class Seeds:
 
         Args:
             seeds (list): List of seed objects to add.
-            force (bool, optional): Determines if add operation should be forced or not.
+            force (bool, optional): Forces replace operation.
 
         Returns:
             dict: Added seeds results.
@@ -58,7 +61,7 @@ class Seeds:
         data = {"seeds": seeds}
         args = {"force": force}
 
-        return self.client._post(self.base_path, args=args, data=data)
+        return self._post(self.base_path, args=args, data=data)
 
     def replace_seeds_by_label(
         self, label: str, seeds: list, force: Optional[bool] = False
@@ -69,7 +72,7 @@ class Seeds:
         Args:
             label (str): Label name to replace by.
             seeds (list): List of seed objects to add.
-            force (bool, optional): Determines if replace operation should be forced or not.
+            force (bool, optional): Forces replace operation.
 
         Returns:
             dict: Added and removed seeds results.
@@ -78,9 +81,9 @@ class Seeds:
         data = {"seeds": seeds}
         args = {"label": label, "force": force}
 
-        return self.client._put(self.base_path, args=args, data=data)
+        return self._put(self.base_path, args=args, data=data)
 
-    def delete_seeds_by_label(self, label: str) -> None:
+    def delete_seeds_by_label(self, label: str) -> dict:
         """
         Delete seeds in the ASM platform by label.
 
@@ -90,9 +93,9 @@ class Seeds:
 
         args = {"label": label}
 
-        return self.client._delete(self.base_path, args=args)
+        return self._delete(self.base_path, args=args)
 
-    def delete_seed_by_id(self, seed_id: int) -> None:
+    def delete_seed_by_id(self, seed_id: int) -> dict:
         """
         Delete a seed in the ASM platform by id.
 
@@ -102,4 +105,4 @@ class Seeds:
 
         path = f"{self.base_path}/{seed_id}"
 
-        return self.client._delete(path)
+        return self._delete(path)

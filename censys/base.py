@@ -1,7 +1,6 @@
 """
 Base for interacting with the Censys API's.
 """
-# pylint: disable=too-many-arguments
 
 import os
 import json
@@ -110,9 +109,9 @@ class CensysAPIBase(ABC):
         """
 
         if endpoint.startswith("/"):
-            url = "".join((self._api_url, endpoint))
+            url = f"{self._api_url}{endpoint}"
         else:
-            url = "/".join((self._api_url, endpoint))
+            url = f"{self._api_url}/{endpoint}"
 
         request_kwargs = {
             "params": args or {},
@@ -176,7 +175,9 @@ class CensysAPIBase(ABC):
     def _put(
         self, endpoint: str, args: Optional[dict] = None, data: Optional[dict] = None
     ) -> dict:
-        return self._make_call(self._session.put, endpoint, args, data)
+        return self._make_call(
+            self._session.put, endpoint, args, data
+        )  # pragma: no cover
 
     def _delete(self, endpoint: str, args: Optional[dict] = None) -> dict:
         return self._make_call(self._session.delete, endpoint, args)  # pragma: no cover

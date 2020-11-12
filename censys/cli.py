@@ -14,7 +14,7 @@ from typing import Union, Optional, List, Tuple
 
 import requests
 
-from censys.client import CensysIndex
+from censys.base import CensysAPIBase
 from censys.config import get_config, write_config, DEFAULT
 from censys.ipv4 import CensysIPv4
 from censys.websites import CensysWebsites
@@ -149,7 +149,10 @@ class CensysAPISearch:
         return self._write_screen(results_list)
 
     def _combine_fields(
-        self, default_fields: Fields, user_fields: Fields, overwrite: bool = False,
+        self,
+        default_fields: Fields,
+        user_fields: Fields,
+        overwrite: bool = False,
     ) -> Fields:
         """
         This method is used to specify which fields will be returned in the results.
@@ -535,66 +538,42 @@ def cli_config(_):  # pragma: no cover
     Args:
         _: Argparse Namespace.
     """
+
+    api_id_prompt = "Censys API ID"
+    api_secret_prompt = "Censys API Secret"
+
     config = get_config()
+    api_id = config.get(DEFAULT, "api_id")
+    api_secret = config.get(DEFAULT, "api_secret")
 
-    api_choice = input("Please choose an API type to configure: Search or ASM: ")
+    if api_id and api_secret:
+        redacted_id = api_id.replace(api_id[:32], 32 * "*")
+        redacted_secret = api_secret.replace(api_secret[:28], 28 * "*")
+        api_id_prompt = f"{api_id_prompt} [{redacted_id}]"
+        api_secret_prompt = f"{api_secret_prompt} [{redacted_secret}]"
 
-    if api_choice.lower() == "asm":
-        api_key_prompt = "Censys ASM API Key"
-        api_key = config.get(DEFAULT, "api_key")
+    api_id = input(api_id_prompt + ": ").strip() or api_id
+    api_secret = input(api_secret_prompt + ": ").strip() or api_secret
 
-        if api_key:
-            redacted_key = api_key.replace(api_key[:32], 32 * "*")
-            api_key_prompt = f"{api_key_prompt} [{redacted_key}]"
+    if not (api_id and api_secret):
+        print("Please enter valid credentials")
+        sys.exit(1)
 
-        api_key = input(api_key_prompt + ": ").strip() or api_key
+    try:
+        client = CensysAPIBase(api_id, api_secret)
+        account = client.account()
+        email = account.get("email")
 
-        if not api_key:
-            print("Please enter a valid API key")
-            sys.exit(1)
-
-        # TODO: find a way to authenticate valid API key
-        config.set(DEFAULT, "api_key", api_key)
+        # Assumes that login was successfully
+        config.set(DEFAULT, "api_id", api_id)
+        config.set(DEFAULT, "api_secret", api_secret)
 
         write_config(config)
-        print("\nSuccessfully updated config for ASM API key")
+        print(f"\nSuccessfully authenticated for {email}")
         sys.exit(0)
-
-    elif api_choice.lower() == "search":
-        api_id_prompt = "Censys Search API ID"
-        api_secret_prompt = "Censys Search API Secret"
-
-        api_id = config.get(DEFAULT, "api_id")
-        api_secret = config.get(DEFAULT, "api_secret")
-
-        if api_id and api_secret:
-            redacted_id = api_id.replace(api_id[:32], 32 * "*")
-            redacted_secret = api_secret.replace(api_secret[:28], 28 * "*")
-            api_id_prompt = f"{api_id_prompt} [{redacted_id}]"
-            api_secret_prompt = f"{api_secret_prompt} [{redacted_secret}]"
-
-        api_id = input(api_id_prompt + ": ").strip() or api_id
-        api_secret = input(api_secret_prompt + ": ").strip() or api_secret
-
-        if not (api_id and api_secret):
-            print("Please enter valid credentials")
-            sys.exit(1)
-
-        try:
-            client = CensysIndex(api_id, api_secret)
-            account = client.account()
-            email = account.get("email")
-
-            # Assumes that login was successfully
-            config.set(DEFAULT, "api_id", api_id)
-            config.set(DEFAULT, "api_secret", api_secret)
-
-            write_config(config)
-            print(f"\nSuccessfully authenticated for {email}")
-            sys.exit(0)
-        except CensysUnauthorizedException:
-            print("Failed to authenticate")
-            sys.exit(1)
+    except CensysUnauthorizedException:
+        print("Failed to authenticate")
+        sys.exit(1)
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -683,7 +662,10 @@ def get_parser() -> argparse.ArgumentParser:
         help="format of output",
     )
     search_parser.add_argument(
-        "-o", "--output", type=Path, help="output file path",
+        "-o",
+        "--output",
+        type=Path,
+        help="output file path",
     )
     search_parser.add_argument(
         "--start-page", default=1, type=int, help="page number to start from"

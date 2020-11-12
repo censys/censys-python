@@ -2,7 +2,7 @@
 Exceptions for Censys.
 """
 
-from typing import Optional
+from typing import Optional, Dict, Type
 
 
 class CensysException(Exception):
@@ -14,6 +14,12 @@ class CensysException(Exception):
 class CensysCLIException(CensysException):
     """
     Exception raised when the CLI is passed invalid arguments.
+    """
+
+
+class CensysMissingApiKeyException(CensysException):
+    """
+    Exception raised when there is no provided ASM API key.
     """
 
 
@@ -92,12 +98,6 @@ class CensysJSONDecodeException(CensysSearchException):
     """
 
 
-class CensysMissingApiKeyException(CensysAsmException):
-    """
-    Exception raised when there is no provided ASM API key.
-    """
-
-
 class CensysInvalidRequestException(CensysAsmException):
     """
     Exception raised when the HTTP request is invalid.
@@ -136,7 +136,7 @@ class CensysInvalidSeedDataException(CensysAsmException):
 
 class CensysAssociatedAssetsThresholdWarningException(CensysAsmException):
     """
-    Exception raised when the number of associated assets is within the warning threshold.
+    Exception raised when the associated asset count is within the warning threshold.
     """
 
 
@@ -190,7 +190,7 @@ class CensysInvalidLogbookCursorException(CensysAsmException):
 
 class CensysPageNumberOutOfRangeException(CensysAsmException):
     """
-    Exception raised when the requested page number is out of the range [1 - totalPages].
+    Exception raised when the requested page number is out of range [1 - totalPages].
     """
 
 
@@ -282,3 +282,48 @@ class CensysDomainNotFoundException(CensysAsmException):
     """
     Exception raised when the domain is not found.
     """
+
+
+class CensysExceptionMapper:
+    ASM_EXCEPTIONS: Dict[int, Type[CensysAsmException]] = {
+        10008: CensysInvalidRequestException,
+        10002: CensysInvalidAuthTokenException,
+        10001: CensysInvalidAPIKeyException,
+        10039: CensysTooManyRequestsException,
+        10029: CensysAppDownForMaintenanceException,
+        10007: CensysInvalidSeedDataException,
+        10017: CensysAssociatedAssetsThresholdWarningException,
+        10016: CensysTooManyInputNodesException,
+        10014: CensysSeedNotFoundException,
+        10015: CensysNotASeedException,
+        10013: CensysNeedConfirmationToRemoveParentSeedsException,
+        10012: CensysCannotRemoveNonExistentSeedsException,
+        10011: CensysCannotRemoveNonSeedsException,
+        10038: CensysInvalidSeedTypeException,
+        10040: CensysInvalidLogbookCursorException,
+        10051: CensysPageNumberOutOfRangeException,
+        10050: CensysInvalidPageSizeException,
+        10018: CensysHostNotFoundException,
+        10021: CensysInvalidIPv4AddressException,
+        10054: CensysInvalidCommentException,
+        10055: CensysCommentNotFoundException,
+        10037: CensysInvalidColorException,
+        10025: CensysTagHasTrailingOrLeadingWhitespaceException,
+        10026: CensysTagIsEmptyStringException,
+        10027: CensysTagLabelsDifferOnlyInCasingException,
+        10028: CensysTagLabelTooLongException,
+        10034: CensysTagColorTooLongException,
+        10035: CensysCannotCreateTagWithNewColorException,
+        10036: CensysTagColorHasTrailingOrLeadingWhitespaceException,
+        10020: CensysCertificateNotFoundException,
+        10019: CensysDomainNotFoundException,
+    }
+    """Map of status code to ASM Exception."""
+
+    SEARCH_EXCEPTIONS: Dict[int, Type[CensysSearchException]] = {
+        401: CensysUnauthorizedException,
+        403: CensysUnauthorizedException,
+        404: CensysNotFoundException,
+        429: CensysRateLimitExceededException,
+    }
+    """Map of status code to Search Exception."""

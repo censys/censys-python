@@ -1,6 +1,6 @@
 import unittest
 
-from utils import CensysTestCase
+from tests.utils import CensysTestCase
 
 from censys.exceptions import CensysSearchException
 from censys.ipv4 import CensysIPv4
@@ -33,9 +33,7 @@ class CensysIPv4Tests(CensysTestCase):
         self.assertIn("autonomous_system", res)
 
     def test_search(self):
-        res = list(
-            self._api.search("*", max_records=self.MAX_RECORDS, flatten=False)
-        )
+        res = list(self._api.search("*", max_records=self.MAX_RECORDS, flatten=False))
         self.assertLessEqual(len(res), self.MAX_RECORDS)
         self.assertSetEqual(set(res[0].keys()), self.EXPECTED_SEARCH_KEYS)
 

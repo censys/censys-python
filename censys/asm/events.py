@@ -1,27 +1,32 @@
 """
 Class for interfacing with the Censys Logbook API.
 """
-from typing import Optional, Generator, List
+
+from censys.asm.api import CensysAsmAPI
+
+from typing import Optional, Generator, List, Union
 from datetime import datetime
 
 
-class Events:
+class Events(CensysAsmAPI):
     """
     Events API class
     """
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.base_path = "logbook"
 
     def get_cursor(
-        self, start: Optional[datetime] = None, filters: Optional[List[str]] = None
+        self,
+        start: Optional[Union[datetime, int]] = None,
+        filters: Optional[List[str]] = None,
     ) -> str:
         """
         Requests a logbook cursor.
 
         Args:
-            start (datetime, optional): Seed type ['IP_ADDRESS', 'DOMAIN_NAME', 'CIDR', 'ASN'].
+            start (datetime or int, optional): Timestamp or event ID to begin searching.
             filters (list, optional): List of filters applied to logbook search results.
 
         Returns:
@@ -31,7 +36,7 @@ class Events:
         path = f"{self.base_path}-cursor"
         data = format_data(start=start, filters=filters)
 
-        return self.client._post(path, data=data)["cursor"]
+        return self._post(path, data=data)["cursor"]
 
     def get_events(self, cursor: Optional[str] = None) -> Generator[dict, None, None]:
         """
@@ -46,7 +51,7 @@ class Events:
 
         args = {"cursor": cursor}
 
-        return self.client._get_logbook_page(self.base_path, args)
+        return self._get_logbook_page(self.base_path, args)
 
 
 class Filters:
@@ -73,24 +78,24 @@ class Filters:
 
 
 def format_data(
-    start: Optional[datetime] = None, filters: Optional[str] = None
+    start: Optional[Union[datetime, int]] = None, filters: Optional[List[str]] = None
 ) -> dict:
     """
     Formats cursor request data into a start date/id and filter list
 
     Args:
-        start (datetime, optional): Seed type ['IP_ADDRESS', 'DOMAIN_NAME', 'CIDR', 'ASN'].
+        start (datetime or int, optional): Timestamp or event ID to begin searching.
         filters (list, optional): List of filters applied to logbook search results.
 
     Returns:
         dict: Formatted logbook cursor request data
     """
 
-    data = {}
+    data: dict = {}
 
     if filters:
         data["filter"] = {"type": filters}
-    if type(start) == int:
+    if isinstance(start, int):
         data["idFrom"] = start
     elif start:
         data["dateFrom"] = start

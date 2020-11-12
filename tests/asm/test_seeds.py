@@ -2,8 +2,8 @@ import json
 import unittest
 from unittest.mock import patch
 
-from censys.asm.client import CensysAsmAPI
-from asm.utils import (
+from censys.asm.client import AsmClient
+from tests.asm.utils import (
     CensysAsmTestCase,
     MockResponse,
     TEST_SUCCESS_CODE,
@@ -41,7 +41,7 @@ class SeedsUnitTests(CensysAsmTestCase):
     """
 
     def setUp(self):
-        self.client = CensysAsmAPI()
+        self.client = AsmClient()
 
     @patch("censys.base.requests.Session.get")
     def test_get_seeds(self, mock):

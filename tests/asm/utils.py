@@ -7,7 +7,10 @@ from censys.config import DEFAULT, get_config
 config = get_config()
 api_key = config.get(DEFAULT, "api_key") or os.getenv("CENSYS_ASM_API_KEY")
 
-required_env_asm = pytest.mark.skipif(not api_key, reason="API key not found",)
+required_env_asm = pytest.mark.skipif(
+    not api_key,
+    reason="API key not found",
+)
 
 RESOURCE_PAGING_RESULTS = ["a", "b", "c", "a", "b", "c", "a", "b", "c"]
 TEST_TIMEOUT = 30
@@ -34,7 +37,7 @@ class MockResponse:
         self.status_code = status_code
 
         self.json_data = {
-            resource_type: self.get_resource(),  # Return a unique dummy resource generator
+            resource_type: self.get_resource(),  # Return dummy resource generator
             "pageNumber": 1,
             "totalPages": 3,  # Default to 3 pages of resources
             "cursor": "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MjA3MTJ9",

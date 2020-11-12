@@ -1,35 +1,30 @@
 """
 Base for interacting with the Censys Search API.
 """
+
 import os
-from typing import Dict, Generator, List, Optional, Type
+from typing import Generator, List, Optional, Type
 
 from requests.models import Response
 
 from censys.base import CensysAPIBase
 from censys.config import DEFAULT, get_config
-from censys.exceptions import (CensysException, CensysNotFoundException,
-                               CensysRateLimitExceededException,
-                               CensysSearchException,
-                               CensysUnauthorizedException)
+from censys.exceptions import (
+    CensysException,
+    CensysSearchException,
+    CensysExceptionMapper,
+)
 
 Fields = Optional[List[str]]
 
 
-class CensysIndex(CensysAPIBase):
+class CensysSearchAPI(CensysAPIBase):
     """
     This class is the base class for the Data, Certificate, IPv4, and Website index.
     """
 
     DEFAULT_URL: str = "https://censys.io/api/v1"
     """Default Search API base URL."""
-    EXCEPTIONS: Dict[int, Type[CensysSearchException]] = {
-        401: CensysUnauthorizedException,
-        403: CensysUnauthorizedException,
-        404: CensysNotFoundException,
-        429: CensysRateLimitExceededException,
-    }
-    """Map of status code to Exception."""
     INDEX_NAME: Optional[str] = None
     """Name of Censys Index."""
 
@@ -68,7 +63,9 @@ class CensysIndex(CensysAPIBase):
         self.account()
 
     def _get_exception_class(self, res: Response) -> Type[CensysSearchException]:
-        return self.EXCEPTIONS.get(res.status_code, CensysSearchException)
+        return CensysExceptionMapper.SEARCH_EXCEPTIONS.get(
+            res.status_code, CensysSearchException
+        )
 
     def account(self) -> dict:
         """
@@ -105,7 +102,11 @@ class CensysIndex(CensysAPIBase):
         return self._post(self.search_path, data=data).get("metadata", {})
 
     def paged_search(
-        self, query: str, fields: Fields = None, page: int = 1, flatten: bool = True,
+        self,
+        query: str,
+        fields: Fields = None,
+        page: int = 1,
+        flatten: bool = True,
     ) -> dict:
         """
         Searches the given index for all records that match the given query.
