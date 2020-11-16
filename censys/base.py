@@ -5,7 +5,7 @@ Base for interacting with the Censys API's.
 import os
 import json
 import warnings
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Type, Optional, Callable, List, Any
 from requests.models import Response
 
@@ -70,7 +70,6 @@ class CensysAPIBase(ABC):
             }
         )
 
-    @abstractmethod
     def _get_exception_class(self, res: Response) -> Type[CensysAPIException]:
         """
         Maps HTTP status code or ASM error code to exception.
@@ -82,7 +81,7 @@ class CensysAPIBase(ABC):
         Returns:
             Type[CensysAPIException]: Exception to raise.
         """
-        pass
+        return CensysAPIException
 
     def _make_call(
         self,
