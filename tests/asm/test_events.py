@@ -2,7 +2,7 @@ import json
 import unittest
 from unittest.mock import patch
 
-from tests.asm.utils import (
+from asm.utils import (
     CensysAsmTestCase,
     MockResponse,
     RESOURCE_PAGING_RESULTS,

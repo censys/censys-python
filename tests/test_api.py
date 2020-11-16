@@ -4,7 +4,7 @@ from unittest.mock import patch, mock_open
 import requests_mock
 from requests.models import Response
 
-from tests.utils import CensysTestCase
+from utils import CensysTestCase
 
 from censys.api import CensysSearchAPI
 from censys.exceptions import (

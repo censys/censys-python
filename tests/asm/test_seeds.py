@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch
 
 from censys.asm.client import AsmClient
-from tests.asm.utils import (
+from asm.utils import (
     CensysAsmTestCase,
     MockResponse,
     TEST_SUCCESS_CODE,

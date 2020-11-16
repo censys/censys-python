@@ -1,6 +1,6 @@
 import unittest
 
-from tests.utils import CensysTestCase
+from utils import CensysTestCase
 
 from censys.certificates import CensysCertificates
 

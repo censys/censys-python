@@ -6,7 +6,7 @@ import contextlib
 from io import StringIO
 from unittest.mock import patch, mock_open
 
-from tests.utils import required_env
+from utils import required_env
 
 from censys.cli import main as cli_main
 from censys.cli import CensysHNRI
