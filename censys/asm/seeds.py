@@ -2,8 +2,9 @@
 Class for interfacing with the Censys Seeds API.
 """
 
-from censys.asm.api import CensysAsmAPI
 from typing import Optional
+
+from censys.asm.api import CensysAsmAPI
 
 
 class Seeds(CensysAsmAPI):

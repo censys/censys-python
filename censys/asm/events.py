@@ -2,10 +2,10 @@
 Class for interfacing with the Censys Logbook API.
 """
 
-from censys.asm.api import CensysAsmAPI
-
-from typing import Optional, Generator, List, Union
 from datetime import datetime
+from typing import Generator, List, Optional, Union
+
+from censys.asm.api import CensysAsmAPI
 
 
 class Events(CensysAsmAPI):
