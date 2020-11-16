@@ -5,7 +5,7 @@ import pytest
 from censys.config import DEFAULT, get_config
 
 config = get_config()
-api_key = config.get(DEFAULT, "api_key") or os.getenv("CENSYS_ASM_API_KEY")
+api_key = config.get(DEFAULT, "asm_api_key") or os.getenv("CENSYS_ASM_API_KEY")
 
 required_env_asm = pytest.mark.skipif(
     not api_key,
