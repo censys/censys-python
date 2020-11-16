@@ -749,8 +749,6 @@ def main():
 
     try:
         args.func(args)
-    except Exception as e:
-        print(str(e))
     except AttributeError:
         parser.print_help()
         parser.exit()

@@ -285,6 +285,10 @@ class CensysDomainNotFoundException(CensysAsmException):
 
 
 class CensysExceptionMapper:
+    """
+    Map status code to Exception for the ASM and Search API.
+    """
+
     ASM_EXCEPTIONS: Dict[int, Type[CensysAsmException]] = {
         10008: CensysInvalidRequestException,
         10002: CensysInvalidAuthTokenException,
