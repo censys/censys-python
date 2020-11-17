@@ -150,7 +150,10 @@ class CensysAPISearch:
         return self._write_screen(results_list)
 
     def _combine_fields(
-        self, default_fields: Fields, user_fields: Fields, overwrite: bool = False,
+        self,
+        default_fields: Fields,
+        user_fields: Fields,
+        overwrite: bool = False,
     ) -> Fields:
         """
         This method is used to specify which fields will be returned in the results.
@@ -698,7 +701,10 @@ def get_parser() -> argparse.ArgumentParser:
         help="format of output",
     )
     search_parser.add_argument(
-        "-o", "--output", type=Path, help="output file path",
+        "-o",
+        "--output",
+        type=Path,
+        help="output file path",
     )
     search_parser.add_argument(
         "--start-page", default=1, type=int, help="page number to start from"

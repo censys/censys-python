@@ -41,7 +41,7 @@ class CensysAsmAPI(CensysAPIBase):
         )
 
         if not self._api_key:
-            raise CensysMissingApiKeyException("No API key configured.")
+            raise CensysMissingApiKeyException("No ASM API key configured.")
 
         self._session.headers.update(
             {"Content-Type": "application/json", "Censys-Api-Key": self._api_key}

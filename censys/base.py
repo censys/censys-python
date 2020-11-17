@@ -5,7 +5,6 @@ Base for interacting with the Censys API's.
 import os
 import json
 import warnings
-from abc import ABC
 from typing import Type, Optional, Callable, List, Any
 from requests.models import Response
 
@@ -21,7 +20,7 @@ from censys.exceptions import (
 Fields = Optional[List[str]]
 
 
-class CensysAPIBase(ABC):
+class CensysAPIBase:
     """
     This is the base class for API queries.
 

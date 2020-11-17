@@ -64,9 +64,10 @@ class CensysAsmException(CensysAPIException):
     """
 
     def __repr__(self):
-        return "%i (Error Code: %i), %s" % (
+        return "%i (Error Code: %i), %s. %s" % (
             self.status_code,
             self.error_code,
+            self.message,
             self.details,
         )
 
