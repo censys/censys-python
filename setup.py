@@ -42,6 +42,7 @@ setup(
             "pytest-cov",
             "requests-mock",
             "mypy",
+            "backoff-stubs",
             "twine",
             "parameterized",
         ],

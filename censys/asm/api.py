@@ -46,7 +46,9 @@ class CensysAsmAPI(CensysAPIBase):
             {"Content-Type": "application/json", "Censys-Api-Key": self._api_key}
         )
 
-    def _get_exception_class(self, res: Response) -> Type[CensysAsmException]:
+    def _get_exception_class(  # type: ignore
+        self, res: Response
+    ) -> Type[CensysAsmException]:
         return CensysExceptionMapper.ASM_EXCEPTIONS.get(
             res.json()["errorCode"], CensysAsmException
         )

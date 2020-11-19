@@ -62,7 +62,9 @@ class CensysSearchAPI(CensysAPIBase):
         # Confirm setup
         self.account()
 
-    def _get_exception_class(self, res: Response) -> Type[CensysSearchException]:
+    def _get_exception_class(  # type: ignore
+        self, res: Response
+    ) -> Type[CensysSearchException]:
         return CensysExceptionMapper.SEARCH_EXCEPTIONS.get(
             res.status_code, CensysSearchException
         )
@@ -102,11 +104,7 @@ class CensysSearchAPI(CensysAPIBase):
         return self._post(self.search_path, data=data).get("metadata", {})
 
     def paged_search(
-        self,
-        query: str,
-        fields: Fields = None,
-        page: int = 1,
-        flatten: bool = True,
+        self, query: str, fields: Fields = None, page: int = 1, flatten: bool = True,
     ) -> dict:
         """
         Searches the given index for all records that match the given query.

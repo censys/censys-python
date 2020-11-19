@@ -5,21 +5,19 @@ Base for interacting with the Censys API's.
 import os
 import json
 import warnings
-from typing import Type, Optional, Callable, List, Any
-from requests.models import Response
 from functools import wraps
+from typing import Any, Callable, List, Optional, Type
 
+import backoff
 import requests
-import backoff  # type: ignore
+from requests.models import Response
 
-from censys import __name__ as NAME, __version__ as VERSION
-from censys.exceptions import (
-    CensysException,
-    CensysAPIException,
-    CensysJSONDecodeException,
-    CensysTooManyRequestsException,
-    CensysRateLimitExceededException,
-)
+from censys import __name__ as NAME
+from censys import __version__ as VERSION
+from censys.exceptions import (CensysAPIException, CensysException,
+                               CensysJSONDecodeException,
+                               CensysRateLimitExceededException,
+                               CensysTooManyRequestsException)
 
 Fields = Optional[List[str]]
 
@@ -30,10 +28,7 @@ def _backoff_wrapper(method: Callable):
     def _wrapper(self, *args, **kwargs):
         @backoff.on_exception(
             backoff.expo,
-            (
-                CensysRateLimitExceededException,
-                CensysTooManyRequestsException,
-            ),
+            (CensysRateLimitExceededException, CensysTooManyRequestsException,),
             max_tries=self.max_retries,
         )
         def _impl():

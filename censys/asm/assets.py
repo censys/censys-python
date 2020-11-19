@@ -50,10 +50,7 @@ class Assets(CensysAsmAPI):
         return self._get(path)
 
     def get_comments(
-        self,
-        asset_id: str,
-        page_number: int = 1,
-        page_size: Optional[int] = None,
+        self, asset_id: str, page_number: int = 1, page_size: Optional[int] = None,
     ) -> Generator[dict, None, None]:
         """
         Requests comments on a specified asset.

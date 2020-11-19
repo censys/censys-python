@@ -3,7 +3,6 @@ from unittest.mock import patch, mock_open
 
 import requests_mock
 from requests.models import Response
-
 from parameterized import parameterized
 
 from utils import CensysTestCase
