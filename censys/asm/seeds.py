@@ -12,8 +12,8 @@ class Seeds(CensysAsmAPI):
     Seeds API class
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, api_key: Optional[str] = None, **kwargs):
+        CensysAsmAPI.__init__(self, api_key, **kwargs)
         self.base_path = "seeds"
 
     def get_seeds(self, seed_type: Optional[str] = None) -> dict:

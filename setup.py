@@ -33,7 +33,7 @@ setup(
     packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
     include_package_data=True,
     zip_safe=False,
-    install_requires=["requests"],
+    install_requires=["requests", "backoff"],
     extras_require={
         "dev": [
             "flake8",

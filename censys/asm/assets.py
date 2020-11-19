@@ -12,8 +12,8 @@ class Assets(CensysAsmAPI):
     Assets API class
     """
 
-    def __init__(self, asset_type, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, asset_type, api_key: Optional[str] = None, **kwargs):
+        CensysAsmAPI.__init__(self, api_key, **kwargs)
         self.base_path = f"assets/{asset_type}"
 
     def get_assets(

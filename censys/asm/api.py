@@ -25,10 +25,9 @@ class CensysAsmAPI(CensysAPIBase):
     DEFAULT_URL: str = "https://app.censys.io/api/v1"
     """Default ASM API base URL."""
 
-    def __init__(
-        self, api_key: Optional[str] = None, url: Optional[str] = DEFAULT_URL, **kwargs
-    ):
-        CensysAPIBase.__init__(self, url, **kwargs)
+    def __init__(self, api_key: Optional[str] = None, **kwargs):
+        url = kwargs.pop("url", self.DEFAULT_URL)
+        CensysAPIBase.__init__(self, url=url, **kwargs)
 
         # Gets config file
         config = get_config()

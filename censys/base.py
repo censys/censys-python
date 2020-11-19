@@ -7,17 +7,41 @@ import json
 import warnings
 from typing import Type, Optional, Callable, List, Any
 from requests.models import Response
+from functools import wraps
 
 import requests
+import backoff  # type: ignore
 
 from censys import __name__ as NAME, __version__ as VERSION
 from censys.exceptions import (
     CensysException,
     CensysAPIException,
     CensysJSONDecodeException,
+    CensysTooManyRequestsException,
+    CensysRateLimitExceededException,
 )
 
 Fields = Optional[List[str]]
+
+
+# Wrapper to make max_retries configurable at runtime
+def _backoff_wrapper(method: Callable):
+    @wraps(method)
+    def _wrapper(self, *args, **kwargs):
+        @backoff.on_exception(
+            backoff.expo,
+            (
+                CensysRateLimitExceededException,
+                CensysTooManyRequestsException,
+            ),
+            max_tries=self.max_retries,
+        )
+        def _impl():
+            return method(self, *args, *kwargs)
+
+        return _impl()
+
+    return _wrapper
 
 
 class CensysAPIBase:
@@ -38,10 +62,13 @@ class CensysAPIBase:
     """Default API timeout."""
     DEFAULT_USER_AGENT: str = "%s/%s" % (NAME, VERSION)
     """Default API user agent."""
+    DEFAULT_MAX_RETRIES: int = 10
+    """Default max number of API retries."""
 
     def __init__(self, url: Optional[str] = None, **kwargs):
         # Get common request settings
         self.timeout = kwargs.get("timeout") or self.DEFAULT_TIMEOUT
+        self.max_retries = kwargs.get("max_retries") or self.DEFAULT_MAX_RETRIES
         self._api_url = url or os.getenv("CENSYS_API_URL")
 
         if not self._api_url:
@@ -83,6 +110,7 @@ class CensysAPIBase:
         """
         return CensysAPIException
 
+    @_backoff_wrapper
     def _make_call(
         self,
         method: Callable,

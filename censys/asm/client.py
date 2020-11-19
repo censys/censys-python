@@ -14,9 +14,9 @@ class AsmClient:
     Client for interacting with the Censys Seeds, Assets, and Events API's.
     """
 
-    def __init__(self, api_key: Optional[str] = None):
-        self.seeds = Seeds(api_key=api_key)
-        self.hosts = Assets("hosts", api_key=api_key)
-        self.certificates = Assets("certificates", api_key=api_key)
-        self.domains = Assets("domains", api_key=api_key)
-        self.events = Events(api_key=api_key)
+    def __init__(self, api_key: Optional[str] = None, **kwargs):
+        self.seeds = Seeds(api_key, **kwargs)
+        self.hosts = Assets("hosts", api_key, **kwargs)
+        self.certificates = Assets("certificates", api_key, **kwargs)
+        self.domains = Assets("domains", api_key, **kwargs)
+        self.events = Events(api_key, **kwargs)
