@@ -14,10 +14,13 @@ from requests.models import Response
 
 from censys import __name__ as NAME
 from censys import __version__ as VERSION
-from censys.exceptions import (CensysAPIException, CensysException,
-                               CensysJSONDecodeException,
-                               CensysRateLimitExceededException,
-                               CensysTooManyRequestsException)
+from censys.exceptions import (
+    CensysAPIException,
+    CensysException,
+    CensysJSONDecodeException,
+    CensysRateLimitExceededException,
+    CensysTooManyRequestsException,
+)
 
 Fields = Optional[List[str]]
 
@@ -28,7 +31,10 @@ def _backoff_wrapper(method: Callable):
     def _wrapper(self, *args, **kwargs):
         @backoff.on_exception(
             backoff.expo,
-            (CensysRateLimitExceededException, CensysTooManyRequestsException,),
+            (
+                CensysRateLimitExceededException,
+                CensysTooManyRequestsException,
+            ),
             max_tries=self.max_retries,
         )
         def _impl():
