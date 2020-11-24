@@ -2,7 +2,7 @@ import unittest
 
 from utils import CensysTestCase
 
-from censys.exceptions import CensysAPIException
+from censys.exceptions import CensysSearchException
 from censys.ipv4 import CensysIPv4
 
 
@@ -33,9 +33,7 @@ class CensysIPv4Tests(CensysTestCase):
         self.assertIn("autonomous_system", res)
 
     def test_search(self):
-        res = list(
-            self._api.search("*", max_records=self.MAX_RECORDS, flatten=False)
-        )
+        res = list(self._api.search("*", max_records=self.MAX_RECORDS, flatten=False))
         self.assertLessEqual(len(res), self.MAX_RECORDS)
         self.assertSetEqual(set(res[0].keys()), self.EXPECTED_SEARCH_KEYS)
 
@@ -56,11 +54,11 @@ class CensysIPv4Tests(CensysTestCase):
         self.assertLessEqual(len(res), self.MAX_RECORDS)
 
     def test_empty_search(self):
-        with self.assertRaises(CensysAPIException):
+        with self.assertRaises(CensysSearchException):
             self._api._post("search/ipv4", data={"query1": "query"})
 
     def test_beyond_max_pages(self):
-        with self.assertRaises(CensysAPIException):
+        with self.assertRaises(CensysSearchException):
             list(self._api.search("*", page=250))
 
     def test_bad_page_search(self):
@@ -68,7 +66,7 @@ class CensysIPv4Tests(CensysTestCase):
             list(self._api.search("*", page="x", max_records=self.MAX_RECORDS))
 
     def test_bad_fields_search(self):
-        with self.assertRaises(CensysAPIException):
+        with self.assertRaises(CensysSearchException):
             list(self._api.search("*", fields="test", max_records=self.MAX_RECORDS))
 
     def test_report(self):

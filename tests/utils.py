@@ -11,11 +11,13 @@ api_secret = config.get(DEFAULT, "api_secret") or os.getenv("CENSYS_API_SECRET")
 
 
 required_env = pytest.mark.skipif(
-    not (api_id and api_secret), reason="API credentials not found",
+    not (api_id and api_secret),
+    reason="API credentials not found",
 )
 
 permissions_env = pytest.mark.skipif(
-    not os.getenv("PERMISSIONS"), reason="(optional) enterprise permissions required",
+    not os.getenv("PERMISSIONS"),
+    reason="(optional) enterprise permissions required",
 )
 
 

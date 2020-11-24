@@ -18,6 +18,7 @@ default_config = {
     "version": __version__,
     "api_id": "",
     "api_secret": "",
+    "asm_api_key": "",
 }
 
 

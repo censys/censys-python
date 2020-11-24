@@ -16,6 +16,7 @@ Welcome to Censys Python's documentation!
    quick-start
    usage
    advanced-usage
+   asm-usage
    cli
    censys
    development

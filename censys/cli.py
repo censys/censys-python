@@ -14,7 +14,8 @@ from typing import Union, Optional, List, Tuple
 
 import requests
 
-from censys.base import CensysAPIBase
+from censys.api import CensysSearchAPI
+from censys.asm.client import AsmClient
 from censys.config import get_config, write_config, DEFAULT
 from censys.ipv4 import CensysIPv4
 from censys.websites import CensysWebsites
@@ -149,7 +150,10 @@ class CensysAPISearch:
         return self._write_screen(results_list)
 
     def _combine_fields(
-        self, default_fields: Fields, user_fields: Fields, overwrite: bool = False,
+        self,
+        default_fields: Fields,
+        user_fields: Fields,
+        overwrite: bool = False,
     ) -> Fields:
         """
         This method is used to specify which fields will be returned in the results.
@@ -557,7 +561,7 @@ def cli_config(_):  # pragma: no cover
         sys.exit(1)
 
     try:
-        client = CensysAPIBase(api_id, api_secret)
+        client = CensysSearchAPI(api_id, api_secret)
         account = client.account()
         email = account.get("email")
 
@@ -567,6 +571,44 @@ def cli_config(_):  # pragma: no cover
 
         write_config(config)
         print(f"\nSuccessfully authenticated for {email}")
+        sys.exit(0)
+    except CensysUnauthorizedException:
+        print("Failed to authenticate")
+        sys.exit(1)
+
+
+def cli_asm_config(_):  # pragma: no cover
+    """
+    config asm subcommand.
+
+    Args:
+        _: Argparse Namespace.
+    """
+
+    api_key_prompt = "Censys ASM API Key"
+
+    config = get_config()
+    api_key = config.get(DEFAULT, "asm_api_key")
+
+    if api_key:
+        key_len = len(api_key) - 4
+        redacted_api_key = api_key.replace(api_key[:key_len], key_len * "*")
+        api_key_prompt = f"{api_key_prompt} [{redacted_api_key}]"
+
+    api_key = input(api_key_prompt + ": ").strip() or api_key
+
+    if not api_key:
+        print("Please enter valid credentials")
+        sys.exit(1)
+
+    try:
+        AsmClient(api_key)
+
+        # Assumes that login was successfully
+        config.set(DEFAULT, "asm_api_key", api_key)
+
+        write_config(config)
+        print("\nSuccessfully authenticated")
         sys.exit(0)
     except CensysUnauthorizedException:
         print("Failed to authenticate")
@@ -659,7 +701,10 @@ def get_parser() -> argparse.ArgumentParser:
         help="format of output",
     )
     search_parser.add_argument(
-        "-o", "--output", type=Path, help="output file path",
+        "-o",
+        "--output",
+        type=Path,
+        help="output file path",
     )
     search_parser.add_argument(
         "--start-page", default=1, type=int, help="page number to start from"
@@ -688,6 +733,14 @@ def get_parser() -> argparse.ArgumentParser:
         help="configure Censys API settings",
     )
     config_parser.set_defaults(func=cli_config)
+
+    # ASM Config Args
+    asm_config_parser = subparsers.add_parser(
+        "config-asm",
+        description="Configure Censys ASM API Settings",
+        help="configure Censys ASM API settings",
+    )
+    asm_config_parser.set_defaults(func=cli_asm_config)
 
     return parser
 

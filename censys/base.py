@@ -1,83 +1,81 @@
 """
-Base for interacting with the Censys Search API.
+Base for interacting with the Censys API's.
 """
-# pylint: disable=too-many-arguments
 
 import os
 import json
 import warnings
-from typing import Type, Optional, Callable, Dict, List, Generator, Any
+from functools import wraps
+from typing import Any, Callable, List, Optional, Type
 
+import backoff
 import requests
+from requests.models import Response
 
-from censys import __name__ as NAME, __version__ as VERSION
-from censys.config import get_config, DEFAULT
+from censys import __name__ as NAME
+from censys import __version__ as VERSION
 from censys.exceptions import (
-    CensysException,
     CensysAPIException,
-    CensysRateLimitExceededException,
-    CensysNotFoundException,
-    CensysUnauthorizedException,
+    CensysException,
     CensysJSONDecodeException,
+    CensysRateLimitExceededException,
+    CensysTooManyRequestsException,
 )
 
 Fields = Optional[List[str]]
 
 
+# Wrapper to make max_retries configurable at runtime
+def _backoff_wrapper(method: Callable):
+    @wraps(method)
+    def _wrapper(self, *args, **kwargs):
+        @backoff.on_exception(
+            backoff.expo,
+            (
+                CensysRateLimitExceededException,
+                CensysTooManyRequestsException,
+            ),
+            max_tries=self.max_retries,
+        )
+        def _impl():
+            return method(self, *args, *kwargs)
+
+        return _impl()
+
+    return _wrapper
+
+
 class CensysAPIBase:
     """
-    This class is the base for API queries.
+    This is the base class for API queries.
 
     Args:
-        api_id (str, optional): The API ID provided by Censys.
-        api_secret (str, optional): The API secret provided by Censys.
         url (str, optional): The URL to make API requests.
         timeout (int, optional): Timeout for API requests in seconds.
         user_agent (str, optional): Override User-Agent string.
         proxies (dict, optional): Configure HTTP proxies.
 
     Raises:
-        CensysAPIException: Base Exception Class for the Censys API.
+        CensysException: Base Exception Class for the Censys API.
     """
 
-    DEFAULT_URL: str = "https://censys.io/api/v1"
-    """Default API base URL."""
     DEFAULT_TIMEOUT: int = 30
     """Default API timeout."""
     DEFAULT_USER_AGENT: str = "%s/%s" % (NAME, VERSION)
     """Default API user agent."""
-    EXCEPTIONS: Dict[int, Type[CensysAPIException]] = {
-        401: CensysUnauthorizedException,
-        403: CensysUnauthorizedException,
-        404: CensysNotFoundException,
-        429: CensysRateLimitExceededException,
-    }
-    """Map of status code to Exception."""
+    DEFAULT_MAX_RETRIES: int = 10
+    """Default max number of API retries."""
 
-    def __init__(
-        self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
-    ):
-        # Gets config file
-        config = get_config()
-
-        # Try to get credentials
-        self._api_id = (
-            api_id or os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id")
-        )
-        self._api_secret = (
-            api_secret
-            or os.getenv("CENSYS_API_SECRET")
-            or config.get(DEFAULT, "api_secret")
-        )
-        if not self._api_id or not self._api_secret:
-            raise CensysException("No API ID or API secret configured.")
-
+    def __init__(self, url: Optional[str] = None, **kwargs):
+        # Get common request settings
         self.timeout = kwargs.get("timeout") or self.DEFAULT_TIMEOUT
-        self._api_url = (
-            kwargs.get("url") or os.getenv("CENSYS_API_URL") or self.DEFAULT_URL
-        )
+        self.max_retries = kwargs.get("max_retries") or self.DEFAULT_MAX_RETRIES
+        self._api_url = url or os.getenv("CENSYS_API_URL")
 
-        # Create a session and sets credentials
+        if not self._api_url:
+            raise CensysException("No API url configured.")
+
+        # Create a session and set credentials
         self._session = requests.Session()
         proxies = kwargs.get("proxies")
         if proxies:
@@ -85,7 +83,6 @@ class CensysAPIBase:
                 warnings.warn("HTTP proxies will not be used.")
                 proxies.pop("http", None)
             self._session.proxies = proxies
-        self._session.auth = (self._api_id, self._api_secret)
         self._session.headers.update(
             {
                 "accept": "application/json, */8",
@@ -100,21 +97,21 @@ class CensysAPIBase:
             }
         )
 
-        # Confirm setup
-        self.account()
-
-    def _get_exception_class(self, status_code: int) -> Type[CensysAPIException]:
-        """Maps HTTP status code to exception.
+    @staticmethod
+    def _get_exception_class(res: Response) -> Type[CensysAPIException]:
+        """
+        Maps HTTP status code or ASM error code to exception.
+        Must be implemented by child class.
 
         Args:
-            status_code (int): HTTP status code.
+            res (Response): HTTP requests response object.
 
         Returns:
             Type[CensysAPIException]: Exception to raise.
         """
+        return CensysAPIException
 
-        return self.EXCEPTIONS.get(status_code, CensysAPIException)
-
+    @_backoff_wrapper
     def _make_call(
         self,
         method: Callable,
@@ -136,13 +133,13 @@ class CensysAPIBase:
             CensysJSONDecodeException: The response is not valid JSON.
 
         Returns:
-            dict: Search results from an API query.
+            dict: Results from an API request.
         """
 
         if endpoint.startswith("/"):
-            url = "".join((self._api_url, endpoint))
+            url = f"{self._api_url}{endpoint}"
         else:
-            url = "/".join((self._api_url, endpoint))
+            url = f"{self._api_url}/{endpoint}"
 
         request_kwargs = {
             "params": args or {},
@@ -156,11 +153,19 @@ class CensysAPIBase:
         res = method(url, **request_kwargs)
 
         if res.status_code == 200:
-            return res.json()
+            # Check for a returned json body
+            try:
+                return res.json()
+            # Successful request returned no json body in response
+            except ValueError:
+                return {}
 
         try:
-            message = res.json()["error"]
-            const = res.json().get("error_type", None)
+            json_data = res.json()
+            message = json_data.get("error") or json_data["message"]
+            const = json_data.get("error_type", None)
+            error_code = json_data.get("errorCode", None)
+            details = json_data.get("details", None)
         except (ValueError, json.decoder.JSONDecodeError) as error:  # pragma: no cover
             message = (
                 f"Response from {res.url} is not valid JSON and cannot be decoded."
@@ -174,164 +179,33 @@ class CensysAPIBase:
         except KeyError:  # pragma: no cover
             message = None
             const = "unknown"
-        censys_exception = self._get_exception_class(res.status_code)
+            details = "unknown"
+            error_code = "unknown"
+
+        censys_exception = self._get_exception_class(res)
         raise censys_exception(
-            status_code=res.status_code, message=message, body=res.text, const=const,
+            status_code=res.status_code,
+            body=res.text,
+            const=const,
+            message=message,
+            error_code=error_code,
+            details=details,
         )
 
     def _get(self, endpoint: str, args: Optional[dict] = None) -> dict:
         return self._make_call(self._session.get, endpoint, args)
 
-    def _post(self, endpoint: str, args: Optional[dict] = None, data=None) -> dict:
+    def _post(
+        self, endpoint: str, args: Optional[dict] = None, data: Optional[dict] = None
+    ) -> dict:
         return self._make_call(self._session.post, endpoint, args, data)
+
+    def _put(
+        self, endpoint: str, args: Optional[dict] = None, data: Optional[dict] = None
+    ) -> dict:
+        return self._make_call(
+            self._session.put, endpoint, args, data
+        )  # pragma: no cover
 
     def _delete(self, endpoint: str, args: Optional[dict] = None) -> dict:
         return self._make_call(self._session.delete, endpoint, args)  # pragma: no cover
-
-    def account(self) -> dict:
-        """
-        Gets the current account information. Including email and quota.
-
-        Returns:
-            dict: Account response.
-        """
-
-        return self._get("account")
-
-    def quota(self) -> dict:
-        """
-        Gets the current account's query quota.
-
-        Returns:
-            dict: Quota response.
-        """
-
-        return self.account()["quota"]
-
-
-class CensysIndex(CensysAPIBase):
-    """
-    This class is the base class for the Data, Certificate, IPv4, and Website index.
-    """
-
-    INDEX_NAME: Optional[str] = None
-    """Name of Censys Index."""
-
-    def __init__(self, *args, **kwargs):
-        CensysAPIBase.__init__(self, *args, **kwargs)
-        # Generate concrete paths to be called
-        self.search_path = f"search/{self.INDEX_NAME}"
-        self.view_path = f"view/{self.INDEX_NAME}"
-        self.report_path = f"report/{self.INDEX_NAME}"
-
-    def metadata(self, query: str) -> dict:
-        """
-        Returns metadata of a given search query.
-
-        Args:
-            query (str): The query to be executed.
-
-        Returns:
-            dict: The metadata of the result set returned.
-        """
-
-        data = {"query": query, "page": 1, "fields": []}
-        return self._post(self.search_path, data=data).get("metadata", {})
-
-    def paged_search(
-        self, query: str, fields: Fields = None, page: int = 1, flatten: bool = True,
-    ) -> dict:
-        """
-        Searches the given index for all records that match the given query.
-
-        Args:
-            query (str): The query to be executed.
-            fields (Fields, optional): Fields to be returned in the result set.
-            page (int, optional): The page of the result set. Defaults to 1.
-            flatten (bool, optional): Flattens fields to dot notation. Defaults to True.
-
-        Returns:
-            dict: The result set returned.
-        """
-
-        page = int(page)
-        data = {
-            "query": query,
-            "page": page,
-            "fields": fields or [],
-            "flatten": flatten,
-        }
-        return self._post(self.search_path, data=data)
-
-    def search(
-        self,
-        query: str,
-        fields: Fields = None,
-        page: int = 1,
-        max_records: Optional[int] = None,
-        flatten: bool = True,
-    ) -> Generator[dict, None, None]:
-        """
-        Searches the given index for all records that match the given query.
-        For more details, see our documentation: https://censys.io/api/v1/docs/search
-
-        Args:
-            query (str): The query to be executed.
-            fields (Fields, optional): Fields to be returned in the result set.
-            page (int, optional): The page of the result set. Defaults to 1.
-            max_records (Optional[int], optional): The maximum number of records.
-            flatten (bool, optional): Flattens fields to dot notation. Defaults to True.
-
-        Yields:
-            dict: The result set returned.
-        """
-
-        if fields is None:
-            fields = []
-        page = int(page)
-        pages = float("inf")
-        data = {"query": query, "page": page, "fields": fields, "flatten": flatten}
-
-        count = 0
-        while page <= pages:
-            payload = self._post(self.search_path, data=data)
-            pages = payload["metadata"]["pages"]
-            page += 1
-            data["page"] = page
-
-            for result in payload["results"]:
-                yield result
-                count += 1
-                if max_records and count >= max_records:
-                    return
-
-    def view(self, document_id: str) -> dict:
-        """
-        View the current structured data we have on a specific document.
-        For more details, see our documentation: https://censys.io/api/v1/docs/view
-
-        Args:
-            document_id (str): The ID of the document you are requesting.
-
-        Returns:
-            dict: The result set returned.
-        """
-
-        return self._get("/".join((self.view_path, document_id)))
-
-    def report(self, query: str, field: str, buckets: int = 50) -> dict:
-        """
-        Creates a report on the breakdown of the values of a field in a result set.
-        For more details, see our documentation: https://censys.io/api/v1/docs/report
-
-        Args:
-            query (str): The query to be executed.
-            field (str): The field you are running a breakdown on.
-            buckets (int, optional): The maximum number of values. Defaults to 50.
-
-        Returns:
-            dict: The result set returned.
-        """
-
-        data = {"query": query, "field": field, "buckets": int(buckets)}
-        return self._post(self.report_path, data=data)

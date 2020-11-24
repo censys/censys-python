@@ -21,15 +21,14 @@ Configure your credentials:
 
 .. tabs::
 
-   .. tab:: with CLI
+   .. tab:: Search API
 
       .. prompt:: bash
 
          censys config
 
-   .. tab:: with environment variables
+   .. tab:: ASM API
 
       .. prompt:: bash
       
-         export CENSYS_API_ID="XXX"
-         export CENSYS_API_SECRET="XXX"
+         censys config-asm

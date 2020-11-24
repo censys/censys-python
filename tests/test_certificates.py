@@ -36,9 +36,7 @@ class CensysCertificatesTests(CensysTestCase):
         self.assertIn(self.CERT_SHA, res)
 
     def test_report(self):
-        res = self._api.report(
-            "*", "parsed.issuer.organizational_unit", buckets=10
-        )
+        res = self._api.report("*", "parsed.issuer.organizational_unit", buckets=10)
         results = res.get("results")
         self.assertEqual(len(results), 10)
 

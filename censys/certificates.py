@@ -4,10 +4,10 @@ Interact with the Censys Search Certificate API.
 
 from typing import List
 
-from censys.base import CensysIndex
+from censys.api import CensysSearchAPI
 
 
-class CensysCertificates(CensysIndex):
+class CensysCertificates(CensysSearchAPI):
     """
     Interacts with the Certificates index.
     """
@@ -18,7 +18,7 @@ class CensysCertificates(CensysIndex):
     """Max number of bulk requests."""
 
     def __init__(self, *args, **kwargs):
-        CensysIndex.__init__(self, *args, **kwargs)
+        CensysSearchAPI.__init__(self, *args, **kwargs)
         self.bulk_path = f"/bulk/{self.INDEX_NAME}"
 
     def bulk(self, fingerprints: List[str]) -> dict:

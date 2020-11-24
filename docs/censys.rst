@@ -1,6 +1,25 @@
 API Reference
 =============
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   censys.asm
+
+Submodules
+----------
+
+censys.api module
+-----------------
+
+.. automodule:: censys.api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 censys.base module
 ------------------
 
