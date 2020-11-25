@@ -1,5 +1,5 @@
 """
-Base for interacting with the Censys Search API.
+Base for interacting with the Censys ASM API.
 """
 # pylint: disable=too-many-arguments
 import os

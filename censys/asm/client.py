@@ -11,7 +11,7 @@ from censys.asm.events import Events
 
 class AsmClient:
     """
-    Client for interacting with the Censys Seeds, Assets, and Events API's.
+    Class for interacting with the Censys Seeds, Assets, and Events API's.
     """
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
