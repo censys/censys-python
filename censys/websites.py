@@ -7,7 +7,7 @@ from censys.api import CensysSearchAPI
 
 class CensysWebsites(CensysSearchAPI):
     """
-    Interacts with the IPv4 index.
+    Interacts with the Websites index.
     """
 
     INDEX_NAME = "websites"

@@ -1,5 +1,5 @@
 """
-Client for interacting with the Censys ASM API.
+Interact with the Censys Seeds, Assets, and Logbook APIs.
 """
 
 from typing import Optional
@@ -11,7 +11,7 @@ from censys.asm.events import Events
 
 class AsmClient:
     """
-    Client for interacting with the Censys Seeds, Assets, and Events API's.
+    Client ASM API class.
     """
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):

@@ -11,10 +11,6 @@ There are three API options that this library provides access to:
 
 More details about each option can be found in the Censys ASM API documentation: https://app.censys.io/api-docs. Users can also test example requests from the API documentation page.
 
-.. note::
-
-        In the following documentation, ``API_KEY`` is a placeholder for the actual API key found on the Admin page in your ASM account. The ``API_KEY`` can either be passed in as the first parameter to each class object, or configured via the CLI tool. More information about credentials is available in :ref:`quick-start:Quick Start`.
-
 Python class objects can be used individually, but must be initialized for each resource type (Seeds, Assets, and Events).
 
 -  ``Seeds()``
