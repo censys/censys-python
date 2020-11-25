@@ -1,5 +1,5 @@
 """
-Class for interfacing with the Censys Assets API.
+Interact with the Censys Assets API.
 """
 
 from typing import Generator, Optional
