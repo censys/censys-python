@@ -729,8 +729,8 @@ def get_parser() -> argparse.ArgumentParser:
     # Config Specific Args
     config_parser = subparsers.add_parser(
         "config",
-        description="Configure Censys API Settings",
-        help="configure Censys API settings",
+        description="Configure Censys search API Settings",
+        help="configure Censys search API settings",
     )
     config_parser.set_defaults(func=cli_config)
 

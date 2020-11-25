@@ -1,5 +1,5 @@
 """
-Class for interfacing with the Censys Seeds API.
+Interact with the Censys Seeds API.
 """
 
 from typing import Optional

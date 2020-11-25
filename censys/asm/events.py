@@ -1,5 +1,5 @@
 """
-Class for interfacing with the Censys Logbook API.
+Interact with the Censys Logbook API.
 """
 
 from datetime import datetime
