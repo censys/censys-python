@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: bug
+labels: 'type: bug'
 assignees: ''
 
 ---
@@ -20,7 +20,7 @@ A clear and concise description of what you expected to happen.
 
 **Device (please complete the following information):**
  - OS [e.g. macOS]:
- - Censys Python Version [e.g. 1.0.1]:
+ - Censys Python Version [e.g. 1.1.0]:
  - Shell [e.g. bash, zsh]:
 
 **Additional context**
