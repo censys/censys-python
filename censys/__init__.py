@@ -8,4 +8,4 @@ __copyright__ = "Copyright 2020 Censys, Inc."
 __version__ = "1.1.0"
 __license__ = "Apache License, Version 2.0"
 
-__all__ = ["certificates", "data", "exceptions", "ipv4", "websites"]
+__all__ = ["asm", "certificates", "data", "exceptions", "ipv4", "websites"]
