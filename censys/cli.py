@@ -31,6 +31,7 @@ Results = List[dict]
 Index = Union[CensysIPv4, CensysWebsites, CensysCertificates]
 
 
+# TODO: Breakout into cli/
 class CensysAPISearch:
     """
     This class searches the Censys API, taking in options from the command line and
