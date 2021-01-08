@@ -22,3 +22,4 @@ Welcome to Censys Python's documentation!
    development
    testing
    contributing
+   GitHub Repo <https://github.com/censys/censys-python>
