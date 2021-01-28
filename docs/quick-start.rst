@@ -17,6 +17,12 @@ Assuming you have Python already, install the package:
 
          pip install git+https://github.com/censys/censys-python@main
 
+   .. tab:: from Kali Linux
+
+      .. prompt:: bash
+
+         sudo apt install python3-censys
+
 Configure your credentials:
 
 .. tabs::
