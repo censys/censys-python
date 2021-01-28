@@ -98,13 +98,13 @@ class CensysAPIBase:
         )
 
     @staticmethod
-    def _get_exception_class(res: Response) -> Type[CensysAPIException]:
+    def _get_exception_class(_: Response) -> Type[CensysAPIException]:
         """
         Maps HTTP status code or ASM error code to exception.
         Must be implemented by child class.
 
         Args:
-            res (Response): HTTP requests response object.
+            _ (Response): HTTP requests response object.
 
         Returns:
             Type[CensysAPIException]: Exception to raise.
