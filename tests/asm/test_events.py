@@ -19,6 +19,7 @@ EVENTS_CURSOR_URL = f"{BASE_URL}/logbook-cursor"
 EVENTS_RESOURCE_TYPE = "events"
 
 TEST_CURSOR = "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MH0"
+TEST_NEXT_CURSOR = "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MjA3MTJ9"
 TEST_START_DATE = "2020-10-29T19:26:34.371Z"
 TEST_START_ID = 20712
 
@@ -108,8 +109,11 @@ class EventsUnitTests(CensysAsmTestCase):
         res = [event for event in events]
 
         self.assertEqual(RESOURCE_PAGING_RESULTS, res)
-        mock.assert_called_with(
+        mock.assert_any_call(
             EVENTS_URL, params={"cursor": None}, timeout=TEST_TIMEOUT
+        )
+        mock.assert_any_call(
+            EVENTS_URL, params={"cursor": TEST_NEXT_CURSOR}, timeout=TEST_TIMEOUT
         )
 
     @patch("censys.base.requests.Session.get")
@@ -119,8 +123,11 @@ class EventsUnitTests(CensysAsmTestCase):
         res = [event for event in events]
 
         self.assertEqual(RESOURCE_PAGING_RESULTS, res)
-        mock.assert_called_with(
+        mock.assert_any_call(
             EVENTS_URL, params={"cursor": TEST_CURSOR}, timeout=TEST_TIMEOUT
+        )
+        mock.assert_any_call(
+            EVENTS_URL, params={"cursor": TEST_NEXT_CURSOR}, timeout=TEST_TIMEOUT
         )
 
 

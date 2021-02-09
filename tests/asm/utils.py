@@ -40,7 +40,8 @@ class MockResponse:
             resource_type: self.get_resource(),  # Return dummy resource generator
             "pageNumber": 1,
             "totalPages": 3,  # Default to 3 pages of resources
-            "cursor": "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MjA3MTJ9",
+            "nextCursor": "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MjA3MTJ9",
+            "cursor": "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MH0",
             "endOfEvents": False,
         }
 

@@ -40,7 +40,7 @@ class Events(CensysAsmAPI):
 
     def get_events(self, cursor: Optional[str] = None) -> Generator[dict, None, None]:
         """
-        Requests a logbook cursor.
+        Requests logbook events from inception or from the provided cursor.
 
         Args:
             cursor (str, optional): Logbook cursor.
