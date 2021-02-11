@@ -103,6 +103,7 @@ class CensysAsmAPI(CensysAPIBase):
         while not end_of_events:
             res = self._get(path, args=args)
             end_of_events = res["endOfEvents"]
+            args = {"cursor": res["nextCursor"]}
 
             for event in res["events"]:
                 yield event
