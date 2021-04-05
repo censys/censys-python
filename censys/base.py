@@ -154,7 +154,9 @@ class CensysAPIBase:
         if res.status_code == 200:
             # Check for a returned json body
             try:
-                return res.json()
+                json_data = res.json()
+                if "error" not in json_data:
+                    return json_data
             # Successful request returned no json body in response
             except ValueError:
                 return {}
