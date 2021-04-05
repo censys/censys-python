@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from configparser import ConfigParser, NoOptionError
 
-from censys import __version__
+from .version import __version__
 
 DEFAULT = "DEFAULT"
 

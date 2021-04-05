@@ -12,9 +12,8 @@ import backoff
 import requests
 from requests.models import Response
 
-from censys import __name__ as NAME
-from censys import __version__ as VERSION
-from censys.exceptions import (
+from .version import __version__ as VERSION
+from .exceptions import (
     CensysAPIException,
     CensysException,
     CensysJSONDecodeException,
@@ -61,7 +60,7 @@ class CensysAPIBase:
 
     DEFAULT_TIMEOUT: int = 30
     """Default API timeout."""
-    DEFAULT_USER_AGENT: str = "%s/%s" % (NAME, VERSION)
+    DEFAULT_USER_AGENT: str = f"censys/{VERSION}"
     """Default API user agent."""
     DEFAULT_MAX_RETRIES: int = 10
     """Default max number of API retries."""
