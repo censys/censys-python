@@ -189,7 +189,7 @@ class CensysCliSearchTest(unittest.TestCase):
             "censys",
             "search",
             "--query",
-            "censys.io",
+            "domain: censys.io AND ports: 443",
             "--index-type",
             "websites",
             "--fields",

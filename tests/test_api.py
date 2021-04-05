@@ -130,7 +130,7 @@ class CensysAsmAPITests(CensysTestCase):
     ]
 
     @parameterized.expand(AsmExceptionParams)
-    @patch("tests.test_api.Response.json")
+    @patch("requests.models.Response.json")
     def test_get_exception_class(self, status_code, exception, mock):
         response = Response()
         mock.return_value = {"errorCode": status_code}
