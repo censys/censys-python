@@ -4,9 +4,9 @@ Interact with the Censys Seeds, Assets, and Logbook APIs.
 
 from typing import Optional
 
-from censys.asm.seeds import Seeds
-from censys.asm.assets import Certificates, Domains, Hosts
-from censys.asm.events import Events
+from .seeds import Seeds
+from .assets import Certificates, Domains, Hosts
+from .events import Events
 
 
 class AsmClient:

@@ -4,7 +4,7 @@ Interact with the Censys Assets API.
 
 from typing import Generator, Optional
 
-from censys.asm.api import CensysAsmAPI
+from ..api import CensysAsmAPI
 
 
 class Assets(CensysAsmAPI):

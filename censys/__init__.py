@@ -2,11 +2,11 @@
 An easy-to-use and lightweight API wrapper for the Censys Search Engine (censys.io).
 """
 from .asm import *
-from .certificates import *
-from .data import *
+from .v1.certificates import *
+from .v1.data import *
 from .exceptions import *
-from .ipv4 import *
-from .websites import *
+from .v1.ipv4 import *
+from .v1.websites import *
 from .version import __version__
 
 __author__ = "Censys Team"

@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from parameterized import parameterized
 
-from asm.utils import (
+from .utils import (
     BASE_URL,
     RESOURCE_PAGING_RESULTS,
     TEST_SUCCESS_CODE,

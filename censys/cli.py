@@ -14,13 +14,13 @@ from typing import Union, Optional, List, Tuple
 
 import requests
 
-from censys.api import CensysSearchAPI
-from censys.asm.client import AsmClient
-from censys.config import get_config, write_config, DEFAULT
-from censys.ipv4 import CensysIPv4
-from censys.websites import CensysWebsites
-from censys.certificates import CensysCertificates
-from censys.exceptions import (
+from .v1.api import CensysSearchAPIv1
+from .asm.client import AsmClient
+from .config import get_config, write_config, DEFAULT
+from .v1.ipv4 import CensysIPv4
+from .v1.websites import CensysWebsites
+from .v1.certificates import CensysCertificates
+from .exceptions import (
     CensysCLIException,
     CensysNotFoundException,
     CensysUnauthorizedException,
@@ -562,7 +562,7 @@ def cli_config(_):  # pragma: no cover
         sys.exit(1)
 
     try:
-        client = CensysSearchAPI(api_id, api_secret)
+        client = CensysSearchAPIv1(api_id, api_secret)
         account = client.account()
         email = account.get("email")
 

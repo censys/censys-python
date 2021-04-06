@@ -6,7 +6,7 @@ import contextlib
 from io import StringIO
 from unittest.mock import patch, mock_open
 
-from utils import required_env
+from .utils import required_env
 
 from censys.cli import main as cli_main
 from censys.cli import CensysHNRI
@@ -303,7 +303,7 @@ class CensysCliHNRITest(unittest.TestCase):
     )
     @patch("censys.cli.CensysHNRI.get_current_ip", lambda _: "8.8.8.8")
     @patch(
-        "censys.ipv4.CensysIPv4.view",
+        "censys.v1.ipv4.CensysIPv4.view",
         lambda _, ip: {"protocols": ["443/https", "53/dns", "21/banner"]},
     )
     def test_hnri_medium(self):
@@ -322,7 +322,7 @@ class CensysCliHNRITest(unittest.TestCase):
         ["censys", "hnri"],
     )
     @patch("censys.cli.CensysHNRI.get_current_ip", lambda _: "94.142.241.111")
-    @patch("censys.ipv4.CensysIPv4.view", lambda _, ip: {"protocols": ["23/telnet"]})
+    @patch("censys.v1.ipv4.CensysIPv4.view", lambda _, ip: {"protocols": ["23/telnet"]})
     def test_hnri_high(self):
         # Using towel.blinkenlights.nl/94.142.241.111
         temp_stdout = StringIO()
@@ -338,7 +338,7 @@ class CensysCliHNRITest(unittest.TestCase):
         "argparse._sys.argv",
         ["censys", "hnri"],
     )
-    @patch("censys.ipv4.CensysIPv4.view", lambda _, ip: {"protocols": ["23/telnet"]})
+    @patch("censys.v1.ipv4.CensysIPv4.view", lambda _, ip: {"protocols": ["23/telnet"]})
     def test_hnri_no_medium(self):
         temp_stdout = StringIO()
         with contextlib.redirect_stdout(temp_stdout):
@@ -356,7 +356,7 @@ class CensysCliHNRITest(unittest.TestCase):
     )
     @patch("censys.cli.CensysHNRI.get_current_ip", lambda _: "8.8.8.8")
     @patch(
-        "censys.ipv4.CensysIPv4.view",
+        "censys.v1.ipv4.CensysIPv4.view",
         side_effect=CensysNotFoundException(
             404, "The requested record does not exist."
         ),

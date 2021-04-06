@@ -4,7 +4,7 @@ Interact with the Censys Seeds API.
 
 from typing import Optional
 
-from censys.asm.api import CensysAsmAPI
+from .api import CensysAsmAPI
 
 
 class Seeds(CensysAsmAPI):

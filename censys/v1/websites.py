@@ -2,10 +2,10 @@
 Interact with the Censys Search Website API.
 """
 
-from censys.api import CensysSearchAPI
+from .api import CensysSearchAPIv1
 
 
-class CensysWebsites(CensysSearchAPI):
+class CensysWebsites(CensysSearchAPIv1):
     """
     Interacts with the Websites index.
     """

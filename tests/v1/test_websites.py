@@ -1,8 +1,8 @@
 import unittest
 
-from utils import CensysTestCase
+from ..utils import CensysTestCase
 
-from censys.websites import CensysWebsites
+from censys.v1.websites import CensysWebsites
 
 
 class CensysWebsitesTests(CensysTestCase):

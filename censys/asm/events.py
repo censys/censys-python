@@ -5,7 +5,7 @@ Interact with the Censys Logbook API.
 from datetime import datetime
 from typing import Generator, List, Optional, Union
 
-from censys.asm.api import CensysAsmAPI
+from .api import CensysAsmAPI
 
 
 class Events(CensysAsmAPI):

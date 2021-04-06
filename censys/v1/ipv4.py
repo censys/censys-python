@@ -2,10 +2,10 @@
 Interact with the Censys Search IPv4 API.
 """
 
-from censys.api import CensysSearchAPI
+from .api import CensysSearchAPIv1
 
 
-class CensysIPv4(CensysSearchAPI):
+class CensysIPv4(CensysSearchAPIv1):
     """
     Interacts with the IPv4 index.
     """

@@ -1,9 +1,9 @@
 import unittest
 
-from utils import CensysTestCase
+from ..utils import CensysTestCase
 
 from censys.exceptions import CensysSearchException
-from censys.ipv4 import CensysIPv4
+from censys.v1.ipv4 import CensysIPv4
 
 
 class CensysIPv4Tests(CensysTestCase):
