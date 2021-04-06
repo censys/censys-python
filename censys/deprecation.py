@@ -1,12 +1,13 @@
-import warnings
 import functools
+import warnings
+from typing import Callable
 
 
 class DeprecationDecorator:
-    def __init__(self, message=None):
+    def __init__(self, message: str = None):
         self.message = message
 
-    def __call__(self, func):
+    def __call__(self, func: Callable):
         @functools.wraps(func)
         def new_func(*args, **kwargs):
             warnings.simplefilter("always", DeprecationWarning)

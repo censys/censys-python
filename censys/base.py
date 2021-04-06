@@ -33,8 +33,10 @@ def _backoff_wrapper(method: Callable):
             (
                 CensysRateLimitExceededException,
                 CensysTooManyRequestsException,
+                requests.exceptions.Timeout,
             ),
             max_tries=self.max_retries,
+            max_time=30,
         )
         def _impl():
             return method(self, *args, *kwargs)
