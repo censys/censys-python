@@ -6,7 +6,4 @@ from .v1 import *
 from .exceptions import *
 from .version import __version__
 
-__author__ = "Censys Team"
-__email__ = "support@censys.io"
-__copyright__ = "Copyright 2020 Censys, Inc."
-__license__ = "Apache License, Version 2.0"
+__copyright__ = "Copyright 2021 Censys, Inc."
