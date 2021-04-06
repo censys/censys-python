@@ -165,10 +165,10 @@ class CensysAPIBase:
 
         try:
             json_data = res.json()
-            message = json_data.get("error") or json_data["message"]
-            const = json_data.get("error_type", None)
-            error_code = json_data.get("errorCode", None)
-            details = json_data.get("details", None)
+            message = json_data.get("error") or json_data.get("message")
+            const = json_data.get("error_type", "unknown")
+            error_code = json_data.get("errorCode", "unknown")
+            details = json_data.get("details", "unknown")
         except (ValueError, json.decoder.JSONDecodeError) as error:  # pragma: no cover
             message = (
                 f"Response from {res.url} is not valid JSON and cannot be decoded."
@@ -179,11 +179,6 @@ class CensysAPIBase:
                 body=res.text,
                 const="badjson",
             ) from error
-        except KeyError:  # pragma: no cover
-            message = None
-            const = "unknown"
-            details = "unknown"
-            error_code = "unknown"
 
         censys_exception = self._get_exception_class(res)
         raise censys_exception(
