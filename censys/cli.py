@@ -17,14 +17,13 @@ import requests
 from .v1.api import CensysSearchAPIv1
 from .asm.client import AsmClient
 from .config import get_config, write_config, DEFAULT
-from .v1.ipv4 import CensysIPv4
-from .v1.websites import CensysWebsites
-from .v1.certificates import CensysCertificates
+from .v1 import CensysIPv4, CensysWebsites, CensysCertificates
 from .exceptions import (
     CensysCLIException,
     CensysNotFoundException,
     CensysUnauthorizedException,
 )
+from .version import __version__
 
 Fields = List[str]
 Results = List[dict]
@@ -643,6 +642,13 @@ def get_parser() -> argparse.ArgumentParser:
     )
 
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="store_true",
+        default=False,
+        help="display version",
+    )
     parser.set_defaults()
     subparsers = parser.add_subparsers()
 
@@ -753,6 +759,10 @@ def main():
 
     # Executes by subcommand
     args = parser.parse_args()
+
+    if args.version:
+        print(f"Censys Python Version: {__version__}")
+        sys.exit(0)
 
     try:
         args.func(args)
