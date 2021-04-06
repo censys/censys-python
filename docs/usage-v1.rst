@@ -1,5 +1,5 @@
-Usage
-=====
+Usage v1
+========
 
 The Censys Search API provides functionality for interacting with Censys resources such as IPv4 addresses, Websites, and Certificates, and for viewing Account information such as query quota.
 
@@ -27,9 +27,9 @@ Below we show an example using the ``CensysIPv4`` index.
 
 .. code:: python
 
-    import censys.ipv4
+    from censys import CensysIPv4
 
-    c = censys.ipv4.CensysIPv4()
+    c = CensysIPv4()
 
     for page in c.search(
         "443.https.get.headers.server: Apache AND location.country: Japan", 
@@ -66,9 +66,9 @@ Below we show an example using the ``CensysCertificates`` index.
 
 .. code:: python
 
-    import censys.certificates
+    from censys import CensysCertificates
 
-    c = censys.certificates.CensysCertificates()
+    c = CensysCertificates()
 
     # View specific certificate
     cert = c.view("a762bf68f167f6fbdf2ab00fdefeb8b96f91335ad6b483b482dfd42c179be076")
@@ -81,9 +81,9 @@ Below we show an example using the ``CensysWebsites`` index.
 
 .. code:: python
 
-    import censys.websites
+    from censys import CensysWebsites
 
-    c = censys.websites.CensysWebsites()
+    c = CensysWebsites()
 
     # The report method constructs a report using a query, an aggregation field, and the
     # number of buckets to bin.
@@ -101,9 +101,9 @@ Below we show an example using the ``CensysData`` index.
 
 .. code:: python
 
-    import censys.data
+    from censys import CensysData
 
-    c = censys.data.CensysData()
+    c = CensysData()
 
     # View a specific result from a specific series
     result = c.view_result("ipv4_2018", "20200818")
@@ -116,9 +116,9 @@ Below we show an example using the ``CensysIPv4`` index.
 
 .. code:: python
 
-    import censys.ipv4
+    from censys import CensysIPv4
 
-    c = censys.ipv4.CensysIPv4()
+    c = CensysIPv4()
 
     # Gets account data
     account = c.account()
@@ -137,9 +137,9 @@ Below we show an example using the ``CensysCertificates`` index.
 
 .. code:: python
 
-    import censys.certificates
+    from censys import CensysCertificates
 
-    c = censys.certificates.CensysCertificates()
+    c = CensysCertificates()
 
     fingerprints = [
         "fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70",

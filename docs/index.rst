@@ -14,7 +14,7 @@ Welcome to Censys Python's documentation!
    :caption: Table of Contents
 
    quick-start
-   usage
+   usage-v1
    advanced-usage
    asm-usage
    cli
