@@ -1,3 +1,7 @@
+"""
+Interact with the Censys Domain Assets API.
+"""
+
 from .assets import Assets
 
 

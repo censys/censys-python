@@ -1,3 +1,7 @@
+"""
+Interact with the Censys Certificate Assets API.
+"""
+
 from .assets import Assets
 
 
