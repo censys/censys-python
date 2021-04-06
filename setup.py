@@ -48,6 +48,7 @@ setup(
             "backoff-stubs",
             "twine",
             "parameterized",
+            "pylint",
         ],
         "docs": ["sphinx"],
     },
