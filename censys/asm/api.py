@@ -85,8 +85,11 @@ class CensysAsmAPI(CensysAPIBase):
             elif "subdomains" in path:
                 keyword = "subdomains"
 
-            for asset in res[keyword]:
-                yield asset
+            try:
+                for asset in res[keyword]:
+                    yield asset
+            except KeyError:
+                CensysException("Bad JSON response from server")
 
     def _get_logbook_page(
         self, path: str, args: Optional[dict] = None

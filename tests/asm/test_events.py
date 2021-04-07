@@ -3,7 +3,6 @@ import unittest
 from unittest.mock import patch
 
 from .utils import (
-    CensysAsmTestCase,
     MockResponse,
     RESOURCE_PAGING_RESULTS,
     TEST_SUCCESS_CODE,
@@ -24,7 +23,7 @@ TEST_START_DATE = "2020-10-29T19:26:34.371Z"
 TEST_START_ID = 20712
 
 
-class EventsUnitTests(CensysAsmTestCase):
+class EventsUnitTests(unittest.TestCase):
     """
     Unit tests for Events API
     """
