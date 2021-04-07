@@ -1,26 +1,7 @@
-import os
-import unittest
-import pytest
-
-from censys.config import DEFAULT, get_config
-
-config = get_config()
-api_key = config.get(DEFAULT, "asm_api_key") or os.getenv("CENSYS_ASM_API_KEY")
-
-required_env_asm = pytest.mark.skipif(
-    not api_key,
-    reason="API key not found",
-)
-
 RESOURCE_PAGING_RESULTS = ["a", "b", "c", "a", "b", "c", "a", "b", "c"]
 TEST_TIMEOUT = 30
 TEST_SUCCESS_CODE = 200
 BASE_URL = "https://app.censys.io/api/v1"
-
-
-@required_env_asm
-class CensysAsmTestCase(unittest.TestCase):
-    pass
 
 
 class MockResponse:

@@ -1,8 +1,8 @@
 import unittest
 
-from utils import CensysTestCase, permissions_env
+from ..utils import CensysTestCase, permissions_env
 
-from censys.data import CensysData
+from censys.v1.data import CensysData
 
 
 class CensysDataTest(CensysTestCase):

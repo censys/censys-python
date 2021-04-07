@@ -12,9 +12,8 @@ import backoff
 import requests
 from requests.models import Response
 
-from censys import __name__ as NAME
-from censys import __version__ as VERSION
-from censys.exceptions import (
+from .version import __version__ as VERSION
+from .exceptions import (
     CensysAPIException,
     CensysException,
     CensysJSONDecodeException,
@@ -34,8 +33,10 @@ def _backoff_wrapper(method: Callable):
             (
                 CensysRateLimitExceededException,
                 CensysTooManyRequestsException,
+                requests.exceptions.Timeout,
             ),
             max_tries=self.max_retries,
+            max_time=30,
         )
         def _impl():
             return method(self, *args, *kwargs)
@@ -61,7 +62,7 @@ class CensysAPIBase:
 
     DEFAULT_TIMEOUT: int = 30
     """Default API timeout."""
-    DEFAULT_USER_AGENT: str = "%s/%s" % (NAME, VERSION)
+    DEFAULT_USER_AGENT: str = f"censys/{VERSION}"
     """Default API user agent."""
     DEFAULT_MAX_RETRIES: int = 10
     """Default max number of API retries."""
@@ -155,17 +156,19 @@ class CensysAPIBase:
         if res.status_code == 200:
             # Check for a returned json body
             try:
-                return res.json()
+                json_data = res.json()
+                if "error" not in json_data:
+                    return json_data
             # Successful request returned no json body in response
             except ValueError:
                 return {}
 
         try:
             json_data = res.json()
-            message = json_data.get("error") or json_data["message"]
-            const = json_data.get("error_type", None)
-            error_code = json_data.get("errorCode", None)
-            details = json_data.get("details", None)
+            message = json_data.get("error") or json_data.get("message")
+            const = json_data.get("error_type", "unknown")
+            error_code = json_data.get("errorCode", "unknown")
+            details = json_data.get("details", "unknown")
         except (ValueError, json.decoder.JSONDecodeError) as error:  # pragma: no cover
             message = (
                 f"Response from {res.url} is not valid JSON and cannot be decoded."
@@ -176,11 +179,6 @@ class CensysAPIBase:
                 body=res.text,
                 const="badjson",
             ) from error
-        except KeyError:  # pragma: no cover
-            message = None
-            const = "unknown"
-            details = "unknown"
-            error_code = "unknown"
 
         censys_exception = self._get_exception_class(res)
         raise censys_exception(

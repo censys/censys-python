@@ -2,17 +2,20 @@ import io
 import os
 from setuptools import setup, find_packages
 
-import censys
-
 NAME = "censys"
-DESCRIPTION = censys.__doc__.strip()
+DESCRIPTION = "An easy-to-use and lightweight API wrapper for the Censys Search Engine (censys.io)."
 GIT_URL = "https://github.com/censys/censys-python"
 ISSUE_URL = GIT_URL + "/issues"
 DOC_URL = "https://censys-python.rtfd.io"
 
+here = os.path.abspath(os.path.dirname(__file__))
+
+pkg_vars = {}
+
+with open(os.path.join(here, NAME, "version.py")) as fp:
+    exec(fp.read(), pkg_vars)
 
 try:
-    here = os.path.abspath(os.path.dirname(__file__))
     with io.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
         long_description = "\n" + f.read()
 except FileNotFoundError:
@@ -20,13 +23,13 @@ except FileNotFoundError:
 
 setup(
     name=NAME,
-    version=censys.__version__,
+    version=pkg_vars["__version__"],
     description=DESCRIPTION,
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author=censys.__author__,
-    author_email=censys.__email__,
-    license=censys.__license__,
+    author="Censys Team",
+    author_email="support@censys.io",
+    license="Apache License, Version 2.0",
     url=GIT_URL,
     keywords=NAME,
     python_requires=">=3.6.0",
@@ -45,6 +48,7 @@ setup(
             "backoff-stubs",
             "twine",
             "parameterized",
+            "pylint",
         ],
         "docs": ["sphinx"],
     },

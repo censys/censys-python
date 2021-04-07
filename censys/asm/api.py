@@ -8,7 +8,7 @@ from math import inf
 from typing import Generator, Type, Optional
 from requests.models import Response
 from censys.exceptions import (
-    CensysMissingApiKeyException,
+    CensysException,
     CensysAsmException,
     CensysExceptionMapper,
 )
@@ -40,7 +40,7 @@ class CensysAsmAPI(CensysAPIBase):
         )
 
         if not self._api_key:
-            raise CensysMissingApiKeyException("No ASM API key configured.")
+            raise CensysException("No ASM API key configured.")
 
         self._session.headers.update(
             {"Content-Type": "application/json", "Censys-Api-Key": self._api_key}
@@ -50,7 +50,7 @@ class CensysAsmAPI(CensysAPIBase):
         self, res: Response
     ) -> Type[CensysAsmException]:
         return CensysExceptionMapper.ASM_EXCEPTIONS.get(
-            res.json()["errorCode"], CensysAsmException
+            res.json().get("errorCode"), CensysAsmException
         )
 
     def _get_page(
@@ -77,12 +77,19 @@ class CensysAsmAPI(CensysAPIBase):
             page_number = int(res["pageNumber"]) + 1
             total_pages = int(res["totalPages"])
 
+            keyword = "assets"
             if "comments" in path:
-                for comment in res["comments"]:
-                    yield comment
-            else:
-                for asset in res["assets"]:
+                keyword = "comments"
+            elif "tags" in path:
+                keyword = "tags"
+            elif "subdomains" in path:
+                keyword = "subdomains"
+
+            try:
+                for asset in res[keyword]:
                     yield asset
+            except KeyError:
+                CensysException("Bad JSON response from server")
 
     def _get_logbook_page(
         self, path: str, args: Optional[dict] = None

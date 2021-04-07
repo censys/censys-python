@@ -7,18 +7,19 @@ from typing import Generator, List, Optional, Type
 
 from requests.models import Response
 
-from censys.base import CensysAPIBase
-from censys.config import DEFAULT, get_config
-from censys.exceptions import (
+from ..base import CensysAPIBase
+from ..config import DEFAULT, get_config
+from ..exceptions import (
     CensysException,
     CensysSearchException,
     CensysExceptionMapper,
 )
+from ..deprecation import DeprecationDecorator
 
 Fields = Optional[List[str]]
 
 
-class CensysSearchAPI(CensysAPIBase):
+class CensysSearchAPIv1(CensysAPIBase):
     """
     This class is the base class for the Data, Certificate, IPv4, and Website index.
     """
@@ -28,24 +29,29 @@ class CensysSearchAPI(CensysAPIBase):
     INDEX_NAME: Optional[str] = None
     """Name of Censys Index."""
 
-    def __init__(
-        self,
-        api_id: Optional[str] = None,
-        api_secret: Optional[str] = None,
-        url: Optional[str] = DEFAULT_URL,
-        **kwargs,
-    ):
-        CensysAPIBase.__init__(self, url, **kwargs)
+    # TODO: Update language
+    @DeprecationDecorator(
+        "v1 API will be deprecated soon. For more details please visit INSERT_LINK"
+    )
+    def __init__(self, *args, **kwargs):
+        # Backwards compatability
+        if len(args) == 2:
+            kwargs["api_id"] = args[0]
+            kwargs["api_secret"] = args[1]
+
+        CensysAPIBase.__init__(self, kwargs.get("url", self.DEFAULT_URL), **kwargs)
 
         # Gets config file
         config = get_config()
 
         # Try to get credentials
         self._api_id = (
-            api_id or os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id")
+            kwargs.get("api_id")
+            or os.getenv("CENSYS_API_ID")
+            or config.get(DEFAULT, "api_id")
         )
         self._api_secret = (
-            api_secret
+            kwargs.get("api_secret")
             or os.getenv("CENSYS_API_SECRET")
             or config.get(DEFAULT, "api_secret")
         )
@@ -104,11 +110,7 @@ class CensysSearchAPI(CensysAPIBase):
         return self._post(self.search_path, data=data).get("metadata", {})
 
     def paged_search(
-        self,
-        query: str,
-        fields: Fields = None,
-        page: int = 1,
-        flatten: bool = True,
+        self, query: str, fields: Fields = None, page: int = 1, flatten: bool = True,
     ) -> dict:
         """
         Searches the given index for all records that match the given query.
@@ -205,3 +207,6 @@ class CensysSearchAPI(CensysAPIBase):
 
         data = {"query": query, "field": field, "buckets": int(buckets)}
         return self._post(self.report_path, data=data)
+
+
+CensysSearchAPI = CensysSearchAPIv1

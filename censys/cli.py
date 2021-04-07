@@ -14,17 +14,16 @@ from typing import Union, Optional, List, Tuple
 
 import requests
 
-from censys.api import CensysSearchAPI
-from censys.asm.client import AsmClient
-from censys.config import get_config, write_config, DEFAULT
-from censys.ipv4 import CensysIPv4
-from censys.websites import CensysWebsites
-from censys.certificates import CensysCertificates
-from censys.exceptions import (
+from .v1.api import CensysSearchAPIv1
+from .asm.client import AsmClient
+from .config import get_config, write_config, DEFAULT
+from .v1 import CensysIPv4, CensysWebsites, CensysCertificates
+from .exceptions import (
     CensysCLIException,
     CensysNotFoundException,
     CensysUnauthorizedException,
 )
+from .version import __version__
 
 Fields = List[str]
 Results = List[dict]
@@ -562,7 +561,7 @@ def cli_config(_):  # pragma: no cover
         sys.exit(1)
 
     try:
-        client = CensysSearchAPI(api_id, api_secret)
+        client = CensysSearchAPIv1(api_id, api_secret)
         account = client.account()
         email = account.get("email")
 
@@ -643,6 +642,13 @@ def get_parser() -> argparse.ArgumentParser:
     )
 
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="store_true",
+        default=False,
+        help="display version",
+    )
     parser.set_defaults()
     subparsers = parser.add_subparsers()
 
@@ -753,6 +759,10 @@ def main():
 
     # Executes by subcommand
     args = parser.parse_args()
+
+    if args.version:
+        print(f"Censys Python Version: {__version__}")
+        sys.exit(0)
 
     try:
         args.func(args)

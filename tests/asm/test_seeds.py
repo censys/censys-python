@@ -3,8 +3,7 @@ import unittest
 from unittest.mock import patch
 
 from censys.asm.client import AsmClient
-from asm.utils import (
-    CensysAsmTestCase,
+from .utils import (
     MockResponse,
     TEST_SUCCESS_CODE,
     TEST_TIMEOUT,
@@ -35,7 +34,7 @@ TEST_SEED_LIST_NO_LABEL = [
 ]
 
 
-class SeedsUnitTests(CensysAsmTestCase):
+class SeedsUnitTests(unittest.TestCase):
     """
     Unit tests for Seeds API
     """

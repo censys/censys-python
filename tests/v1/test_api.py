@@ -5,10 +5,10 @@ import requests_mock
 from requests.models import Response
 from parameterized import parameterized
 
-from utils import CensysTestCase
+from ..utils import CensysTestCase
 
 from censys.base import CensysAPIBase
-from censys.api import CensysSearchAPI
+from censys.v1.api import CensysSearchAPI
 from censys.asm.api import CensysAsmAPI
 from censys.exceptions import (
     CensysException,
@@ -130,7 +130,7 @@ class CensysAsmAPITests(CensysTestCase):
     ]
 
     @parameterized.expand(AsmExceptionParams)
-    @patch("tests.test_api.Response.json")
+    @patch("requests.models.Response.json")
     def test_get_exception_class(self, status_code, exception, mock):
         response = Response()
         mock.return_value = {"errorCode": status_code}

@@ -17,12 +17,6 @@ class CensysCLIException(CensysException):
     """
 
 
-class CensysMissingApiKeyException(CensysException):
-    """
-    Exception raised when there is no provided ASM API key.
-    """
-
-
 class CensysAPIException(CensysException):
     """
     Base Exception for Censys API's.
@@ -72,6 +66,12 @@ class CensysAsmException(CensysAPIException):
         )
 
     __str__ = __repr__
+
+
+class CensysMissingApiKeyException(CensysAsmException):
+    """
+    Exception raised when there is no provided ASM API key.
+    """
 
 
 class CensysRateLimitExceededException(CensysSearchException):
@@ -285,43 +285,79 @@ class CensysDomainNotFoundException(CensysAsmException):
     """
 
 
+class CensysInvalidCloudAssetDataException(CensysAsmException):
+    """
+    Exception raised when invalid cloud asset data is submitted.
+    """
+
+
+class CensysInvalidObjectStorageAssetIdentifierException(CensysAsmException):
+    """
+    Exception raised when object storage name is not a valid object storage asset URL.
+    """
+
+
+class CensysInvalidObjectStorageAssetNotFoundException(CensysAsmException):
+    """
+    Exception raised when no object storage assets with given URL were found.
+    """
+
+
+class CensysBadJSONBodyException(CensysAsmException):
+    """
+    Exception raised when a bad JSON string is in the body.
+    """
+
+
+class CensysRiskNotFoundException(CensysAsmException):
+    """
+    Exception raised when no risks are found with given risk_id.
+    """
+
+
 class CensysExceptionMapper:
     """
     Map status code to Exception for the ASM and Search API.
     """
 
     ASM_EXCEPTIONS: Dict[int, Type[CensysAsmException]] = {
-        10008: CensysInvalidRequestException,
-        10002: CensysInvalidAuthTokenException,
+        10000: CensysMissingApiKeyException,
         10001: CensysInvalidAPIKeyException,
-        10039: CensysTooManyRequestsException,
-        10029: CensysAppDownForMaintenanceException,
+        10002: CensysInvalidAuthTokenException,
         10007: CensysInvalidSeedDataException,
-        10017: CensysAssociatedAssetsThresholdWarningException,
-        10016: CensysTooManyInputNodesException,
+        10008: CensysInvalidRequestException,
+        10011: CensysCannotRemoveNonSeedsException,
+        10012: CensysCannotRemoveNonExistentSeedsException,
+        10013: CensysNeedConfirmationToRemoveParentSeedsException,
         10014: CensysSeedNotFoundException,
         10015: CensysNotASeedException,
-        10013: CensysNeedConfirmationToRemoveParentSeedsException,
-        10012: CensysCannotRemoveNonExistentSeedsException,
-        10011: CensysCannotRemoveNonSeedsException,
-        10038: CensysInvalidSeedTypeException,
-        10040: CensysInvalidLogbookCursorException,
-        10051: CensysPageNumberOutOfRangeException,
-        10050: CensysInvalidPageSizeException,
+        10016: CensysTooManyInputNodesException,
+        10017: CensysAssociatedAssetsThresholdWarningException,
         10018: CensysHostNotFoundException,
+        10019: CensysDomainNotFoundException,
+        10020: CensysCertificateNotFoundException,
         10021: CensysInvalidIPv4AddressException,
-        10054: CensysInvalidCommentException,
-        10055: CensysCommentNotFoundException,
-        10037: CensysInvalidColorException,
         10025: CensysTagHasTrailingOrLeadingWhitespaceException,
         10026: CensysTagIsEmptyStringException,
         10027: CensysTagLabelsDifferOnlyInCasingException,
         10028: CensysTagLabelTooLongException,
+        10029: CensysAppDownForMaintenanceException,
         10034: CensysTagColorTooLongException,
         10035: CensysCannotCreateTagWithNewColorException,
         10036: CensysTagColorHasTrailingOrLeadingWhitespaceException,
-        10020: CensysCertificateNotFoundException,
-        10019: CensysDomainNotFoundException,
+        10037: CensysInvalidColorException,
+        10038: CensysInvalidSeedTypeException,
+        10039: CensysTooManyRequestsException,
+        10040: CensysInvalidLogbookCursorException,
+        10050: CensysInvalidPageSizeException,
+        10051: CensysPageNumberOutOfRangeException,
+        10054: CensysInvalidCommentException,
+        10055: CensysCommentNotFoundException,
+        10059: CensysInvalidCloudAssetDataException,
+        10060: CensysInvalidObjectStorageAssetIdentifierException,
+        10061: CensysInvalidObjectStorageAssetNotFoundException,
+        10067: CensysBadJSONBodyException,
+        10073: CensysRiskNotFoundException,
     }
     """Map of status code to ASM Exception."""
 

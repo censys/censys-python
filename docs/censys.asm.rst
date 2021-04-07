@@ -1,6 +1,14 @@
 censys.asm package
 ==================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   censys.asm.assets
+
 Submodules
 ----------
 
@@ -8,14 +16,6 @@ censys.asm.api module
 ---------------------
 
 .. automodule:: censys.asm.api
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-censys.asm.assets module
-------------------------
-
-.. automodule:: censys.asm.assets
    :members:
    :undoc-members:
    :show-inheritance:

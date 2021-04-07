@@ -4,12 +4,11 @@ from unittest.mock import patch
 
 from parameterized import parameterized
 
-from asm.utils import (
+from .utils import (
     BASE_URL,
     RESOURCE_PAGING_RESULTS,
     TEST_SUCCESS_CODE,
     TEST_TIMEOUT,
-    CensysAsmTestCase,
     MockResponse,
 )
 
@@ -33,7 +32,7 @@ TEST_TAG_NAME = "asset-test-tag"
 TEST_TAG_COLOR = "#4287f5"
 
 
-class AssetsUnitTest(CensysAsmTestCase):
+class AssetsUnitTest(unittest.TestCase):
     """
     Unit tests for Host, Certificate, and Domain API's
     """
