@@ -151,7 +151,7 @@ class CensysSearchAPIv1(CensysAPIBase):
             query (str): The query to be executed.
             fields (Fields, optional): Fields to be returned in the result set.
             page (int, optional): The page of the result set. Defaults to 1.
-            max_records (Optional[int], optional): The maximum number of records.
+            max_records (int, optional): The maximum number of records.
             flatten (bool, optional): Flattens fields to dot notation. Defaults to True.
 
         Yields:

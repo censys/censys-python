@@ -53,6 +53,7 @@ class CensysAPIBase:
     Args:
         url (str, optional): The URL to make API requests.
         timeout (int, optional): Timeout for API requests in seconds.
+        max_retries (int, optional): Max number of times to retry failed API requests.
         user_agent (str, optional): Override User-Agent string.
         proxies (dict, optional): Configure HTTP proxies.
 
