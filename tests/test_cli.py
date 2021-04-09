@@ -43,7 +43,7 @@ class CensysCliTest(unittest.TestCase):
         self.assertIn("search,hnri,config,config-asm", stdout)
 
     @patch("argparse._sys.argv", ["censys", "-v"])
-    def test_default_help(self):
+    def test_version(self):
         temp_stdout = StringIO()
         with contextlib.redirect_stdout(temp_stdout):
             with self.assertRaises(SystemExit) as exit_event:
