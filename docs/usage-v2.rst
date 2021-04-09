@@ -9,7 +9,7 @@ There are three API options that this library provides access to:
 -  ``view`` - Returns the structured data we have about a specific Host, given the resource's natural ID.
 -  ``aggregate`` - Allows you to view resources as a spectrum based on attributes of the resource, similar to the `Report Builder page <https://search.censys.io/search/report?resource=hosts>`__ on the web app.
 
-More details about each option can be found in the Censys API documentation: https://search.censys.io/api. A list of index fields can be found in the Censys API definitions page: https://search.censys.io/api/v2/docs.
+More details about each option can be found in the `Censys API documentation <https://search.censys.io/api>`__. A list of index fields can be found in the `Censys API definitions page <https://search.censys.io/api/v2/docs>`__.
 
 Python class objects must be initialized for each resource index (Hosts).
 
