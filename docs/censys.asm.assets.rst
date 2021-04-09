@@ -1,8 +1,11 @@
 censys.asm.assets package
 =========================
 
-Submodules
-----------
+.. automodule:: censys.asm.assets
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 censys.asm.assets.assets module
 -------------------------------
@@ -32,14 +35,6 @@ censys.asm.assets.hosts module
 ------------------------------
 
 .. automodule:: censys.asm.assets.hosts
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: censys.asm.assets
    :members:
    :undoc-members:
    :show-inheritance:

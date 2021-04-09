@@ -1,4 +1,4 @@
-Usage v1
+Usage v2
 ========
 
 The Censys Search API provides functionality for interacting with Censys resources such as Hosts.

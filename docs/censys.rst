@@ -11,9 +11,6 @@ Subpackages
    censys.v1
    censys.v2
 
-Submodules
-----------
-
 censys.base module
 ------------------
 
@@ -38,6 +35,14 @@ censys.config module
    :undoc-members:
    :show-inheritance:
 
+censys.deprecation module
+-------------------------
+
+.. automodule:: censys.deprecation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 censys.exceptions module
 ------------------------
 
@@ -46,3 +51,10 @@ censys.exceptions module
    :undoc-members:
    :show-inheritance:
 
+censys.version module
+---------------------
+
+.. automodule:: censys.version
+   :members:
+   :undoc-members:
+   :show-inheritance:
