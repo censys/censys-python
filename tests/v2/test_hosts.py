@@ -69,27 +69,15 @@ HTTP_AGGREGATE_JSON = {
     "result": {
         "total_omitted": 358388380,
         "buckets": [
-            {
-                "count": 47637476,
-                "key": "80"
-            },
-            {
-                "count": 35073802,
-                "key": "443"
-            },
-            {
-                "count": 17256198,
-                "key": "7547"
-            },
-            {
-                "count": 13216884,
-                "key": "22"
-            }
+            {"count": 47637476, "key": "80"},
+            {"count": 35073802, "key": "443"},
+            {"count": 17256198, "key": "7547"},
+            {"count": 13216884, "key": "22"},
         ],
         "potential_deviation": 605118,
         "field": "services.port",
         "query": "service.service_name: HTTP",
-        "total": 149575980
+        "total": 149575980,
     }
 }
 
@@ -175,10 +163,13 @@ class TestHosts(unittest.TestCase):
     def test_aggregate(self):
         self.responses.add(
             responses.GET,
-            self.base_url + "/hosts/aggregate?field=services.port&q=service.service_name: HTTP&num_buckets=4",
+            self.base_url
+            + "/hosts/aggregate?field=services.port&q=service.service_name: HTTP&num_buckets=4",
             status=200,
             json=HTTP_AGGREGATE_JSON,
         )
         self.maxDiff = None
-        res = self.api.aggregate("service.service_name: HTTP", "services.port", num_buckets=4)
+        res = self.api.aggregate(
+            "service.service_name: HTTP", "services.port", num_buckets=4
+        )
         self.assertDictEqual(res, HTTP_AGGREGATE_JSON["result"])

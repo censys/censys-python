@@ -1,6 +1,4 @@
-"""
-Base for interacting with the Censys ASM API.
-"""
+"""Base for interacting with the Censys ASM API."""
 # pylint: disable=too-many-arguments
 import os
 
@@ -18,14 +16,20 @@ from censys.config import get_config, DEFAULT
 
 
 class CensysAsmAPI(CensysAPIBase):
-    """
-    This is the base class for ASM's Seeds, Assets, and Events classes
-    """
+    """This is the base class for ASM's Seeds, Assets, and Events classes."""
 
     DEFAULT_URL: str = "https://app.censys.io/api/v1"
     """Default ASM API base URL."""
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
+        """Inits CensysAsmAPI.
+
+        Args:
+            api_key (str, optional): The API Key provided by Censys.
+
+        Raises:
+            CensysException: [description]
+        """
         url = kwargs.pop("url", self.DEFAULT_URL)
         CensysAPIBase.__init__(self, url=url, **kwargs)
 
@@ -56,8 +60,7 @@ class CensysAsmAPI(CensysAPIBase):
     def _get_page(
         self, path: str, page_number: int = 1, page_size: Optional[int] = None
     ) -> Generator[dict, None, None]:
-        """
-        Fetches paginated ASM resource API results.
+        """Fetches paginated ASM resource API results.
 
         Args:
             path (str): The API url endpoint.
@@ -67,7 +70,6 @@ class CensysAsmAPI(CensysAPIBase):
         Returns:
             generator: The resource result set returned.
         """
-
         total_pages = inf
 
         while page_number <= total_pages:
@@ -94,8 +96,7 @@ class CensysAsmAPI(CensysAPIBase):
     def _get_logbook_page(
         self, path: str, args: Optional[dict] = None
     ) -> Generator[dict, None, None]:
-        """
-        Fetches paginated ASM logbook API events.
+        """Fetches paginated ASM logbook API events.
 
         Args:
             path (str): The API url endpoint.
@@ -104,7 +105,6 @@ class CensysAsmAPI(CensysAPIBase):
         Returns:
             generator: The event result set returned.
         """
-
         end_of_events = False
 
         while not end_of_events:

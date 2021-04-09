@@ -1,7 +1,4 @@
-"""
-Base for interacting with the Censys Search API.
-"""
-
+"""Base for interacting with the Censys Search API."""
 import os
 from typing import Generator, List, Optional, Type
 
@@ -20,9 +17,7 @@ Fields = Optional[List[str]]
 
 
 class CensysSearchAPIv1(CensysAPIBase):
-    """
-    This class is the base class for the Data, Certificate, IPv4, and Website index.
-    """
+    """This class is the base class for all v1 API indexes."""
 
     DEFAULT_URL: str = "https://censys.io/api/v1"
     """Default Search API base URL."""
@@ -34,6 +29,17 @@ class CensysSearchAPIv1(CensysAPIBase):
         "v1 API will be deprecated soon. For more details please visit INSERT_LINK"
     )
     def __init__(self, *args, **kwargs):
+        """Inits CensysSearchAPIv1.
+
+        See CensysAPIBase for additional arguments.
+
+        Args:
+            api_id (str, optional): The API ID provided by Censys.
+            api_secret (str, optional): The API secret provided by Censys.
+
+        Raises:
+            CensysException: Base Exception Class for the Censys API.
+        """
         # Backwards compatability
         if len(args) == 2:
             kwargs["api_id"] = args[0]
@@ -76,28 +82,25 @@ class CensysSearchAPIv1(CensysAPIBase):
         )
 
     def account(self) -> dict:
-        """
-        Gets the current account information. Including email and quota.
+        """Gets the current account information.
+
+        This includes email and quota.
 
         Returns:
             dict: Account response.
         """
-
         return self._get("account")
 
     def quota(self) -> dict:
-        """
-        Gets the current account's query quota.
+        """Gets the current account's query quota.
 
         Returns:
             dict: Quota response.
         """
-
         return self.account()["quota"]
 
     def metadata(self, query: str) -> dict:
-        """
-        Returns metadata of a given search query.
+        """Returns metadata of a given search query.
 
         Args:
             query (str): The query to be executed.
@@ -105,15 +108,17 @@ class CensysSearchAPIv1(CensysAPIBase):
         Returns:
             dict: The metadata of the result set returned.
         """
-
         data = {"query": query, "page": 1, "fields": []}
         return self._post(self.search_path, data=data).get("metadata", {})
 
     def paged_search(
-        self, query: str, fields: Fields = None, page: int = 1, flatten: bool = True,
+        self,
+        query: str,
+        fields: Fields = None,
+        page: int = 1,
+        flatten: bool = True,
     ) -> dict:
-        """
-        Searches the given index for all records that match the given query.
+        """Searches the given index for all records that match the given query.
 
         Args:
             query (str): The query to be executed.
@@ -124,7 +129,6 @@ class CensysSearchAPIv1(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
-
         page = int(page)
         data = {
             "query": query,
@@ -143,8 +147,8 @@ class CensysSearchAPIv1(CensysAPIBase):
         max_records: Optional[int] = None,
         flatten: bool = True,
     ) -> Generator[dict, None, None]:
-        """
-        Searches the given index for all records that match the given query.
+        """Searches the given index for all records that match the given query.
+
         For more details, see our documentation: https://censys.io/api/v1/docs/search
 
         Args:
@@ -157,7 +161,6 @@ class CensysSearchAPIv1(CensysAPIBase):
         Yields:
             dict: The result set returned.
         """
-
         if fields is None:
             fields = []
         page = int(page)
@@ -178,8 +181,8 @@ class CensysSearchAPIv1(CensysAPIBase):
                     return
 
     def view(self, document_id: str) -> dict:
-        """
-        View the current structured data we have on a specific document.
+        """View the current structured data we have on a specific document.
+
         For more details, see our documentation: https://censys.io/api/v1/docs/view
 
         Args:
@@ -188,12 +191,11 @@ class CensysSearchAPIv1(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
-
         return self._get("/".join((self.view_path, document_id)))
 
     def report(self, query: str, field: str, buckets: int = 50) -> dict:
-        """
-        Creates a report on the breakdown of the values of a field in a result set.
+        """Creates a report on the breakdown of the values of a field in a result set.
+
         For more details, see our documentation: https://censys.io/api/v1/docs/report
 
         Args:
@@ -204,7 +206,6 @@ class CensysSearchAPIv1(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
-
         data = {"query": query, "field": field, "buckets": int(buckets)}
         return self._post(self.report_path, data=data)
 

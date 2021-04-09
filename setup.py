@@ -40,6 +40,7 @@ setup(
     extras_require={
         "dev": [
             "flake8",
+            "flake8-docstrings",
             "black",
             "pytest",
             "pytest-cov",
@@ -48,7 +49,6 @@ setup(
             "backoff-stubs",
             "twine",
             "parameterized",
-            "pylint",
         ],
         "docs": ["sphinx"],
     },

@@ -34,7 +34,7 @@ TEST_TAG_COLOR = "#4287f5"
 
 class AssetsUnitTest(unittest.TestCase):
     """
-    Unit tests for Host, Certificate, and Domain API's
+    Unit tests for Host, Certificate, and Domain APIs
     """
 
     def setUp(self):

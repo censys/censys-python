@@ -1,7 +1,4 @@
-"""
-Base for interacting with the Censys Search API.
-"""
-
+"""Base for interacting with the Censys Search API."""
 import os
 import datetime
 from typing import Generator, List, Optional, Type, overload, Union
@@ -20,9 +17,7 @@ Fields = Optional[List[str]]
 
 
 class CensysSearchAPIv2(CensysAPIBase):
-    """
-    This class is the base class for the Hosts index.
-    """
+    """This class is the base class for the Hosts index."""
 
     DEFAULT_URL: str = "https://search.censys.io/api/v2"
     """Default Search API base URL."""
@@ -40,6 +35,10 @@ class CensysSearchAPIv2(CensysAPIBase):
         ...
 
     def __init__(self, *args, **kwargs):
+        """Inits CensysSearchAPIv2.
+
+        See CensysAPIBase for additional arguments.
+        """
         # Backwards compatability
         if len(args) == 2:
             kwargs["api_id"] = args[0]
@@ -108,7 +107,8 @@ class CensysSearchAPIv2(CensysAPIBase):
         cursor: Optional[str] = None,
         pages: int = 1,
     ) -> Generator[dict, None, None]:
-        """
+        """Search current index.
+
         Searches the given index for all records that match the given query.
         For more details, see our documentation: https://search.censys.io/api/v2/docs
 
@@ -122,7 +122,6 @@ class CensysSearchAPIv2(CensysAPIBase):
         Yields:
             dict: The result set returned.
         """
-
         args = {"q": query, "per_page": per_page}
 
         page = 1
@@ -141,7 +140,8 @@ class CensysSearchAPIv2(CensysAPIBase):
     def view(
         self, document_id: str, at_time: Optional[Union[str, datetime.date]] = None
     ) -> dict:
-        """
+        """View document from current index.
+
         View the current structured data we have on a specific document.
         For more details, see our documentation: https://search.censys.io/api/v2/docs
 
@@ -164,7 +164,8 @@ class CensysSearchAPIv2(CensysAPIBase):
     def aggregate(
         self, query: str, field: str, num_buckets: Optional[int] = None
     ) -> dict:
-        """
+        """Aggregate current index.
+
         Creates a report on the breakdown of the values of a field in a result set.
         For more details, see our documentation: https://search.censys.io/api/v2/docs
 
@@ -176,6 +177,5 @@ class CensysSearchAPIv2(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
-
         args = {"q": query, "field": field, "num_buckets": num_buckets}
         return self._get(self.aggregate_path, args)["result"]

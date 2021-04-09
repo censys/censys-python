@@ -2,3 +2,4 @@
 max-line-length = 88
 exclude = docs/*.py
 per-file-ignores = tests/*.py:E501
+docstring-convention=google

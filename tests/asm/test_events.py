@@ -108,9 +108,7 @@ class EventsUnitTests(unittest.TestCase):
         res = [event for event in events]
 
         self.assertEqual(RESOURCE_PAGING_RESULTS, res)
-        mock.assert_any_call(
-            EVENTS_URL, params={"cursor": None}, timeout=TEST_TIMEOUT
-        )
+        mock.assert_any_call(EVENTS_URL, params={"cursor": None}, timeout=TEST_TIMEOUT)
         mock.assert_any_call(
             EVENTS_URL, params={"cursor": TEST_NEXT_CURSOR}, timeout=TEST_TIMEOUT
         )

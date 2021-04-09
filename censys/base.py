@@ -1,7 +1,4 @@
-"""
-Base for interacting with the Censys API's.
-"""
-
+"""Base for interacting with the Censys APIs."""
 import os
 import json
 import warnings
@@ -47,19 +44,7 @@ def _backoff_wrapper(method: Callable):
 
 
 class CensysAPIBase:
-    """
-    This is the base class for API queries.
-
-    Args:
-        url (str, optional): The URL to make API requests.
-        timeout (int, optional): Timeout for API requests in seconds.
-        max_retries (int, optional): Max number of times to retry failed API requests.
-        user_agent (str, optional): Override User-Agent string.
-        proxies (dict, optional): Configure HTTP proxies.
-
-    Raises:
-        CensysException: Base Exception Class for the Censys API.
-    """
+    """This is the base class for API queries."""
 
     DEFAULT_TIMEOUT: int = 30
     """Default API timeout."""
@@ -69,6 +54,19 @@ class CensysAPIBase:
     """Default max number of API retries."""
 
     def __init__(self, url: Optional[str] = None, **kwargs):
+        """Inits CensysAPIBase.
+
+        Args:
+            url (str, optional): The URL to make API requests.
+            timeout (int, optional): Timeout for API requests in seconds.
+            max_retries (int, optional): Max number of times to retry failed API
+                requests.
+            user_agent (str, optional): Override User-Agent string.
+            proxies (dict, optional): Configure HTTP proxies.
+
+        Raises:
+            CensysException: Base Exception Class for the Censys API.
+        """
         # Get common request settings
         self.timeout = kwargs.get("timeout") or self.DEFAULT_TIMEOUT
         self.max_retries = kwargs.get("max_retries") or self.DEFAULT_MAX_RETRIES
@@ -101,8 +99,8 @@ class CensysAPIBase:
 
     @staticmethod
     def _get_exception_class(_: Response) -> Type[CensysAPIException]:
-        """
-        Maps HTTP status code or ASM error code to exception.
+        """Maps HTTP status code or ASM error code to exception.
+
         Must be implemented by child class.
 
         Args:
@@ -121,7 +119,8 @@ class CensysAPIBase:
         args: Optional[dict] = None,
         data: Optional[Any] = None,
     ) -> dict:
-        """
+        """Make API call.
+
         Wrapper functions for all our REST API calls checking for errors
         and decoding the responses.
 
@@ -137,7 +136,6 @@ class CensysAPIBase:
         Returns:
             dict: Results from an API request.
         """
-
         if endpoint.startswith("/"):
             url = f"{self._api_url}{endpoint}"
         else:

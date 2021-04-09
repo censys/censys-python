@@ -1,7 +1,4 @@
-"""
-An easy-to-use and lightweight API wrapper for the Censys ASM platform (censys.io).
-"""
-
+"""An easy-to-use and lightweight API wrapper for Censys ASM (censys.io)."""
 from .assets import *
 from .api import *
 from .client import *
