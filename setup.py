@@ -43,7 +43,7 @@ setup(
             "black",
             "pytest",
             "pytest-cov",
-            "requests-mock",
+            "responses",
             "mypy",
             "backoff-stubs",
             "twine",
