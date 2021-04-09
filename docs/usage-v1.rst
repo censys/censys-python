@@ -1,4 +1,4 @@
-Usage v1
+Usage v2
 ========
 
 The Censys Search API provides functionality for interacting with Censys resources such as IPv4 addresses, Websites, and Certificates, and for viewing Account information such as query quota.
