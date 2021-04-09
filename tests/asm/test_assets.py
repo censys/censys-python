@@ -33,9 +33,7 @@ TEST_TAG_COLOR = "#4287f5"
 
 
 class AssetsUnitTest(unittest.TestCase):
-    """
-    Unit tests for Host, Certificate, and Domain APIs
-    """
+    """Unit tests for Host, Certificate, and Domain APIs."""
 
     def setUp(self):
         self.client = AsmClient()
@@ -47,7 +45,7 @@ class AssetsUnitTest(unittest.TestCase):
         assets = getattr(self.client, asset_type).get_assets()
         res = [asset for asset in assets]
 
-        self.assertEqual(RESOURCE_PAGING_RESULTS, res)
+        assert RESOURCE_PAGING_RESULTS == res
         mock.assert_called_with(
             f"{ASSETS_URL}/{asset_type}",
             params={"pageNumber": 3, "pageSize": 500},
@@ -65,8 +63,8 @@ class AssetsUnitTest(unittest.TestCase):
         )
         res = [asset for asset in assets]
 
-        self.assertEqual(RESOURCE_PAGING_RESULTS[:6], res)
-        self.assertNotEqual(1, mock.call_args_list[0][1]["params"]["pageNumber"])
+        assert RESOURCE_PAGING_RESULTS[:6] == res
+        assert mock.call_args_list[0][1]["params"]["pageNumber"] != 1
         mock.assert_called_with(
             f"{ASSETS_URL}/{asset_type}",
             params={"pageNumber": 3, "pageSize": 2},
@@ -94,7 +92,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
         res = [comment for comment in comments]
 
-        self.assertEqual(RESOURCE_PAGING_RESULTS, res)
+        assert RESOURCE_PAGING_RESULTS == res
         mock.assert_called_with(
             f"{ASSETS_URL}/{asset_type}/{TEST_ASSET_IDS[asset_type]}/{COMMENT_TYPE}",
             params={"pageNumber": 3, "pageSize": 500},
@@ -112,8 +110,8 @@ class AssetsUnitTest(unittest.TestCase):
         )
         res = [comment for comment in comments]
 
-        self.assertEqual(RESOURCE_PAGING_RESULTS[:6], res)
-        self.assertNotEqual(1, mock.call_args_list[0][1]["params"]["pageNumber"])
+        assert RESOURCE_PAGING_RESULTS[:6] == res
+        assert mock.call_args_list[0][1]["params"]["pageNumber"] != 1
         mock.assert_called_with(
             f"{ASSETS_URL}/{asset_type}/{TEST_ASSET_IDS[asset_type]}/{COMMENT_TYPE}",
             params={"pageNumber": 3, "pageSize": 2},

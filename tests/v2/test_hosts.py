@@ -102,7 +102,8 @@ class TestHosts(unittest.TestCase):
         )
 
         res = self.api.view("8.8.8.8")
-        self.assertDictEqual(res, VIEW_HOST_JSON["result"])
+
+        assert res == VIEW_HOST_JSON["result"]
 
     def test_view_at_time(self):
 
@@ -116,7 +117,8 @@ class TestHosts(unittest.TestCase):
         date = datetime.date(2021, 3, 1)
 
         res = self.api.view("8.8.8.8", at_time=date)
-        self.assertDictEqual(res, VIEW_HOST_JSON["result"])
+
+        assert res == VIEW_HOST_JSON["result"]
 
     def test_search(self):
         self.responses.add(
@@ -127,7 +129,8 @@ class TestHosts(unittest.TestCase):
         )
 
         res = list(self.api.search("service.service_name: HTTP"))
-        self.assertListEqual(res, HTTP_SEARCH_JSON["result"]["hits"])
+
+        assert res == HTTP_SEARCH_JSON["result"]["hits"]
 
     def test_search_pages(self):
         self.responses.add(
@@ -158,7 +161,8 @@ class TestHosts(unittest.TestCase):
         )
 
         res = list(self.api.search("service.service_name: HTTP", pages=2))
-        self.assertListEqual(res, hits + new_hits)
+
+        assert res == hits + new_hits
 
     def test_aggregate(self):
         self.responses.add(
@@ -172,4 +176,5 @@ class TestHosts(unittest.TestCase):
         res = self.api.aggregate(
             "service.service_name: HTTP", "services.port", num_buckets=4
         )
-        self.assertDictEqual(res, HTTP_AGGREGATE_JSON["result"])
+
+        assert res == HTTP_AGGREGATE_JSON["result"]

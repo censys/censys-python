@@ -6,6 +6,7 @@ from typing import Callable
 
 class DeprecationDecorator:
     """Deprecation Decorator for classes and functions."""
+
     def __init__(self, message: str = None):
         """Inits DeprecationDecorator.
 
@@ -23,6 +24,7 @@ class DeprecationDecorator:
         Returns:
             Callable: Wrapped function.
         """
+
         @functools.wraps(func)
         def new_func(*args, **kwargs):
             warnings.simplefilter("always", DeprecationWarning)

@@ -129,7 +129,10 @@ class CensysSearchAPIv1(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
-        page = int(page)
+        try:
+            page = int(page)
+        except ValueError:
+            raise CensysException(f"Invalid page value: {page}")
         data = {
             "query": query,
             "page": page,
@@ -163,7 +166,10 @@ class CensysSearchAPIv1(CensysAPIBase):
         """
         if fields is None:
             fields = []
-        page = int(page)
+        try:
+            page = int(page)
+        except ValueError:
+            raise CensysException(f"Invalid page value: {page}")
         pages = float("inf")
         data = {"query": query, "page": page, "fields": fields, "flatten": flatten}
 

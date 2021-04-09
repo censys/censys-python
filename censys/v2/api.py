@@ -25,11 +25,11 @@ class CensysSearchAPIv2(CensysAPIBase):
     """Name of Censys Index."""
 
     @overload
-    def __init__(self, api_id: str, api_secret: str, **kwargs):
+    def __init__(self, api_id: str, api_secret: str, **kwargs):  # noqa
         ...
 
     @overload
-    def __init__(
+    def __init__(  # noqa
         self, api_id: str = "YOUR_API_ID", api_secret: str = "YOUR_API_SECRET", **kwargs
     ):
         ...

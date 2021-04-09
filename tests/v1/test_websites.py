@@ -16,15 +16,18 @@ class CensysWebsitesTests(CensysTestCase):
 
     def test_view(self):
         res = self._api.view("google.com")
-        self.assertIsInstance(res, dict)
+
+        assert isinstance(res, dict)
 
     def test_search(self):
         res = list(self._api.search("*", max_records=self.MAX_RECORDS))
-        self.assertLessEqual(len(res), self.MAX_RECORDS)
+
+        assert len(res) <= self.MAX_RECORDS
 
     def test_report(self):
         res = self._api.report("*", "80.http.get.headers.server.raw")
-        self.assertSetEqual(set(res.keys()), self.EXPECTED_REPORT_FIELDS)
+
+        assert set(res.keys()) == self.EXPECTED_REPORT_FIELDS
 
 
 if __name__ == "__main__":

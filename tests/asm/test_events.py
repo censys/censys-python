@@ -24,9 +24,7 @@ TEST_START_ID = 20712
 
 
 class EventsUnitTests(unittest.TestCase):
-    """
-    Unit tests for Events API
-    """
+    """Unit tests for Events API."""
 
     def setUp(self):
         self.client = AsmClient()
@@ -107,7 +105,7 @@ class EventsUnitTests(unittest.TestCase):
         events = self.client.events.get_events()
         res = [event for event in events]
 
-        self.assertEqual(RESOURCE_PAGING_RESULTS, res)
+        assert RESOURCE_PAGING_RESULTS == res
         mock.assert_any_call(EVENTS_URL, params={"cursor": None}, timeout=TEST_TIMEOUT)
         mock.assert_any_call(
             EVENTS_URL, params={"cursor": TEST_NEXT_CURSOR}, timeout=TEST_TIMEOUT
@@ -119,7 +117,7 @@ class EventsUnitTests(unittest.TestCase):
         events = self.client.events.get_events(TEST_CURSOR)
         res = [event for event in events]
 
-        self.assertEqual(RESOURCE_PAGING_RESULTS, res)
+        assert RESOURCE_PAGING_RESULTS == res
         mock.assert_any_call(
             EVENTS_URL, params={"cursor": TEST_CURSOR}, timeout=TEST_TIMEOUT
         )
