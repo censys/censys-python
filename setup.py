@@ -41,6 +41,7 @@ setup(
             "flake8",
             "flake8-docstrings",
             "flake8-pytest-style",
+            "flake8-simplify",
             "black",
             "pytest",
             "pytest-cov",

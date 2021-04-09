@@ -25,18 +25,16 @@ class CensysCliTest(unittest.TestCase):
     @patch("argparse._sys.argv", ["censys"])
     def test_default_help(self):
         temp_stdout = StringIO()
-        with contextlib.redirect_stdout(temp_stdout):
-            with pytest.raises(SystemExit):
-                cli_main()
+        with contextlib.redirect_stdout(temp_stdout), pytest.raises(SystemExit):
+            cli_main()
 
         assert temp_stdout.getvalue().strip().startswith("usage: censys")
 
     @patch("argparse._sys.argv", ["censys", "--help"])
     def test_help(self):
         temp_stdout = StringIO()
-        with contextlib.redirect_stdout(temp_stdout):
-            with pytest.raises(SystemExit):
-                cli_main()
+        with contextlib.redirect_stdout(temp_stdout), pytest.raises(SystemExit):
+            cli_main()
 
         stdout = temp_stdout.getvalue().strip()
         assert stdout.startswith("usage: censys")
@@ -45,9 +43,8 @@ class CensysCliTest(unittest.TestCase):
     @patch("argparse._sys.argv", ["censys", "-v"])
     def test_version(self):
         temp_stdout = StringIO()
-        with contextlib.redirect_stdout(temp_stdout):
-            with pytest.raises(SystemExit):
-                cli_main()
+        with contextlib.redirect_stdout(temp_stdout), pytest.raises(SystemExit):
+            cli_main()
 
         assert __version__ in temp_stdout.getvalue()
 
@@ -56,9 +53,8 @@ class CensysCliSearchTest(unittest.TestCase):
     @patch("argparse._sys.argv", ["censys", "search", "--help"])
     def test_search_help(self):
         temp_stdout = StringIO()
-        with contextlib.redirect_stdout(temp_stdout):
-            with pytest.raises(SystemExit):
-                cli_main()
+        with contextlib.redirect_stdout(temp_stdout), pytest.raises(SystemExit):
+            cli_main()
 
         assert temp_stdout.getvalue().strip().startswith("usage: censys search")
 
@@ -110,7 +106,7 @@ class CensysCliSearchTest(unittest.TestCase):
             json_response = json.load(json_file)
 
         assert len(json_response) >= 1
-        assert "parsed.issuer.country" in json_response[0].keys()
+        assert "parsed.issuer.country" in json_response[0]
 
         # Cleanup
         os.remove(json_path)
@@ -184,7 +180,7 @@ class CensysCliSearchTest(unittest.TestCase):
             json_response = json.load(json_file)
 
         assert len(json_response) >= 1
-        assert "parsed.issuer.country" in json_response[0].keys()
+        assert "parsed.issuer.country" in json_response[0]
 
         # Cleanup
         os.remove(output_path)
@@ -213,7 +209,7 @@ class CensysCliSearchTest(unittest.TestCase):
         json_response = json.loads(temp_stdout.getvalue().strip())
 
         assert len(json_response) >= 1
-        assert "443.https.get.headers.server" in json_response[0].keys()
+        assert "443.https.get.headers.server" in json_response[0]
 
     @required_env
     @patch(

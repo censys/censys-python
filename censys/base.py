@@ -79,7 +79,7 @@ class CensysAPIBase:
         self._session = requests.Session()
         proxies = kwargs.get("proxies")
         if proxies:
-            if "http" in proxies.keys():
+            if "http" in proxies:
                 warnings.warn("HTTP proxies will not be used.")
                 proxies.pop("http", None)
             self._session.proxies = proxies

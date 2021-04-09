@@ -51,7 +51,7 @@ class CensysSearchException(CensysAPIException):
         Returns:
             str: Printable representation.
         """
-        return "%i (%s): %s" % (self.status_code, self.const, self.message or self.body)
+        return f"{self.status_code} ({self.const}): {self.message or self.body}"
 
     __str__ = __repr__
 
@@ -65,11 +65,9 @@ class CensysAsmException(CensysAPIException):
         Returns:
             str: Printable representation.
         """
-        return "%i (Error Code: %i), %s. %s" % (
-            self.status_code,
-            self.error_code,
-            self.message,
-            self.details,
+        return (
+            f"{self.status_code} (Error Code: {self.error_code}), "
+            f"{self.message}. {self.details}"
         )
 
     __str__ = __repr__

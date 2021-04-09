@@ -134,8 +134,7 @@ class CensysSearchAPIv2(CensysAPIBase):
             result = payload["result"]
             cursor = result["links"]["next"]
 
-            for hit in result["hits"]:
-                yield hit
+            yield from result["hits"]
 
     def view(
         self, document_id: str, at_time: Optional[Union[str, datetime.date]] = None

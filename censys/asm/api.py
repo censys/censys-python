@@ -88,8 +88,7 @@ class CensysAsmAPI(CensysAPIBase):
                 keyword = "subdomains"
 
             try:
-                for asset in res[keyword]:
-                    yield asset
+                yield from res[keyword]
             except KeyError:
                 CensysException("Bad JSON response from server")
 
@@ -112,5 +111,4 @@ class CensysAsmAPI(CensysAPIBase):
             end_of_events = res["endOfEvents"]
             args = {"cursor": res["nextCursor"]}
 
-            for event in res["events"]:
-                yield event
+            yield from res["events"]

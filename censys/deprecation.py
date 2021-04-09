@@ -29,7 +29,7 @@ class DeprecationDecorator:
         def new_func(*args, **kwargs):
             warnings.simplefilter("always", DeprecationWarning)
             warnings.warn(
-                self.message or "Call to deprecated function {}.".format(func.__name__),
+                self.message or f"Call to deprecated function {func.__name__}.",
                 category=DeprecationWarning,
                 stacklevel=2,
             )
