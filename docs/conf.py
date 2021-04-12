@@ -23,11 +23,11 @@ sys.path.insert(0, os.path.abspath("../censys"))
 # -- Project information -----------------------------------------------------
 
 project = "Censys Python"
-copyright = f"{datetime.now().year or 2021}, Censys Team"
 author = "Censys Team"
+copyright = f"{datetime.now().year or 2021}, {author}"
 
 # The full version, including alpha/beta/rc tags
-release = "1.1.1"
+release = "2.0.0.dev0"
 
 
 # -- General configuration ---------------------------------------------------

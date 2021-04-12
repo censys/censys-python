@@ -16,8 +16,8 @@ Welcome to Censys Python's documentation!
    quick-start
    usage-v1
    usage-v2
-   advanced-usage
    asm-usage
+   advanced-usage
    cli
    censys
    development
