@@ -17,7 +17,20 @@ Fields = Optional[List[str]]
 
 
 class CensysSearchAPIv2(CensysAPIBase):
-    """This class is the base class for the Hosts index."""
+    """This class is the base class for the Hosts index.
+
+    See CensysAPIBase for additional arguments.
+
+    Args:
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
+
+    Raises:
+        CensysException: Base Exception Class for the Censys API.
+
+    Examples:
+        >>> c = CensysSearchAPIv2()
+    """
 
     DEFAULT_URL: str = "https://search.censys.io/api/v2"
     """Default Search API base URL."""
@@ -35,10 +48,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         ...
 
     def __init__(self, *args, **kwargs):
-        """Inits CensysSearchAPIv2.
-
-        See CensysAPIBase for additional arguments.
-        """
+        """Inits CensysSearchAPIv2."""
         # Backwards compatability
         if len(args) == 2:
             kwargs["api_id"] = args[0]
@@ -114,10 +124,10 @@ class CensysSearchAPIv2(CensysAPIBase):
 
         Args:
             query (str): The query to be executed.
-            per_page (Fields, optional): Fields to be returned in the result set.
-                Defaults to 50.
-            cursor (int, optional): The cursor of the desired result set.
-            pages (int, optional): The number of pages returned. Defaults to 1.
+            per_page (Fields): Optional;
+                Fields to be returned in the result set. Defaults to 50.
+            cursor (int): Optional; The cursor of the desired result set.
+            pages (int): Optional; The number of pages returned. Defaults to 1.
 
         Yields:
             dict: The result set returned.
@@ -146,8 +156,8 @@ class CensysSearchAPIv2(CensysAPIBase):
 
         Args:
             document_id (str): The ID of the document you are requesting.
-            at_time ([str, date], optional): Fetches a document at a given point
-                in time.
+            at_time ([str, date]):
+                Optional; Fetches a document at a given point in time.
 
         Returns:
             dict: The result set returned.
@@ -171,7 +181,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         Args:
             query (str): The query to be executed.
             field (str): The field you are running a breakdown on.
-            num_buckets (int, optional): The maximum number of values. Defaults to 50.
+            num_buckets (int): Optional; The maximum number of values. Defaults to 50.
 
         Returns:
             dict: The result set returned.

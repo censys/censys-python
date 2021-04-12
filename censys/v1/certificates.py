@@ -5,7 +5,14 @@ from .api import CensysSearchAPIv1
 
 
 class CensysCertificates(CensysSearchAPIv1):
-    """Interacts with the Certificates index."""
+    """Interacts with the Certificates index.
+
+    See CensysSearchAPIv1 for additional arguments.
+
+    Args:
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
+    """
 
     INDEX_NAME = "certificates"
     """Name of Censys Index."""
@@ -13,10 +20,7 @@ class CensysCertificates(CensysSearchAPIv1):
     """Max number of bulk requests."""
 
     def __init__(self, *args, **kwargs):
-        """Inits CensysCertificates.
-
-        See CensysSearchAPIv1 for additional arguments.
-        """
+        """Inits CensysCertificates."""
         super().__init__(self, *args, **kwargs)
         self.bulk_path = f"/bulk/{self.INDEX_NAME}"
 

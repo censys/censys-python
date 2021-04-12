@@ -5,14 +5,16 @@ from ..api import CensysAsmAPI
 
 
 class Assets(CensysAsmAPI):
-    """Assets API class."""
+    """Assets API class.
 
-    def __init__(self, asset_type, *args, **kwargs):
-        """Inits Assets.
+    Args:
+        asset_type (str): Type of asset to interact with.
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
+    """
 
-        Args:
-            asset_type ([type]): [description]
-        """
+    def __init__(self, asset_type: str, *args, **kwargs):
+        """Inits Assets."""
         CensysAsmAPI.__init__(self, *args, **kwargs)
         self.base_path = f"assets/{asset_type}"
 
@@ -22,8 +24,8 @@ class Assets(CensysAsmAPI):
         """Requests assets data.
 
         Args:
-            page_number (int, optional): Page number to begin at when searching.
-            page_size (int, optional): Page size for retrieving assets.
+            page_number (int): Optional; Page number to begin at when searching.
+            page_size (int): Optional; Page size for retrieving assets.
 
         Returns:
             generator: Asset search results.
@@ -55,8 +57,8 @@ class Assets(CensysAsmAPI):
 
         Args:
             asset_id (str): Asset ID for requested comments.
-            page_number (int, optional): Page number to begin at when searching.
-            page_size (int, optional): Page size for retrieving comments.
+            page_number (int): Optional; Page number to begin at when searching.
+            page_size (int): Optional; Page size for retrieving comments.
 
         Returns:
             generator: Comment search results.
@@ -100,7 +102,10 @@ class Assets(CensysAsmAPI):
         Args:
             asset_id (str): Asset ID to add tag to.
             name (str): New tag name.
-            color (str, optional): New tag color.
+            color (str): Optional; New tag color.
+
+        Returns:
+            dict: Added tag results.
         """
         path = f"{self.base_path}/{asset_id}/tags"
         data = format_tag(name, color)
@@ -113,6 +118,9 @@ class Assets(CensysAsmAPI):
         Args:
             asset_id (str): Asset ID to delete tag from.
             name (str): Tag name to delete.
+
+        Returns:
+            dict: Deleted tag results.
         """
         path = f"{self.base_path}/{asset_id}/tags/{name}"
 
@@ -124,10 +132,10 @@ def format_tag(name: str, color: Optional[str] = None) -> dict:
 
     Args:
         name (str): Tag name.
-        color (str, optional): Tag color.
+        color (str): Optional; Tag color.
 
     Returns:
-            dict: Formatted tag request data.
+        dict: Formatted tag request data.
     """
     if color:
         return {"name": str(name), "color": str(color)}

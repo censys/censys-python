@@ -16,20 +16,21 @@ from censys.config import get_config, DEFAULT
 
 
 class CensysAsmAPI(CensysAPIBase):
-    """This is the base class for ASM's Seeds, Assets, and Events classes."""
+    """This is the base class for ASM's Seeds, Assets, and Events classes.
+
+    Args:
+        api_key (str): Optional; The API Key provided by Censys.
+        **kwargs: Arbitrary keyword arguments.
+
+    Raises:
+        CensysException: Base Exception Class for the Censys API.
+    """
 
     DEFAULT_URL: str = "https://app.censys.io/api/v1"
     """Default ASM API base URL."""
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
-        """Inits CensysAsmAPI.
-
-        Args:
-            api_key (str, optional): The API Key provided by Censys.
-
-        Raises:
-            CensysException: [description]
-        """
+        """Inits CensysAsmAPI."""
         url = kwargs.pop("url", self.DEFAULT_URL)
         CensysAPIBase.__init__(self, url=url, **kwargs)
 
@@ -64,11 +65,11 @@ class CensysAsmAPI(CensysAPIBase):
 
         Args:
             path (str): The API url endpoint.
-            page_number (int, optional): Page number to begin at when getting results.
-            page_size (int, optional): Number of results to return per HTTP request
+            page_number (int): Optional; Page number to begin at when getting results.
+            page_size (int): Optional; Number of results to return per HTTP request
 
-        Returns:
-            generator: The resource result set returned.
+        Yields:
+            dict: The resource result returned.
         """
         total_pages = inf
 
@@ -99,10 +100,10 @@ class CensysAsmAPI(CensysAPIBase):
 
         Args:
             path (str): The API url endpoint.
-            args (dict, optional): URL args that are mapped to params (cursor).
+            args (dict): Optional; URL args that are mapped to params (cursor).
 
-        Returns:
-            generator: The event result set returned.
+        Yields:
+            dict: The event result returned.
         """
         end_of_events = False
 

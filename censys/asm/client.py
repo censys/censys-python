@@ -7,14 +7,15 @@ from .events import Events
 
 
 class AsmClient:
-    """Client ASM API class."""
+    """Client ASM API class.
+
+    Args:
+        api_key (str): Optional; The API Key provided by Censys.
+        **kwargs: Arbitrary keyword arguments.
+    """
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
-        """Inits AsmClient.
-
-        Args:
-            api_key (str, optional): The API Key provided by Censys.
-        """
+        """Inits AsmClient."""
         self.seeds = Seeds(api_key, **kwargs)
         self.hosts = HostsAssets(api_key, **kwargs)
         self.certificates = CertificatesAssets(api_key, **kwargs)

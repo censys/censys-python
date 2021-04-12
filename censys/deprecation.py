@@ -1,18 +1,18 @@
 """Warns on deprecated class and functions."""
 import functools
 import warnings
-from typing import Callable
+from typing import Callable, Optional
 
 
 class DeprecationDecorator:
-    """Deprecation Decorator for classes and functions."""
+    """Deprecation Decorator for classes and functions.
 
-    def __init__(self, message: str = None):
-        """Inits DeprecationDecorator.
+    Args:
+        message (str): Optional; Message to display to user.
+    """
 
-        Args:
-            message (str, optional): Message to display to user.
-        """
+    def __init__(self, message: Optional[str] = None):
+        """Inits DeprecationDecorator."""
         self.message = message
 
     def __call__(self, func: Callable) -> Callable:

@@ -30,7 +30,11 @@ def write_config(config):
 
 
 def get_config():
-    """Reads and returns config."""
+    """Reads and returns config.
+
+    Returns:
+        ConfigParser: Config for Censys.
+    """
     config = ConfigParser()
     if not os.path.isdir(xdg_config_path):
         os.mkdir(xdg_config_path)

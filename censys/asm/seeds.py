@@ -13,8 +13,8 @@ class Seeds(CensysAsmAPI):
         """Requests seed data.
 
         Args:
-            seed_type (str, optional): Seed type
-                ['IP_ADDRESS', 'DOMAIN_NAME', 'CIDR', 'ASN'].
+            seed_type (str):
+                Optional; Seed type ['IP_ADDRESS', 'DOMAIN_NAME', 'CIDR', 'ASN'].
 
         Returns:
             dict: Seed search results.
@@ -59,7 +59,7 @@ class Seeds(CensysAsmAPI):
         Args:
             label (str): Label name to replace by.
             seeds (list): List of seed objects to add.
-            force (bool, optional): Forces replace operation.
+            force (bool): Optional; Forces replace operation.
 
         Returns:
             dict: Added and removed seeds results.
@@ -74,6 +74,9 @@ class Seeds(CensysAsmAPI):
 
         Args:
             label (str): Label name to delete by.
+
+        Returns:
+            dict: Delete results.
         """
         args = {"label": label}
 
@@ -84,6 +87,9 @@ class Seeds(CensysAsmAPI):
 
         Args:
             seed_id (int): Seed ID to delete by.
+
+        Returns:
+            dict: Delete results.
         """
         path = f"{self.base_path}/{seed_id}"
 

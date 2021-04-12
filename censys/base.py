@@ -44,7 +44,23 @@ def _backoff_wrapper(method: Callable):
 
 
 class CensysAPIBase:
-    """This is the base class for API queries."""
+    """This is the base class for API queries.
+
+    Args:
+        url (str): Optional; The URL to make API requests.
+        timeout (int): Optional; Timeout for API requests in seconds.
+        max_retries (int):
+            Optional; Max number of times to retry failed API requests.
+        user_agent (str): Optional; Override User-Agent string.
+        proxies (dict): Optional; Configure HTTP proxies.
+        **kwargs: Arbitrary keyword arguments.
+
+    Raises:
+        CensysException: Base Exception Class for the Censys API.
+
+    Examples:
+        >>> api = CensysAPIBase()
+    """
 
     DEFAULT_TIMEOUT: int = 30
     """Default API timeout."""
@@ -54,19 +70,7 @@ class CensysAPIBase:
     """Default max number of API retries."""
 
     def __init__(self, url: Optional[str] = None, **kwargs):
-        """Inits CensysAPIBase.
-
-        Args:
-            url (str, optional): The URL to make API requests.
-            timeout (int, optional): Timeout for API requests in seconds.
-            max_retries (int, optional): Max number of times to retry failed API
-                requests.
-            user_agent (str, optional): Override User-Agent string.
-            proxies (dict, optional): Configure HTTP proxies.
-
-        Raises:
-            CensysException: Base Exception Class for the Censys API.
-        """
+        """Inits CensysAPIBase."""
         # Get common request settings
         self.timeout = kwargs.get("timeout") or self.DEFAULT_TIMEOUT
         self.max_retries = kwargs.get("max_retries") or self.DEFAULT_MAX_RETRIES
@@ -127,11 +131,11 @@ class CensysAPIBase:
         Args:
             method (Callable): Method to send HTTP request.
             endpoint (str): The path of API endpoint.
-            args (dict, optional): URL args that are mapped to params.
-            data (Any, optional): JSON data to serialize with request.
+            args (dict): Optional; URL args that are mapped to params.
+            data (Any): Optional; JSON data to serialize with request.
 
         Raises:
-            CensysJSONDecodeException: The response is not valid JSON.
+            CensysException: Base Exception Class for the Censys API.
 
         Returns:
             dict: Results from an API request.

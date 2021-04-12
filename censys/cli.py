@@ -33,6 +33,12 @@ class CensysAPISearch:
 
     This class searches the Censys API, taking in options from the command line and
     returning the results to a CSV or JSON file, or to stdout.
+
+    Args:
+        api_id (str, optional): The API ID provided by Censys.
+        api_secret (str, optional): The API secret provided by Censys.
+        start_page (int, optional): Page number to start from. Defaults to 1.
+        max_pages (int, optional): The maximum number of pages. Defaults to 10.
     """
 
     csv_fields: Fields = list()
@@ -42,10 +48,7 @@ class CensysAPISearch:
         """Inits CensysAPISearch.
 
         Args:
-            api_id (str, optional): The API ID provided by Censys.
-            api_secret (str, optional): The API secret provided by Censys.
-            start_page (int, optional): Page number to start from. Defaults to 1.
-            max_pages (int, optional): The maximum number of pages. Defaults to 10.
+            **kwargs: Arbitrary keyword arguments.
         """
         self.api_user = kwargs.get("api_id")
         self.api_pass = kwargs.get("api_secret")
@@ -120,8 +123,8 @@ class CensysAPISearch:
 
         Args:
             results_list (Results): A list of results from the API query.
-            file_format (str, optional): The format of the output.
-            file_path (str optional): A path to write results to.
+            file_format (str): Optional; The format of the output.
+            file_path (str): Optional; A path to write results to.
 
         Returns:
             bool: True if wrote out successfully.
@@ -151,7 +154,7 @@ class CensysAPISearch:
         Args:
             default_fields (Fields): A list of fields that are returned by default.
             user_fields (Fields): A list of user-specified fields. Max 20.
-            overwrite (bool, optional): Whether to overwrite or append default fields
+            overwrite (bool): Optional; Whether to overwrite or append default fields
                                         with user fields. Defaults to False.
 
         Raises:
@@ -215,10 +218,7 @@ class CensysAPISearch:
         """Search the IPv4 data set via the API.
 
         Args:
-            query (str): The string search query.
-            fields (list, optional): The fields that should be returned with a query.
-            overwrite (bool, optional): Whether to overwrite or append default fields
-                                        with user fields. Defaults to False.
+            **kwargs: Arbitrary keyword arguments.
 
         Returns:
             Results: A list of results from the query.
@@ -257,10 +257,7 @@ class CensysAPISearch:
         """Search the Certificates data set via the API.
 
         Args:
-            query (str): The string search query.
-            fields (list, optional): The fields that should be returned with a query.
-            overwrite (bool, optional): Whether to overwrite or append default fields
-                                        with user fields. Defaults to False.
+            **kwargs: Arbitrary keyword arguments.
 
         Returns:
             Results: A list of results from the query.
@@ -296,10 +293,7 @@ class CensysAPISearch:
         """Search the Websites (Alexa Top 1M) data set via the API.
 
         Args:
-            query (str): The string search query.
-            fields (list, optional): The fields that should be returned with a query.
-            overwrite (bool, optional): Whether to overwrite or append default fields
-                                        with user fields. Defaults to False.
+            **kwargs: Arbitrary keyword arguments.
 
         Returns:
             Results: A list of results from the query.
@@ -328,18 +322,18 @@ class CensysAPISearch:
 
 
 class CensysHNRI:
-    """Searches the Censys API for the user's current IP to scan for risks."""
+    """Searches the Censys API for the user's current IP to scan for risks.
+
+    Args:
+        api_id (str): Optional; The API ID provided by Censys.
+        api_secret (str): Optional; The API secret provided by Censys.
+    """
 
     HIGH_RISK_DEFINITION: List[str] = ["telnet", "redis", "postgres", "vnc"]
     MEDIUM_RISK_DEFINITION: List[str] = ["ssh", "http", "https"]
 
-    def __init__(self, api_id: str, api_secret: str):
-        """Inits CensysHNRI.
-
-        Args:
-            api_id (str, optional): The API ID provided by Censys.
-            api_secret (str, optional): The API secret provided by Censys.
-        """
+    def __init__(self, api_id: Optional[str] = None, api_secret: Optional[str] = None):
+        """Inits CensysHNRI."""
         self.index = CensysIPv4(api_id, api_secret)
 
     @staticmethod

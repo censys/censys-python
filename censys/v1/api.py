@@ -17,7 +17,19 @@ Fields = Optional[List[str]]
 
 
 class CensysSearchAPIv1(CensysAPIBase):
-    """This class is the base class for all v1 API indexes."""
+    """This class is the base class for all v1 API indexes.
+
+    See CensysAPIBase for additional arguments.
+
+    Args:
+        api_id (str): Optional; The API ID provided by Censys.
+        api_secret (str): Optional; The API secret provided by Censys.
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
+
+    Raises:
+        CensysException: Base Exception Class for the Censys API.
+    """
 
     DEFAULT_URL: str = "https://censys.io/api/v1"
     """Default Search API base URL."""
@@ -29,17 +41,7 @@ class CensysSearchAPIv1(CensysAPIBase):
         "v1 API will be deprecated soon. For more details please visit INSERT_LINK"
     )
     def __init__(self, *args, **kwargs):
-        """Inits CensysSearchAPIv1.
-
-        See CensysAPIBase for additional arguments.
-
-        Args:
-            api_id (str, optional): The API ID provided by Censys.
-            api_secret (str, optional): The API secret provided by Censys.
-
-        Raises:
-            CensysException: Base Exception Class for the Censys API.
-        """
+        """Inits CensysSearchAPIv1."""
         # Backwards compatability
         if len(args) == 2:
             kwargs["api_id"] = args[0]
@@ -122,17 +124,20 @@ class CensysSearchAPIv1(CensysAPIBase):
 
         Args:
             query (str): The query to be executed.
-            fields (Fields, optional): Fields to be returned in the result set.
-            page (int, optional): The page of the result set. Defaults to 1.
-            flatten (bool, optional): Flattens fields to dot notation. Defaults to True.
+            fields (Fields): Optional; Fields to be returned in the result set.
+            page (int): Optional; The page of the result set. Defaults to 1.
+            flatten (bool): Optional; Flattens fields to dot notation. Defaults to True.
+
+        Raises:
+            CensysException: Base Exception Class for the Censys API.
 
         Returns:
             dict: The result set returned.
         """
         try:
             page = int(page)
-        except ValueError:
-            raise CensysException(f"Invalid page value: {page}")
+        except ValueError as error:
+            raise CensysException(f"Invalid page value: {page}") from error
         data = {
             "query": query,
             "page": page,
@@ -156,10 +161,13 @@ class CensysSearchAPIv1(CensysAPIBase):
 
         Args:
             query (str): The query to be executed.
-            fields (Fields, optional): Fields to be returned in the result set.
-            page (int, optional): The page of the result set. Defaults to 1.
-            max_records (int, optional): The maximum number of records.
-            flatten (bool, optional): Flattens fields to dot notation. Defaults to True.
+            fields (Fields): Optional; Fields to be returned in the result set.
+            page (int): Optional; The page of the result set. Defaults to 1.
+            max_records (int): Optional; The maximum number of records.
+            flatten (bool): Optional; Flattens fields to dot notation. Defaults to True.
+
+        Raises:
+            CensysException: Base Exception Class for the Censys API.
 
         Yields:
             dict: The result set returned.
@@ -168,8 +176,8 @@ class CensysSearchAPIv1(CensysAPIBase):
             fields = []
         try:
             page = int(page)
-        except ValueError:
-            raise CensysException(f"Invalid page value: {page}")
+        except ValueError as error:
+            raise CensysException(f"Invalid page value: {page}") from error
         pages = float("inf")
         data = {"query": query, "page": page, "fields": fields, "flatten": flatten}
 
@@ -207,7 +215,7 @@ class CensysSearchAPIv1(CensysAPIBase):
         Args:
             query (str): The query to be executed.
             field (str): The field you are running a breakdown on.
-            buckets (int, optional): The maximum number of values. Defaults to 50.
+            buckets (int): Optional; The maximum number of values. Defaults to 50.
 
         Returns:
             dict: The result set returned.

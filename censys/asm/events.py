@@ -18,8 +18,8 @@ class Events(CensysAsmAPI):
         """Requests a logbook cursor.
 
         Args:
-            start (datetime or int, optional): Timestamp or event ID to begin searching.
-            filters (list, optional): List of filters applied to logbook search results.
+            start ([datetime, int]): Optional; Timestamp or event ID to begin searching.
+            filters (list): Optional; List of filters applied to logbook search results.
 
         Returns:
             str: Cursor result.
@@ -33,14 +33,14 @@ class Events(CensysAsmAPI):
         """Requests logbook events from inception or from the provided cursor.
 
         Args:
-            cursor (str, optional): Logbook cursor.
+            cursor (str): Optional; Logbook cursor.
 
-        Returns:
-            generator: Logbook events results.
+        Yields:
+            dict: Logbook event.
         """
         args = {"cursor": cursor}
 
-        return self._get_logbook_page(self.base_path, args)
+        yield from self._get_logbook_page(self.base_path, args)
 
 
 class Filters:
@@ -70,8 +70,8 @@ def format_data(
     """Formats cursor request data into a start date/id and filter list.
 
     Args:
-        start (datetime or int, optional): Timestamp or event ID to begin searching.
-        filters (list, optional): List of filters applied to logbook search results.
+        start ([datetime, int]): Optional; Timestamp or event ID to begin searching.
+        filters (list): Optional; List of filters applied to logbook search results.
 
     Returns:
         dict: Formatted logbook cursor request data
