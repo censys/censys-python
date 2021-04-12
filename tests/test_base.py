@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+import responses
 from requests.models import Response
 
 from .utils import CensysTestCase
@@ -10,6 +11,9 @@ from censys.exceptions import (
     CensysException,
     CensysAPIException,
 )
+
+TEST_URL = "https://url"
+TEST_ENDPOINT = "/endpoint"
 
 
 class CensysAPIBaseTests(CensysTestCase):
@@ -23,11 +27,49 @@ class CensysAPIBaseTests(CensysTestCase):
         with pytest.raises(CensysException, match="No API url configured."):
             CensysAPIBase()
 
-    @patch("censys.base.requests.Session.get")
-    def test_successful_empty_json_response(self, mock):
-        mock_response = Response()
-        mock_response.status_code = 200
-        mock.return_value = mock_response
-        base = CensysAPIBase("url")
+    def test_successful_empty_json_response(self):
+        self.responses.add(
+            responses.GET,
+            TEST_URL + TEST_ENDPOINT,
+            status=200,
+            body=None,
+        )
+        base = CensysAPIBase(TEST_URL)
 
-        assert base._make_call(base._session.get, "endpoint") == {}
+        assert base._get(TEST_ENDPOINT) == {}
+
+    def test_successful_error_json_response(self):
+        ERROR_JSON = {
+            "error": "Test Error",
+            "error_type": "Test",
+            "errorCode": 200,
+            "details": "This is a test error",
+        }
+        self.responses.add(
+            responses.GET,
+            TEST_URL + TEST_ENDPOINT,
+            status=200,
+            json=ERROR_JSON,
+        )
+        base = CensysAPIBase(TEST_URL)
+
+        with pytest.raises(CensysAPIException, match=ERROR_JSON["error"]):
+            base._get(TEST_ENDPOINT)
+
+    def test_invalid_json_response(self):
+        self.responses.add(
+            responses.GET,
+            TEST_URL + TEST_ENDPOINT,
+            status=400,
+            body="<html><h1>Definitely not JSON</h1>",
+        )
+        base = CensysAPIBase(TEST_URL)
+
+        with pytest.raises(
+            CensysAPIException, match="is not valid JSON and cannot be decoded"
+        ):
+            base._get(TEST_ENDPOINT)
+
+    def test_proxies(self):
+        base = CensysAPIBase(TEST_URL, proxies={"http": "test", "https": "tests"})
+        assert list(base._session.proxies.keys()) == ["https"]

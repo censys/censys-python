@@ -7,21 +7,38 @@ from io import StringIO
 from unittest.mock import patch, mock_open
 
 import pytest
+import responses
 
-from .utils import required_env
+from .utils import CensysTestCase
 
 from censys.cli import main as cli_main
 from censys.cli import CensysHNRI
 from censys.exceptions import (
     CensysException,
     CensysCLIException,
-    CensysNotFoundException,
 )
 from censys.config import config_path
 from censys import __version__
 
+BASE_URL = "https://censys.io/api/v1"
+CLI_AUTH_ARGS = [
+    "--api-id",
+    CensysTestCase.api_id,
+    "--api-secret",
+    CensysTestCase.api_secret,
+]
 
-class CensysCliTest(unittest.TestCase):
+
+def search_callback(request):
+    payload = json.loads(request.body)
+    resp_body = {
+        "results": [{field: None for field in payload["fields"]}],
+        "metadata": {"page": payload["page"], "pages": 100},
+    }
+    return (200, {}, json.dumps(resp_body))
+
+
+class CensysCliTest(CensysTestCase):
     @patch("argparse._sys.argv", ["censys"])
     def test_default_help(self):
         temp_stdout = StringIO()
@@ -49,7 +66,7 @@ class CensysCliTest(unittest.TestCase):
         assert __version__ in temp_stdout.getvalue()
 
 
-class CensysCliSearchTest(unittest.TestCase):
+class CensysCliSearchTest(CensysTestCase):
     @patch("argparse._sys.argv", ["censys", "search", "--help"])
     def test_search_help(self):
         temp_stdout = StringIO()
@@ -69,7 +86,6 @@ class CensysCliSearchTest(unittest.TestCase):
 
         mock_file.assert_called_with(config_path, "w")
 
-    @required_env
     @patch(
         "argparse._sys.argv",
         [
@@ -85,9 +101,17 @@ class CensysCliSearchTest(unittest.TestCase):
             "json",
             "--max-pages",
             "2",
-        ],
+        ]
+        + CLI_AUTH_ARGS,
     )
     def test_write_json(self):
+        self.responses.add_callback(
+            responses.POST,
+            BASE_URL + "/search/certificates",
+            callback=search_callback,
+            content_type="application/json",
+        )
+
         temp_stdout = StringIO()
         with contextlib.redirect_stdout(temp_stdout):
             cli_main()
@@ -100,7 +124,6 @@ class CensysCliSearchTest(unittest.TestCase):
         json_path = cli_response.replace(PREFIX, "").strip()
         assert json_path.endswith(".json")
         assert json_path.startswith("censys-query-output.")
-        assert os.path.isfile(json_path)
 
         with open(json_path) as json_file:
             json_response = json.load(json_file)
@@ -111,7 +134,6 @@ class CensysCliSearchTest(unittest.TestCase):
         # Cleanup
         os.remove(json_path)
 
-    @required_env
     @patch(
         "argparse._sys.argv",
         [
@@ -125,9 +147,17 @@ class CensysCliSearchTest(unittest.TestCase):
             "protocols",
             "--format",
             "csv",
-        ],
+        ]
+        + CLI_AUTH_ARGS,
     )
     def test_write_csv(self):
+        self.responses.add_callback(
+            responses.POST,
+            BASE_URL + "/search/ipv4",
+            callback=search_callback,
+            content_type="application/json",
+        )
+
         temp_stdout = StringIO()
         with contextlib.redirect_stdout(temp_stdout):
             cli_main()
@@ -140,7 +170,6 @@ class CensysCliSearchTest(unittest.TestCase):
         csv_path = cli_response.replace(PREFIX, "").strip()
         assert csv_path.endswith(".csv")
         assert csv_path.startswith("censys-query-output.")
-        assert os.path.isfile(csv_path)
 
         with open(csv_path) as csv_file:
             csv_reader = csv.reader(csv_file)
@@ -151,7 +180,6 @@ class CensysCliSearchTest(unittest.TestCase):
         # Cleanup
         os.remove(csv_path)
 
-    @required_env
     @patch(
         "argparse._sys.argv",
         [
@@ -167,9 +195,17 @@ class CensysCliSearchTest(unittest.TestCase):
             "json",
             "--output",
             "censys-certs.json",
-        ],
+        ]
+        + CLI_AUTH_ARGS,
     )
     def test_write_output_path(self):
+        self.responses.add_callback(
+            responses.POST,
+            BASE_URL + "/search/certificates",
+            callback=search_callback,
+            content_type="application/json",
+        )
+
         output_path = "censys-certs.json"
 
         cli_main()
@@ -185,7 +221,6 @@ class CensysCliSearchTest(unittest.TestCase):
         # Cleanup
         os.remove(output_path)
 
-    @required_env
     @patch(
         "argparse._sys.argv",
         [
@@ -199,9 +234,17 @@ class CensysCliSearchTest(unittest.TestCase):
             "443.https.get.headers.server",
             "--format",
             "screen",
-        ],
+        ]
+        + CLI_AUTH_ARGS,
     )
     def test_write_screen(self):
+        self.responses.add_callback(
+            responses.POST,
+            BASE_URL + "/search/websites",
+            callback=search_callback,
+            content_type="application/json",
+        )
+
         temp_stdout = StringIO()
         with contextlib.redirect_stdout(temp_stdout):
             cli_main()
@@ -211,7 +254,6 @@ class CensysCliSearchTest(unittest.TestCase):
         assert len(json_response) >= 1
         assert "443.https.get.headers.server" in json_response[0]
 
-    @required_env
     @patch(
         "argparse._sys.argv",
         [
@@ -232,9 +274,17 @@ class CensysCliSearchTest(unittest.TestCase):
             "443.https.get.headers.server",
             "--format",
             "screen",
-        ],
+        ]
+        + CLI_AUTH_ARGS,
     )
     def test_overwrite(self):
+        self.responses.add_callback(
+            responses.POST,
+            BASE_URL + "/search/websites",
+            callback=search_callback,
+            content_type="application/json",
+        )
+
         expected_fields = {
             "domain",
             "ports",
@@ -254,7 +304,6 @@ class CensysCliSearchTest(unittest.TestCase):
         assert len(json_response) >= 1
         assert expected_fields == set(json_response[0].keys())
 
-    @required_env
     @patch(
         "argparse._sys.argv",
         [
@@ -286,7 +335,8 @@ class CensysCliSearchTest(unittest.TestCase):
             "parsed.tbs_noct_fingerprint",
             "parsed.validation_level",
             "parsed.version",
-        ],
+        ]
+        + CLI_AUTH_ARGS,
     )
     def test_field_max(self):
         with pytest.raises(
@@ -296,18 +346,28 @@ class CensysCliSearchTest(unittest.TestCase):
             cli_main()
 
 
-class CensysCliHNRITest(unittest.TestCase):
-    @required_env
+class CensysCliHNRITest(CensysTestCase):
+    IPIFY_URL = "https://api.ipify.org?format=json"
+    IP_ADDRESS = "8.8.8.8"
+
+    def setUp(self):
+        super().setUp()
+        self.api = CensysHNRI(self.api_id, self.api_secret)
+        self.base_url = self.api.index._api_url
+
     @patch(
         "argparse._sys.argv",
-        ["censys", "hnri"],
+        ["censys", "hnri"] + CLI_AUTH_ARGS,
     )
-    @patch("censys.cli.CensysHNRI.get_current_ip", return_value="8.8.8.8")
-    @patch(
-        "censys.v1.ipv4.CensysIPv4.view",
-        return_value={"protocols": ["443/https", "53/dns", "21/banner"]},
-    )
-    def test_hnri_medium(self, mock_ip, mock_view):
+    @patch("censys.cli.CensysHNRI.get_current_ip", return_value=IP_ADDRESS)
+    def test_hnri_medium(self, mock_ip):
+        self.responses.add(
+            responses.GET,
+            f"{self.base_url}/view/ipv4/{self.IP_ADDRESS}",
+            status=200,
+            json={"protocols": ["443/https", "53/dns", "21/banner"]},
+        )
+
         temp_stdout = StringIO()
         with contextlib.redirect_stdout(temp_stdout):
             cli_main()
@@ -317,30 +377,19 @@ class CensysCliHNRITest(unittest.TestCase):
         assert "https on 443" in stdout
         assert "dns on 53" in stdout
 
-    @required_env
     @patch(
         "argparse._sys.argv",
-        ["censys", "hnri"],
+        ["censys", "hnri"] + CLI_AUTH_ARGS,
     )
-    @patch("censys.cli.CensysHNRI.get_current_ip", return_value="94.142.241.111")
-    @patch("censys.v1.ipv4.CensysIPv4.view", return_value={"protocols": ["23/telnet"]})
-    def test_hnri_high(self, mock_ip, mock_view):
-        # Using towel.blinkenlights.nl/94.142.241.111
-        temp_stdout = StringIO()
-        with contextlib.redirect_stdout(temp_stdout):
-            cli_main()
+    @patch("censys.cli.CensysHNRI.get_current_ip", return_value=IP_ADDRESS)
+    def test_hnri_no_medium(self, mock_ip):
+        self.responses.add(
+            responses.GET,
+            f"{self.base_url}/view/ipv4/{self.IP_ADDRESS}",
+            status=200,
+            json={"protocols": ["23/telnet"]},
+        )
 
-        stdout = temp_stdout.getvalue().strip()
-        assert "High Risks Found:" in stdout
-        assert "telnet on 23" in stdout
-
-    @required_env
-    @patch(
-        "argparse._sys.argv",
-        ["censys", "hnri"],
-    )
-    @patch("censys.v1.ipv4.CensysIPv4.view", return_value={"protocols": ["23/telnet"]})
-    def test_hnri_no_medium(self, mock_view):
         temp_stdout = StringIO()
         with contextlib.redirect_stdout(temp_stdout):
             cli_main()
@@ -350,35 +399,43 @@ class CensysCliHNRITest(unittest.TestCase):
         assert "telnet on 23" in stdout
         assert "You don't have any Medium Risks in your network" in stdout
 
-    @required_env
     @patch(
         "argparse._sys.argv",
-        ["censys", "hnri"],
+        ["censys", "hnri"] + CLI_AUTH_ARGS,
     )
-    @patch("censys.cli.CensysHNRI.get_current_ip", return_value="8.8.8.8")
-    @patch(
-        "censys.v1.ipv4.CensysIPv4.view",
-        side_effect=CensysNotFoundException(
-            404, "The requested record does not exist."
-        ),
-    )
-    def test_hnri_not_found(self, mock_view, mock_ip):
+    @patch("censys.cli.CensysHNRI.get_current_ip", return_value=IP_ADDRESS)
+    def test_hnri_not_found(self, mock_ip):
+        self.responses.add(
+            responses.GET,
+            f"{self.base_url}/view/ipv4/{self.IP_ADDRESS}",
+            status=404,
+            json={
+                "status": "error",
+                "error_type": "unknown",
+                "error": "We don't know anything about the specified host.",
+            },
+        )
+
         temp_stdout = StringIO()
         with contextlib.redirect_stdout(temp_stdout):
             cli_main()
-
-        mock_view.assert_called_with("8.8.8.8")
 
         stdout = temp_stdout.getvalue().strip()
         assert "No Risks were found on your network" in stdout
 
     def test_get_current_ip(self):
-        ip_address = CensysHNRI.get_current_ip()
-        assert isinstance(ip_address, str)
+        self.responses.add(
+            responses.GET,
+            self.IPIFY_URL,
+            status=200,
+            json={"ip": self.IP_ADDRESS},
+        )
+        ip_address = self.api.get_current_ip()
+        assert ip_address == self.IP_ADDRESS
 
     def test_no_risks(self):
         with pytest.raises(CensysCLIException):
-            CensysHNRI.risks_to_string([], [])
+            self.api.risks_to_string([], [])
 
 
 if __name__ == "__main__":

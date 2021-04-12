@@ -12,6 +12,6 @@ exclude =
     # This contains builds of flake8 that we don't want to check
     dist
 per-file-ignores = 
-    tests/*.py:E501,D100,D101,D102,D104,D107,
+    tests/*.py:E501,D100,D101,D102,D103,D104,D107,
     __init__.py:F401,F403
 docstring-convention=google

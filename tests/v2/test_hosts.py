@@ -1,7 +1,8 @@
-import unittest
 import datetime
 
 import responses
+
+from ..utils import CensysTestCase
 
 from censys import CensysHosts
 
@@ -82,16 +83,10 @@ HTTP_AGGREGATE_JSON = {
 }
 
 
-class TestHosts(unittest.TestCase):
+class TestHosts(CensysTestCase):
     def setUp(self):
-        self.responses = responses.RequestsMock()
-        self.responses.start()
-
-        self.addCleanup(self.responses.stop)
-        self.addCleanup(self.responses.reset)
-
-        self.api = CensysHosts("test-api-id", "test-api-secret")
-        self.base_url = self.api._api_url
+        super().setUp()
+        self.setUpApi(CensysHosts(self.api_id, self.api_secret))
 
     def test_view(self):
         self.responses.add(
@@ -106,7 +101,6 @@ class TestHosts(unittest.TestCase):
         assert res == VIEW_HOST_JSON["result"]
 
     def test_view_at_time(self):
-
         self.responses.add(
             responses.GET,
             self.base_url + "/hosts/8.8.8.8?at_time=2021-03-01T00:00:00.000000Z",

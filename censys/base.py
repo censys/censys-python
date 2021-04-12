@@ -169,7 +169,7 @@ class CensysAPIBase:
             const = json_data.get("error_type", "unknown")
             error_code = json_data.get("errorCode", "unknown")
             details = json_data.get("details", "unknown")
-        except (ValueError, json.decoder.JSONDecodeError) as error:  # pragma: no cover
+        except (ValueError, json.decoder.JSONDecodeError) as error:
             message = (
                 f"Response from {res.url} is not valid JSON and cannot be decoded."
             )

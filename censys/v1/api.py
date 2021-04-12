@@ -74,7 +74,7 @@ class CensysSearchAPIv1(CensysAPIBase):
         self.report_path = f"report/{self.INDEX_NAME}"
 
         # Confirm setup
-        self.account()
+        # self.account()
 
     def _get_exception_class(  # type: ignore
         self, res: Response
@@ -192,7 +192,7 @@ class CensysSearchAPIv1(CensysAPIBase):
                 yield result
                 count += 1
                 if max_records and count >= max_records:
-                    return
+                    return  # pragma: no cover
 
     def view(self, document_id: str) -> dict:
         """View the current structured data we have on a specific document.

@@ -4,24 +4,26 @@ from ..utils import CensysTestCase, permissions_env
 
 from censys.v1.data import CensysData
 
+# TODO: Mock responses
+
 
 class CensysDataTest(CensysTestCase):
 
     EXPECTED_GET_SERIES_KEYS = ["primary_series", "raw_series"]
 
-    @classmethod
-    def setUpClass(cls):
-        cls._api = CensysData()
+    def setUp(self):
+        super().setUp()
+        self.setUpApi(CensysData(self.api_id, self.api_secret))
 
     def test_get_series(self):
-        series = self._api.get_series()
+        series = self.api.get_series()
         for key in self.EXPECTED_GET_SERIES_KEYS:
             assert key in series
 
     @permissions_env
     def test_view_series(self):
         series = "ipv4_2018"
-        res = self._api.view_series(series)
+        res = self.api.view_series(series)
 
         assert "description" in res
         assert "results" in res
@@ -32,7 +34,7 @@ class CensysDataTest(CensysTestCase):
     def test_view_result(self):
         series = "ipv4_2018"
         result = "20200818"
-        res = self._api.view_result(series, result)
+        res = self.api.view_result(series, result)
 
         assert res["id"] == result
         assert len(res["files"].keys()) == 1035

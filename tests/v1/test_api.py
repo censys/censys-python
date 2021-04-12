@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch, mock_open
 
 import pytest
+import responses
 from requests.models import Response
 from parameterized import parameterized
 
@@ -14,42 +15,62 @@ from censys.exceptions import (
     CensysExceptionMapper,
 )
 
+ACCOUNT_JSON = {
+    "login": "test@censys.io",
+    "first_login": "2021-01-01 01:00:00",
+    "last_login": "2021-01-01 01:00:00.000000",
+    "email": "test@censys.io",
+    "quota": {"used": 1, "resets_at": "2021-01-01 01:00:00", "allowance": 100},
+}
+
+SearchExceptionParams = [
+    (code, exception)
+    for code, exception in CensysExceptionMapper.SEARCH_EXCEPTIONS.items()
+]
+
 
 class CensysSearchAPITests(CensysTestCase):
-
-    EXPECTED_ACCOUNT_KEYS = {"email", "first_login", "last_login", "login", "quota"}
-    EXPECTED_QUOTA_KEYS = {"allowance", "resets_at", "used"}
-    SearchExceptionParams = [
-        (code, exception)
-        for code, exception in CensysExceptionMapper.SEARCH_EXCEPTIONS.items()
-    ]
-
-    @classmethod
-    def setUpClass(cls):
-        cls._api = CensysSearchAPI()
+    def setUp(self):
+        super().setUp()
+        self.setUpApi(CensysSearchAPI(self.api_id, self.api_secret))
 
     def test_account(self):
-        res = self._api.account()
+        self.responses.add(
+            responses.GET,
+            self.base_url + "/account",
+            status=200,
+            json=ACCOUNT_JSON,
+        )
+        res = self.api.account()
 
-        assert set(res.keys()) == self.EXPECTED_ACCOUNT_KEYS
+        assert res == ACCOUNT_JSON
 
     def test_quota(self):
-        res = self._api.quota()
+        self.responses.add(
+            responses.GET,
+            self.base_url + "/account",
+            status=200,
+            json=ACCOUNT_JSON,
+        )
+        res = self.api.quota()
 
-        assert set(res.keys()) == self.EXPECTED_QUOTA_KEYS
-        assert all(isinstance(value, int) for value in [res["allowance"], res["used"]])
+        assert res == ACCOUNT_JSON["quota"]
 
     @parameterized.expand(SearchExceptionParams)
     def test_get_exception_class(self, status_code, exception):
         response = Response()
         response.status_code = status_code
 
-        assert self._api._get_exception_class(response) == exception
+        assert self.api._get_exception_class(response) == exception
 
     def test_exception_repr(self):
         exception = CensysSearchException(404, "Not Found", const="notfound")
 
         assert repr(exception) == "404 (notfound): Not Found"
+
+    def test_invalid_page_value(self):
+        with pytest.raises(CensysException, match="Invalid page value:"):
+            self.api.paged_search("test query", page="x")
 
 
 @patch.dict("os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""})
