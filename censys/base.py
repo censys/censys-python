@@ -57,9 +57,6 @@ class CensysAPIBase:
 
     Raises:
         CensysException: Base Exception Class for the Censys API.
-
-    Examples:
-        >>> api = CensysAPIBase()
     """
 
     DEFAULT_TIMEOUT: int = 30

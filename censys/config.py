@@ -1,7 +1,7 @@
 """Interact with the config file."""
 import os
+import configparser
 from pathlib import Path
-from configparser import ConfigParser, NoOptionError
 
 from censys.version import __version__
 
@@ -29,13 +29,13 @@ def write_config(config):
         config.write(configfile)
 
 
-def get_config():
+def get_config() -> configparser.ConfigParser:
     """Reads and returns config.
 
     Returns:
-        ConfigParser: Config for Censys.
+        configparser.ConfigParser: Config for Censys.
     """
-    config = ConfigParser()
+    config = configparser.ConfigParser()
     if not os.path.isdir(xdg_config_path):
         os.mkdir(xdg_config_path)
     if not os.path.isdir(censys_path):
@@ -61,6 +61,6 @@ def check_config(config):
     for key in default_config:
         try:
             config.get(DEFAULT, key)
-        except NoOptionError:
+        except configparser.NoOptionError:
             config.set(DEFAULT, key, default_config.get(key))
     write_config(config)

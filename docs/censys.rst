@@ -50,11 +50,3 @@ censys.exceptions module
    :members:
    :undoc-members:
    :show-inheritance:
-
-censys.version module
----------------------
-
-.. automodule:: censys.version
-   :members:
-   :undoc-members:
-   :show-inheritance:

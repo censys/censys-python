@@ -8,6 +8,7 @@ class CensysHosts(CensysSearchAPIv2):
     Examples:
         Inits Censys Hosts.
 
+        >>> from censys import CensysHosts
         >>> h = CensysHosts()
 
         Simple host search.
@@ -24,7 +25,7 @@ class CensysHosts(CensysSearchAPIv2):
         }
         ...
 
-        Simple host view.
+        View specific host.
 
         >>> h.view("1.0.0.0")
         {
