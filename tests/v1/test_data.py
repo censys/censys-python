@@ -1,45 +1,65 @@
 import unittest
 
-from ..utils import CensysTestCase, permissions_env
+import responses
+
+from ..utils import CensysTestCase
 
 from censys.v1.data import CensysData
 
-# TODO: Mock responses
+SERIES_JSON = {
+    "primary_series": "",
+    "raw_series": "",
+}
+VIEW_JSON = {
+    "description": (
+        "The Censys IPv4 dataset provides data about the services "
+        "(e.g., HTTP, SMTP, MySQL) running on all publicly-accessible IPv4 hosts."
+    ),
+    "results": {"historical": []},
+}
+RESULT_JSON = {"files": {"filename": {"file_type": "data"}}}
+SERIES = "ipv4_2018"
+RESULT = "20200818"
 
 
 class CensysDataTest(CensysTestCase):
-
-    EXPECTED_GET_SERIES_KEYS = ["primary_series", "raw_series"]
-
     def setUp(self):
         super().setUp()
         self.setUpApi(CensysData(self.api_id, self.api_secret))
 
     def test_get_series(self):
+        self.responses.add(
+            responses.GET,
+            f"{self.base_url}/data",
+            status=200,
+            json=SERIES_JSON,
+        )
+
         series = self.api.get_series()
-        for key in self.EXPECTED_GET_SERIES_KEYS:
-            assert key in series
+        assert series == SERIES_JSON
 
-    @permissions_env
     def test_view_series(self):
-        series = "ipv4_2018"
-        res = self.api.view_series(series)
+        self.responses.add(
+            responses.GET,
+            f"{self.base_url}/data/{SERIES}",
+            status=200,
+            json=VIEW_JSON,
+        )
+        res = self.api.view_series(SERIES)
 
-        assert "description" in res
-        assert "results" in res
-        assert "historical" in res["results"]
-        assert isinstance(res["results"]["historical"], list)
+        assert res == VIEW_JSON
 
-    @permissions_env
     def test_view_result(self):
-        series = "ipv4_2018"
-        result = "20200818"
-        res = self.api.view_result(series, result)
+        self.responses.add(
+            responses.GET,
+            f"{self.base_url}/data/{SERIES}/{RESULT}",
+            status=200,
+            json=RESULT_JSON,
+        )
 
-        assert res["id"] == result
-        assert len(res["files"].keys()) == 1035
-        assert res["total_size"] == 347732264183
-        assert res["series"] == {"id": series, "name": "IPv4 Snapshots"}
+        res = self.api.view_result(SERIES, RESULT)
+
+        assert res == RESULT_JSON
 
 
 if __name__ == "__main__":
