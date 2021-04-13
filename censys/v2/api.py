@@ -47,13 +47,10 @@ class CensysSearchAPIv2(CensysAPIBase):
     ):
         ...
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
+    ):
         """Inits CensysSearchAPIv2."""
-        # Backwards compatability
-        if len(args) == 2:
-            kwargs["api_id"] = args[0]
-            kwargs["api_secret"] = args[1]
-
         CensysAPIBase.__init__(self, kwargs.get("url", self.DEFAULT_URL), **kwargs)
 
         # Gets config file
@@ -61,12 +58,10 @@ class CensysSearchAPIv2(CensysAPIBase):
 
         # Try to get credentials
         self._api_id = (
-            kwargs.get("api_id")
-            or os.getenv("CENSYS_API_ID")
-            or config.get(DEFAULT, "api_id")
+            api_id or os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id")
         )
         self._api_secret = (
-            kwargs.get("api_secret")
+            api_secret
             or os.getenv("CENSYS_API_SECRET")
             or config.get(DEFAULT, "api_secret")
         )
@@ -78,10 +73,6 @@ class CensysSearchAPIv2(CensysAPIBase):
         # Generate concrete paths to be called
         self.search_path = f"{self.INDEX_NAME}/search"
         self.aggregate_path = f"{self.INDEX_NAME}/aggregate"
-
-        # Confirm setup
-        # TODO: Update when account migrates over
-        # self.account()
 
     def _get_exception_class(  # type: ignore
         self, res: Response

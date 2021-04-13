@@ -46,12 +46,15 @@ class CensysAsmAPITests(CensysTestCase):
 
     def test_exception_repr(self):
         exception = CensysAsmException(
-            404, "Unable to Find Seed", error_code=10014, details="[{id: 999}]"
+            404,
+            "Unable to Find Seed",
+            error_code=10014,
+            details="[{id: 999}]",  # noqa: FS003
         )
 
         assert (
             repr(exception)
-            == "404 (Error Code: 10014), Unable to Find Seed. [{id: 999}]"
+            == "404 (Error Code: 10014), Unable to Find Seed. [{id: 999}]"  # noqa: FS003
         )
 
     @parameterized.expand([("assets"), ("comments"), ("tags"), ("subdomains")])

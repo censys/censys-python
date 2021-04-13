@@ -120,6 +120,20 @@ class CensysIndexTests(CensysTestCase):
         with pytest.raises(CensysException, match="Invalid page value: x"):
             list(self.api.search("*", page="x"))
 
+    def test_max_records_search(self):
+        MAX_RECORDS = 10
+        temp_json = SEARCH_JSON.copy()
+        temp_json["results"] = [{"sample": "results"} for _ in range(MAX_RECORDS + 5)]
+        self.responses.add(
+            responses.POST,
+            f"{self.base_url}/search/{self.index}",
+            status=200,
+            json=temp_json,
+        )
+
+        res = list(self.api.search("*", max_records=MAX_RECORDS))
+        assert len(res) == MAX_RECORDS
+
 
 if __name__ == "__main__":
     unittest.main()

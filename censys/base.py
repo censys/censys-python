@@ -201,9 +201,7 @@ class CensysAPIBase:
     def _put(
         self, endpoint: str, args: Optional[dict] = None, data: Optional[dict] = None
     ) -> dict:
-        return self._make_call(
-            self._session.put, endpoint, args, data
-        )  # pragma: no cover
+        return self._make_call(self._session.put, endpoint, args, data)
 
     def _delete(self, endpoint: str, args: Optional[dict] = None) -> dict:
-        return self._make_call(self._session.delete, endpoint, args)  # pragma: no cover
+        return self._make_call(self._session.delete, endpoint, args)

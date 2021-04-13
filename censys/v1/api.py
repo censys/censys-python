@@ -192,7 +192,7 @@ class CensysSearchAPIv1(CensysAPIBase):
                 yield result
                 count += 1
                 if max_records and count >= max_records:
-                    return  # pragma: no cover
+                    return
 
     def view(self, document_id: str) -> dict:
         """View the current structured data we have on a specific document.
