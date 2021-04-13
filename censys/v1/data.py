@@ -28,7 +28,7 @@ class CensysData(CensysSearchAPIv1):
         Returns:
             dict: The result set returned.
         """
-        path = "/".join([self._PREFIX, series_id])
+        path = f"{self._PREFIX}/{series_id}"
         return self._get(path)
 
     def view_result(self, series_id: str, result_id: str) -> dict:
@@ -41,5 +41,5 @@ class CensysData(CensysSearchAPIv1):
         Returns:
             dict: The result set returned.
         """
-        path = "/".join([self._PREFIX, series_id, result_id])
+        path = f"{self._PREFIX}/{series_id}/{result_id}"
         return self._get(path)
