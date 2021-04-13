@@ -66,7 +66,8 @@ class CensysAsmAPI(CensysAPIBase):
         Args:
             path (str): The API url endpoint.
             page_number (int): Optional; Page number to begin at when getting results.
-            page_size (int): Optional; Number of results to return per HTTP request
+            page_size (int):
+                Optional; Number of results to return per HTTP request. Defaults to 500.
 
         Yields:
             dict: The resource result returned.
