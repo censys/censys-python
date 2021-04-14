@@ -3,9 +3,7 @@ import os
 from setuptools import find_packages, setup
 
 NAME = "censys"
-DESCRIPTION = (
-    "An easy-to-use and lightweight API wrapper for Censys Search (censys.io)."
-)
+DESCRIPTION = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
 GIT_URL = "https://github.com/censys/censys-python"
 ISSUE_URL = GIT_URL + "/issues"
 DOC_URL = "https://censys-python.rtfd.io"

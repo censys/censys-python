@@ -1,4 +1,4 @@
-"""An easy-to-use and lightweight API wrapper for Censys Search (censys.io)."""
+"""An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."""
 from .asm import AsmClient
 from .v1 import *
 from .v2 import *
