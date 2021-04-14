@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-"""
-Interact with the Censys Search API through the command line.
-"""
-
+"""Interact with the Censys Search API through the command line."""
 import os
 import sys
 import csv
@@ -32,7 +29,8 @@ Index = Union[CensysIPv4, CensysWebsites, CensysCertificates]
 
 # TODO: Breakout into cli/
 class CensysAPISearch:
-    """
+    """Censys Search for CLI.
+
     This class searches the Censys API, taking in options from the command line and
     returning the results to a CSV or JSON file, or to stdout.
 
@@ -47,6 +45,11 @@ class CensysAPISearch:
     """A list of fields to be used by the CSV writer."""
 
     def __init__(self, **kwargs):
+        """Inits CensysAPISearch.
+
+        Args:
+            **kwargs: Arbitrary keyword arguments.
+        """
         self.api_user = kwargs.get("api_id")
         self.api_pass = kwargs.get("api_secret")
         self.start_page = kwargs.get("start_page", 1)
@@ -54,8 +57,7 @@ class CensysAPISearch:
 
     @staticmethod
     def _write_csv(file_path: str, search_results: Results, fields: Fields) -> bool:
-        """
-        This method writes the search results to a new file in CSV format.
+        """Write search results to a new file in CSV format.
 
         Args:
             file_path (str): Name of the file to write to on the disk.
@@ -65,7 +67,6 @@ class CensysAPISearch:
         Returns:
             bool: True if wrote to file successfully.
         """
-
         with open(file_path, "w") as output_file:
             if search_results and isinstance(search_results, list):
                 # Get the header row from the first result
@@ -83,8 +84,7 @@ class CensysAPISearch:
 
     @staticmethod
     def _write_json(file_path: str, search_results: Results) -> bool:
-        """
-        This method writes the search results to a new file in JSON format.
+        """Write search results to a new file in JSON format.
 
         Args:
             file_path (str): Name of the file to write to on the disk.
@@ -93,7 +93,6 @@ class CensysAPISearch:
         Returns:
             bool: True if wrote to file successfully.
         """
-
         with open(file_path, "w") as output_file:
             # Since the results are already in JSON, just write them to a file.
             json.dump(search_results, output_file, indent=4)
@@ -103,8 +102,7 @@ class CensysAPISearch:
 
     @staticmethod
     def _write_screen(search_results: Results) -> bool:
-        """
-        This method writes the search results to screen.
+        """Writes search results to standard output.
 
         Args:
             search_results (Results): A list of results from the query.
@@ -112,7 +110,6 @@ class CensysAPISearch:
         Returns:
             bool: True if wrote to file successfully.
         """
-
         print(json.dumps(search_results, indent=4))
         return True
 
@@ -122,19 +119,16 @@ class CensysAPISearch:
         file_format: str = "screen",
         file_path: Optional[str] = None,
     ) -> bool:
-        """
-        This method just sorts which format will be used to store
-        the results of the query.
+        """Maps formats and writes results.
 
         Args:
             results_list (Results): A list of results from the API query.
-            file_format (str, optional): The format of the output.
-            file_path (str optional): A path to write results to.
+            file_format (str): Optional; The format of the output.
+            file_path (str): Optional; A path to write results to.
 
         Returns:
             bool: True if wrote out successfully.
         """
-
         if file_format and isinstance(file_format, str):
             file_format = file_format.lower()
 
@@ -155,13 +149,12 @@ class CensysAPISearch:
         user_fields: Fields,
         overwrite: bool = False,
     ) -> Fields:
-        """
-        This method is used to specify which fields will be returned in the results.
+        """Combines fields search fields.
 
         Args:
             default_fields (Fields): A list of fields that are returned by default.
             user_fields (Fields): A list of user-specified fields. Max 20.
-            overwrite (bool, optional): Whether to overwrite or append default fields
+            overwrite (bool): Optional; Whether to overwrite or append default fields
                                         with user fields. Defaults to False.
 
         Raises:
@@ -170,7 +163,6 @@ class CensysAPISearch:
         Returns:
             Fields: A list of fields.
         """
-
         field_list: Fields = default_fields
 
         if user_fields:
@@ -191,8 +183,7 @@ class CensysAPISearch:
     def _process_search(
         self, query: str, search_index: Index, fields: Fields
     ) -> Results:
-        """
-        This method provides a common way to process searches from the API.
+        """Provides common function to search all indexes.
 
         Args:
             query (str): The string to send to the API as a query.
@@ -202,7 +193,6 @@ class CensysAPISearch:
         Returns:
             Results: A list of results from the query.
         """
-
         records = []
 
         while True:
@@ -225,19 +215,14 @@ class CensysAPISearch:
         return records
 
     def search_ipv4(self, **kwargs) -> Results:
-        """
-        A method to search the IPv4 data set via the API.
+        """Search the IPv4 data set via the API.
 
         Args:
-            query (str): The string search query.
-            fields (list, optional): The fields that should be returned with a query.
-            overwrite (bool, optional): Whether to overwrite or append default fields
-                                        with user fields. Defaults to False.
+            **kwargs: Arbitrary keyword arguments.
 
         Returns:
             Results: A list of results from the query.
         """
-
         default_fields = [
             "updated_at",
             "protocols",
@@ -269,19 +254,14 @@ class CensysAPISearch:
         )
 
     def search_certificates(self, **kwargs) -> Results:
-        """
-        A method to search the Certificates data set via the API.
+        """Search the Certificates data set via the API.
 
         Args:
-            query (str): The string search query.
-            fields (list, optional): The fields that should be returned with a query.
-            overwrite (bool, optional): Whether to overwrite or append default fields
-                                        with user fields. Defaults to False.
+            **kwargs: Arbitrary keyword arguments.
 
         Returns:
             Results: A list of results from the query.
         """
-
         default_fields = [
             "metadata.updated_at",
             "parsed.issuer.common_name",
@@ -310,19 +290,14 @@ class CensysAPISearch:
         )
 
     def search_websites(self, **kwargs) -> Results:
-        """
-        A method to search the Websites (Alexa Top 1M) data set via the API.
+        """Search the Websites (Alexa Top 1M) data set via the API.
 
         Args:
-            query (str): The string search query.
-            fields (list, optional): The fields that should be returned with a query.
-            overwrite (bool, optional): Whether to overwrite or append default fields
-                                        with user fields. Defaults to False.
+            **kwargs: Arbitrary keyword arguments.
 
         Returns:
             Results: A list of results from the query.
         """
-
         default_fields = [
             "443.https.tls.version",
             "alexa_rank",
@@ -347,36 +322,33 @@ class CensysAPISearch:
 
 
 class CensysHNRI:
-    """
-    This class searches the Censys API, check the user's current IP for risks.
+    """Searches the Censys API for the user's current IP to scan for risks.
 
     Args:
-        api_id (str, optional): The API ID provided by Censys.
-        api_secret (str, optional): The API secret provided by Censys.
+        api_id (str): Optional; The API ID provided by Censys.
+        api_secret (str): Optional; The API secret provided by Censys.
     """
 
     HIGH_RISK_DEFINITION: List[str] = ["telnet", "redis", "postgres", "vnc"]
     MEDIUM_RISK_DEFINITION: List[str] = ["ssh", "http", "https"]
 
-    def __init__(self, api_id: str, api_secret: str):
+    def __init__(self, api_id: Optional[str] = None, api_secret: Optional[str] = None):
+        """Inits CensysHNRI."""
         self.index = CensysIPv4(api_id, api_secret)
 
     @staticmethod
     def get_current_ip() -> str:
-        """
-        Uses ipify.org to get the current IP address.
+        """Uses ipify.org to get the current IP address.
 
         Returns:
             str: IP address.
         """
-
         response = requests.get("https://api.ipify.org?format=json")
-        current_ip = response.json().get("ip")
+        current_ip = str(response.json().get("ip"))
         return current_ip
 
     def translate_risk(self, protocols: list) -> Tuple[list, list]:
-        """
-        Interpret protocols to risks.
+        """Interpret protocols to risks.
 
         Args:
             protocols (list): List of slash divided ports/protocols.
@@ -384,7 +356,6 @@ class CensysHNRI:
         Returns:
             Tuple[list, list]: Lists of high and medium risks.
         """
-
         high_risk = []
         medium_risk = []
 
@@ -410,8 +381,7 @@ class CensysHNRI:
 
     @staticmethod
     def risks_to_string(high_risk: list, medium_risk: list) -> str:
-        """
-        Risks to printable string.
+        """Risks to printable string.
 
         Args:
             high_risk (list): Lists of high risks.
@@ -423,7 +393,6 @@ class CensysHNRI:
         Returns:
             str: Printable string for CLI.
         """
-
         len_high_risk = len(high_risk)
         len_medium_risk = len(medium_risk)
 
@@ -450,13 +419,11 @@ class CensysHNRI:
         return response
 
     def view_current_ip_risks(self) -> str:
-        """
-        Gets protocol information for the current IP and returns any risks.
+        """Gets protocol information for the current IP and returns any risks.
 
         Returns:
             str: Printable
         """
-
         current_ip = self.get_current_ip()
 
         try:
@@ -469,13 +436,11 @@ class CensysHNRI:
 
 
 def search(args):
-    """
-    search subcommand.
+    """Search subcommand.
 
     Args:
         args (Namespace): Argparse Namespace.
     """
-
     censys_args = {}
 
     if args.start_page:
@@ -518,13 +483,11 @@ def search(args):
 
 
 def hnri(args):
-    """
-    hnri subcommand.
+    """HNRI subcommand.
 
     Args:
         args (Namespace): Argparse Namespace.
     """
-
     client = CensysHNRI(args.api_id, args.api_secret)
 
     risks = client.view_current_ip_risks()
@@ -533,13 +496,11 @@ def hnri(args):
 
 
 def cli_config(_):  # pragma: no cover
-    """
-    config subcommand.
+    """Config subcommand.
 
     Args:
         _: Argparse Namespace.
     """
-
     api_id_prompt = "Censys API ID"
     api_secret_prompt = "Censys API Secret"
 
@@ -578,13 +539,11 @@ def cli_config(_):  # pragma: no cover
 
 
 def cli_asm_config(_):  # pragma: no cover
-    """
-    config asm subcommand.
+    """Config asm subcommand.
 
     Args:
         _: Argparse Namespace.
     """
-
     api_key_prompt = "Censys ASM API Key"
 
     config = get_config()
@@ -616,13 +575,11 @@ def cli_asm_config(_):  # pragma: no cover
 
 
 def get_parser() -> argparse.ArgumentParser:
-    """
-    Gets ArgumentParser for CLI.
+    """Gets ArgumentParser for CLI.
 
     Returns:
         argparse.ArgumentParser
     """
-
     config = get_config()
 
     auth = argparse.ArgumentParser(add_help=False)
@@ -753,8 +710,7 @@ def get_parser() -> argparse.ArgumentParser:
 
 
 def main():
-    """main cli function"""
-
+    """Main cli function."""
     parser = get_parser()
 
     # Executes by subcommand

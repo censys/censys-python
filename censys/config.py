@@ -1,12 +1,9 @@
-"""
-Interact with the config file.
-"""
-
+"""Interact with the config file."""
 import os
+import configparser
 from pathlib import Path
-from configparser import ConfigParser, NoOptionError
 
-from .version import __version__
+from censys.version import __version__
 
 DEFAULT = "DEFAULT"
 
@@ -23,23 +20,22 @@ default_config = {
 
 
 def write_config(config):
-    """
-    Writes config to file.
+    """Writes config to file.
 
     Args:
         config: Configuration to write.
     """
-
     with open(config_path, "w") as configfile:
         config.write(configfile)
 
 
-def get_config():
-    """
-    Reads and returns config.
-    """
+def get_config() -> configparser.ConfigParser:
+    """Reads and returns config.
 
-    config = ConfigParser()
+    Returns:
+        configparser.ConfigParser: Config for Censys.
+    """
+    config = configparser.ConfigParser()
     if not os.path.isdir(xdg_config_path):
         os.mkdir(xdg_config_path)
     if not os.path.isdir(censys_path):
@@ -57,16 +53,14 @@ def get_config():
 
 
 def check_config(config):
-    """
-    Checks config against default config for fields.
+    """Checks config against default config for fields.
 
     Args:
         config: Configuration to write.
     """
-
     for key in default_config:
         try:
             config.get(DEFAULT, key)
-        except NoOptionError:
+        except configparser.NoOptionError:
             config.set(DEFAULT, key, default_config.get(key))
     write_config(config)

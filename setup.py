@@ -1,25 +1,22 @@
-import io
+"""Censys Python Setup."""
 import os
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 NAME = "censys"
-DESCRIPTION = "An easy-to-use and lightweight API wrapper for the Censys Search Engine (censys.io)."
+DESCRIPTION = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
 GIT_URL = "https://github.com/censys/censys-python"
 ISSUE_URL = GIT_URL + "/issues"
 DOC_URL = "https://censys-python.rtfd.io"
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-pkg_vars = {}
+pkg_vars = {}  # type: ignore
 
-with open(os.path.join(here, NAME, "version.py")) as fp:
-    exec(fp.read(), pkg_vars)
+with open(os.path.join(here, NAME, "version.py")) as f:
+    exec(f.read(), pkg_vars)
 
-try:
-    with io.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
-        long_description = "\n" + f.read()
-except FileNotFoundError:
-    long_description = DESCRIPTION
+with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+    long_description = "\n" + f.read()
 
 setup(
     name=NAME,
@@ -40,15 +37,17 @@ setup(
     extras_require={
         "dev": [
             "flake8",
+            "flake8-docstrings",
+            "flake8-pytest-style",
+            "flake8-simplify",
             "black",
             "pytest",
             "pytest-cov",
-            "requests-mock",
+            "responses",
             "mypy",
             "backoff-stubs",
             "twine",
             "parameterized",
-            "pylint",
         ],
         "docs": ["sphinx"],
     },

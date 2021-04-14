@@ -1,22 +1,35 @@
-"""
-Deprecation Utilities
-"""
-
+"""Warns on deprecated class and functions."""
 import functools
 import warnings
-from typing import Callable
+from typing import Callable, Optional
 
 
 class DeprecationDecorator:
-    def __init__(self, message: str = None):
+    """Deprecation Decorator for classes and functions.
+
+    Args:
+        message (str): Optional; Message to display to user.
+    """
+
+    def __init__(self, message: Optional[str] = None):
+        """Inits DeprecationDecorator."""
         self.message = message
 
-    def __call__(self, func: Callable):
+    def __call__(self, func: Callable) -> Callable:
+        """Wrapper function.
+
+        Args:
+            func (Callable): Function to wrap.
+
+        Returns:
+            Callable: Wrapped function.
+        """
+
         @functools.wraps(func)
         def new_func(*args, **kwargs):
             warnings.simplefilter("always", DeprecationWarning)
             warnings.warn(
-                self.message or "Call to deprecated function {}.".format(func.__name__),
+                self.message or f"Call to deprecated function {func.__name__}.",
                 category=DeprecationWarning,
                 stacklevel=2,
             )

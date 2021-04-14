@@ -15,11 +15,13 @@ Welcome to Censys Python's documentation!
 
    quick-start
    usage-v1
-   advanced-usage
+   usage-v2
    asm-usage
+   advanced-usage
    cli
    censys
    development
    testing
    contributing
+   license
    GitHub Repo <https://github.com/censys/censys-python>

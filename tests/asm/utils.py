@@ -35,8 +35,7 @@ class MockResponse:
 
     # Generate dummy resources for pagination
     def get_resource(self):
-        for resource in self.RESOURCES:
-            yield resource
+        yield from self.RESOURCES
 
     # Generate next page number for pagination; max 10 pages
     def get_page_number(self):
@@ -45,5 +44,4 @@ class MockResponse:
 
     # Generate endOfEvents boolean
     def get_end_of_events(self):
-        for eov in self.END_OF_EVENTS:
-            yield eov
+        yield from self.END_OF_EVENTS

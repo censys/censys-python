@@ -29,7 +29,7 @@ Below we show examples for **listing seeds** from the Censys ASM platform.
 
 .. code:: python3
 
-    from censys.asm.seeds import Seeds
+    from censys.asm import Seeds
 
     s = Seeds()
 
@@ -50,7 +50,7 @@ Below we show examples for **adding seeds** to the Censys ASM platform.
 
 .. code:: python3
 
-    from censys.asm.seeds import Seeds
+    from censys.asm import Seeds
 
     s = Seeds()
 
@@ -76,7 +76,7 @@ Below we show examples for **deleting seeds** from the Censys ASM platform.
 
 .. code:: python3
 
-    from censys.asm.seeds import Seeds
+    from censys.asm import Seeds
 
     s = Seeds()
 
@@ -97,7 +97,7 @@ Below we show examples for **viewing assets** on the Censys ASM platform.
 
 .. code:: python
 
-    from censys.asm.assets import Assets
+    from censys.asm import Assets
 
     h = Assets("hosts")
 
@@ -113,7 +113,7 @@ Below we show examples for **managing asset comments** via the ASM API.
 
 .. code:: python
 
-    from censys.asm.assets import Assets
+    from censys.asm import Assets
 
     d = Assets("domains")
 
@@ -135,7 +135,7 @@ Below we show examples for **managing asset tags** via the ASM API.
 
 .. code:: python
 
-    from censys.asm.assets import Assets
+    from censys.asm import Assets
 
     c = Assets("certificates")
     cert_sha = "0006afc1ddc8431aa57c812adf028ab4f168b25bf5f06e94af86edbafa88dfe0"
@@ -180,7 +180,7 @@ Below we show examples for **creating a logbook cursor** for retrieving filtered
 
 .. code:: python
 
-    from censys.asm.events import Events
+    from censys.asm import Events
 
     e = Events()
 
@@ -204,7 +204,7 @@ Below we show examples for **getting logbook events.**
 
 .. code:: python
 
-    from censys.asm.events import Events
+    from censys.asm import Events
 
     e = Events()
 
@@ -225,7 +225,7 @@ Below we show how to initialize the AsmClient class object as well as a couple e
 
 .. code:: python
 
-    from censys.asm.client import AsmClient
+    from censys.asm import AsmClient
 
     client = AsmClient()
 

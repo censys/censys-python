@@ -1,8 +1,10 @@
 censys.v1 package
 =================
 
-Submodules
-----------
+.. automodule:: censys.v1
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 censys.v1.api module
 --------------------
@@ -40,14 +42,6 @@ censys.v1.websites module
 -------------------------
 
 .. automodule:: censys.v1.websites
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: censys.v1
    :members:
    :undoc-members:
    :show-inheritance:

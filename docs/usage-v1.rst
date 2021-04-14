@@ -12,7 +12,7 @@ There are six API options that this library provides access to:
 -  ``account`` - Returns information about your Censys account, including your current query quota usage. This function is available for all index types.
 -  ``bulk`` - Returns the structured data for certificates in bulk, given the certificates' SHA-256 fingerprints.
 
-More details about each option can be found in the Censys API documentation: https://censys.io/api. A list of index fields can be found in the Censys API definitions page: https://censys.io/ipv4/help/definitions.
+More details about each option can be found in the `Censys API documentation <https://censys.io/api>`__. A list of index fields can be found in the `Censys API definitions page <https://censys.io/ipv4/help/definitions>`__.
 
 Python class objects must be initialized for each resource index (IPv4 addresses, Websites, and Certificates).
 

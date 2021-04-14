@@ -35,9 +35,7 @@ TEST_SEED_LIST_NO_LABEL = [
 
 
 class SeedsUnitTests(unittest.TestCase):
-    """
-    Unit tests for Seeds API
-    """
+    """Unit tests for Seeds API."""
 
     def setUp(self):
         self.client = AsmClient()

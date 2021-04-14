@@ -1,8 +1,5 @@
-"""
-Interact with the Censys Search v1 API's.
-"""
-
-from .api import *
+"""Interact with the Censys Search v1 APIs."""
+from .api import CensysSearchAPIv1
 from .certificates import *
 from .data import *
 from .ipv4 import *

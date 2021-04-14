@@ -1,44 +1,40 @@
 import unittest
 
+import responses
+
 from ..utils import CensysTestCase
 
 from censys.v1.certificates import CensysCertificates
 
+BULK_JSON = {
+    "fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70": "MISC_CERT_DATA",
+    "a762bf68f167f6fbdf2ab00fdefeb8b96f91335ad6b483b482dfd42c179be076": "MISC_CERT_DATA",
+}
+
 
 class CensysCertificatesTests(CensysTestCase):
-
-    CERT_SHA = "fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70"
-
-    @classmethod
-    def setUpClass(cls):
-        cls._api = CensysCertificates()
-
-    def test_view(self):
-        res = self._api.view(self.CERT_SHA)
-        self.assertIsInstance(res, dict)
-        self.assertEqual(res["parsed"]["fingerprint_sha256"], self.CERT_SHA)
-
-    def test_search(self):
-        res = list(
-            self._api.search(
-                self.CERT_SHA,
-                fields=["parsed.subject_dn", "parsed.fingerprint_sha256"],
-                max_records=1,
-            )
+    def setUp(self):
+        super().setUp()
+        self.setUpApi(
+            CensysCertificates(api_id=self.api_id, api_secret=self.api_secret)
         )
-        self.assertEqual(len(res), 1)
-        self.assertIn("parsed.subject_dn", res[0])
-        self.assertIn("parsed.fingerprint_sha256", res[0])
 
     def test_bulk(self):
-        res = self._api.bulk([self.CERT_SHA])
-        self.assertEqual(len(res.keys()), 1)
-        self.assertIn(self.CERT_SHA, res)
+        self.responses.add(
+            responses.POST,
+            f"{self.base_url}/bulk/certificates",
+            status=200,
+            json=BULK_JSON,
+        )
 
-    def test_report(self):
-        res = self._api.report("*", "parsed.issuer.organizational_unit", buckets=10)
-        results = res.get("results")
-        self.assertEqual(len(results), 10)
+        res = self.api.bulk(
+            [
+                "fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70",
+                "a762bf68f167f6fbdf2ab00fdefeb8b96f91335ad6b483b482dfd42c179be076",
+            ]
+        )
+
+        assert res == BULK_JSON
 
 
 if __name__ == "__main__":

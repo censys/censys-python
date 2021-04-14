@@ -1,25 +1,25 @@
-"""
-Exceptions for Censys.
-"""
-
+"""Exceptions for Censys."""
 from typing import Optional, Dict, Type
 
 
 class CensysException(Exception):
-    """
-    Base Exception for Censys.
-    """
+    """Base Exception for Censys."""
 
 
 class CensysCLIException(CensysException):
-    """
-    Exception raised when the CLI is passed invalid arguments.
-    """
+    """Exception raised when the CLI is passed invalid arguments."""
 
 
 class CensysAPIException(CensysException):
-    """
-    Base Exception for Censys API's.
+    """Base Exception for Censys APIs.
+
+    Args:
+        status_code (int): HTTP status code.
+        message (str): HTTP message.
+        body (str): Optional; HTTP body.
+        const (str): Optional; Constant for manual errors.
+        error_code (int): Optional; Error code.
+        details (str): Optional; Additional details.
     """
 
     # pylint: disable=too-many-arguments
@@ -32,6 +32,7 @@ class CensysAPIException(CensysException):
         error_code: Optional[int] = None,
         details: Optional[str] = None,
     ):
+        """Inits CensysAPIException."""
         self.status_code = status_code
         self.message = message
         self.body = body
@@ -42,283 +43,202 @@ class CensysAPIException(CensysException):
 
 
 class CensysSearchException(CensysAPIException):
-    """
-    Base Exception for the Censys search API.
-    """
+    """Base Exception for the Censys search API."""
 
     def __repr__(self):
-        return "%i (%s): %s" % (self.status_code, self.const, self.message or self.body)
+        """Representation of CensysSearchException.
+
+        Returns:
+            str: Printable representation.
+        """
+        return f"{self.status_code} ({self.const}): {self.message or self.body}"
 
     __str__ = __repr__
 
 
 class CensysAsmException(CensysAPIException):
-    """
-    Base Exception for the Censys ASM API.
-    """
+    """Base Exception for the Censys ASM API."""
 
     def __repr__(self):
-        return "%i (Error Code: %i), %s. %s" % (
-            self.status_code,
-            self.error_code,
-            self.message,
-            self.details,
+        """Representation of CensysAsmException.
+
+        Returns:
+            str: Printable representation.
+        """
+        return (
+            f"{self.status_code} (Error Code: {self.error_code}), "
+            f"{self.message}. {self.details}"
         )
 
     __str__ = __repr__
 
 
 class CensysMissingApiKeyException(CensysAsmException):
-    """
-    Exception raised when there is no provided ASM API key.
-    """
+    """Exception raised when there is no provided ASM API key."""
 
 
 class CensysRateLimitExceededException(CensysSearchException):
-    """
-    Exception raised when your Censys rate limit has been exceeded.
-    """
+    """Exception raised when your Censys rate limit has been exceeded."""
 
 
 class CensysNotFoundException(CensysSearchException):
-    """
-    Exception raised when the resource requested is not found.
-    """
+    """Exception raised when the resource requested is not found."""
 
 
 class CensysUnauthorizedException(CensysSearchException):
-    """
-    Exception raised when your Censys account doesn't have
-    access to the requested resource.
-    """
+    """Exception raised when you doesn't have access to the requested resource."""
 
 
 class CensysJSONDecodeException(CensysSearchException):
-    """
-    Exception raised when the resource requested is not valid JSON.
-    """
+    """Exception raised when the resource requested is not valid JSON."""
 
 
 class CensysInvalidRequestException(CensysAsmException):
-    """
-    Exception raised when the HTTP request is invalid.
-    """
+    """Exception raised when the HTTP request is invalid."""
 
 
 class CensysInvalidAuthTokenException(CensysAsmException):
-    """
-    Exception raised when the auth token is invalid.
-    """
+    """Exception raised when the auth token is invalid."""
 
 
 class CensysInvalidAPIKeyException(CensysAsmException):
-    """
-    Exception raised when the ASM API key is invalid.
-    """
+    """Exception raised when the ASM API key is invalid."""
 
 
 class CensysTooManyRequestsException(CensysAsmException):
-    """
-    Exception raised when the allowed requests bandwidth is exceeded.
-    """
+    """Exception raised when the allowed requests bandwidth is exceeded."""
 
 
 class CensysAppDownForMaintenanceException(CensysAsmException):
-    """
-    Exception raised when the ASM API is down for maintenance.
-    """
+    """Exception raised when the ASM API is down for maintenance."""
 
 
 class CensysInvalidSeedDataException(CensysAsmException):
-    """
-    Exception raised when the seed data is invalid.
-    """
+    """Exception raised when the seed data is invalid."""
 
 
 class CensysAssociatedAssetsThresholdWarningException(CensysAsmException):
-    """
-    Exception raised when the associated asset count is within the warning threshold.
-    """
+    """Exception raised when the asset count is within the warning threshold."""
 
 
 class CensysTooManyInputNodesException(CensysAsmException):
-    """
-    Exception raised when there are too many input nodes.
-    """
+    """Exception raised when there are too many input nodes."""
 
 
 class CensysSeedNotFoundException(CensysAsmException):
-    """
-    Exception raised when the requested seed can not be found.
-    """
+    """Exception raised when the requested seed can not be found."""
 
 
 class CensysNotASeedException(CensysAsmException):
-    """
-    Exception raised when the requested resource is not a seed.
-    """
+    """Exception raised when the requested resource is not a seed."""
 
 
 class CensysNeedConfirmationToRemoveParentSeedsException(CensysAsmException):
-    """
-    Exception raised when confirmation is needed to remove seeds with children.
-    """
+    """Exception raised when confirmation is needed to remove seeds with children."""
 
 
 class CensysCannotRemoveNonExistentSeedsException(CensysAsmException):
-    """
-    Exception raised when trying to remove non existent seed nodes.
-    """
+    """Exception raised when trying to remove non existent seed nodes."""
 
 
 class CensysCannotRemoveNonSeedsException(CensysAsmException):
-    """
-    Exception raised when trying to remove non seed nodes.
-    """
+    """Exception raised when trying to remove non seed nodes."""
 
 
 class CensysInvalidSeedTypeException(CensysAsmException):
-    """
-    Exception raised when the seed type is invalid.
-    """
+    """Exception raised when the seed type is invalid."""
 
 
 class CensysInvalidLogbookCursorException(CensysAsmException):
-    """
-    Exception raised when the logbook cursor is invalid.
-    """
+    """Exception raised when the logbook cursor is invalid."""
 
 
 class CensysPageNumberOutOfRangeException(CensysAsmException):
-    """
-    Exception raised when the requested page number is out of range [1 - totalPages].
-    """
+    """Exception raised when the page number is out of range [1 - totalPages]."""
 
 
 class CensysInvalidPageSizeException(CensysAsmException):
-    """
-    Exception raised when the page size is invalid.
-    """
+    """Exception raised when the page size is invalid."""
 
 
 class CensysHostNotFoundException(CensysAsmException):
-    """
-    Exception raised when the requested host is not found.
-    """
+    """Exception raised when the requested host is not found."""
 
 
 class CensysInvalidIPv4AddressException(CensysAsmException):
-    """
-    Exception raised when the IPv4 address is invalid.
-    """
+    """Exception raised when the IPv4 address is invalid."""
 
 
 class CensysInvalidCommentException(CensysAsmException):
-    """
-    Exception raised when the comment is invalid.
-    """
+    """Exception raised when the comment is invalid."""
 
 
 class CensysCommentNotFoundException(CensysAsmException):
-    """
-    Exception raised when the requested comment is not found.
-    """
+    """Exception raised when the requested comment is not found."""
 
 
 class CensysInvalidColorException(CensysAsmException):
-    """
-    Exception raised when the specified color is invalid.
-    """
+    """Exception raised when the specified color is invalid."""
 
 
 class CensysTagHasTrailingOrLeadingWhitespaceException(CensysAsmException):
-    """
-    Exception raised when the specified tag has trailing or leading whitespace.
-    """
+    """Exception raised when the specified tag has trailing or leading whitespace."""
 
 
 class CensysTagIsEmptyStringException(CensysAsmException):
-    """
-    Exception raised when the specified tag is an empty string.
-    """
+    """Exception raised when the specified tag is an empty string."""
 
 
 class CensysTagLabelsDifferOnlyInCasingException(CensysAsmException):
-    """
-    Exception raised when the specified tag differs from an existing tag in only casing.
-    """
+    """Exception raised when the tag differs from an existing tag in only casing."""
 
 
 class CensysTagLabelTooLongException(CensysAsmException):
-    """
-    Exception raised when the specified tag label is too long.
-    """
+    """Exception raised when the specified tag label is too long."""
 
 
 class CensysTagColorTooLongException(CensysAsmException):
-    """
-    Exception raised when the specified tag color is too long.
-    """
+    """Exception raised when the specified tag color is too long."""
 
 
 class CensysCannotCreateTagWithNewColorException(CensysAsmException):
-    """
-    Exception raised when the specified tag cannot be created with a new color.
-    """
+    """Exception raised when the specified tag cannot be created with a new color."""
 
 
 class CensysTagColorHasTrailingOrLeadingWhitespaceException(CensysAsmException):
-    """
-    Exception raised when the specified tag color has trailing or leading whitespace.
-    """
+    """Exception raised when the tag color has trailing or leading whitespace."""
 
 
 class CensysCertificateNotFoundException(CensysAsmException):
-    """
-    Exception raised when the certificate is not found.
-    """
+    """Exception raised when the certificate is not found."""
 
 
 class CensysDomainNotFoundException(CensysAsmException):
-    """
-    Exception raised when the domain is not found.
-    """
+    """Exception raised when the domain is not found."""
 
 
 class CensysInvalidCloudAssetDataException(CensysAsmException):
-    """
-    Exception raised when invalid cloud asset data is submitted.
-    """
+    """Exception raised when invalid cloud asset data is submitted."""
 
 
 class CensysInvalidObjectStorageAssetIdentifierException(CensysAsmException):
-    """
-    Exception raised when object storage name is not a valid object storage asset URL.
-    """
+    """Exception raised when object storage name is not a valid asset URL."""
 
 
 class CensysInvalidObjectStorageAssetNotFoundException(CensysAsmException):
-    """
-    Exception raised when no object storage assets with given URL were found.
-    """
+    """Exception raised when no object storage assets with given URL were found."""
 
 
 class CensysBadJSONBodyException(CensysAsmException):
-    """
-    Exception raised when a bad JSON string is in the body.
-    """
+    """Exception raised when a bad JSON string is in the body."""
 
 
 class CensysRiskNotFoundException(CensysAsmException):
-    """
-    Exception raised when no risks are found with given risk_id.
-    """
+    """Exception raised when no risks are found with given risk_id."""
 
 
 class CensysExceptionMapper:
-    """
-    Map status code to Exception for the ASM and Search API.
-    """
+    """Map status code to Exception for the ASM and Search API."""
 
     ASM_EXCEPTIONS: Dict[int, Type[CensysAsmException]] = {
         10000: CensysMissingApiKeyException,
