@@ -4,7 +4,7 @@ import responses
 
 from ..utils import CensysTestCase
 
-from censys.v1.data import CensysData
+from censys import CensysData
 
 SERIES_JSON = {
     "primary_series": "",

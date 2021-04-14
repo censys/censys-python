@@ -4,7 +4,7 @@ import responses
 
 from ..utils import CensysTestCase
 
-from censys.v1.certificates import CensysCertificates
+from censys import CensysCertificates
 
 BULK_JSON = {
     "fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70": "MISC_CERT_DATA",
