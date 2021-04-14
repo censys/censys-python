@@ -197,6 +197,20 @@ class AssetsUnitTest(unittest.TestCase):
             timeout=TEST_TIMEOUT,
         )
 
+    @patch("censys.base.requests.Session.get")
+    def test_get_subdomains(self, mock):
+        test_domain = TEST_ASSET_IDS.get("domains")
+        mock.return_value = MockResponse(TEST_SUCCESS_CODE, "subdomains")
+        subdomains = self.client.domains.get_subdomains(test_domain)
+        res = [sub for sub in subdomains]
+
+        assert RESOURCE_PAGING_RESULTS == res
+        mock.assert_called_with(
+            f"{ASSETS_URL}/domains/{test_domain}/subdomains",
+            params={"pageNumber": 3, "pageSize": 500},
+            timeout=TEST_TIMEOUT,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
