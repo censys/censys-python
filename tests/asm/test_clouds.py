@@ -27,7 +27,11 @@ class CloudsUnitTest(CensysTestCase):
         self.client = AsmClient(self.api_key)
 
     @parameterized.expand(
-        [["2021-01-01", "2021-01-01"], [datetime.date(2021, 1, 1), "2021-01-01"]]
+        [
+            ["2021-01-01", "2021-01-01"],
+            [datetime.date(2021, 1, 1), "2021-01-01"],
+            [datetime.datetime(2021, 1, 1, 12, 15, 20, 40), "2021-01-01"],
+        ]
     )
     def test_get_host_counts(self, since, actual):
         self.responses.add(
