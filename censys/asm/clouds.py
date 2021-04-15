@@ -1,4 +1,4 @@
-"""Interact with the Censys Logbook API."""
+"""Interact with the Censys Clouds API."""
 import datetime
 from typing import Union
 
@@ -6,7 +6,7 @@ from .api import CensysAsmAPI
 
 
 class Clouds(CensysAsmAPI):
-    """Events API class."""
+    """Clouds API class."""
 
     base_path = "clouds"
 
