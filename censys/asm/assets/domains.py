@@ -22,7 +22,7 @@ class DomainsAssets(Assets):
         """List all subdomains of the parent domain.
 
         Args:
-            domain: (str): Domain to get subdomains from.
+            domain: (str): Parent domain to query.
             page_number (int): Optional; Page number to begin at when searching.
             page_size (int): Optional; Page size for retrieving assets.
 
