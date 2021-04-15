@@ -29,6 +29,7 @@ permissions_env = pytest.mark.skipif(
 class CensysTestCase(unittest.TestCase):
     api_id = "test-api-id"
     api_secret = "test-api-secret"
+    api_key = "test-api-key"
 
     def setUp(self):
         self.responses = responses.RequestsMock()
