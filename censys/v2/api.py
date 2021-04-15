@@ -104,7 +104,7 @@ class CensysSearchAPIv2(CensysAPIBase):
     def search(
         self,
         query: str,
-        per_page: Optional[int] = None,
+        per_page: Optional[int] = 100,
         cursor: Optional[str] = None,
         pages: int = 1,
     ) -> Iterator[dict]:
@@ -116,7 +116,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         Args:
             query (str): The query to be executed.
             per_page (Fields): Optional;
-                Fields to be returned in the result set. Defaults to 50.
+                Fields to be returned in the result set. Defaults to 100.
             cursor (int): Optional; The cursor of the desired result set.
             pages (int): Optional; The number of pages returned. Defaults to 1.
 

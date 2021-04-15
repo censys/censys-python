@@ -117,7 +117,7 @@ class TestHosts(CensysTestCase):
     def test_search(self):
         self.responses.add(
             responses.GET,
-            self.base_url + "/hosts/search?q=service.service_name: HTTP",
+            self.base_url + "/hosts/search?q=service.service_name: HTTP&per_page=100",
             status=200,
             json=HTTP_SEARCH_JSON,
         )
@@ -129,7 +129,7 @@ class TestHosts(CensysTestCase):
     def test_search_pages(self):
         self.responses.add(
             responses.GET,
-            self.base_url + "/hosts/search?q=service.service_name: HTTP",
+            self.base_url + "/hosts/search?q=service.service_name: HTTP&per_page=100",
             status=200,
             json=HTTP_SEARCH_JSON,
         )
@@ -148,7 +148,7 @@ class TestHosts(CensysTestCase):
         self.responses.add(
             responses.GET,
             self.base_url
-            + "/hosts/search?q=service.service_name: HTTP"
+            + "/hosts/search?q=service.service_name: HTTP&per_page=100"
             + "&cursor=eyJBZnRlciI6WyIxIiwiMS4wLjAuNDkiXSwiUmV2ZXJzZSI6ZmFsc2V9",
             status=200,
             json=page_2,
