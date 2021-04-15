@@ -138,7 +138,9 @@ class CensysSearchAPIv2(CensysAPIBase):
             yield from result["hits"]
 
     def view(
-        self, document_id: str, at_time: Optional[Union[str, datetime.date]] = None
+        self,
+        document_id: str,
+        at_time: Optional[Union[str, datetime.date, datetime.datetime]] = None,
     ) -> dict:
         """View document from current index.
 
@@ -147,7 +149,7 @@ class CensysSearchAPIv2(CensysAPIBase):
 
         Args:
             document_id (str): The ID of the document you are requesting.
-            at_time ([str, date]):
+            at_time ([str, datetime.date, datetime.datetime]):
                 Optional; Fetches a document at a given point in time.
 
         Returns:
@@ -155,7 +157,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         """
         args = {}
         if at_time:
-            if isinstance(at_time, datetime.date):
+            if isinstance(at_time, (datetime.date, datetime.datetime)):
                 at_time = at_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
             args["at_time"] = at_time
 
