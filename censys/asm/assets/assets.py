@@ -1,5 +1,5 @@
 """Base for interacting with the Censys Assets API."""
-from typing import Generator, Optional
+from typing import Iterator, Optional
 
 from ..api import CensysAsmAPI
 
@@ -20,17 +20,17 @@ class Assets(CensysAsmAPI):
 
     def get_assets(
         self, page_number: int = 1, page_size: Optional[int] = None
-    ) -> Generator[dict, None, None]:
+    ) -> Iterator[dict]:
         """Requests assets data.
 
         Args:
             page_number (int): Optional; Page number to begin at when searching.
             page_size (int): Optional; Page size for retrieving assets.
 
-        Returns:
-            generator: Asset search results.
+        Yields:
+            dict: The assets result returned.
         """
-        return self._get_page(
+        yield from self._get_page(
             self.base_path, page_number=page_number, page_size=page_size
         )
 
@@ -52,7 +52,7 @@ class Assets(CensysAsmAPI):
         asset_id: str,
         page_number: int = 1,
         page_size: Optional[int] = None,
-    ) -> Generator[dict, None, None]:
+    ) -> Iterator[dict]:
         """Requests comments on a specified asset.
 
         Args:

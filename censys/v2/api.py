@@ -1,7 +1,7 @@
 """Base for interacting with the Censys Search API."""
 import os
 import datetime
-from typing import Generator, List, Optional, Type, overload, Union
+from typing import Iterator, List, Optional, Type, overload, Union
 
 from requests.models import Response
 
@@ -107,7 +107,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         per_page: Optional[int] = None,
         cursor: Optional[str] = None,
         pages: int = 1,
-    ) -> Generator[dict, None, None]:
+    ) -> Iterator[dict]:
         """Search current index.
 
         Searches the given index for all records that match the given query.

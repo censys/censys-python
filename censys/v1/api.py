@@ -1,6 +1,6 @@
 """Base for interacting with the Censys Search API."""
 import os
-from typing import Generator, List, Optional, Type
+from typing import Iterator, List, Optional, Type
 
 from requests.models import Response
 
@@ -154,7 +154,7 @@ class CensysSearchAPIv1(CensysAPIBase):
         page: int = 1,
         max_records: Optional[int] = None,
         flatten: bool = True,
-    ) -> Generator[dict, None, None]:
+    ) -> Iterator[dict]:
         """Searches the given index for all records that match the given query.
 
         For more details, see our documentation: https://censys.io/api/v1/docs/search
