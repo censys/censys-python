@@ -138,7 +138,9 @@ class CensysSearchAPIv2(CensysAPIBase):
             yield from result["hits"]
 
     def view(
-        self, document_id: str, at_time: Optional[Union[str, datetime.date, datetime.datetime]] = None
+        self,
+        document_id: str,
+        at_time: Optional[Union[str, datetime.date, datetime.datetime]] = None,
     ) -> dict:
         """View document from current index.
 

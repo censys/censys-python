@@ -19,7 +19,7 @@ class Clouds(CensysAsmAPI):
         Hosts found after the date provided in the `since` parameter will be included in the new asset counts.
 
         Args:
-            since ([datetime, int]): Date to include hosts from.
+            since ([str, datetime.date, datetime.datetime]): Date to include hosts from.
 
         Returns:
             dict: Host count result.
