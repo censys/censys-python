@@ -4,6 +4,7 @@ from typing import Optional
 from .seeds import Seeds
 from .assets import CertificatesAssets, DomainsAssets, HostsAssets
 from .events import Events
+from .clouds import Clouds
 
 
 class AsmClient:
@@ -21,3 +22,4 @@ class AsmClient:
         self.certificates = CertificatesAssets(api_key, **kwargs)
         self.domains = DomainsAssets(api_key, **kwargs)
         self.events = Events(api_key, **kwargs)
+        self.clouds = Clouds(api_key, **kwargs)

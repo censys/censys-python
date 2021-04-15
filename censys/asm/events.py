@@ -1,5 +1,5 @@
 """Interact with the Censys Logbook API."""
-from datetime import datetime
+import datetime
 from typing import Generator, List, Optional, Union
 
 from .api import CensysAsmAPI
@@ -12,13 +12,13 @@ class Events(CensysAsmAPI):
 
     def get_cursor(
         self,
-        start: Optional[Union[datetime, int]] = None,
+        start: Optional[Union[datetime.datetime, int]] = None,
         filters: Optional[List[str]] = None,
     ) -> str:
         """Requests a logbook cursor.
 
         Args:
-            start ([datetime, int]): Optional; Timestamp or event ID to begin searching.
+            start ([datetime.datetime, int]): Optional; Timestamp or event ID to begin searching.
             filters (list): Optional; List of filters applied to logbook search results.
 
         Returns:
@@ -65,12 +65,13 @@ class Filters:
 
 
 def format_data(
-    start: Optional[Union[datetime, int]] = None, filters: Optional[List[str]] = None
+    start: Optional[Union[datetime.datetime, int]] = None,
+    filters: Optional[List[str]] = None,
 ) -> dict:
     """Formats cursor request data into a start date/id and filter list.
 
     Args:
-        start ([datetime, int]): Optional; Timestamp or event ID to begin searching.
+        start ([datetime.datetime, int]): Optional; Timestamp or event ID to begin searching.
         filters (list): Optional; List of filters applied to logbook search results.
 
     Returns:
