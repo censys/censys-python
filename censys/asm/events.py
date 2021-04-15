@@ -1,6 +1,6 @@
 """Interact with the Censys Logbook API."""
 import datetime
-from typing import Generator, List, Optional, Union
+from typing import Iterator, List, Optional, Union
 
 from .api import CensysAsmAPI
 
@@ -29,7 +29,7 @@ class Events(CensysAsmAPI):
 
         return self._post(path, data=data)["cursor"]
 
-    def get_events(self, cursor: Optional[str] = None) -> Generator[dict, None, None]:
+    def get_events(self, cursor: Optional[str] = None) -> Iterator[dict]:
         """Requests logbook events from inception or from the provided cursor.
 
         Args:

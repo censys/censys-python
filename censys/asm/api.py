@@ -3,7 +3,7 @@
 import os
 
 from math import inf
-from typing import Generator, Type, Optional
+from typing import Iterator, Type, Optional
 from requests.models import Response
 from censys.exceptions import (
     CensysException,
@@ -60,7 +60,7 @@ class CensysAsmAPI(CensysAPIBase):
 
     def _get_page(
         self, path: str, page_number: int = 1, page_size: Optional[int] = None
-    ) -> Generator[dict, None, None]:
+    ) -> Iterator[dict]:
         """Fetches paginated ASM resource API results.
 
         Args:
@@ -93,7 +93,7 @@ class CensysAsmAPI(CensysAPIBase):
 
     def _get_logbook_page(
         self, path: str, args: Optional[dict] = None
-    ) -> Generator[dict, None, None]:
+    ) -> Iterator[dict]:
         """Fetches paginated ASM logbook API events.
 
         Args:
