@@ -91,3 +91,6 @@ autosectionlabel_prefix_document = True
 
 # Define the prompt text that you’d like removed from copied text in your code blocks
 copybutton_prompt_text = "$"
+
+# Napoleon
+napoleon_include_init_with_doc = False
