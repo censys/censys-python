@@ -1,5 +1,6 @@
 import datetime
 
+import pytest
 import responses
 
 from ..utils import CensysTestCase
@@ -137,6 +138,25 @@ class TestHosts(CensysTestCase):
 
         query = self.api.search("service.service_name: HTTP", per_page=test_per_page)
         assert next(query) == HTTP_SEARCH_JSON["result"]["hits"]
+
+    def test_search_invalid_query(self):
+        invalid_query = "some_bad_query"
+        no_hosts_json = HTTP_SEARCH_JSON.copy()
+        no_hosts_json["result"]["hits"] = []
+        no_hosts_json["result"]["total"] = 0
+        no_hosts_json["result"]["links"]["next"] = ""
+        self.responses.add(
+            responses.GET,
+            self.base_url + f"/hosts/search?q={invalid_query}&per_page=100",
+            status=200,
+            json=no_hosts_json,
+        )
+
+        query = self.api.search(invalid_query)
+        assert next(query) == no_hosts_json["result"]["hits"]
+        assert query.pages == 0
+        with pytest.raises(StopIteration):
+            next(query)
 
     def test_search_pages(self):
         self.responses.add(

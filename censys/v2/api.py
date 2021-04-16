@@ -146,6 +146,8 @@ class CensysSearchAPIv2(CensysAPIBase):
             self.page += 1
             result = payload["result"]
             self.nextCursor = result["links"]["next"]
+            if result["total"] == 0 or not self.nextCursor:
+                self.pages = 0
             return result["hits"]
 
         def __next__(self) -> List[dict]:
