@@ -13,17 +13,19 @@ class CensysHosts(CensysSearchAPIv2):
 
         Simple host search.
 
-        >>> for host in h.search("service.service_name: HTTP"):
-        >>>     print(host)
-        {
+        >>> for page in h.search("service.service_name: HTTP"):
+        >>>     print(page)
+        [
+            {
             'services':
                 [
                     {'service_name': 'HTTP', 'port': 80},
                     {'service_name': 'HTTP', 'port': 443}
                 ],
             'ip': '1.0.0.0'
-        }
-        ...
+            },
+            ...
+        ]
 
         View specific host.
 
