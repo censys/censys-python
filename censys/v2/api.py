@@ -1,7 +1,7 @@
 """Base for interacting with the Censys Search API."""
 import os
 import datetime
-from typing import Iterator, List, Optional, Type, overload, Union
+from typing import Iterable, Iterator, List, Optional, Type, Union
 
 from requests.models import Response
 
@@ -36,16 +36,6 @@ class CensysSearchAPIv2(CensysAPIBase):
     """Default Search API base URL."""
     INDEX_NAME: str = ""
     """Name of Censys Index."""
-
-    @overload
-    def __init__(self, api_id: str, api_secret: str, **kwargs):  # noqa
-        ...
-
-    @overload
-    def __init__(  # noqa
-        self, api_id: str = "YOUR_API_ID", api_secret: str = "YOUR_API_SECRET", **kwargs
-    ):
-        ...
 
     def __init__(
         self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
@@ -101,13 +91,86 @@ class CensysSearchAPIv2(CensysAPIBase):
 
     #     return self.account()["quota"]
 
+    class Query(Iterable):
+        """Query class that is callable and iterable.
+
+        Object Searches the given index for all records that match the given query.
+        For more details, see our documentation: https://search.censys.io/api/v2/docs
+
+        Args:
+            api (CensysSearchAPIv2): Parent API object.
+            query (str): The query to be executed.
+            per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
+            cursor (int): Optional; The cursor of the desired result set.
+            pages (int): Optional; The number of pages returned. Defaults to 1.
+        """
+
+        def __init__(
+            self,
+            api: "CensysSearchAPIv2",
+            query: str,
+            per_page: Optional[int] = None,
+            cursor: Optional[str] = None,
+            pages: int = 1,
+        ) -> None:
+            """Inits Query."""
+            self.api = api
+            self.query = query
+            self.per_page = per_page
+            self.cursor = cursor
+            self.nextCursor: Optional[str] = None
+            self.page = 1
+            self.pages = pages
+
+        def __call__(self, per_page: Optional[int] = None) -> List[dict]:
+            """Search current index.
+
+            Args:
+                per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
+
+            Raises:
+                StopIteration: Raised when pages have been already received.
+
+            Returns:
+                List[dict]: One page worth of result hits.
+            """
+            if self.page > self.pages:
+                raise StopIteration
+
+            args = {
+                "q": self.query,
+                "per_page": per_page or self.per_page or 100,
+                "cursor": self.nextCursor or self.cursor,
+            }
+            payload = self.api._get(self.api.search_path, args)
+            self.page += 1
+            result = payload["result"]
+            self.nextCursor = result["links"]["next"]
+            return result["hits"]
+
+        def __next__(self) -> List[dict]:
+            """Gets next page of search results.
+
+            Returns:
+                List[dict]: One page worth of result hits.
+            """
+            return self.__call__()
+
+        def __iter__(self) -> Iterator[List[dict]]:
+            """Gets Iterator.
+
+            Returns:
+                Iterable: Returns self.
+            """
+            return self
+
     def search(
         self,
         query: str,
-        per_page: Optional[int] = 100,
+        per_page: Optional[int] = None,
         cursor: Optional[str] = None,
         pages: int = 1,
-    ) -> Iterator[dict]:
+    ) -> Query:
         """Search current index.
 
         Searches the given index for all records that match the given query.
@@ -115,27 +178,14 @@ class CensysSearchAPIv2(CensysAPIBase):
 
         Args:
             query (str): The query to be executed.
-            per_page (Fields): Optional;
-                Fields to be returned in the result set. Defaults to 100.
+            per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
             cursor (int): Optional; The cursor of the desired result set.
             pages (int): Optional; The number of pages returned. Defaults to 1.
 
-        Yields:
-            dict: The result set returned.
+        Returns:
+            Query: Query object that can be a callable or an iterable.
         """
-        args = {"q": query, "per_page": per_page}
-
-        page = 1
-        while page <= pages:
-            if cursor:
-                args["cursor"] = cursor
-
-            payload = self._get(self.search_path, args)
-            page += 1
-            result = payload["result"]
-            cursor = result["links"]["next"]
-
-            yield from result["hits"]
+        return self.Query(self, query, per_page, cursor, pages)
 
     def view(
         self,

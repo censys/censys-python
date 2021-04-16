@@ -26,14 +26,15 @@ Below we show an example using the ``CensysHosts`` index.
 
     h = CensysHosts()
 
-    # Search for hosts running HTTP
-    for host in h.search("service.service_name: HTTP"):
-        print(host)
+    # Single page of search results
+    query = h.search("service.service_name: HTTP", per_page=5)
+    print(query())
 
+    # Multiple pages of search results
     # You can optionally pass in a number of results to be returned
     # each page and the number of pages you want returned.
-    for host in h.search("service.service_name: HTTP", per_page=25, pages=2):
-        print(host)
+    for page in h.search("service.service_name: HTTP", per_page=5, pages=2):
+        print(page)
 
 ``view``
 --------

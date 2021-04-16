@@ -122,9 +122,21 @@ class TestHosts(CensysTestCase):
             json=HTTP_SEARCH_JSON,
         )
 
-        res = list(self.api.search("service.service_name: HTTP"))
+        query = self.api.search("service.service_name: HTTP")
+        assert query() == HTTP_SEARCH_JSON["result"]["hits"]
 
-        assert res == HTTP_SEARCH_JSON["result"]["hits"]
+    def test_search_per_page(self):
+        test_per_page = 50
+        self.responses.add(
+            responses.GET,
+            self.base_url
+            + f"/hosts/search?q=service.service_name: HTTP&per_page={test_per_page}",
+            status=200,
+            json=HTTP_SEARCH_JSON,
+        )
+
+        query = self.api.search("service.service_name: HTTP", per_page=test_per_page)
+        assert next(query) == HTTP_SEARCH_JSON["result"]["hits"]
 
     def test_search_pages(self):
         self.responses.add(
@@ -133,8 +145,8 @@ class TestHosts(CensysTestCase):
             status=200,
             json=HTTP_SEARCH_JSON,
         )
-        page_2 = HTTP_SEARCH_JSON.copy()
-        hits = page_2["result"]["hits"]
+        page_2_json = HTTP_SEARCH_JSON.copy()
+        hits = page_2_json["result"]["hits"]
         new_hits = [
             {
                 "services": [
@@ -144,19 +156,22 @@ class TestHosts(CensysTestCase):
                 "ip": "1.0.0.2",
             }
         ]
-        page_2["result"]["hits"] = new_hits
+        next_cursor = HTTP_SEARCH_JSON["result"]["links"]["next"]
+        page_2_json["result"]["hits"] = new_hits
         self.responses.add(
             responses.GET,
             self.base_url
             + "/hosts/search?q=service.service_name: HTTP&per_page=100"
-            + "&cursor=eyJBZnRlciI6WyIxIiwiMS4wLjAuNDkiXSwiUmV2ZXJzZSI6ZmFsc2V9",
+            + f"&cursor={next_cursor}",
             status=200,
-            json=page_2,
+            json=page_2_json,
         )
 
-        res = list(self.api.search("service.service_name: HTTP", pages=2))
+        expected = [hits, new_hits]
 
-        assert res == hits + new_hits
+        query = self.api.search("service.service_name: HTTP", pages=2)
+        for i, page in enumerate(query):
+            assert expected[i] == page
 
     def test_aggregate(self):
         self.responses.add(
