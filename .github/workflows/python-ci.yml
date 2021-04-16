@@ -44,9 +44,6 @@ jobs:
         run: |
           mypy censys
 
-      - name: Build coverage file
+      - name: Test with pytest
         run: |
-          pytest --cache-clear --cov=censys tests/ > pytest-coverage.txt
-
-      - name: Comment coverage
-        uses: coroo/pytest-coverage-commentator@v1.0.2
+          pytest
