@@ -59,19 +59,19 @@ class CensysAsmAPITests(CensysTestCase):
 
     @parameterized.expand([("assets"), ("comments"), ("tags"), ("subdomains")])
     def test_page_keywords(self, keyword):
-        SECOND_PAGE = ["test4", "test5"]
-        PAGE_JSON = {
+        page_json = {
             "pageNumber": 1,
             "totalPages": 2,
             keyword: ["test1", "test2", "test3"],
         }
+        second_page = ["test4", "test5"]
 
         def keyword_callback(request):
-            temp_json = PAGE_JSON.copy()
-            pageNumber = int(request.params.get("pageNumber"))
-            temp_json["pageNumber"] = pageNumber
-            if pageNumber > 1:
-                temp_json[keyword] = SECOND_PAGE
+            temp_json = page_json.copy()
+            page_number = int(request.params.get("pageNumber"))
+            temp_json["pageNumber"] = page_number
+            if page_number > 1:
+                temp_json[keyword] = second_page
             return (200, {}, json.dumps(temp_json))
 
         self.responses.add_callback(
@@ -82,7 +82,7 @@ class CensysAsmAPITests(CensysTestCase):
 
         res = list(self.api._get_page(f"/{keyword}"))
 
-        assert res == PAGE_JSON[keyword] + SECOND_PAGE
+        assert res == page_json[keyword] + second_page
 
 
 if __name__ == "__main__":

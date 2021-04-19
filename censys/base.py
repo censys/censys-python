@@ -16,7 +16,7 @@ from .exceptions import (
     CensysRateLimitExceededException,
     CensysTooManyRequestsException,
 )
-from .version import __version__ as VERSION
+from .version import __version__
 
 Fields = Optional[List[str]]
 
@@ -61,7 +61,7 @@ class CensysAPIBase:
 
     DEFAULT_TIMEOUT: int = 30
     """Default API timeout."""
-    DEFAULT_USER_AGENT: str = f"censys/{VERSION}"
+    DEFAULT_USER_AGENT: str = f"censys/{__version__}"
     """Default API user agent."""
     DEFAULT_MAX_RETRIES: int = 10
     """Default max number of API retries."""

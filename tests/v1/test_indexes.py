@@ -9,6 +9,7 @@ from ..utils import CensysTestCase
 from censys import CensysCertificates, CensysIPv4, CensysWebsites
 from censys.exceptions import CensysException
 
+MAX_RECORDS = 10
 VIEW_JSON = {
     "document": "test_id",
     "tags": ["http", "https"],
@@ -121,7 +122,6 @@ class CensysIndexTests(CensysTestCase):
             list(self.api.search("*", page="x"))
 
     def test_max_records_search(self):
-        MAX_RECORDS = 10
         temp_json = SEARCH_JSON.copy()
         temp_json["results"] = [{"sample": "results"} for _ in range(MAX_RECORDS + 5)]
         self.responses.add(

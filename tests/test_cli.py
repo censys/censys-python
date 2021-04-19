@@ -27,6 +27,7 @@ CLI_AUTH_ARGS = [
     "--api-secret",
     CensysTestCase.api_secret,
 ]
+WROTE_PREFIX = "Wrote results to file"
 
 
 def search_callback(request):
@@ -116,12 +117,10 @@ class CensysCliSearchTest(CensysTestCase):
         with contextlib.redirect_stdout(temp_stdout):
             cli_main()
 
-        PREFIX = "Wrote results to file"
-
         cli_response = temp_stdout.getvalue().strip()
-        assert cli_response.startswith(PREFIX)
+        assert cli_response.startswith(WROTE_PREFIX)
 
-        json_path = cli_response.replace(PREFIX, "").strip()
+        json_path = cli_response.replace(WROTE_PREFIX, "").strip()
         assert json_path.endswith(".json")
         assert json_path.startswith("censys-query-output.")
 
@@ -162,12 +161,10 @@ class CensysCliSearchTest(CensysTestCase):
         with contextlib.redirect_stdout(temp_stdout):
             cli_main()
 
-        PREFIX = "Wrote results to file"
-
         cli_response = temp_stdout.getvalue().strip()
-        assert cli_response.startswith(PREFIX)
+        assert cli_response.startswith(WROTE_PREFIX)
 
-        csv_path = cli_response.replace(PREFIX, "").strip()
+        csv_path = cli_response.replace(WROTE_PREFIX, "").strip()
         assert csv_path.endswith(".csv")
         assert csv_path.startswith("censys-query-output.")
 

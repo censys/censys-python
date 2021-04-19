@@ -14,6 +14,12 @@ from censys.exceptions import (
 
 TEST_URL = "https://url"
 TEST_ENDPOINT = "/endpoint"
+ERROR_JSON = {
+    "error": "Test Error",
+    "error_type": "Test",
+    "errorCode": 200,
+    "details": "This is a test error",
+}
 
 
 class CensysAPIBaseTests(CensysTestCase):
@@ -39,12 +45,6 @@ class CensysAPIBaseTests(CensysTestCase):
         assert base._get(TEST_ENDPOINT) == {}
 
     def test_successful_error_json_response(self):
-        ERROR_JSON = {
-            "error": "Test Error",
-            "error_type": "Test",
-            "errorCode": 200,
-            "details": "This is a test error",
-        }
         self.responses.add(
             responses.GET,
             TEST_URL + TEST_ENDPOINT,
