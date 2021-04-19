@@ -5,7 +5,6 @@ from setuptools import find_packages, setup
 NAME = "censys"
 DESCRIPTION = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
 GIT_URL = "https://github.com/censys/censys-python"
-ISSUE_URL = GIT_URL + "/issues"
 DOC_URL = "https://censys-python.rtfd.io"
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -27,7 +26,6 @@ setup(
     author="Censys Team",
     author_email="support@censys.io",
     license="Apache License, Version 2.0",
-    url=GIT_URL,
     keywords=NAME,
     python_requires=">=3.6.0",
     packages=find_packages(exclude=["tests", "examples"]),
@@ -79,5 +77,11 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: Implementation :: PyPy",
     ],
-    project_urls={"Documentation": DOC_URL, "Source": GIT_URL, "Tracker": ISSUE_URL},
+    project_urls={
+        "Censys Homepage": "https://censys.io/",
+        "Documentation": DOC_URL,
+        "Changelog": GIT_URL + "/releases",
+        "Tracker": GIT_URL + "/issues",
+        "Source": GIT_URL,
+    },
 )

@@ -17,7 +17,7 @@ The library can be installed using `pip`.
 $ pip install censys
 ```
 
-To configure your credentials run `censys config` or set both `CENSYS_API_ID` and `CENSYS_API_SECRET` environment variables.
+To configure your search credentials run `censys config` or set both `CENSYS_API_ID` and `CENSYS_API_SECRET` environment variables.
 
 ```bash
 $ censys config
@@ -28,11 +28,23 @@ Censys API Secret: XXX
 Successfully authenticated for your@email.com
 ```
 
+To configure your ASM credentials run `censys config-asm` or set the `CENSYS_ASM_API_KEY` environment variables.
+
+```bash
+$ censys config-asm
+
+Censys ASM API Key: XXX
+
+Successfully authenticated
+```
+
 ## Resources
 
-- [Official Website](https://censys.io/)
-- [Documentation](https://censys-python.rtfd.io)
+- [Censys Homepage](https://censys.io/)
+- [Source](https://github.com/censys/censys-python)
 - [Issue Tracker](https://github.com/censys/censys-python/issues)
+- [Changelog](https://github.com/censys/censys-python/releases)
+- [Documentation](https://censys-python.rtfd.io)
 
 ## Contributing
 
@@ -46,8 +58,6 @@ $ pip install -e ".[dev]"
 ```
 
 ## Testing
-
-Testing requires credentials to be set.
 
 ```bash
 $ pytest
