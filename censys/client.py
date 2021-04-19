@@ -46,5 +46,10 @@ class SearchClient:
 
     def __init__(self, *args, **kwargs) -> None:
         """Inits SearchClient."""
-        self.v1 = self._V1(*args, **kwargs)
-        self.v2 = self._V2(*args, **kwargs)
+        # Backwards compatability
+        if len(args) == 2:
+            kwargs["api_id"] = args[0]
+            kwargs["api_secret"] = args[1]
+
+        self.v1 = self._V1(**kwargs)
+        self.v2 = self._V2(**kwargs)
