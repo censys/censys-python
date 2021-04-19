@@ -27,6 +27,14 @@ censys.cli module
    :undoc-members:
    :show-inheritance:
 
+censys.client module
+--------------------
+
+.. automodule:: censys.client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 censys.config module
 --------------------
 

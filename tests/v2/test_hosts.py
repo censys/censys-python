@@ -5,7 +5,7 @@ import responses
 
 from ..utils import CensysTestCase
 
-from censys import CensysHosts
+from censys import SearchClient
 
 VIEW_HOST_JSON = {
     "result": {
@@ -87,7 +87,7 @@ HTTP_AGGREGATE_JSON = {
 class TestHosts(CensysTestCase):
     def setUp(self):
         super().setUp()
-        self.setUpApi(CensysHosts(self.api_id, self.api_secret))
+        self.setUpApi(SearchClient(self.api_id, self.api_secret).v2.hosts)
 
     def test_view(self):
         self.responses.add(

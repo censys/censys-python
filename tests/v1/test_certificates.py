@@ -4,7 +4,7 @@ import responses
 
 from ..utils import CensysTestCase
 
-from censys import CensysCertificates
+from censys import SearchClient
 
 BULK_JSON = {
     "fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70": "MISC_CERT_DATA",
@@ -16,7 +16,7 @@ class CensysCertificatesTests(CensysTestCase):
     def setUp(self):
         super().setUp()
         self.setUpApi(
-            CensysCertificates(api_id=self.api_id, api_secret=self.api_secret)
+            SearchClient(api_id=self.api_id, api_secret=self.api_secret).v1.certificates
         )
 
     def test_bulk(self):

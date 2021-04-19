@@ -4,7 +4,7 @@ import responses
 
 from ..utils import CensysTestCase
 
-from censys import CensysData
+from censys import SearchClient
 
 SERIES_JSON = {
     "primary_series": "",
@@ -25,7 +25,7 @@ RESULT = "20200818"
 class CensysDataTest(CensysTestCase):
     def setUp(self):
         super().setUp()
-        self.setUpApi(CensysData(self.api_id, self.api_secret))
+        self.setUpApi(SearchClient(self.api_id, self.api_secret).v1.data)
 
     def test_get_series(self):
         self.responses.add(

@@ -6,7 +6,7 @@ from parameterized import parameterized_class
 
 from ..utils import CensysTestCase
 
-from censys import CensysCertificates, CensysIPv4, CensysWebsites
+from censys import SearchClient
 from censys.exceptions import CensysException
 
 MAX_RECORDS = 10
@@ -51,22 +51,24 @@ REPORT_JSON = {
 
 
 @parameterized_class(
-    ("index", "index_wrapper", "document_id"),
+    ("index", "document_id"),
     [
         (
             "certificates",
-            CensysCertificates,
             "fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70",
         ),
-        ("ipv4", CensysIPv4, "8.8.8.8"),
-        ("websites", CensysWebsites, "google.com"),
+        ("ipv4", "8.8.8.8"),
+        ("websites", "google.com"),
     ],
 )
 class CensysIndexTests(CensysTestCase):
     def setUp(self):
         super().setUp()
         self.setUpApi(
-            self.index_wrapper(api_id=self.api_id, api_secret=self.api_secret)
+            getattr(
+                SearchClient(api_id=self.api_id, api_secret=self.api_secret).v1,
+                self.index,
+            )
         )
 
     def test_view(self):

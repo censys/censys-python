@@ -6,7 +6,6 @@ from requests.models import Response
 
 from ..base import CensysAPIBase
 from ..config import DEFAULT, get_config
-from ..deprecation import DeprecationDecorator
 from ..exceptions import CensysException, CensysExceptionMapper, CensysSearchException
 
 Fields = Optional[List[str]]
@@ -32,9 +31,6 @@ class CensysSearchAPIv1(CensysAPIBase):
     INDEX_NAME: Optional[str] = None
     """Name of Censys Index."""
 
-    @DeprecationDecorator(
-        "The v1 Search API is deprecated and will be removed in the future."
-    )
     def __init__(self, *args, **kwargs):
         """Inits CensysSearchAPIv1."""
         # Backwards compatability
