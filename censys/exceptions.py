@@ -45,7 +45,7 @@ class CensysAPIException(CensysException):
 class CensysSearchException(CensysAPIException):
     """Base Exception for the Censys search API."""
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Representation of CensysSearchException.
 
         Returns:
@@ -59,7 +59,7 @@ class CensysSearchException(CensysAPIException):
 class CensysAsmException(CensysAPIException):
     """Base Exception for the Censys ASM API."""
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Representation of CensysAsmException.
 
         Returns:

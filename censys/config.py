@@ -19,7 +19,7 @@ default_config = {
 }
 
 
-def write_config(config):
+def write_config(config: configparser.ConfigParser) -> None:
     """Writes config to file.
 
     Args:
@@ -52,7 +52,7 @@ def get_config() -> configparser.ConfigParser:
     return config
 
 
-def check_config(config):
+def check_config(config: configparser.ConfigParser) -> None:
     """Checks config against default config for fields.
 
     Args:

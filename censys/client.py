@@ -30,7 +30,7 @@ class SearchClient:
         @DeprecationDecorator(
             "The v1 Search API is deprecated and will be removed in the future."
         )
-        def __init__(self, *args, **kwargs) -> None:
+        def __init__(self, *args, **kwargs):
             """Inits V1."""
             self.certificates = CensysCertificates(*args, **kwargs)
             self.data = CensysData(*args, **kwargs)
@@ -40,11 +40,11 @@ class SearchClient:
     class _V2:
         """Class for v2 Search APIs."""
 
-        def __init__(self, *args, **kwargs) -> None:
+        def __init__(self, *args, **kwargs):
             """Inits V2."""
             self.hosts = CensysHosts(*args, **kwargs)
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs):
         """Inits SearchClient."""
         # Backwards compatability
         if len(args) == 2:

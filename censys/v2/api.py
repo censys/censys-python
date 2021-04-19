@@ -108,7 +108,7 @@ class CensysSearchAPIv2(CensysAPIBase):
             per_page: Optional[int] = None,
             cursor: Optional[str] = None,
             pages: int = 1,
-        ) -> None:
+        ):
             """Inits Query."""
             self.api = api
             self.query = query
