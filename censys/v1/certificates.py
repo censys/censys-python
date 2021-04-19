@@ -33,7 +33,7 @@ class CensysCertificates(CensysSearchAPIv1):
         Returns:
             dict: Search results from an API query.
         """
-        result = dict()
+        result = {}
         start = 0
         end = self.MAX_PER_BULK_REQUEST
         while start < len(fingerprints):

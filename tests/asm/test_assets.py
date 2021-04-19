@@ -43,7 +43,7 @@ class AssetsUnitTest(unittest.TestCase):
     def test_get_assets(self, asset_type, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, ASSET_TYPE)
         assets = getattr(self.client, asset_type).get_assets()
-        res = [asset for asset in assets]
+        res = list(assets)
 
         assert RESOURCE_PAGING_RESULTS == res
         mock.assert_called_with(
@@ -61,7 +61,7 @@ class AssetsUnitTest(unittest.TestCase):
         assets = getattr(self.client, asset_type).get_assets(
             page_number=TEST_PAGE_NUMBER, page_size=TEST_PAGE_SIZE
         )
-        res = [asset for asset in assets]
+        res = list(assets)
 
         assert RESOURCE_PAGING_RESULTS[:6] == res
         assert mock.call_args_list[0][1]["params"]["pageNumber"] != 1
@@ -90,7 +90,7 @@ class AssetsUnitTest(unittest.TestCase):
         comments = getattr(self.client, asset_type).get_comments(
             TEST_ASSET_IDS[asset_type]
         )
-        res = [comment for comment in comments]
+        res = list(comments)
 
         assert RESOURCE_PAGING_RESULTS == res
         mock.assert_called_with(
@@ -108,7 +108,7 @@ class AssetsUnitTest(unittest.TestCase):
         comments = getattr(self.client, asset_type).get_comments(
             TEST_ASSET_IDS[asset_type], page_number=2, page_size=2
         )
-        res = [comment for comment in comments]
+        res = list(comments)
 
         assert RESOURCE_PAGING_RESULTS[:6] == res
         assert mock.call_args_list[0][1]["params"]["pageNumber"] != 1
@@ -202,7 +202,7 @@ class AssetsUnitTest(unittest.TestCase):
         test_domain = TEST_ASSET_IDS.get("domains")
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, "subdomains")
         subdomains = self.client.domains.get_subdomains(test_domain)
-        res = [sub for sub in subdomains]
+        res = list(subdomains)
 
         assert RESOURCE_PAGING_RESULTS == res
         mock.assert_called_with(

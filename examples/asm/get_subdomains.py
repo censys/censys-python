@@ -3,7 +3,7 @@ from censys import AsmClient
 
 c = AsmClient()
 
-domains = list()
+domains = []
 for domain in c.domains.get_assets():
     domain_str = domain["data"]["domain"]
     domains.append(domain_str)

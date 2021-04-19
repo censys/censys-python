@@ -103,7 +103,7 @@ class EventsUnitTests(unittest.TestCase):
     def test_get_all_events(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, EVENTS_RESOURCE_TYPE)
         events = self.client.events.get_events()
-        res = [event for event in events]
+        res = list(events)
 
         assert RESOURCE_PAGING_RESULTS == res
         mock.assert_any_call(EVENTS_URL, params={"cursor": None}, timeout=TEST_TIMEOUT)
@@ -115,7 +115,7 @@ class EventsUnitTests(unittest.TestCase):
     def test_get_events_with_cursor(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, EVENTS_RESOURCE_TYPE)
         events = self.client.events.get_events(TEST_CURSOR)
-        res = [event for event in events]
+        res = list(events)
 
         assert RESOURCE_PAGING_RESULTS == res
         mock.assert_any_call(

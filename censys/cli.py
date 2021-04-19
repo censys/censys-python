@@ -41,7 +41,7 @@ class CensysAPISearch:
         max_pages (int, optional): The maximum number of pages. Defaults to 10.
     """
 
-    csv_fields: Fields = list()
+    csv_fields: Fields = []
     """A list of fields to be used by the CSV writer."""
 
     def __init__(self, **kwargs):
