@@ -36,9 +36,8 @@ class CensysSearchAPIv1(CensysAPIBase):
     INDEX_NAME: Optional[str] = None
     """Name of Censys Index."""
 
-    # TODO: Update language
     @DeprecationDecorator(
-        "v1 API will be deprecated soon. For more details please visit INSERT_LINK"
+        "The v1 Search API is deprecated and will be removed in the future."
     )
     def __init__(self, *args, **kwargs):
         """Inits CensysSearchAPIv1."""
