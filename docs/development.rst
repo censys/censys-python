@@ -5,17 +5,23 @@ Clone the repository:
 
 .. tabs::
 
-   .. tab:: with SSH
+   .. tab:: SSH
 
       .. prompt:: bash $
 
         git clone git@github.com:censys/censys-python.git
 
-   .. tab:: with HTTPS
+   .. tab:: HTTPS
 
       .. prompt:: bash $
       
         git clone https://github.com/censys/censys-python.git
+   
+   .. tab:: GitHub CLI
+
+      .. prompt:: bash $
+      
+        gh repo clone censys/censys-python
 
 Install dependencies via ``pip``:
 

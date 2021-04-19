@@ -2,20 +2,23 @@ name: Python CI
 
 on:
   push:
-    paths-ignore: 
-      - 'docs/**'
-      - '**.md'
+    paths-ignore:
+      - "docs/**"
+      - "**.md"
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 10
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: "3.9.0"
+          python-version: "3.x"
 
       - name: Cache pip
         uses: actions/cache@v2
@@ -35,15 +38,13 @@ jobs:
 
       - name: Lint with flake8
         run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 censys --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 censys --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          # The GitHub editor is 127 chars wide
+          flake8 --max-line-length=127
 
       - name: Type checking with mypy
         run: |
           mypy censys
 
-    # - name: Test with pytest
-    #   run: |
-    #     pytest
+      - name: Test with pytest
+        run: |
+          pytest

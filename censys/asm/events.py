@@ -1,63 +1,50 @@
-"""
-Interact with the Censys Logbook API.
-"""
+"""Interact with the Censys Logbook API."""
+import datetime
+from typing import Iterator, List, Optional, Union
 
-from datetime import datetime
-from typing import Generator, List, Optional, Union
-
-from censys.asm.api import CensysAsmAPI
+from .api import CensysAsmAPI
 
 
 class Events(CensysAsmAPI):
-    """
-    Events API class
-    """
+    """Events API class."""
 
-    def __init__(self, api_key: Optional[str] = None, **kwargs):
-        CensysAsmAPI.__init__(self, api_key, **kwargs)
-        self.base_path = "logbook"
+    base_path = "logbook"
 
     def get_cursor(
         self,
-        start: Optional[Union[datetime, int]] = None,
+        start: Optional[Union[datetime.datetime, int]] = None,
         filters: Optional[List[str]] = None,
     ) -> str:
-        """
-        Requests a logbook cursor.
+        """Requests a logbook cursor.
 
         Args:
-            start (datetime or int, optional): Timestamp or event ID to begin searching.
-            filters (list, optional): List of filters applied to logbook search results.
+            start ([datetime.datetime, int]): Optional; Timestamp or event ID to begin searching.
+            filters (list): Optional; List of filters applied to logbook search results.
 
         Returns:
             str: Cursor result.
         """
-
         path = f"{self.base_path}-cursor"
         data = format_data(start=start, filters=filters)
 
         return self._post(path, data=data)["cursor"]
 
-    def get_events(self, cursor: Optional[str] = None) -> Generator[dict, None, None]:
-        """
-        Requests logbook events from inception or from the provided cursor.
+    def get_events(self, cursor: Optional[str] = None) -> Iterator[dict]:
+        """Requests logbook events from inception or from the provided cursor.
 
         Args:
-            cursor (str, optional): Logbook cursor.
+            cursor (str): Optional; Logbook cursor.
 
-        Returns:
-            generator: Logbook events results.
+        Yields:
+            dict: Logbook event.
         """
-
         args = {"cursor": cursor}
 
-        return self._get_logbook_page(self.base_path, args)
+        yield from self._get_logbook_page(self.base_path, args)
 
 
 class Filters:
-    """
-    Logbook filters class
-    """
+    """Logbook filters class."""
 
     CERT = "CERT"
     CERT_RISK = "CERT_RISK"
@@ -78,19 +65,18 @@ class Filters:
 
 
 def format_data(
-    start: Optional[Union[datetime, int]] = None, filters: Optional[List[str]] = None
+    start: Optional[Union[datetime.datetime, int]] = None,
+    filters: Optional[List[str]] = None,
 ) -> dict:
-    """
-    Formats cursor request data into a start date/id and filter list
+    """Formats cursor request data into a start date/id and filter list.
 
     Args:
-        start (datetime or int, optional): Timestamp or event ID to begin searching.
-        filters (list, optional): List of filters applied to logbook search results.
+        start ([datetime.datetime, int]): Optional; Timestamp or event ID to begin searching.
+        filters (list): Optional; List of filters applied to logbook search results.
 
     Returns:
         dict: Formatted logbook cursor request data
     """
-
     data: dict = {}
 
     if filters:

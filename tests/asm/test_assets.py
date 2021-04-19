@@ -4,12 +4,11 @@ from unittest.mock import patch
 
 from parameterized import parameterized
 
-from asm.utils import (
+from .utils import (
     BASE_URL,
     RESOURCE_PAGING_RESULTS,
     TEST_SUCCESS_CODE,
     TEST_TIMEOUT,
-    CensysAsmTestCase,
     MockResponse,
 )
 
@@ -33,10 +32,8 @@ TEST_TAG_NAME = "asset-test-tag"
 TEST_TAG_COLOR = "#4287f5"
 
 
-class AssetsUnitTest(CensysAsmTestCase):
-    """
-    Unit tests for Host, Certificate, and Domain API's
-    """
+class AssetsUnitTest(unittest.TestCase):
+    """Unit tests for Host, Certificate, and Domain APIs."""
 
     def setUp(self):
         self.client = AsmClient()
@@ -46,9 +43,9 @@ class AssetsUnitTest(CensysAsmTestCase):
     def test_get_assets(self, asset_type, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, ASSET_TYPE)
         assets = getattr(self.client, asset_type).get_assets()
-        res = [asset for asset in assets]
+        res = list(assets)
 
-        self.assertEqual(RESOURCE_PAGING_RESULTS, res)
+        assert RESOURCE_PAGING_RESULTS == res
         mock.assert_called_with(
             f"{ASSETS_URL}/{asset_type}",
             params={"pageNumber": 3, "pageSize": 500},
@@ -64,10 +61,10 @@ class AssetsUnitTest(CensysAsmTestCase):
         assets = getattr(self.client, asset_type).get_assets(
             page_number=TEST_PAGE_NUMBER, page_size=TEST_PAGE_SIZE
         )
-        res = [asset for asset in assets]
+        res = list(assets)
 
-        self.assertEqual(RESOURCE_PAGING_RESULTS[:6], res)
-        self.assertNotEqual(1, mock.call_args_list[0][1]["params"]["pageNumber"])
+        assert RESOURCE_PAGING_RESULTS[:6] == res
+        assert mock.call_args_list[0][1]["params"]["pageNumber"] != 1
         mock.assert_called_with(
             f"{ASSETS_URL}/{asset_type}",
             params={"pageNumber": 3, "pageSize": 2},
@@ -93,9 +90,9 @@ class AssetsUnitTest(CensysAsmTestCase):
         comments = getattr(self.client, asset_type).get_comments(
             TEST_ASSET_IDS[asset_type]
         )
-        res = [comment for comment in comments]
+        res = list(comments)
 
-        self.assertEqual(RESOURCE_PAGING_RESULTS, res)
+        assert RESOURCE_PAGING_RESULTS == res
         mock.assert_called_with(
             f"{ASSETS_URL}/{asset_type}/{TEST_ASSET_IDS[asset_type]}/{COMMENT_TYPE}",
             params={"pageNumber": 3, "pageSize": 500},
@@ -111,10 +108,10 @@ class AssetsUnitTest(CensysAsmTestCase):
         comments = getattr(self.client, asset_type).get_comments(
             TEST_ASSET_IDS[asset_type], page_number=2, page_size=2
         )
-        res = [comment for comment in comments]
+        res = list(comments)
 
-        self.assertEqual(RESOURCE_PAGING_RESULTS[:6], res)
-        self.assertNotEqual(1, mock.call_args_list[0][1]["params"]["pageNumber"])
+        assert RESOURCE_PAGING_RESULTS[:6] == res
+        assert mock.call_args_list[0][1]["params"]["pageNumber"] != 1
         mock.assert_called_with(
             f"{ASSETS_URL}/{asset_type}/{TEST_ASSET_IDS[asset_type]}/{COMMENT_TYPE}",
             params={"pageNumber": 3, "pageSize": 2},
@@ -197,6 +194,20 @@ class AssetsUnitTest(CensysAsmTestCase):
                 f"/tags/{TEST_TAG_NAME}"
             ),
             params={},
+            timeout=TEST_TIMEOUT,
+        )
+
+    @patch("censys.base.requests.Session.get")
+    def test_get_subdomains(self, mock):
+        test_domain = TEST_ASSET_IDS.get("domains")
+        mock.return_value = MockResponse(TEST_SUCCESS_CODE, "subdomains")
+        subdomains = self.client.domains.get_subdomains(test_domain)
+        res = list(subdomains)
+
+        assert RESOURCE_PAGING_RESULTS == res
+        mock.assert_called_with(
+            f"{ASSETS_URL}/domains/{test_domain}/subdomains",
+            params={"pageNumber": 3, "pageSize": 500},
             timeout=TEST_TIMEOUT,
         )
 

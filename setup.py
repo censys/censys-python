@@ -1,50 +1,54 @@
-import io
+"""Censys Python Setup."""
 import os
-from setuptools import setup, find_packages
-
-import censys
+from setuptools import find_packages, setup
 
 NAME = "censys"
-DESCRIPTION = censys.__doc__.strip()
+DESCRIPTION = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
 GIT_URL = "https://github.com/censys/censys-python"
-ISSUE_URL = GIT_URL + "/issues"
 DOC_URL = "https://censys-python.rtfd.io"
 
+here = os.path.abspath(os.path.dirname(__file__))
 
-try:
-    here = os.path.abspath(os.path.dirname(__file__))
-    with io.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
-        long_description = "\n" + f.read()
-except FileNotFoundError:
-    long_description = DESCRIPTION
+pkg_vars = {}  # type: ignore
+
+with open(os.path.join(here, NAME, "version.py")) as f:
+    exec(f.read(), pkg_vars)
+
+with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+    long_description = "\n" + f.read()
 
 setup(
     name=NAME,
-    version=censys.__version__,
+    version=pkg_vars["__version__"],
     description=DESCRIPTION,
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author=censys.__author__,
-    author_email=censys.__email__,
-    license=censys.__license__,
-    url=GIT_URL,
+    author="Censys Team",
+    author_email="support@censys.io",
+    license="Apache License, Version 2.0",
     keywords=NAME,
     python_requires=">=3.6.0",
-    packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
+    packages=find_packages(exclude=["tests", "examples"]),
     include_package_data=True,
     zip_safe=False,
-    install_requires=["requests", "backoff"],
+    install_requires=["requests>=2.25.1", "backoff==1.10.0"],
     extras_require={
         "dev": [
-            "flake8",
-            "black",
-            "pytest",
-            "pytest-cov",
-            "requests-mock",
-            "mypy",
-            "backoff-stubs",
-            "twine",
-            "parameterized",
+            "flake8==3.9.1",
+            "flake8-docstrings==1.6.0",
+            "flake8-pytest-style==1.4.1",
+            "flake8-simplify==0.14.0",
+            "flake8-comprehensions==3.4.0",
+            "pep8-naming==0.11.1",
+            "flake8-black==0.2.1",
+            "black==20.8b1",
+            "pytest==6.2.3",
+            "pytest-cov==2.11.1",
+            "responses==0.13.2",
+            "mypy==0.812",
+            "backoff-stubs==1.10.0",
+            "twine==3.4.1",
+            "parameterized==0.8.1",
         ],
         "docs": ["sphinx"],
     },
@@ -73,5 +77,11 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: Implementation :: PyPy",
     ],
-    project_urls={"Documentation": DOC_URL, "Source": GIT_URL, "Tracker": ISSUE_URL},
+    project_urls={
+        "Censys Homepage": "https://censys.io/",
+        "Documentation": DOC_URL,
+        "Changelog": GIT_URL + "/releases",
+        "Tracker": GIT_URL + "/issues",
+        "Source": GIT_URL,
+    },
 )

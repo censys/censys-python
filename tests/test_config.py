@@ -46,6 +46,6 @@ class CensysConfigTest(unittest.TestCase):
         new_version = "test" + pre_version
         with patch("censys.config.__version__", new_version):
             config = get_config()
-            self.assertEqual(config.get(DEFAULT, "version"), new_version)
+            assert config.get(DEFAULT, "version") == new_version
 
         mock_file.assert_called_with(test_config_path, "w")

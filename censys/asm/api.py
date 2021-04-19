@@ -1,31 +1,32 @@
-"""
-Base for interacting with the Censys ASM API.
-"""
+"""Base for interacting with the Censys ASM API."""
 # pylint: disable=too-many-arguments
 import os
-
 from math import inf
-from typing import Generator, Type, Optional
+from typing import Iterator, Optional, Type
+
 from requests.models import Response
-from censys.exceptions import (
-    CensysMissingApiKeyException,
-    CensysAsmException,
-    CensysExceptionMapper,
-)
 
 from censys.base import CensysAPIBase
-from censys.config import get_config, DEFAULT
+from censys.config import DEFAULT, get_config
+from censys.exceptions import CensysAsmException, CensysException, CensysExceptionMapper
 
 
 class CensysAsmAPI(CensysAPIBase):
-    """
-    This is the base class for ASM's Seeds, Assets, and Events classes
+    """This is the base class for ASM's Seeds, Assets, and Events classes.
+
+    Args:
+        api_key (str): Optional; The API Key provided by Censys.
+        **kwargs: Arbitrary keyword arguments.
+
+    Raises:
+        CensysException: Base Exception Class for the Censys API.
     """
 
     DEFAULT_URL: str = "https://app.censys.io/api/v1"
     """Default ASM API base URL."""
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
+        """Inits CensysAsmAPI."""
         url = kwargs.pop("url", self.DEFAULT_URL)
         CensysAPIBase.__init__(self, url=url, **kwargs)
 
@@ -40,7 +41,7 @@ class CensysAsmAPI(CensysAPIBase):
         )
 
         if not self._api_key:
-            raise CensysMissingApiKeyException("No ASM API key configured.")
+            raise CensysException("No ASM API key configured.")
 
         self._session.headers.update(
             {"Content-Type": "application/json", "Censys-Api-Key": self._api_key}
@@ -50,24 +51,23 @@ class CensysAsmAPI(CensysAPIBase):
         self, res: Response
     ) -> Type[CensysAsmException]:
         return CensysExceptionMapper.ASM_EXCEPTIONS.get(
-            res.json()["errorCode"], CensysAsmException
+            res.json().get("errorCode"), CensysAsmException
         )
 
     def _get_page(
         self, path: str, page_number: int = 1, page_size: Optional[int] = None
-    ) -> Generator[dict, None, None]:
-        """
-        Fetches paginated ASM resource API results.
+    ) -> Iterator[dict]:
+        """Fetches paginated ASM resource API results.
 
         Args:
             path (str): The API url endpoint.
-            page_number (int, optional): Page number to begin at when getting results.
-            page_size (int, optional): Number of results to return per HTTP request
+            page_number (int): Optional; Page number to begin at when getting results.
+            page_size (int):
+                Optional; Number of results to return per HTTP request. Defaults to 500.
 
-        Returns:
-            generator: The resource result set returned.
+        Yields:
+            dict: The resource result returned.
         """
-
         total_pages = inf
 
         while page_number <= total_pages:
@@ -77,27 +77,28 @@ class CensysAsmAPI(CensysAPIBase):
             page_number = int(res["pageNumber"]) + 1
             total_pages = int(res["totalPages"])
 
+            keyword = "assets"
             if "comments" in path:
-                for comment in res["comments"]:
-                    yield comment
-            else:
-                for asset in res["assets"]:
-                    yield asset
+                keyword = "comments"
+            elif "tags" in path:
+                keyword = "tags"
+            elif "subdomains" in path:
+                keyword = "subdomains"
+
+            yield from res[keyword]
 
     def _get_logbook_page(
         self, path: str, args: Optional[dict] = None
-    ) -> Generator[dict, None, None]:
-        """
-        Fetches paginated ASM logbook API events.
+    ) -> Iterator[dict]:
+        """Fetches paginated ASM logbook API events.
 
         Args:
             path (str): The API url endpoint.
-            args (dict, optional): URL args that are mapped to params (cursor).
+            args (dict): Optional; URL args that are mapped to params (cursor).
 
-        Returns:
-            generator: The event result set returned.
+        Yields:
+            dict: The event result returned.
         """
-
         end_of_events = False
 
         while not end_of_events:
@@ -105,5 +106,4 @@ class CensysAsmAPI(CensysAPIBase):
             end_of_events = res["endOfEvents"]
             args = {"cursor": res["nextCursor"]}
 
-            for event in res["events"]:
-                yield event
+            yield from res["events"]

@@ -8,30 +8,13 @@ Subpackages
    :maxdepth: 4
 
    censys.asm
-
-Submodules
-----------
-
-censys.api module
------------------
-
-.. automodule:: censys.api
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   censys.v1
+   censys.v2
 
 censys.base module
 ------------------
 
 .. automodule:: censys.base
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-censys.certificates module
---------------------------
-
-.. automodule:: censys.certificates
    :members:
    :undoc-members:
    :show-inheritance:
@@ -44,6 +27,14 @@ censys.cli module
    :undoc-members:
    :show-inheritance:
 
+censys.client module
+--------------------
+
+.. automodule:: censys.client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 censys.config module
 --------------------
 
@@ -52,10 +43,10 @@ censys.config module
    :undoc-members:
    :show-inheritance:
 
-censys.data module
-------------------
+censys.deprecation module
+-------------------------
 
-.. automodule:: censys.data
+.. automodule:: censys.deprecation
    :members:
    :undoc-members:
    :show-inheritance:
@@ -64,22 +55,6 @@ censys.exceptions module
 ------------------------
 
 .. automodule:: censys.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-censys.ipv4 module
-------------------
-
-.. automodule:: censys.ipv4
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-censys.websites module
-----------------------
-
-.. automodule:: censys.websites
    :members:
    :undoc-members:
    :show-inheritance:

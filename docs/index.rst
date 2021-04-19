@@ -14,12 +14,14 @@ Welcome to Censys Python's documentation!
    :caption: Table of Contents
 
    quick-start
-   usage
-   advanced-usage
+   usage-v1
+   usage-v2
    asm-usage
+   advanced-usage
    cli
    censys
    development
    testing
    contributing
+   license
    GitHub Repo <https://github.com/censys/censys-python>

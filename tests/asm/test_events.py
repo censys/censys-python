@@ -2,8 +2,7 @@ import json
 import unittest
 from unittest.mock import patch
 
-from asm.utils import (
-    CensysAsmTestCase,
+from .utils import (
     MockResponse,
     RESOURCE_PAGING_RESULTS,
     TEST_SUCCESS_CODE,
@@ -24,10 +23,8 @@ TEST_START_DATE = "2020-10-29T19:26:34.371Z"
 TEST_START_ID = 20712
 
 
-class EventsUnitTests(CensysAsmTestCase):
-    """
-    Unit tests for Events API
-    """
+class EventsUnitTests(unittest.TestCase):
+    """Unit tests for Events API."""
 
     def setUp(self):
         self.client = AsmClient()
@@ -106,12 +103,10 @@ class EventsUnitTests(CensysAsmTestCase):
     def test_get_all_events(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, EVENTS_RESOURCE_TYPE)
         events = self.client.events.get_events()
-        res = [event for event in events]
+        res = list(events)
 
-        self.assertEqual(RESOURCE_PAGING_RESULTS, res)
-        mock.assert_any_call(
-            EVENTS_URL, params={"cursor": None}, timeout=TEST_TIMEOUT
-        )
+        assert RESOURCE_PAGING_RESULTS == res
+        mock.assert_any_call(EVENTS_URL, params={"cursor": None}, timeout=TEST_TIMEOUT)
         mock.assert_any_call(
             EVENTS_URL, params={"cursor": TEST_NEXT_CURSOR}, timeout=TEST_TIMEOUT
         )
@@ -120,9 +115,9 @@ class EventsUnitTests(CensysAsmTestCase):
     def test_get_events_with_cursor(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, EVENTS_RESOURCE_TYPE)
         events = self.client.events.get_events(TEST_CURSOR)
-        res = [event for event in events]
+        res = list(events)
 
-        self.assertEqual(RESOURCE_PAGING_RESULTS, res)
+        assert RESOURCE_PAGING_RESULTS == res
         mock.assert_any_call(
             EVENTS_URL, params={"cursor": TEST_CURSOR}, timeout=TEST_TIMEOUT
         )
