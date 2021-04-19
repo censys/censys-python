@@ -1,25 +1,25 @@
 #!/usr/bin/env python
 """Interact with the Censys Search API through the command line."""
+import argparse
+import csv
+import json
 import os
 import sys
-import csv
 import time
-import json
-import argparse
 from pathlib import Path
-from typing import Union, Optional, List, Tuple
+from typing import List, Optional, Tuple, Union
 
 import requests
 
-from .v1.api import CensysSearchAPIv1
 from .asm.client import AsmClient
-from .config import get_config, write_config, DEFAULT
-from .v1 import CensysIPv4, CensysWebsites, CensysCertificates
+from .config import DEFAULT, get_config, write_config
 from .exceptions import (
     CensysCLIException,
     CensysNotFoundException,
     CensysUnauthorizedException,
 )
+from .v1 import CensysCertificates, CensysIPv4, CensysWebsites
+from .v1.api import CensysSearchAPIv1
 from .version import __version__
 
 Fields = List[str]

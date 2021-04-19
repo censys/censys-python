@@ -1,18 +1,14 @@
 """Base for interacting with the Censys ASM API."""
 # pylint: disable=too-many-arguments
 import os
-
 from math import inf
-from typing import Iterator, Type, Optional
+from typing import Iterator, Optional, Type
+
 from requests.models import Response
-from censys.exceptions import (
-    CensysException,
-    CensysAsmException,
-    CensysExceptionMapper,
-)
 
 from censys.base import CensysAPIBase
-from censys.config import get_config, DEFAULT
+from censys.config import DEFAULT, get_config
+from censys.exceptions import CensysAsmException, CensysException, CensysExceptionMapper
 
 
 class CensysAsmAPI(CensysAPIBase):

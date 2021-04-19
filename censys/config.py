@@ -1,6 +1,6 @@
 """Interact with the config file."""
-import os
 import configparser
+import os
 from pathlib import Path
 
 from censys.version import __version__

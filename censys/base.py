@@ -1,6 +1,6 @@
 """Base for interacting with the Censys APIs."""
-import os
 import json
+import os
 import warnings
 from functools import wraps
 from typing import Any, Callable, List, Optional, Type
@@ -9,7 +9,6 @@ import backoff
 import requests
 from requests.models import Response
 
-from .version import __version__ as VERSION
 from .exceptions import (
     CensysAPIException,
     CensysException,
@@ -17,6 +16,7 @@ from .exceptions import (
     CensysRateLimitExceededException,
     CensysTooManyRequestsException,
 )
+from .version import __version__ as VERSION
 
 Fields = Optional[List[str]]
 

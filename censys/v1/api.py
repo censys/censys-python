@@ -6,12 +6,8 @@ from requests.models import Response
 
 from ..base import CensysAPIBase
 from ..config import DEFAULT, get_config
-from ..exceptions import (
-    CensysException,
-    CensysSearchException,
-    CensysExceptionMapper,
-)
 from ..deprecation import DeprecationDecorator
+from ..exceptions import CensysException, CensysExceptionMapper, CensysSearchException
 
 Fields = Optional[List[str]]
 

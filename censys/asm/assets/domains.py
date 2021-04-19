@@ -1,7 +1,7 @@
 """Interact with the Censys Domain Assets API."""
-from .assets import Assets
-
 from typing import Iterator, Optional
+
+from .assets import Assets
 
 
 class DomainsAssets(Assets):

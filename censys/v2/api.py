@@ -1,17 +1,13 @@
 """Base for interacting with the Censys Search API."""
-import os
 import datetime
+import os
 from typing import Iterable, Iterator, List, Optional, Type, Union
 
 from requests.models import Response
 
 from ..base import CensysAPIBase
 from ..config import DEFAULT, get_config
-from ..exceptions import (
-    CensysException,
-    CensysSearchException,
-    CensysExceptionMapper,
-)
+from ..exceptions import CensysException, CensysExceptionMapper, CensysSearchException
 
 Fields = Optional[List[str]]
 
