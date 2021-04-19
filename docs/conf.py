@@ -5,7 +5,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 from datetime import datetime
-
+from censys import __version__
 import sphinx_rtd_theme
 
 # -- Path setup --------------------------------------------------------------
@@ -27,7 +27,7 @@ author = "Censys Team"
 copyright = f"{datetime.now().year or 2021}, {author}"
 
 # The full version, including alpha/beta/rc tags
-release = "2.0.0.dev0"
+release = __version__
 
 
 # -- General configuration ---------------------------------------------------
