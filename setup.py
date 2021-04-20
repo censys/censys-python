@@ -46,7 +46,7 @@ setup(
             "pytest-cov==2.11.1",
             "responses==0.13.2",
             "mypy==0.812",
-            "backoff-stubs==1.10.0",
+            "backoff-stubs==1.10.0.post3",
             "twine==3.4.1",
             "parameterized==0.8.1",
         ],
