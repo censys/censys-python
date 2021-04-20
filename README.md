@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/censys?color=orange)](https://pypi.org/project/censys/)
 [![Python Version](https://img.shields.io/badge/python-3.6%2B-blue)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/github/license/censys/censys-python)](LICENSE)
-[![Documentation](https://readthedocs.org/projects/censys-python/badge/?version=latest)](https://censys-python.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/censys-python/badge/?version=stable)](https://censys-python.readthedocs.io/en/stable/?badge=stable)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
