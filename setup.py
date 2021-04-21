@@ -30,6 +30,7 @@ setup(
     python_requires=">=3.6.0",
     packages=find_packages(exclude=["tests", "examples"]),
     include_package_data=True,
+    package_data={"censys": ["py.typed"]},
     zip_safe=False,
     install_requires=["requests>=2.25.1", "backoff==1.10.0"],
     extras_require={
