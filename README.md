@@ -62,3 +62,9 @@ $ pip install -e ".[dev]"
 ```bash
 $ pytest
 ```
+
+## License
+
+This software is licensed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+- Copyright (C) 2021 Censys, Inc.
