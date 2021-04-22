@@ -8,5 +8,6 @@ query = h.search("service.service_name: HTTP", per_page=5)
 print(query())
 
 # Multiple pages of search results
-for page in h.search("service.service_name: HTTP", per_page=5, pages=2):
+query = h.search("service.service_name: HTTP", per_page=5, pages=2)
+for page in query:
     print(page)
