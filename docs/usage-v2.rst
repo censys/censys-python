@@ -5,7 +5,7 @@ The Censys Search API provides functionality for interacting with Censys resourc
 
 There are three API options that this library provides access to:
 
--  ``search`` - Allows searches against the Hosts indexes using the same search syntax as the `web app <https://search.censys.io/search/language?resource=hosts>`__.
+-  ``search`` - Allows searches against the Hosts index using the same search syntax as the `web app <https://search.censys.io/search/language?resource=hosts>`__.
 -  ``view`` - Returns the structured data we have about a specific Host, given the resource's natural ID.
 -  ``aggregate`` - Allows you to view resources as a spectrum based on attributes of the resource, similar to the `Report Builder page <https://search.censys.io/search/report?resource=hosts>`__ on the web app.
 
