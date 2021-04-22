@@ -52,6 +52,7 @@ setup(
             "parameterized==0.8.1",
         ],
         "docs": ["sphinx"],
+        "tools": ["dnspython==2.1.0"],
     },
     entry_points={"console_scripts": ["censys = censys.cli:main"]},
     classifiers=[
