@@ -11,23 +11,22 @@ from typing import List, Optional, Tuple, Union
 
 import requests
 
-from .asm.client import AsmClient
-from .config import DEFAULT, get_config, write_config
-from .exceptions import (
+from ..asm.client import AsmClient
+from ..config import DEFAULT, get_config, write_config
+from ..exceptions import (
     CensysCLIException,
     CensysNotFoundException,
     CensysUnauthorizedException,
 )
-from .v1 import CensysCertificates, CensysIPv4, CensysWebsites
-from .v1.api import CensysSearchAPIv1
-from .version import __version__
+from ..v1 import CensysCertificates, CensysIPv4, CensysWebsites
+from ..v1.api import CensysSearchAPIv1
+from ..version import __version__
 
 Fields = List[str]
 Results = List[dict]
 Index = Union[CensysIPv4, CensysWebsites, CensysCertificates]
 
 
-# TODO: Breakout into cli/
 class CensysAPISearch:
     """Censys Search for CLI.
 
