@@ -42,11 +42,11 @@ def get_config() -> configparser.ConfigParser:
         write_config(config)
     else:
         config.read(config_path)
-    config = check_config(config)
+    check_config(config)
     return config
 
 
-def check_config(config: configparser.ConfigParser) -> configparser.ConfigParser:
+def check_config(config: configparser.ConfigParser) -> None:
     """Checks config against default config for fields.
 
     Args:
@@ -60,4 +60,3 @@ def check_config(config: configparser.ConfigParser) -> configparser.ConfigParser
             config.get(DEFAULT, key)
         except configparser.NoOptionError:
             config.set(DEFAULT, key, default_config.get(key))
-    return config
