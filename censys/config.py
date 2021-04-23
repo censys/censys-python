@@ -3,8 +3,6 @@ import configparser
 import os
 from pathlib import Path
 
-from censys.version import __version__
-
 DEFAULT = "DEFAULT"
 
 xdg_config_path = os.path.join(str(Path.home()), ".config")
@@ -12,7 +10,6 @@ censys_path = os.path.join(xdg_config_path, "censys")
 config_path = os.path.join(censys_path, "censys.cfg")
 
 default_config = {
-    "version": __version__,
     "api_id": "",
     "api_secret": "",
     "asm_api_key": "",
@@ -42,25 +39,25 @@ def get_config() -> configparser.ConfigParser:
         os.mkdir(censys_path)
     if not os.path.exists(config_path):
         config[DEFAULT] = default_config
-        with open(config_path, "w") as configfile:
-            config.write(configfile)
-    config.read(config_path)
-    check_config(config)
-    if config.get(DEFAULT, "version") != __version__:
-        config.set(DEFAULT, "version", __version__)
         write_config(config)
+    else:
+        config.read(config_path)
+    config = check_config(config)
     return config
 
 
-def check_config(config: configparser.ConfigParser) -> None:
+def check_config(config: configparser.ConfigParser) -> configparser.ConfigParser:
     """Checks config against default config for fields.
 
     Args:
-        config: Configuration to write.
+        config (configparser.ConfigParser): Configuration to write.
+
+    Returns:
+        configparser.ConfigParser: Config for Censys.
     """
     for key in default_config:
         try:
             config.get(DEFAULT, key)
         except configparser.NoOptionError:
             config.set(DEFAULT, key, default_config.get(key))
-    write_config(config)
+    return config
