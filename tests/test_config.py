@@ -19,10 +19,6 @@ os.mkdir = Mock()
 test_config = ConfigParser()
 test_config[DEFAULT] = default_config
 
-censys = MagicMock()
-censys.config = MagicMock()
-censys.config.get_config = Mock(return_value=test_config)
-
 test_config_path = config_path + ".test"
 
 
@@ -36,16 +32,4 @@ class CensysConfigTest(unittest.TestCase):
         os.path.isdir.assert_called_with(censys_path)
         os.mkdir.assert_called_with(censys_path)
         os.path.exists.assert_called_with(test_config_path)
-        mock_file.assert_called_with(test_config_path, "w")
-
-    @patch("builtins.open", new_callable=mock_open)
-    def test_write_version(self, mock_file):
-        config = get_config()
-        pre_version = config.get(DEFAULT, "version")
-
-        new_version = "test" + pre_version
-        with patch("censys.config.__version__", new_version):
-            config = get_config()
-            assert config.get(DEFAULT, "version") == new_version
-
         mock_file.assert_called_with(test_config_path, "w")
