@@ -17,7 +17,6 @@ from censys.exceptions import (
     CensysException,
     CensysCLIException,
 )
-from censys.config import config_path
 from censys import __version__
 
 BASE_URL = "https://censys.io/api/v1"
@@ -84,8 +83,6 @@ class CensysCliSearchTest(CensysTestCase):
             CensysException, match="No API ID or API secret configured."
         ):
             cli_main()
-
-        mock_file.assert_called_with(config_path, "w")
 
     @patch(
         "argparse._sys.argv",

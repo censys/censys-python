@@ -18,11 +18,7 @@ class CensysCertificates(CensysSearchAPIv1):
     """Name of Censys Index."""
     MAX_PER_BULK_REQUEST = 50
     """Max number of bulk requests."""
-
-    def __init__(self, *args, **kwargs):
-        """Inits CensysCertificates."""
-        super().__init__(self, *args, **kwargs)
-        self.bulk_path = f"/bulk/{self.INDEX_NAME}"
+    bulk_path = f"/bulk/{INDEX_NAME}"
 
     def bulk(self, fingerprints: List[str]) -> dict:
         """Requests bulk certificates.

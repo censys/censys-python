@@ -1,11 +1,11 @@
 # Censys Python Library
 
-[![PyPI](https://img.shields.io/pypi/v/censys?color=orange)](https://pypi.org/project/censys/)
-[![Python Version](https://img.shields.io/badge/python-3.6%2B-blue)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/github/license/censys/censys-python)](LICENSE)
-[![Documentation Status](https://readthedocs.org/projects/censys-python/badge/?version=stable)](https://censys-python.readthedocs.io/en/stable/?badge=stable)
-[![Code Style](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![PyPI](https://img.shields.io/pypi/v/censys?color=orange&logo=pypi&logoColor=orange)](https://pypi.org/project/censys/)
+[![Python Version](https://img.shields.io/badge/python-3.6%2B-blue?logo=python)](https://www.python.org/downloads/)
+[![Read the Docs (version)](https://img.shields.io/readthedocs/censys-python/latest?logo=read%20the%20docs)](https://censys-python.readthedocs.io/en/stable/?badge=stable)
+[![GitHub Discussions](https://img.shields.io/badge/GitHub-Discussions-brightgreen?logo=github)](https://github.com/censys/censys-python/discussions)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-organge.svg?logo=git&logoColor=organge)](http://makeapullrequest.com)
+[![License](https://img.shields.io/github/license/censys/censys-python?logo=apache)](LICENSE)
 
 An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://censys.io/)). Python 3.6+ is currently supported.
 

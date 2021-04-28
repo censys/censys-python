@@ -31,13 +31,10 @@ class CensysSearchAPIv1(CensysAPIBase):
     INDEX_NAME: Optional[str] = None
     """Name of Censys Index."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
+    ):
         """Inits CensysSearchAPIv1."""
-        # Backwards compatability
-        if len(args) == 2:
-            kwargs["api_id"] = args[0]
-            kwargs["api_secret"] = args[1]
-
         CensysAPIBase.__init__(self, kwargs.get("url", self.DEFAULT_URL), **kwargs)
 
         # Gets config file
@@ -45,12 +42,10 @@ class CensysSearchAPIv1(CensysAPIBase):
 
         # Try to get credentials
         self._api_id = (
-            kwargs.get("api_id")
-            or os.getenv("CENSYS_API_ID")
-            or config.get(DEFAULT, "api_id")
+            api_id or os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id")
         )
         self._api_secret = (
-            kwargs.get("api_secret")
+            api_secret
             or os.getenv("CENSYS_API_SECRET")
             or config.get(DEFAULT, "api_secret")
         )

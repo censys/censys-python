@@ -3,3 +3,5 @@ from .assets import Assets
 from .certificates import CertificatesAssets
 from .domains import DomainsAssets
 from .hosts import HostsAssets
+
+__all__ = ["Assets", "CertificatesAssets", "DomainsAssets", "HostsAssets"]
