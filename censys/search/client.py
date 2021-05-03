@@ -7,6 +7,8 @@ from .v2 import CensysHosts
 class SearchClient:
     """Client for interacting with all Search APIs.
 
+    All indexes are passed the args and kwargs that are provided.
+
     Examples:
         Inits SearchClient.
 
@@ -20,8 +22,6 @@ class SearchClient:
         >>> ipv4 = c.v1.ipv4 # CensysIPv4()
         >>> websites = c.v1.websites # CensysWebsites()
         >>> hosts = c.v2.hosts # CensysHosts()
-
-        All indexes are passed all *args and **kwargs that are provided.
     """
 
     class _V1:

@@ -38,11 +38,3 @@ censys.common.exceptions module
    :members:
    :undoc-members:
    :show-inheritance:
-
-censys.common.version module
-----------------------------
-
-.. automodule:: censys.common.version
-   :members:
-   :undoc-members:
-   :show-inheritance:

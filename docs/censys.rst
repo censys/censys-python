@@ -1,8 +1,5 @@
-censys namespace
-================
-
-Subpackages
------------
+API Reference
+=============
 
 .. toctree::
    :maxdepth: 4
