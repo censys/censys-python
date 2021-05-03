@@ -1,5 +1,5 @@
 """List all domains and subdomains in ASM."""
-from censys import AsmClient
+from censys.asm import AsmClient
 
 c = AsmClient()
 
