@@ -27,7 +27,7 @@ Below we show an example using the ``CensysIPv4`` index.
 
 .. code:: python
 
-    from censys import CensysIPv4
+    from censys.search import CensysIPv4
 
     c = CensysIPv4()
 
@@ -66,7 +66,7 @@ Below we show an example using the ``CensysCertificates`` index.
 
 .. code:: python
 
-    from censys import CensysCertificates
+    from censys.search import CensysCertificates
 
     c = CensysCertificates()
 
@@ -81,7 +81,7 @@ Below we show an example using the ``CensysWebsites`` index.
 
 .. code:: python
 
-    from censys import CensysWebsites
+    from censys.search import CensysWebsites
 
     c = CensysWebsites()
 
@@ -101,7 +101,7 @@ Below we show an example using the ``CensysData`` index.
 
 .. code:: python
 
-    from censys import CensysData
+    from censys.search import CensysData
 
     c = CensysData()
 
@@ -116,7 +116,7 @@ Below we show an example using the ``CensysIPv4`` index.
 
 .. code:: python
 
-    from censys import CensysIPv4
+    from censys.search import CensysIPv4
 
     c = CensysIPv4()
 
@@ -137,7 +137,7 @@ Below we show an example using the ``CensysCertificates`` index.
 
 .. code:: python
 
-    from censys import CensysCertificates
+    from censys.search import CensysCertificates
 
     c = CensysCertificates()
 

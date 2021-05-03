@@ -13,7 +13,7 @@ help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 apidoc:
-	cd .. && sphinx-apidoc -o docs censys
+	cd .. && sphinx-apidoc -o docs censys --implicit-namespaces
 
 .PHONY: help apidoc Makefile
 

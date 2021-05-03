@@ -8,7 +8,7 @@ If you need to use a proxy, you can configure resource indexes with the proxies 
 
 .. code:: python
 
-    from censys import CensysIPv4
+    from censys.search import CensysIPv4
 
     proxies = {
         "https": "http://10.10.1.10:1080",

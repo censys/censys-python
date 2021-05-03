@@ -27,6 +27,14 @@ censys.asm.client module
    :undoc-members:
    :show-inheritance:
 
+censys.asm.clouds module
+------------------------
+
+.. automodule:: censys.asm.clouds
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 censys.asm.events module
 ------------------------
 

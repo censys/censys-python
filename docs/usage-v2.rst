@@ -22,7 +22,7 @@ Below we show an example using the ``CensysHosts`` index.
 
 .. code:: python
 
-    from censys import CensysHosts
+    from censys.search import CensysHosts
 
     h = CensysHosts()
 
@@ -43,7 +43,7 @@ Below we show an example using the ``CensysHosts`` index.
 
 .. code:: python
 
-    from censys import CensysHosts
+    from censys.search import CensysHosts
 
     h = CensysHosts()
 
@@ -69,7 +69,7 @@ Below we show an example using the ``CensysHosts`` index.
 
 .. code:: python
 
-    from censys import CensysHosts
+    from censys.search import CensysHosts
 
     h = CensysHosts()
 

@@ -10,7 +10,7 @@ class SearchClient:
     Examples:
         Inits SearchClient.
 
-        >>> from censys import SearchClient
+        >>> from censys.search import SearchClient
         >>> c = SearchClient()
 
         Access both v1 and v2 indexes.
