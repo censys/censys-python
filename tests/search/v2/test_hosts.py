@@ -3,9 +3,9 @@ import datetime
 import pytest
 import responses
 
-from ..utils import CensysTestCase
+from tests.utils import CensysTestCase
 
-from censys import SearchClient
+from censys.search import SearchClient
 
 VIEW_HOST_JSON = {
     "result": {

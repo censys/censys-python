@@ -4,10 +4,10 @@ import pytest
 import responses
 from parameterized import parameterized_class
 
-from ..utils import CensysTestCase
+from tests.utils import CensysTestCase
 
-from censys import SearchClient
-from censys.exceptions import CensysException
+from censys.search import SearchClient
+from censys.common.exceptions import CensysException
 
 MAX_RECORDS = 10
 VIEW_JSON = {

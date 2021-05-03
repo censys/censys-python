@@ -40,14 +40,14 @@ class SeedsUnitTests(unittest.TestCase):
     def setUp(self):
         self.client = AsmClient()
 
-    @patch("censys.base.requests.Session.get")
+    @patch("censys.common.base.requests.Session.get")
     def test_get_seeds(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, SEED_RESOURCE_TYPE)
         self.client.seeds.get_seeds()
 
         mock.assert_called_with(SEEDS_URL, params={"type": None}, timeout=TEST_TIMEOUT)
 
-    @patch("censys.base.requests.Session.get")
+    @patch("censys.common.base.requests.Session.get")
     def test_get_seeds_by_type(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, SEED_RESOURCE_TYPE)
         self.client.seeds.get_seeds(seed_type=TEST_SEED_TYPE)
@@ -56,7 +56,7 @@ class SeedsUnitTests(unittest.TestCase):
             SEEDS_URL, params={"type": TEST_SEED_TYPE}, timeout=TEST_TIMEOUT
         )
 
-    @patch("censys.base.requests.Session.get")
+    @patch("censys.common.base.requests.Session.get")
     def test_get_seed_by_id(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, SEED_RESOURCE_TYPE)
         self.client.seeds.get_seed_by_id(TEST_SEED_ID)
@@ -65,7 +65,7 @@ class SeedsUnitTests(unittest.TestCase):
             f"{SEEDS_URL}/{TEST_SEED_ID}", params={}, timeout=TEST_TIMEOUT
         )
 
-    @patch("censys.base.requests.Session.post")
+    @patch("censys.common.base.requests.Session.post")
     def test_add_seed(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, SEED_RESOURCE_TYPE)
         self.client.seeds.add_seeds([TEST_SEED])
@@ -77,7 +77,7 @@ class SeedsUnitTests(unittest.TestCase):
             data=json.dumps({"seeds": [TEST_SEED]}),
         )
 
-    @patch("censys.base.requests.Session.post")
+    @patch("censys.common.base.requests.Session.post")
     def test_add_seeds(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, SEED_RESOURCE_TYPE)
         self.client.seeds.add_seeds(TEST_SEED_LIST)
@@ -89,7 +89,7 @@ class SeedsUnitTests(unittest.TestCase):
             data=json.dumps({"seeds": TEST_SEED_LIST}),
         )
 
-    @patch("censys.base.requests.Session.post")
+    @patch("censys.common.base.requests.Session.post")
     def test_add_seeds_forced(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, SEED_RESOURCE_TYPE)
         self.client.seeds.add_seeds(TEST_SEED_LIST, force=True)
@@ -101,7 +101,7 @@ class SeedsUnitTests(unittest.TestCase):
             data=json.dumps({"seeds": TEST_SEED_LIST}),
         )
 
-    @patch("censys.base.requests.Session.put")
+    @patch("censys.common.base.requests.Session.put")
     def test_replace_seeds_by_label(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, SEED_RESOURCE_TYPE)
         self.client.seeds.replace_seeds_by_label(TEST_SEED_LABEL, [TEST_SEED_NO_LABEL])
@@ -113,7 +113,7 @@ class SeedsUnitTests(unittest.TestCase):
             data=json.dumps({"seeds": [TEST_SEED_NO_LABEL]}),
         )
 
-    @patch("censys.base.requests.Session.put")
+    @patch("censys.common.base.requests.Session.put")
     def test_replace_seeds_by_label_forced(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, SEED_RESOURCE_TYPE)
         self.client.seeds.replace_seeds_by_label(
@@ -127,7 +127,7 @@ class SeedsUnitTests(unittest.TestCase):
             data=json.dumps({"seeds": TEST_SEED_LIST_NO_LABEL}),
         )
 
-    @patch("censys.base.requests.Session.delete")
+    @patch("censys.common.base.requests.Session.delete")
     def test_delete_seeds_by_label(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, SEED_RESOURCE_TYPE)
         self.client.seeds.delete_seeds_by_label(TEST_SEED_LABEL)
@@ -136,7 +136,7 @@ class SeedsUnitTests(unittest.TestCase):
             SEEDS_URL, params={"label": TEST_SEED_LABEL}, timeout=TEST_TIMEOUT
         )
 
-    @patch("censys.base.requests.Session.delete")
+    @patch("censys.common.base.requests.Session.delete")
     def test_delete_seed_by_id(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, SEED_RESOURCE_TYPE)
         self.client.seeds.delete_seed_by_id(TEST_SEED_ID)

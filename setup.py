@@ -1,6 +1,6 @@
 """Censys Python Setup."""
 import os
-from setuptools import find_packages, setup
+from setuptools import find_namespace_packages, setup
 
 NAME = "censys"
 DESCRIPTION = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
@@ -11,7 +11,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 pkg_vars = {}  # type: ignore
 
-with open(os.path.join(here, NAME, "version.py")) as f:
+with open(os.path.join(here, NAME, "common", "version.py")) as f:
     exec(f.read(), pkg_vars)
 
 with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
@@ -28,7 +28,9 @@ setup(
     license="Apache License, Version 2.0",
     keywords=NAME,
     python_requires=">=3.6.0",
-    packages=find_packages(exclude=["tests", "examples"]),
+    packages=find_namespace_packages(
+        include=["censys.*"], exclude=["tests", "examples"]
+    ),
     include_package_data=True,
     package_data={"censys": ["py.typed"]},
     zip_safe=False,
@@ -53,7 +55,7 @@ setup(
         ],
         "docs": ["sphinx"],
     },
-    entry_points={"console_scripts": ["censys = censys.cli:main"]},
+    entry_points={"console_scripts": ["censys = censys.common.cli:main"]},
     classifiers=[
         "Typing :: Typed",
         "Topic :: Internet",

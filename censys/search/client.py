@@ -1,5 +1,5 @@
 """Interact with all Search APIs."""
-from .deprecation import DeprecationDecorator
+from ..common.deprecation import DeprecationDecorator
 from .v1 import CensysCertificates, CensysData, CensysIPv4, CensysWebsites
 from .v2 import CensysHosts
 

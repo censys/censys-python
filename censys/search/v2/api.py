@@ -5,9 +5,13 @@ from typing import Iterable, Iterator, List, Optional, Type, Union
 
 from requests.models import Response
 
-from ..base import CensysAPIBase
-from ..config import DEFAULT, get_config
-from ..exceptions import CensysException, CensysExceptionMapper, CensysSearchException
+from censys.common.base import CensysAPIBase
+from censys.common.config import DEFAULT, get_config
+from censys.common.exceptions import (
+    CensysException,
+    CensysExceptionMapper,
+    CensysSearchException,
+)
 
 Fields = Optional[List[str]]
 

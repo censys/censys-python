@@ -39,7 +39,7 @@ class AssetsUnitTest(unittest.TestCase):
         self.client = AsmClient()
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
-    @patch("censys.base.requests.Session.get")
+    @patch("censys.common.base.requests.Session.get")
     def test_get_assets(self, asset_type, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, ASSET_TYPE)
         assets = getattr(self.client, asset_type).get_assets()
@@ -53,7 +53,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
-    @patch("censys.base.requests.Session.get")
+    @patch("censys.common.base.requests.Session.get")
     def test_get_hosts_by_page(self, asset_type, mock):
         mock.return_value = MockResponse(
             TEST_SUCCESS_CODE, ASSET_TYPE, TEST_PAGE_NUMBER
@@ -72,7 +72,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
-    @patch("censys.base.requests.Session.get")
+    @patch("censys.common.base.requests.Session.get")
     def test_get_host_by_asset_id(self, asset_type, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, ASSET_TYPE)
         getattr(self.client, asset_type).get_asset_by_id(TEST_ASSET_IDS[asset_type])
@@ -84,7 +84,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
-    @patch("censys.base.requests.Session.get")
+    @patch("censys.common.base.requests.Session.get")
     def test_get_host_comments(self, asset_type, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, COMMENT_TYPE)
         comments = getattr(self.client, asset_type).get_comments(
@@ -100,7 +100,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
-    @patch("censys.base.requests.Session.get")
+    @patch("censys.common.base.requests.Session.get")
     def test_get_host_comments_by_page(self, asset_type, mock):
         mock.return_value = MockResponse(
             TEST_SUCCESS_CODE, COMMENT_TYPE, TEST_PAGE_NUMBER
@@ -119,7 +119,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
-    @patch("censys.base.requests.Session.get")
+    @patch("censys.common.base.requests.Session.get")
     def test_get_comment_by_id(self, asset_type, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, COMMENT_TYPE)
         getattr(self.client, asset_type).get_comment_by_id(
@@ -136,7 +136,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
-    @patch("censys.base.requests.Session.post")
+    @patch("censys.common.base.requests.Session.post")
     def test_add_host_comment(self, asset_type, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, COMMENT_TYPE)
         getattr(self.client, asset_type).add_comment(
@@ -151,7 +151,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
-    @patch("censys.base.requests.Session.post")
+    @patch("censys.common.base.requests.Session.post")
     def test_add_host_tag_with_color(self, asset_type, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, ASSET_TYPE)
         getattr(self.client, asset_type).add_tag(
@@ -166,7 +166,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
-    @patch("censys.base.requests.Session.post")
+    @patch("censys.common.base.requests.Session.post")
     def test_add_host_tag_without_color(self, asset_type, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, ASSET_TYPE)
         getattr(self.client, asset_type).add_tag(
@@ -181,7 +181,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
-    @patch("censys.base.requests.Session.delete")
+    @patch("censys.common.base.requests.Session.delete")
     def test_delete_host_tag(self, asset_type, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, ASSET_TYPE)
         getattr(self.client, asset_type).delete_tag(
@@ -197,7 +197,7 @@ class AssetsUnitTest(unittest.TestCase):
             timeout=TEST_TIMEOUT,
         )
 
-    @patch("censys.base.requests.Session.get")
+    @patch("censys.common.base.requests.Session.get")
     def test_get_subdomains(self, mock):
         test_domain = TEST_ASSET_IDS.get("domains")
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, "subdomains")

@@ -6,9 +6,13 @@ from typing import Iterator, Optional, Type
 
 from requests.models import Response
 
-from censys.base import CensysAPIBase
-from censys.config import DEFAULT, get_config
-from censys.exceptions import CensysAsmException, CensysException, CensysExceptionMapper
+from censys.common.base import CensysAPIBase
+from censys.common.config import DEFAULT, get_config
+from censys.common.exceptions import (
+    CensysAsmException,
+    CensysException,
+    CensysExceptionMapper,
+)
 
 
 class CensysAsmAPI(CensysAPIBase):

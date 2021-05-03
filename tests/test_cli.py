@@ -13,11 +13,11 @@ from .utils import CensysTestCase
 
 from censys.cli import main as cli_main
 from censys.cli import CensysHNRI
-from censys.exceptions import (
+from censys.common.exceptions import (
     CensysException,
     CensysCLIException,
 )
-from censys import __version__
+from censys.common import __version__
 
 BASE_URL = "https://censys.io/api/v1"
 CLI_AUTH_ARGS = [

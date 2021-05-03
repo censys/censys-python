@@ -2,9 +2,9 @@ import unittest
 
 import responses
 
-from ..utils import CensysTestCase
+from tests.utils import CensysTestCase
 
-from censys import SearchClient
+from censys.search import SearchClient
 
 SERIES_JSON = {
     "primary_series": "",
