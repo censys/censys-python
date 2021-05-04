@@ -11,16 +11,15 @@ from typing import List, Optional, Tuple, Union
 
 import requests
 
-from .asm.client import AsmClient
-from .config import DEFAULT, get_config, write_config
-from .exceptions import (
+from censys.common.config import DEFAULT, get_config, write_config
+from censys.common.exceptions import (
     CensysCLIException,
     CensysNotFoundException,
     CensysUnauthorizedException,
 )
-from .v1 import CensysCertificates, CensysIPv4, CensysWebsites
-from .v1.api import CensysSearchAPIv1
-from .version import __version__
+from censys.search.v1 import CensysCertificates, CensysIPv4, CensysWebsites
+from censys.search.v1.api import CensysSearchAPIv1
+from censys.common.version import __version__
 
 Fields = List[str]
 Results = List[dict]
@@ -561,8 +560,6 @@ def cli_asm_config(_):  # pragma: no cover
         sys.exit(1)
 
     try:
-        AsmClient(api_key)
-
         # Assumes that login was successfully
         config.set(DEFAULT, "asm_api_key", api_key)
 

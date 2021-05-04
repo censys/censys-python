@@ -5,10 +5,10 @@ import pytest
 from requests.models import Response
 from parameterized import parameterized
 
-from ..utils import CensysTestCase
+from tests.utils import CensysTestCase
 
-from censys.v2.api import CensysSearchAPIv2
-from censys.exceptions import (
+from censys.search.v2.api import CensysSearchAPIv2
+from censys.common.exceptions import (
     CensysException,
     CensysExceptionMapper,
 )

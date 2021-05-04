@@ -6,10 +6,10 @@ import responses
 from requests.models import Response
 from parameterized import parameterized
 
-from ..utils import CensysTestCase
+from tests.utils import CensysTestCase
 
-from censys.v1.api import CensysSearchAPI
-from censys.exceptions import (
+from censys.search.v1.api import CensysSearchAPI
+from censys.common.exceptions import (
     CensysException,
     CensysSearchException,
     CensysExceptionMapper,

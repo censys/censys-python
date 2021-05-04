@@ -2,7 +2,7 @@ import unittest
 
 import responses
 
-from censys.base import CensysAPIBase
+from censys.common.base import CensysAPIBase
 
 
 class CensysTestCase(unittest.TestCase):

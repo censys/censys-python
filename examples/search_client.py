@@ -1,5 +1,5 @@
 """Example using SearchClient."""
-from censys import SearchClient
+from censys.search import SearchClient
 
 c = SearchClient()
 

@@ -5,7 +5,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 from datetime import datetime
-from censys import __version__
+from censys.common import __version__
 import sphinx_rtd_theme
 
 # -- Path setup --------------------------------------------------------------

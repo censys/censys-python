@@ -8,7 +8,7 @@ class CensysHosts(CensysSearchAPIv2):
     Examples:
         Inits Censys Hosts.
 
-        >>> from censys import CensysHosts
+        >>> from censys.search import CensysHosts
         >>> h = CensysHosts()
 
         Simple host search.

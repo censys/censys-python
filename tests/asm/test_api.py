@@ -10,7 +10,7 @@ from parameterized import parameterized
 from ..utils import CensysTestCase
 
 from censys.asm.api import CensysAsmAPI
-from censys.exceptions import (
+from censys.common.exceptions import (
     CensysException,
     CensysAsmException,
     CensysExceptionMapper,

@@ -6,8 +6,8 @@ from requests.models import Response
 
 from .utils import CensysTestCase
 
-from censys.base import CensysAPIBase
-from censys.exceptions import (
+from censys.common.base import CensysAPIBase
+from censys.common.exceptions import (
     CensysException,
     CensysAPIException,
 )

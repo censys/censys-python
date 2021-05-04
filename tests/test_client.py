@@ -1,6 +1,6 @@
 from .utils import CensysTestCase
 
-from censys import SearchClient
+from censys.search import SearchClient
 
 ALL_INDEXES = {
     "v1": ["certificates", "data", "ipv4", "websites"],
