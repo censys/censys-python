@@ -61,8 +61,9 @@ class CensysSearchAPIv2(CensysAPIBase):
         self._session.auth = (self._api_id, self._api_secret)
 
         # Generate concrete paths to be called
-        self.search_path = f"{self.INDEX_NAME}/search"
-        self.aggregate_path = f"{self.INDEX_NAME}/aggregate"
+        self.view_path = f"/{self.INDEX_NAME}/"
+        self.search_path = f"/{self.INDEX_NAME}/search"
+        self.aggregate_path = f"/{self.INDEX_NAME}/aggregate"
 
     def _get_exception_class(  # type: ignore
         self, res: Response
@@ -213,7 +214,7 @@ class CensysSearchAPIv2(CensysAPIBase):
                 at_time = at_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
             args["at_time"] = at_time
 
-        return self._get("/".join((self.INDEX_NAME, document_id)), args)["result"]
+        return self._get(self.view_path + document_id, args)["result"]
 
     def aggregate(
         self, query: str, field: str, num_buckets: Optional[int] = None

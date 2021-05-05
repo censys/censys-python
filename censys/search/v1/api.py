@@ -59,9 +59,9 @@ class CensysSearchAPIv1(CensysAPIBase):
         self._session.auth = (self._api_id, self._api_secret)
 
         # Generate concrete paths to be called
-        self.search_path = f"search/{self.INDEX_NAME}"
-        self.view_path = f"view/{self.INDEX_NAME}"
-        self.report_path = f"report/{self.INDEX_NAME}"
+        self.search_path = f"/search/{self.INDEX_NAME}"
+        self.view_path = f"/view/{self.INDEX_NAME}/"
+        self.report_path = f"/report/{self.INDEX_NAME}"
 
         # Confirm setup
         # self.account()
@@ -195,7 +195,7 @@ class CensysSearchAPIv1(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
-        return self._get("/".join((self.view_path, document_id)))
+        return self._get(self.view_path + document_id)
 
     def report(self, query: str, field: str, buckets: int = 50) -> dict:
         """Creates a report on the breakdown of the values of a field in a result set.
