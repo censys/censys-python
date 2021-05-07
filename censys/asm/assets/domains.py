@@ -29,7 +29,7 @@ class DomainsAssets(Assets):
         Returns:
             generator: Asset search results.
         """
-        return self._get_page(
+        yield from self._get_page(
             f"{self.base_path}/{domain}/subdomains",
             page_number=page_number,
             page_size=page_size,

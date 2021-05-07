@@ -72,7 +72,7 @@ class SeedsUnitTests(unittest.TestCase):
 
         mock.assert_called_with(
             SEEDS_URL,
-            params={"force": False},
+            params={"force": None},
             timeout=TEST_TIMEOUT,
             data=json.dumps({"seeds": [TEST_SEED]}),
         )
@@ -84,7 +84,7 @@ class SeedsUnitTests(unittest.TestCase):
 
         mock.assert_called_with(
             SEEDS_URL,
-            params={"force": False},
+            params={"force": None},
             timeout=TEST_TIMEOUT,
             data=json.dumps({"seeds": TEST_SEED_LIST}),
         )
@@ -108,7 +108,7 @@ class SeedsUnitTests(unittest.TestCase):
 
         mock.assert_called_with(
             SEEDS_URL,
-            params={"label": "seed-test-label", "force": False},
+            params={"label": "seed-test-label", "force": None},
             timeout=TEST_TIMEOUT,
             data=json.dumps({"seeds": [TEST_SEED_NO_LABEL]}),
         )

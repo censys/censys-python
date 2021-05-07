@@ -36,7 +36,7 @@ class Seeds(CensysAsmAPI):
 
         return self._get(path)
 
-    def add_seeds(self, seeds: list, force: Optional[bool] = False) -> dict:
+    def add_seeds(self, seeds: list, force: Optional[bool] = None) -> dict:
         """Add seeds to the ASM platform.
 
         Args:
@@ -52,7 +52,7 @@ class Seeds(CensysAsmAPI):
         return self._post(self.base_path, args=args, data=data)
 
     def replace_seeds_by_label(
-        self, label: str, seeds: list, force: Optional[bool] = False
+        self, label: str, seeds: list, force: Optional[bool] = None
     ) -> dict:
         """Replace seeds in the ASM platform by label.
 
