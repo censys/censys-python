@@ -1,2 +1,2 @@
 """Censys Version."""
-__version__ = "2.0.0.b3"
+__version__ = "2.0.0"
