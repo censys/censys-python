@@ -55,7 +55,7 @@ setup(
         ],
         "docs": ["sphinx"],
     },
-    entry_points={"console_scripts": ["censys = censys.common.cli:main"]},
+    entry_points={"console_scripts": ["censys = censys.cli:main"]},
     classifiers=[
         "Typing :: Typed",
         "Topic :: Internet",
