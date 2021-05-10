@@ -237,6 +237,14 @@ class CensysRiskNotFoundException(CensysAsmException):
     """Exception raised when no risks are found with given risk_id."""
 
 
+class CensysInvalidDateException(CensysAsmException):
+    """Exception raised when an invalid date is submitted."""
+
+
+class CensysInvalidCloudException(CensysAsmException):
+    """Exception raised when an invalid cloud is submitted."""
+
+
 class CensysExceptionMapper:
     """Map status code to Exception for the ASM and Search API."""
 
@@ -278,6 +286,8 @@ class CensysExceptionMapper:
         10061: CensysInvalidObjectStorageAssetNotFoundException,
         10067: CensysBadJSONBodyException,
         10073: CensysRiskNotFoundException,
+        10078: CensysInvalidDateException,
+        10082: CensysInvalidCloudException,
     }
     """Map of status code to ASM Exception."""
 

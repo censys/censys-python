@@ -9,8 +9,9 @@ from .utils import (
 )
 
 from censys.asm.client import AsmClient
+from censys.asm.clouds import format_since_date
 
-HOST_COUNT_JSON = {
+TEST_COUNT_JSON = {
     "totalAssetCount": 0,
     "totalNewAssetCount": 0,
     "totalCloudAssetCount": 0,
@@ -33,13 +34,60 @@ class CloudsUnitTest(CensysTestCase):
             [datetime.datetime(2021, 1, 1, 12, 15, 20, 40), "2021-01-01"],
         ]
     )
-    def test_get_host_counts(self, since, actual):
+    def test_format_since_date(self, since, actual):
+        assert format_since_date(since) == actual
+
+    def test_get_host_counts(self):
         self.responses.add(
             responses.GET,
-            BASE_URL + f"/clouds/hostCounts/{actual}",
+            BASE_URL + "/clouds/hostCounts/2021-01-01",
             status=200,
-            json=HOST_COUNT_JSON,
+            json=TEST_COUNT_JSON,
         )
 
-        res = self.client.clouds.get_host_counts(since)
-        assert res == HOST_COUNT_JSON
+        res = self.client.clouds.get_host_counts("2021-01-01")
+        assert res == TEST_COUNT_JSON
+
+    def test_get_domain_counts(self):
+        self.responses.add(
+            responses.GET,
+            BASE_URL + "/clouds/domainCounts/2021-01-01",
+            status=200,
+            json=TEST_COUNT_JSON,
+        )
+
+        res = self.client.clouds.get_domain_counts("2021-01-01")
+        assert res == TEST_COUNT_JSON
+
+    def test_get_object_store_counts(self):
+        self.responses.add(
+            responses.GET,
+            BASE_URL + "/clouds/objectStoreCounts/2021-01-01",
+            status=200,
+            json=TEST_COUNT_JSON,
+        )
+
+        res = self.client.clouds.get_object_store_counts("2021-01-01")
+        assert res == TEST_COUNT_JSON
+
+    def test_get_subdomain_counts(self):
+        self.responses.add(
+            responses.GET,
+            BASE_URL + "/clouds/subdomainCounts/2021-01-01",
+            status=200,
+            json=TEST_COUNT_JSON,
+        )
+
+        res = self.client.clouds.get_subdomain_counts("2021-01-01")
+        assert res == TEST_COUNT_JSON
+
+    def test_get_unknown_counts(self):
+        self.responses.add(
+            responses.GET,
+            BASE_URL + "/clouds/unknownCounts",
+            status=200,
+            json=TEST_COUNT_JSON,
+        )
+
+        res = self.client.clouds.get_unknown_counts()
+        assert res == TEST_COUNT_JSON
