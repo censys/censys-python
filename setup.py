@@ -3,7 +3,6 @@ import os
 from setuptools import find_namespace_packages, setup
 
 NAME = "censys"
-DESCRIPTION = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
 GIT_URL = "https://github.com/censys/censys-python"
 DOC_URL = "https://censys-python.rtfd.io"
 
@@ -20,13 +19,13 @@ with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
 setup(
     name=NAME,
     version=pkg_vars["__version__"],
-    description=DESCRIPTION,
+    description="An easy-to-use and lightweight API wrapper for Censys APIs (censys.io).",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Censys Team",
     author_email="support@censys.io",
     license="Apache License, Version 2.0",
-    keywords=NAME,
+    keywords=["censys", "api", "search"],
     python_requires=">=3.6.0",
     packages=find_namespace_packages(
         include=["censys.*"], exclude=["tests", "examples"]
