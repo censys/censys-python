@@ -40,7 +40,7 @@ setup(
             "flake8-docstrings==1.6.0",
             "flake8-pytest-style==1.4.1",
             "flake8-simplify==0.14.0",
-            "flake8-comprehensions==3.4.0",
+            "flake8-comprehensions==3.5.0",
             "pep8-naming==0.11.1",
             "flake8-black==0.2.1",
             "black==21.5b0",
