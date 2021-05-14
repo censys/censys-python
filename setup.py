@@ -4,7 +4,6 @@ from setuptools import find_namespace_packages, setup
 
 NAME = "censys"
 GIT_URL = "https://github.com/censys/censys-python"
-DOC_URL = "https://censys-python.rtfd.io"
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -81,7 +80,8 @@ setup(
     ],
     project_urls={
         "Censys Homepage": "https://censys.io/",
-        "Documentation": DOC_URL,
+        "Discussions": GIT_URL + "/discussions",
+        "Documentation": "https://censys-python.rtfd.io",
         "Changelog": GIT_URL + "/releases",
         "Tracker": GIT_URL + "/issues",
         "Source": GIT_URL,

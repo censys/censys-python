@@ -40,11 +40,12 @@ Successfully authenticated
 
 ## Resources
 
-- [Censys Homepage](https://censys.io/)
 - [Source](https://github.com/censys/censys-python)
 - [Issue Tracker](https://github.com/censys/censys-python/issues)
 - [Changelog](https://github.com/censys/censys-python/releases)
 - [Documentation](https://censys-python.rtfd.io)
+- [Discussions](https://github.com/censys/censys-python/discussions)
+- [Censys Homepage](https://censys.io/)
 
 ## Contributing
 
