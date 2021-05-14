@@ -15,4 +15,4 @@ per-file-ignores =
     tests/*.py:E501,D100,D101,D102,D103,D104,D107,
     __init__.py:F401,F403
 docstring-convention = google
-ignore = E203,E501,W503,SIM113
+ignore = E203,E501,W503,SIM113,SIM119
