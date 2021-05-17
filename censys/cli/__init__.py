@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Interact with the Censys Search API through the command line."""
 import argparse
 import csv
