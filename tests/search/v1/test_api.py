@@ -68,10 +68,6 @@ class CensysSearchAPITests(CensysTestCase):
 
         assert repr(exception) == "404 (notfound): Not Found"
 
-    def test_invalid_page_value(self):
-        with pytest.raises(CensysException, match="Invalid page value:"):
-            self.api.paged_search("test query", page="x")
-
 
 @patch.dict("os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""})
 class CensysAPIBaseTestsNoSearchEnv(unittest.TestCase):
