@@ -103,7 +103,7 @@ def get_parser() -> argparse.ArgumentParser:
             with fields provided in the fields argument",
     )
     v1_group.add_argument(
-        "--max_records",
+        "--max-records",
         type=int,
         help="maximum number of results to return",
     )

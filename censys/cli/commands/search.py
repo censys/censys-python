@@ -4,7 +4,7 @@ from typing import List
 
 from censys.search import SearchClient
 from censys.common.exceptions import CensysCLIException
-from ..utils import write_file, flatten
+from ..utils import write_file
 
 Fields = List[str]
 Results = List[dict]
@@ -77,9 +77,6 @@ def cli_search(args: argparse.Namespace):
     search_args = {}
     write_args = {"file_format": args.format, "file_path": args.output}
 
-    if index_type not in INDEXES:
-        raise CensysCLIException("Invalid index")
-
     if index_type in V1_INDEXES:
         index = getattr(c.v1, index_type)
 
@@ -105,6 +102,10 @@ def cli_search(args: argparse.Namespace):
 
         results = list(index.search(args.query, **search_args))
     elif index_type in V2_INDEXES:
+        if args.format == "csv":
+            raise CensysCLIException(
+                "The CSV file format is not valid for Search 2.0 responses."
+            )
         index = getattr(c.v2, index_type)
 
         if args.pages:
@@ -115,8 +116,6 @@ def cli_search(args: argparse.Namespace):
         results = []
         for hits in query:
             results += hits
-        if args.format == "csv":
-            results = [flatten(res) for res in results]
 
     try:
         write_file(results, **write_args)

@@ -7,7 +7,7 @@ from censys.common.exceptions import CensysUnauthorizedException
 from censys.search.v1.api import CensysSearchAPIv1
 
 
-def cli_config(_: argparse.Namespace):
+def cli_config(_: argparse.Namespace):  # pragma: no cover
     """Config subcommand.
 
     Args:
@@ -50,7 +50,7 @@ def cli_config(_: argparse.Namespace):
         sys.exit(1)
 
 
-def cli_asm_config(_: argparse.Namespace):
+def cli_asm_config(_: argparse.Namespace):  # pragma: no cover
     """Config asm subcommand.
 
     Args:
@@ -77,7 +77,7 @@ def cli_asm_config(_: argparse.Namespace):
         config.set(DEFAULT, "asm_api_key", api_key)
 
         write_config(config)
-        print("\nSuccessfully authenticated")
+        print("\nSuccessfully configured credentials")
         sys.exit(0)
     except CensysUnauthorizedException:
         print("Failed to authenticate")

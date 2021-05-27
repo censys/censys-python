@@ -25,7 +25,9 @@ class CensysCliHNRITest(CensysTestCase):
         "argparse._sys.argv",
         ["censys", "hnri"] + CensysTestCase.cli_args,
     )
-    @patch("censys.cli.commands.hnri.CensysHNRI.get_current_ip", return_value=IP_ADDRESS)
+    @patch(
+        "censys.cli.commands.hnri.CensysHNRI.get_current_ip", return_value=IP_ADDRESS
+    )
     def test_hnri_medium(self, mock_ip):
         self.responses.add(
             responses.GET,
@@ -47,7 +49,9 @@ class CensysCliHNRITest(CensysTestCase):
         "argparse._sys.argv",
         ["censys", "hnri"] + CensysTestCase.cli_args,
     )
-    @patch("censys.cli.commands.hnri.CensysHNRI.get_current_ip", return_value=IP_ADDRESS)
+    @patch(
+        "censys.cli.commands.hnri.CensysHNRI.get_current_ip", return_value=IP_ADDRESS
+    )
     def test_hnri_no_medium(self, mock_ip):
         self.responses.add(
             responses.GET,
@@ -69,7 +73,9 @@ class CensysCliHNRITest(CensysTestCase):
         "argparse._sys.argv",
         ["censys", "hnri"] + CensysTestCase.cli_args,
     )
-    @patch("censys.cli.commands.hnri.CensysHNRI.get_current_ip", return_value=IP_ADDRESS)
+    @patch(
+        "censys.cli.commands.hnri.CensysHNRI.get_current_ip", return_value=IP_ADDRESS
+    )
     def test_hnri_not_found(self, mock_ip):
         self.responses.add(
             responses.GET,

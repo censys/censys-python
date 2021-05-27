@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from .utils import CensysTestCase
+from tests.utils import CensysTestCase
 
 from censys.cli import main as cli_main
 from censys.common import __version__

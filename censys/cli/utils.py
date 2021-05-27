@@ -2,31 +2,10 @@
 import csv
 import json
 import time
-from typing import List, Tuple, Any, MutableMapping, Optional
+from typing import List, Optional
 
 Fields = List[str]
 Results = List[dict]
-
-
-def flatten(d: MutableMapping, parent_key: str = "", sep: str = ".") -> dict:
-    """Generates new flattened dict from nested dict.
-
-    Args:
-        d (MutableMapping): Nested dict.
-        parent_key (str): Optional; Parent key (for recursion).
-        sep (str): Optional; Key seperator. Defaults to ".".
-
-    Returns:
-        dict: Flattened dict.
-    """
-    items: List[Tuple[str, Any]] = []
-    for k, v in d.items():
-        new_key = parent_key + sep + k if parent_key else k
-        if isinstance(v, MutableMapping):
-            items.extend(flatten(v, new_key, sep=sep).items())
-        else:
-            items.append((new_key, v))
-    return dict(items)
 
 
 def _write_csv(file_path: str, search_results: Results, fields: Fields):

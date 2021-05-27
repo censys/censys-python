@@ -9,6 +9,7 @@ import pytest
 import responses
 
 from tests.utils import CensysTestCase
+from tests.search.v2.test_hosts import HTTP_SEARCH_JSON
 
 from censys.cli import main as cli_main
 from censys.common.exceptions import (
@@ -292,6 +293,90 @@ class CensysCliSearchTest(CensysTestCase):
         with pytest.raises(
             CensysCLIException,
             match="Too many fields specified. The maximum number of fields is 20.",
+        ):
+            cli_main()
+
+    @patch(
+        "argparse._sys.argv",
+        [
+            "censys",
+            "search",
+            "domain: censys.io AND ports: 443",
+            "--index-type",
+            "websites",
+            "--format",
+            "screen",
+            "--max-records",
+            "2",
+        ]
+        + CensysTestCase.cli_args,
+    )
+    def test_max_records(self):
+        self.responses.add_callback(
+            responses.POST,
+            V1_URL + "/search/websites",
+            callback=search_callback,
+            content_type="application/json",
+        )
+
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        json_response = json.loads(temp_stdout.getvalue().strip())
+
+        assert len(json_response) == 2
+
+    @patch(
+        "argparse._sys.argv",
+        [
+            "censys",
+            "search",
+            "service.service_name: HTTP",
+            "--index-type",
+            "hosts",
+            "--format",
+            "screen",
+            "--pages",
+            "1",
+        ]
+        + CensysTestCase.cli_args,
+    )
+    def test_write_screen_v2(self):
+        self.responses.add(
+            responses.GET,
+            V2_URL + "/hosts/search?q=service.service_name: HTTP&per_page=100",
+            status=200,
+            json=HTTP_SEARCH_JSON,
+        )
+
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        json_response = json.loads(temp_stdout.getvalue().strip())
+
+        assert json_response == HTTP_SEARCH_JSON["result"]["hits"]
+
+    @patch(
+        "argparse._sys.argv",
+        [
+            "censys",
+            "search",
+            "service.service_name: HTTP",
+            "--index-type",
+            "hosts",
+            "--format",
+            "csv",
+            "--pages",
+            "1",
+        ]
+        + CensysTestCase.cli_args,
+    )
+    def test_write_csv_v2(self):
+        with pytest.raises(
+            CensysCLIException,
+            match="The CSV file format is not valid for Search 2.0 responses.",
         ):
             cli_main()
 
