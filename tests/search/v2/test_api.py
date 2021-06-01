@@ -1,17 +1,14 @@
 import unittest
-from unittest.mock import patch, mock_open
+from unittest.mock import mock_open, patch
 
 import pytest
-from requests.models import Response
 from parameterized import parameterized
+from requests.models import Response
 
 from tests.utils import CensysTestCase
 
+from censys.common.exceptions import CensysException, CensysExceptionMapper
 from censys.search.v2.api import CensysSearchAPIv2
-from censys.common.exceptions import (
-    CensysException,
-    CensysExceptionMapper,
-)
 
 SearchExceptionParams = [
     (code, exception)

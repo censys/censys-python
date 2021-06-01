@@ -6,8 +6,8 @@ from parameterized import parameterized_class
 
 from tests.utils import CensysTestCase
 
-from censys.search import SearchClient
 from censys.common.exceptions import CensysException
+from censys.search import SearchClient
 
 MAX_RECORDS = 10
 VIEW_JSON = {

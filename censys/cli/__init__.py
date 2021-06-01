@@ -2,8 +2,8 @@
 """Interact with the Censys Search API through the command line."""
 import sys
 
-from censys.common.version import __version__
 from .args import get_parser
+from censys.common.version import __version__
 
 
 def main():

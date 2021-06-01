@@ -1,0 +1,8 @@
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+color_output = true
+known_first_party = ["censys"]
+known_local_folder = ["censys"]
+extend_skip = ["setup.py", "conf.py"]

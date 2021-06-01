@@ -1,11 +1,11 @@
 """Interact with argparser."""
-import os
 import argparse
+import os
 from pathlib import Path
 
-from censys.common.config import get_config, DEFAULT
-from .commands import cli_config, cli_asm_config, cli_hnri, cli_search
+from .commands import cli_asm_config, cli_config, cli_hnri, cli_search
 from .commands.search import INDEXES, V1_INDEXES, V2_INDEXES
+from censys.common.config import DEFAULT, get_config
 
 
 def get_parser() -> argparse.ArgumentParser:

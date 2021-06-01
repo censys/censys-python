@@ -2,13 +2,8 @@ import json
 import unittest
 from unittest.mock import patch
 
+from .utils import BASE_URL, TEST_SUCCESS_CODE, TEST_TIMEOUT, MockResponse
 from censys.asm.client import AsmClient
-from .utils import (
-    MockResponse,
-    TEST_SUCCESS_CODE,
-    TEST_TIMEOUT,
-    BASE_URL,
-)
 
 SEEDS_URL = f"{BASE_URL}/seeds"
 SEED_RESOURCE_TYPE = "seeds"

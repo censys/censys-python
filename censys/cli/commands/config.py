@@ -2,7 +2,7 @@
 import argparse
 import sys
 
-from censys.common.config import get_config, write_config, DEFAULT
+from censys.common.config import DEFAULT, get_config, write_config
 from censys.common.exceptions import CensysUnauthorizedException
 from censys.search.v1.api import CensysSearchAPIv1
 

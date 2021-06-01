@@ -5,12 +5,8 @@ import responses
 from requests.models import Response
 
 from .utils import CensysTestCase
-
 from censys.common.base import CensysAPIBase
-from censys.common.exceptions import (
-    CensysException,
-    CensysAPIException,
-)
+from censys.common.exceptions import CensysAPIException, CensysException
 
 TEST_URL = "https://url"
 TEST_ENDPOINT = "/endpoint"

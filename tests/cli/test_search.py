@@ -1,21 +1,18 @@
-import os
+import contextlib
 import csv
 import json
-import contextlib
+import os
 from io import StringIO
-from unittest.mock import patch, mock_open
+from unittest.mock import mock_open, patch
 
 import pytest
 import responses
 
-from tests.utils import CensysTestCase
 from tests.search.v2.test_hosts import HTTP_SEARCH_JSON
+from tests.utils import CensysTestCase
 
 from censys.cli import main as cli_main
-from censys.common.exceptions import (
-    CensysException,
-    CensysCLIException,
-)
+from censys.common.exceptions import CensysCLIException, CensysException
 
 V1_URL = "https://censys.io/api/v1"
 V2_URL = "https://search.censys.io/api/v2"

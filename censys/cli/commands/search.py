@@ -2,9 +2,9 @@
 import argparse
 from typing import List
 
-from censys.search import SearchClient
-from censys.common.exceptions import CensysCLIException
 from ..utils import write_file
+from censys.common.exceptions import CensysCLIException
+from censys.search import SearchClient
 
 Fields = List[str]
 Results = List[dict]

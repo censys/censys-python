@@ -1,5 +1,4 @@
 from .utils import CensysTestCase
-
 from censys.search import SearchClient
 
 ALL_INDEXES = {

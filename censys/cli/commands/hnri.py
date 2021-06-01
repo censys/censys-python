@@ -4,11 +4,8 @@ from typing import List, Optional, Tuple
 
 import requests
 
+from censys.common.exceptions import CensysCLIException, CensysNotFoundException
 from censys.search import CensysIPv4
-from censys.common.exceptions import (
-    CensysCLIException,
-    CensysNotFoundException,
-)
 
 
 class CensysHNRI:
