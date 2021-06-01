@@ -9,3 +9,17 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    labels:
+      - "type: dependencies"
+    assignees:
+      - "thehappydinoa"
+
+  - package-ecosystem: "pip" # See documentation for possible values
+    directory: "/docs" # Location of package manifests
+    schedule:
+      interval: "daily"
+    labels:
+      - "type: dependencies"
+      - "type: documentation"
+    assignees:
+      - "thehappydinoa"
