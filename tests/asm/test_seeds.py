@@ -139,7 +139,3 @@ class SeedsUnitTests(unittest.TestCase):
         mock.assert_called_with(
             f"{SEEDS_URL}/{TEST_SEED_ID}", params={}, timeout=TEST_TIMEOUT
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

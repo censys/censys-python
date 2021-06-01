@@ -77,7 +77,3 @@ class CensysAPIBaseTestsNoSearchEnv(unittest.TestCase):
             CensysException, match="No API ID or API secret configured."
         ):
             CensysSearchAPI()
-
-
-if __name__ == "__main__":
-    unittest.main()

@@ -209,7 +209,3 @@ class AssetsUnitTest(unittest.TestCase):
             params={"pageNumber": 3, "pageSize": 500},
             timeout=TEST_TIMEOUT,
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

@@ -374,9 +374,3 @@ class CensysCliSearchTest(CensysTestCase):
             match="The CSV file format is not valid for Search 2.0 responses.",
         ):
             cli_main()
-
-
-if __name__ == "__main__":
-    import unittest
-
-    unittest.main()

@@ -1,5 +1,3 @@
-import unittest
-
 import pytest
 import responses
 from parameterized import parameterized_class
@@ -135,7 +133,3 @@ class CensysIndexTests(CensysTestCase):
 
         res = list(self.api.search("*", max_records=MAX_RECORDS))
         assert len(res) == MAX_RECORDS
-
-
-if __name__ == "__main__":
-    unittest.main()

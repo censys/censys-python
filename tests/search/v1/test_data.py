@@ -1,5 +1,3 @@
-import unittest
-
 import responses
 
 from tests.utils import CensysTestCase
@@ -60,7 +58,3 @@ class CensysDataTest(CensysTestCase):
         res = self.api.view_result(SERIES, RESULT)
 
         assert res == RESULT_JSON
-
-
-if __name__ == "__main__":
-    unittest.main()

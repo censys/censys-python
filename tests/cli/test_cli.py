@@ -1,5 +1,4 @@
 import contextlib
-import unittest
 from io import StringIO
 from unittest.mock import patch
 
@@ -38,7 +37,3 @@ class CensysCliTest(CensysTestCase):
             cli_main()
 
         assert __version__ in temp_stdout.getvalue()
-
-
-if __name__ == "__main__":
-    unittest.main()

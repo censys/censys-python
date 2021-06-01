@@ -1,5 +1,3 @@
-import unittest
-
 import responses
 
 from tests.utils import CensysTestCase
@@ -35,7 +33,3 @@ class CensysCertificatesTests(CensysTestCase):
         )
 
         assert res == BULK_JSON
-
-
-if __name__ == "__main__":
-    unittest.main()
