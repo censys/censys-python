@@ -4,10 +4,7 @@ import responses
 from parameterized import parameterized
 
 from ..utils import CensysTestCase
-from .utils import (
-    BASE_URL,
-)
-
+from .utils import BASE_URL
 from censys.asm.client import AsmClient
 from censys.asm.clouds import format_since_date
 

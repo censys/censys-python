@@ -103,39 +103,6 @@ class CensysSearchAPIv1(CensysAPIBase):
         data = {"query": query, "page": 1, "fields": []}
         return self._post(self.search_path, data=data).get("metadata", {})
 
-    def paged_search(
-        self,
-        query: str,
-        fields: Fields = None,
-        page: int = 1,
-        flatten: bool = True,
-    ) -> dict:
-        """Searches the given index for all records that match the given query.
-
-        Args:
-            query (str): The query to be executed.
-            fields (Fields): Optional; Fields to be returned in the result set.
-            page (int): Optional; The page of the result set. Defaults to 1.
-            flatten (bool): Optional; Flattens fields to dot notation. Defaults to True.
-
-        Raises:
-            CensysException: Base Exception Class for the Censys API.
-
-        Returns:
-            dict: The result set returned.
-        """
-        try:
-            page = int(page)
-        except ValueError as error:
-            raise CensysException(f"Invalid page value: {page}") from error
-        data = {
-            "query": query,
-            "page": page,
-            "fields": fields or [],
-            "flatten": flatten,
-        }
-        return self._post(self.search_path, data=data)
-
     # pylint: disable=too-many-arguments
     def search(
         self,

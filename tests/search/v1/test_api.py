@@ -1,19 +1,19 @@
 import unittest
-from unittest.mock import patch, mock_open
+from unittest.mock import mock_open, patch
 
 import pytest
 import responses
-from requests.models import Response
 from parameterized import parameterized
+from requests.models import Response
 
 from tests.utils import CensysTestCase
 
-from censys.search.v1.api import CensysSearchAPI
 from censys.common.exceptions import (
     CensysException,
-    CensysSearchException,
     CensysExceptionMapper,
+    CensysSearchException,
 )
+from censys.search.v1.api import CensysSearchAPI
 
 ACCOUNT_JSON = {
     "login": "test@censys.io",
@@ -67,10 +67,6 @@ class CensysSearchAPITests(CensysTestCase):
         exception = CensysSearchException(404, "Not Found", const="notfound")
 
         assert repr(exception) == "404 (notfound): Not Found"
-
-    def test_invalid_page_value(self):
-        with pytest.raises(CensysException, match="Invalid page value:"):
-            self.api.paged_search("test query", page="x")
 
 
 @patch.dict("os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""})

@@ -1,18 +1,17 @@
 import json
 import unittest
-from unittest.mock import patch, mock_open
+from unittest.mock import mock_open, patch
 
 import pytest
 import responses
-from requests.models import Response
 from parameterized import parameterized
+from requests.models import Response
 
 from ..utils import CensysTestCase
-
 from censys.asm.api import CensysAsmAPI
 from censys.common.exceptions import (
-    CensysException,
     CensysAsmException,
+    CensysException,
     CensysExceptionMapper,
 )
 

@@ -3,13 +3,12 @@ import unittest
 from unittest.mock import patch
 
 from .utils import (
-    MockResponse,
+    BASE_URL,
     RESOURCE_PAGING_RESULTS,
     TEST_SUCCESS_CODE,
     TEST_TIMEOUT,
-    BASE_URL,
+    MockResponse,
 )
-
 from censys.asm.client import AsmClient
 from censys.asm.events import Filters
 

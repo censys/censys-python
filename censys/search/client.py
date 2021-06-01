@@ -33,6 +33,8 @@ class SearchClient:
         def __init__(self, *args, **kwargs):
             """Inits V1."""
             self.certificates = CensysCertificates(*args, **kwargs)
+            # Alias certs to certificates
+            self.certs = self.certificates
             self.data = CensysData(*args, **kwargs)
             self.ipv4 = CensysIPv4(*args, **kwargs)
             self.websites = CensysWebsites(*args, **kwargs)

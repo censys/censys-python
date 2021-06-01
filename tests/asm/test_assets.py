@@ -11,7 +11,6 @@ from .utils import (
     TEST_TIMEOUT,
     MockResponse,
 )
-
 from censys.asm.client import AsmClient
 
 ASSETS_URL = f"{BASE_URL}/assets"

@@ -1,13 +1,13 @@
 import unittest
 from configparser import ConfigParser
-from unittest.mock import patch, mock_open, Mock, MagicMock
+from unittest.mock import MagicMock, Mock, mock_open, patch
 
 from censys.common.config import (
-    get_config,
+    DEFAULT,
     censys_path,
     config_path,
     default_config,
-    DEFAULT,
+    get_config,
 )
 
 os = MagicMock()
