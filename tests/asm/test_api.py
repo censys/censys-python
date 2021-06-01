@@ -82,7 +82,3 @@ class CensysAsmAPITests(CensysTestCase):
         res = list(self.api._get_page(f"/{keyword}"))
 
         assert res == page_json[keyword] + second_page
-
-
-if __name__ == "__main__":
-    unittest.main()

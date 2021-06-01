@@ -238,9 +238,3 @@ class TestHosts(CensysTestCase):
         query = self.api.search("service.service_name: HTTP", per_page=test_per_page)
         results = query.view_all()
         assert results == expected
-
-
-if __name__ == "__main__":
-    import unittest
-
-    unittest.main()

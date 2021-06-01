@@ -123,7 +123,3 @@ class EventsUnitTests(unittest.TestCase):
         mock.assert_any_call(
             EVENTS_URL, params={"cursor": TEST_NEXT_CURSOR}, timeout=TEST_TIMEOUT
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

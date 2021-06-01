@@ -179,9 +179,3 @@ class CensysCliSearchTest(CensysTestCase):
 
         # Cleanup
         os.remove(json_path)
-
-
-if __name__ == "__main__":
-    import unittest
-
-    unittest.main()
