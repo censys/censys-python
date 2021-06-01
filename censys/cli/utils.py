@@ -1,11 +1,17 @@
 """Censys CLI utilities."""
+import argparse
 import csv
+import datetime
 import json
 import time
 from typing import List, Optional
 
 Fields = List[str]
 Results = List[dict]
+
+V1_INDEXES = ["ipv4", "certs", "websites"]
+V2_INDEXES = ["hosts"]
+INDEXES = V1_INDEXES + V2_INDEXES
 
 
 def _write_csv(file_path: str, search_results: Results, fields: Fields):
@@ -65,6 +71,8 @@ def write_file(
     results_list: Results,
     file_format: str = "screen",
     file_path: Optional[str] = None,
+    time_str: str = str(time.time()),
+    base_name: str = "censys-query-output",
     csv_fields: Fields = [],
 ):
     """Maps formats and writes results.
@@ -82,11 +90,22 @@ def write_file(
 
     if not file_path:
         # This method just creates some dynamic file names
-        file_name_ext = f"{time.time()}.{file_format}"
-        file_path = f"censys-query-output.{file_name_ext}"
+        file_path = ".".join([base_name, time_str, file_format])
 
     if file_format == "json":
         return _write_json(file_path, results_list)
     if file_format == "csv":
         return _write_csv(file_path, results_list, fields=csv_fields)
     return _write_screen(results_list)
+
+
+def valid_datetime_type(datetime_str: str) -> datetime.datetime:
+    """Custom argparse type for user datetime values from arg."""
+    try:
+        return datetime.datetime.strptime(datetime_str, "%Y-%m-%d %H:%M")
+    except ValueError:
+        try:
+            return datetime.datetime.strptime(datetime_str, "%Y-%m-%d")
+        except ValueError:
+            msg = f"Given datetime ({datetime_str}) is not valid! Expected format: 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm'."
+            raise argparse.ArgumentTypeError(msg)

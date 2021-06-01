@@ -3,8 +3,8 @@ import argparse
 import os
 from pathlib import Path
 
-from .commands import cli_asm_config, cli_config, cli_hnri, cli_search
-from .commands.search import INDEXES, V1_INDEXES, V2_INDEXES
+from .commands import cli_asm_config, cli_config, cli_hnri, cli_search, cli_view
+from .utils import INDEXES, V1_INDEXES, V2_INDEXES, valid_datetime_type
 from censys.common.config import DEFAULT, get_config
 
 
@@ -81,7 +81,8 @@ def get_parser() -> argparse.ArgumentParser:
         "--format",
         type=str,
         default="screen",
-        metavar="json|csv|screen",
+        choices=["screen", "json", "csv"],
+        metavar="screen|json|csv",
         help="format of output",
     )
     search_parser.add_argument(
@@ -119,6 +120,50 @@ def get_parser() -> argparse.ArgumentParser:
     )
 
     search_parser.set_defaults(func=cli_search)
+
+    # View Specific Args
+    view_parser = subparsers.add_parser(
+        "view",
+        description="View a document in Censys Search by providing a document \
+            id and the resource index",
+        help="view document",
+        parents=[auth],
+    )
+    view_parser.add_argument(
+        "document_id",
+        type=str,
+        help="a string written in Censys Search syntax",
+    )
+    view_parser.add_argument(
+        "--index-type",
+        type=str,
+        default="hosts",
+        choices=V2_INDEXES,
+        metavar="|".join(V2_INDEXES),
+        help="which resource index to query",
+    )
+    view_parser.add_argument(
+        "--at-time",
+        type=valid_datetime_type,
+        metavar="YYYY-MM-DD (HH:mm)",
+        help="Fetches a document at a given point in time",
+    )
+    view_parser.add_argument(
+        "-f",
+        "--format",
+        type=str,
+        default="screen",
+        choices=["screen", "json"],
+        metavar="screen|json",
+        help="format of output",
+    )
+    view_parser.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        help="output file path",
+    )
+    view_parser.set_defaults(func=cli_view)
 
     # HNRI Specific Args
     hnri_parser = subparsers.add_parser(

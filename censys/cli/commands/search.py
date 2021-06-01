@@ -2,16 +2,13 @@
 import argparse
 from typing import List
 
-from ..utils import write_file
+from ..utils import V1_INDEXES, V2_INDEXES, write_file
 from censys.common.exceptions import CensysCLIException
 from censys.search import SearchClient
 
 Fields = List[str]
 Results = List[dict]
 
-V1_INDEXES = ["ipv4", "certs", "websites"]
-V2_INDEXES = ["hosts"]
-INDEXES = V1_INDEXES + V2_INDEXES
 DEFAULT_FIELDS = {
     "ipv4": [
         "updated_at",

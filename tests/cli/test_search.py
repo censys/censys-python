@@ -9,13 +9,11 @@ import pytest
 import responses
 
 from tests.search.v2.test_hosts import HTTP_SEARCH_JSON
-from tests.utils import CensysTestCase
+from tests.utils import V1_URL, V2_URL, CensysTestCase
 
 from censys.cli import main as cli_main
 from censys.common.exceptions import CensysCLIException, CensysException
 
-V1_URL = "https://censys.io/api/v1"
-V2_URL = "https://search.censys.io/api/v2"
 WROTE_PREFIX = "Wrote results to file"
 
 

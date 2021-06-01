@@ -78,3 +78,4 @@ dmypy.json
 
 # Output
 censys-query-output.*
+censys-view-*
