@@ -32,7 +32,7 @@ def cli_view(args: argparse.Namespace):
 
     if args.at_time:
         view_args["at_time"] = args.at_time
-        write_args["time_str"] = str(args.at_time)
+        write_args["time_str"] = args.at_time.strftime("%Y-%m-%d")
 
     document = index.view(args.document_id, **view_args)
 
