@@ -97,9 +97,9 @@ Below we show examples for **viewing assets** on the Censys ASM platform.
 
 .. code:: python
 
-    from censys.asm import Assets
+    from censys.asm import HostsAssets
 
-    h = Assets("hosts")
+    h = HostsAssets()
 
     # Get a generator that returns hosts
     hosts = h.get_assets()
@@ -113,9 +113,9 @@ Below we show examples for **managing asset comments** via the ASM API.
 
 .. code:: python
 
-    from censys.asm import Assets
+    from censys.asm import DomainsAssets
 
-    d = Assets("domains")
+    d = DomainsAssets()
 
     # Get a generator that returns all comments on a specific domain asset
     # Here we get all comments on the domain with ID="my_domain.com"
@@ -135,9 +135,9 @@ Below we show examples for **managing asset tags** via the ASM API.
 
 .. code:: python
 
-    from censys.asm import Assets
+    from censys.asm import CertificatesAssets
 
-    c = Assets("certificates")
+    c = CertificatesAssets()
     cert_sha = "0006afc1ddc8431aa57c812adf028ab4f168b25bf5f06e94af86edbafa88dfe0"
 
     # Add a tag to a certificate asset

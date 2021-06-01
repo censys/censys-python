@@ -1,13 +1,13 @@
 """List all domains and subdomains in ASM."""
-from censys.asm import AsmClient
+from censys.asm import DomainsAssets
 
-c = AsmClient()
+d = DomainsAssets()
 
 domains = []
-for domain in c.domains.get_assets():
+for domain in d.get_assets():
     domain_str = domain["data"]["domain"]
     domains.append(domain_str)
-    subdomains = [sub["subdomain"] for sub in c.domains.get_subdomains(domain_str)]
+    subdomains = [sub["subdomain"] for sub in d.get_subdomains(domain_str)]
     domains.extend(subdomains)
 
 print(domains)
