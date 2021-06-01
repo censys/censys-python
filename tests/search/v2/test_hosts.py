@@ -207,3 +207,40 @@ class TestHosts(CensysTestCase):
         )
 
         assert res == HTTP_AGGREGATE_JSON["result"]
+
+    def test_search_view_all(self):
+        test_per_page = 50
+        ips = ["1.1.1.1", "1.1.1.2"]
+        search_json = HTTP_SEARCH_JSON.copy()
+        search_json["result"]["hits"] = [{"ip": ip} for ip in ips]
+        search_json["result"]["total"] = len(ips)
+        search_json["result"]["links"]["next"] = ""
+        self.responses.add(
+            responses.GET,
+            self.base_url
+            + f"/hosts/search?q=service.service_name: HTTP&per_page={test_per_page}",
+            status=200,
+            json=search_json,
+        )
+
+        expected = {}
+        for ip in ips:
+            view_json = VIEW_HOST_JSON.copy()
+            view_json["result"]["ip"] = ip
+            self.responses.add(
+                responses.GET,
+                f"{self.base_url}/hosts/{ip}",
+                status=200,
+                json=view_json,
+            )
+            expected[ip] = view_json["result"].copy()
+
+        query = self.api.search("service.service_name: HTTP", per_page=test_per_page)
+        results = query.view_all()
+        assert results == expected
+
+
+if __name__ == "__main__":
+    import unittest
+
+    unittest.main()

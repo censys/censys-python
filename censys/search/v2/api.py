@@ -1,7 +1,8 @@
 """Base for interacting with the Censys Search API."""
 import datetime
 import os
-from typing import Iterable, Iterator, List, Optional, Type, Union
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Dict, Iterable, Iterator, List, Optional, Type, Union
 
 from requests.models import Response
 
@@ -14,6 +15,8 @@ from censys.common.exceptions import (
 )
 
 Fields = Optional[List[str]]
+
+INDEX_TO_KEY = {"hosts": "ip"}
 
 
 class CensysSearchAPIv2(CensysAPIBase):
@@ -166,6 +169,30 @@ class CensysSearchAPIv2(CensysAPIBase):
                 Iterable: Returns self.
             """
             return self
+
+        def view_all(self) -> Dict[str, dict]:
+            """View each document returned from query.
+
+            Please note that each result returned by the query will be looked up using the view method.
+
+            Returns:
+                Dict[str, dict]: Dictionary mapping documents to that document's result set.
+            """
+            threads = []
+            results = {}
+
+            document_key = INDEX_TO_KEY.get(self.api.INDEX_NAME, "ip")
+
+            with ThreadPoolExecutor(max_workers=20) as executor:
+                for hit in self.__call__():
+                    document_id = hit[document_key]
+                    threads.append(executor.submit(self.api.view, document_id))
+
+                for task in as_completed(threads):
+                    result = task.result()
+                    results[result[document_key]] = result
+
+            return results
 
     def search(
         self,
