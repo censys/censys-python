@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 import responses
 
+from tests.search.v2.test_hosts import VIEW_HOST_JSON
 from tests.utils import CensysTestCase
 
 from censys.cli import main as cli_main
@@ -29,11 +30,16 @@ class CensysCliHNRITest(CensysTestCase):
         "censys.cli.commands.hnri.CensysHNRI.get_current_ip", return_value=IP_ADDRESS
     )
     def test_hnri_medium(self, mock_ip):
+        response = VIEW_HOST_JSON.copy()
+        response["result"]["services"] = [
+            {"port": 443, "service_name": "HTTPS"},
+            {"port": 53, "service_name": "DNS"},
+        ]
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/view/ipv4/{self.IP_ADDRESS}",
+            f"{self.base_url}/hosts/{self.IP_ADDRESS}",
             status=200,
-            json={"protocols": ["443/https", "53/dns", "21/banner"]},
+            json=response,
         )
 
         temp_stdout = StringIO()
@@ -42,8 +48,8 @@ class CensysCliHNRITest(CensysTestCase):
 
         stdout = temp_stdout.getvalue().strip()
         assert "Medium Risks Found:" in stdout
-        assert "https on 443" in stdout
-        assert "dns on 53" in stdout
+        assert "HTTPS on 443" in stdout
+        assert "DNS on 53" in stdout
 
     @patch(
         "argparse._sys.argv",
@@ -53,11 +59,13 @@ class CensysCliHNRITest(CensysTestCase):
         "censys.cli.commands.hnri.CensysHNRI.get_current_ip", return_value=IP_ADDRESS
     )
     def test_hnri_no_medium(self, mock_ip):
+        response = VIEW_HOST_JSON.copy()
+        response["result"]["services"] = [{"port": 23, "service_name": "VNC"}]
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/view/ipv4/{self.IP_ADDRESS}",
+            f"{self.base_url}/hosts/{self.IP_ADDRESS}",
             status=200,
-            json={"protocols": ["23/telnet"]},
+            json=response,
         )
 
         temp_stdout = StringIO()
@@ -66,7 +74,7 @@ class CensysCliHNRITest(CensysTestCase):
 
         stdout = temp_stdout.getvalue().strip()
         assert "High Risks Found:" in stdout
-        assert "telnet on 23" in stdout
+        assert "VNC on 23" in stdout
         assert "You don't have any Medium Risks in your network" in stdout
 
     @patch(
@@ -77,15 +85,13 @@ class CensysCliHNRITest(CensysTestCase):
         "censys.cli.commands.hnri.CensysHNRI.get_current_ip", return_value=IP_ADDRESS
     )
     def test_hnri_not_found(self, mock_ip):
+        response = VIEW_HOST_JSON.copy()
+        response["result"]["services"] = []
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/view/ipv4/{self.IP_ADDRESS}",
-            status=404,
-            json={
-                "status": "error",
-                "error_type": "unknown",
-                "error": "We don't know anything about the specified host.",
-            },
+            f"{self.base_url}/hosts/{self.IP_ADDRESS}",
+            status=200,
+            json=response,
         )
 
         temp_stdout = StringIO()

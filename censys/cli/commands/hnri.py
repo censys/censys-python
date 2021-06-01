@@ -5,7 +5,7 @@ from typing import List, Optional, Tuple
 import requests
 
 from censys.common.exceptions import CensysCLIException, CensysNotFoundException
-from censys.search import CensysIPv4
+from censys.search import CensysHosts
 
 
 class CensysHNRI:
@@ -16,12 +16,12 @@ class CensysHNRI:
         api_secret (str): Optional; The API secret provided by Censys.
     """
 
-    HIGH_RISK_DEFINITION: List[str] = ["telnet", "redis", "postgres", "vnc"]
-    MEDIUM_RISK_DEFINITION: List[str] = ["ssh", "http", "https"]
+    HIGH_RISK_DEFINITION: List[str] = ["TELNET", "REDIS", "POSTGRES", "VNC"]
+    MEDIUM_RISK_DEFINITION: List[str] = ["SSH", "HTTP", "HTTPS"]
 
     def __init__(self, api_id: Optional[str] = None, api_secret: Optional[str] = None):
         """Inits CensysHNRI."""
-        self.index = CensysIPv4(api_id, api_secret)
+        self.index = CensysHosts(api_id, api_secret)
 
     @staticmethod
     def get_current_ip() -> str:
@@ -34,11 +34,11 @@ class CensysHNRI:
         current_ip = str(response.json().get("ip"))
         return current_ip
 
-    def translate_risk(self, protocols: List[str]) -> Tuple[List[dict], List[dict]]:
+    def translate_risk(self, services: List[dict]) -> Tuple[List[dict], List[dict]]:
         """Interpret protocols to risks.
 
         Args:
-            protocols (list): List of slash divided ports/protocols.
+            services (list): List of services.
 
         Returns:
             Tuple[list, list]: Lists of high and medium risks.
@@ -46,18 +46,15 @@ class CensysHNRI:
         high_risk = []
         medium_risk = []
 
-        for protocol in protocols:
-            port, protocol = protocol.split("/")
+        for service in services:
+            port = service.get("port")
+            protocol = service.get("service_name")
             string = f"{protocol} on {port}"
             if protocol in self.HIGH_RISK_DEFINITION:
                 high_risk.append({"port": port, "protocol": protocol, "string": string})
             elif protocol in self.MEDIUM_RISK_DEFINITION:
                 medium_risk.append(
                     {"port": port, "protocol": protocol, "string": string}
-                )
-            elif protocol == "banner":
-                medium_risk.append(
-                    {"port": port, "protocol": "unknown protocol", "string": string}
                 )
             else:
                 medium_risk.append(
@@ -115,8 +112,8 @@ class CensysHNRI:
 
         try:
             results = self.index.view(current_ip)
-            protocols = results.get("protocols", [])
-            high_risk, medium_risk = self.translate_risk(protocols)
+            services = results.get("services", [])
+            high_risk, medium_risk = self.translate_risk(services)
             return self.risks_to_string(high_risk, medium_risk)
         except (CensysNotFoundException, CensysCLIException):
             return "No Risks were found on your network"
