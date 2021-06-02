@@ -40,6 +40,8 @@ Successfully authenticated
 
 ## API Reference and User Guide available on [Read the Docs](https://censys-python.readthedocs.io/)
 
+[![Read the Docs](https://github.com/censys/censys-python/blob/main/docs/_static/readthedocs.png)](https://censys-python.readthedocs.io/)
+
 ## Upgrading
 
 The library can be upgraded using `pip`.
