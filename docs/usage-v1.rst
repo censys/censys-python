@@ -5,25 +5,26 @@ The Censys Search API provides functionality for interacting with Censys resourc
 
 There are six API options that this library provides access to:
 
--  ``search`` - Allows searches against the IPv4 addresses, Websites, and Certificates indexes using the same search syntax as the `web app <https://censys.io/ipv4>`__.
--  ``view`` - Returns the structured data we have about a specific IPv4 address, Website, or Certificate, given the resource's natural ID.
--  ``report`` - Allows you to view resources as a spectrum based on attributes of the resource, similar to the `Report Builder page <https://censys.io/ipv4/report>`__ on the web app.
--  ``data`` - Returns collections of scan series whose metadata includes a description of the data collected in the series and links to the individual scan results.
--  ``account`` - Returns information about your Censys account, including your current query quota usage. This function is available for all index types.
--  ``bulk`` - Returns the structured data for certificates in bulk, given the certificates' SHA-256 fingerprints.
+-  :attr:`search <censys.search.v1.api.CensysSearchAPIv1.search>` - Allows searches against the IPv4 addresses, Websites, and Certificates indexes using the same search syntax as the `web app <https://censys.io/ipv4>`__.
+-  :attr:`view <censys.search.v1.api.CensysSearchAPIv1.view>` - Returns the structured data we have about a specific IPv4 address, Website, or Certificate, given the resource's natural ID.
+-  :attr:`report <censys.search.v1.api.CensysSearchAPIv1.report>` - Allows you to view resources as a spectrum based on attributes of the resource, similar to the `Report Builder page <https://censys.io/ipv4/report>`__ on the web app.
+-  :attr:`data <censys.search.v1.CensysData>` - Returns collections of scan series whose metadata includes a description of the data collected in the series and links to the individual scan results.
+-  :attr:`account <censys.search.v1.api.CensysSearchAPIv1.account>` - Returns information about your Censys account, including your current query quota usage. This function is available for all index types.
+-  :attr:`bulk <censys.search.v1.CensysCertificates.bulk>` - Returns the structured data for certificates in bulk, given the certificates' SHA-256 fingerprints.
 
 More details about each option can be found in the `Censys API documentation <https://censys.io/api>`__. A list of index fields can be found in the `Censys API definitions page <https://censys.io/ipv4/help/definitions>`__.
 
 Python class objects must be initialized for each resource index (IPv4 addresses, Websites, and Certificates).
 
--  ``CensysIPv4``
--  ``CensysWebsites``
--  ``CensysCertificates``
+-  :attr:`CensysIPv4 <censys.search.v1.CensysIPv4>`
+-  :attr:`CensysWebsites <censys.search.v1.CensysWebsites>`
+-  :attr:`CensysCertificates <censys.search.v1.CensysCertificates>`
+-  :attr:`CensysData <censys.search.v1.CensysData>`
 
 ``search``
 ----------
 
-Below we show an example using the ``CensysIPv4`` index.
+Below we show an example using the :attr:`CensysIPv4 <censys.search.v1.CensysIPv4>` index.
 
 .. code:: python
 
@@ -62,7 +63,7 @@ Below we show an example using the ``CensysIPv4`` index.
 ``view``
 --------
 
-Below we show an example using the ``CensysCertificates`` index.
+Below we show an example using the :attr:`CensysCertificates <censys.search.v1.CensysCertificates>` index.
 
 .. code:: python
 
@@ -77,7 +78,7 @@ Below we show an example using the ``CensysCertificates`` index.
 ``report``
 ----------
 
-Below we show an example using the ``CensysWebsites`` index.
+Below we show an example using the :attr:`CensysWebsites <censys.search.v1.CensysWebsites>` index.
 
 .. code:: python
 
@@ -97,7 +98,7 @@ Below we show an example using the ``CensysWebsites`` index.
 ``data``
 --------
 
-Below we show an example using the ``CensysData`` index.
+Below we show an example using the :attr:`CensysData <censys.search.v1.CensysData>` index.
 
 .. code:: python
 
@@ -112,7 +113,7 @@ Below we show an example using the ``CensysData`` index.
 ``account``
 -----------
 
-Below we show an example using the ``CensysIPv4`` index.
+Below we show an example using the :attr:`CensysIPv4 <censys.search.v1.CensysIPv4>` index.
 
 .. code:: python
 
@@ -133,7 +134,7 @@ Below we show an example using the ``CensysIPv4`` index.
 
 **Please note this method is only available only for the certificate index**
 
-Below we show an example using the ``CensysCertificates`` index.
+Below we show an example using the :attr:`CensysCertificates <censys.search.v1.CensysCertificates>` index.
 
 .. code:: python
 

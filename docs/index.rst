@@ -4,24 +4,51 @@
    contain the root `toctree` directive.
 
 Welcome to Censys Python's documentation!
------------------------------------------
+=========================================
 
-.. automodule:: censys
-   :members:
+Release v\ |version|. (:ref:`quick-start:Quick Start`)
+
+.. image:: https://img.shields.io/pypi/v/censys?color=orange&logo=pypi&logoColor=orange
+   :target: https://pypi.org/project/censys/
+
+.. image:: https://img.shields.io/badge/python-3.6%2B-blue?logo=python
+   :target: https://www.python.org/downloads/
+
+.. image:: https://img.shields.io/github/license/censys/censys-python?logo=apache
+   :target: https://github.com/censys/censys-python/blob/main/LICENSE
+
+**Censys Python** is an easy-to-use and lightweight API wrapper for Censys APIs.
+
+-------------------
+
+The User Guide
+--------------
 
 .. toctree::
    :maxdepth: 1
-   :caption: Table of Contents
 
    quick-start
    usage-v1
    usage-v2
-   asm-usage
+   usage-asm
    advanced-usage
-   cli
+
+The API Documentation
+---------------------
+
+.. toctree::
+   :maxdepth: 1
+
    censys
+   cli
+
+The Contributor Guide
+---------------------
+
+.. toctree::
+   :maxdepth: 1
+
+   contributing
    development
    testing
-   contributing
-   license
    GitHub Repo <https://github.com/censys/censys-python>

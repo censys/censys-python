@@ -5,7 +5,7 @@
 [![Read the Docs (version)](https://img.shields.io/readthedocs/censys-python/latest?logo=read%20the%20docs)](https://censys-python.readthedocs.io/en/stable/?badge=stable)
 [![GitHub Discussions](https://img.shields.io/badge/GitHub-Discussions-brightgreen?logo=github)](https://github.com/censys/censys-python/discussions)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-organge.svg?logo=git&logoColor=organge)](http://makeapullrequest.com)
-[![License](https://img.shields.io/github/license/censys/censys-python?logo=apache)](LICENSE)
+[![License](https://img.shields.io/github/license/censys/censys-python?logo=apache)](https://github.com/censys/censys-python/blob/main/LICENSE)
 
 An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://censys.io/)). Python 3.6+ is currently supported.
 
@@ -14,7 +14,7 @@ An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://
 The library can be installed using `pip`.
 
 ```bash
-$ pip install censys
+pip install censys
 ```
 
 To configure your search credentials run `censys config` or set both `CENSYS_API_ID` and `CENSYS_API_SECRET` environment variables.
@@ -38,6 +38,16 @@ Censys ASM API Key: XXX
 Successfully authenticated
 ```
 
+## API Reference and User Guide available on [Read the Docs](https://censys-python.readthedocs.io/)
+
+## Upgrading
+
+The library can be upgraded using `pip`.
+
+```bash
+pip install --upgrade censys
+```
+
 ## Resources
 
 - [Source](https://github.com/censys/censys-python)
@@ -54,14 +64,15 @@ All contributions (no matter how small) are always welcome.
 ## Development
 
 ```bash
-$ git clone git@github.com:censys/censys-python.git
-$ pip install -e ".[dev]"
+git clone git@github.com:censys/censys-python.git
+cd censys-python/
+pip install -e ".[dev]"
 ```
 
 ## Testing
 
 ```bash
-$ pytest
+pytest
 ```
 
 ## License

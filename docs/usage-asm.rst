@@ -5,21 +5,26 @@ The Censys ASM API provides functionality for interacting with Censys ASM endpoi
 
 There are three API options that this library provides access to:
 
--  ``seeds`` - Provides programmatic management of seeds in the ASM platform.
--  ``assets`` - Returns asset data for hosts, certificates, and domains. This option also allows the user to manage tags and comments on assets.
--  ``events`` - Returns logbook events. Can be used to execute targeted searches for events based on start id or date, and event type filters.
+-  :attr:`seeds <censys.asm.Seeds>` - Provides programmatic management of seeds in the ASM platform.
+-  :attr:`assets <censys.asm.Assets>` - Returns asset data for hosts, certificates, and domains. This option also allows the user to manage tags and comments on assets.
+-  :attr:`events <censys.asm.events.Events>` - Returns logbook events. Can be used to execute targeted searches for events based on start id or date, and event type filters.
 
-More details about each option can be found in the Censys ASM API documentation: https://app.censys.io/api-docs. Users can also test example requests from the API documentation page.
+More details about each option can be found in the `Censys ASM API documentation <https://app.censys.io/api-docs>`__. Users can also test example requests from the API documentation page.
 
 Python class objects can be used individually, but must be initialized for each resource type (Seeds, Assets, and Events).
 
--  ``Seeds()``
--  ``Assets("ASSET_TYPE ["hosts" | "certificates" | "domains"]", )``
--  ``Events()``
+-  :attr:`Seeds <censys.asm.Seeds>`
+-  :attr:`Assets <censys.asm.Assets>`
+
+   -  :attr:`CertificatesAssets <censys.asm.CertificatesAssets>`
+   -  :attr:`DomainsAssets <censys.asm.DomainsAssets>`
+   -  :attr:`HostsAssets <censys.asm.HostsAssets>`
+
+-  :attr:`Events <censys.asm.events.Events>`
 
 Alternatively, all three class objects can be used together by initializing an AsmClient object. This client wraps the three APIs under one object for ease of use.
 
--  ``AsmClient()``
+-  :attr:`AsmClient <censys.asm.AsmClient>`
 
 
 ``Seeds``

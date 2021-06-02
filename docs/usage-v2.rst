@@ -5,20 +5,20 @@ The Censys Search API provides functionality for interacting with Censys resourc
 
 There are three API options that this library provides access to:
 
--  ``search`` - Allows searches against the Hosts index using the same search syntax as the `web app <https://search.censys.io/search/language?resource=hosts>`__.
--  ``view`` - Returns the structured data we have about a specific Host, given the resource's natural ID.
--  ``aggregate`` - Allows you to view resources as a spectrum based on attributes of the resource, similar to the `Report Builder page <https://search.censys.io/search/report?resource=hosts>`__ on the web app.
+-  :attr:`search <censys.search.v2.api.CensysSearchAPIv2.search>` - Allows searches against the Hosts index using the same search syntax as the `web app <https://search.censys.io/search/language?resource=hosts>`__.
+-  :attr:`view <censys.search.v2.api.CensysSearchAPIv2.view>` - Returns the structured data we have about a specific Host, given the resource's natural ID.
+-  :attr:`aggregate <censys.search.v2.api.CensysSearchAPIv2.aggregate>` - Allows you to view resources as a spectrum based on attributes of the resource, similar to the `Report Builder page <https://search.censys.io/search/report?resource=hosts>`__ on the web app.
 
-More details about each option can be found in the `Censys API documentation <https://search.censys.io/api>`__. A list of index fields can be found in the `Censys API definitions page <https://search.censys.io/api/v2/docs>`__.
+More details about each option can be found in the `Censys API documentation <https://search.censys.io/api>`__. A list of index fields can be found in the `Censys API definitions page <https://search.censys.io/api>`__.
 
 Python class objects must be initialized for each resource index (Hosts).
 
--  ``CensysHosts``
+-  :attr:`CensysHosts <censys.search.v2.CensysHosts>`
 
 ``search``
 ----------
 
-Below we show an example using the ``CensysHosts`` index.
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
 .. code:: python
 
@@ -36,10 +36,15 @@ Below we show an example using the ``CensysHosts`` index.
     for page in h.search("service.service_name: HTTP", per_page=5, pages=2):
         print(page)
 
+    # View each result returned
+    # For `hosts` this looks like a mapping of IPs to view results
+    query = h.search("service.service_name: HTTP", per_page=5, pages=2)
+    print(query.view_all())
+
 ``view``
 --------
 
-Below we show an example using the ``CensysHosts`` index.
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
 .. code:: python
 
@@ -65,7 +70,7 @@ Below we show an example using the ``CensysHosts`` index.
 ``aggregate``
 -------------
 
-Below we show an example using the ``CensysHosts`` index.
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
 .. code:: python
 

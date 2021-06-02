@@ -12,3 +12,4 @@ censys.search package
    :members:
    :undoc-members:
    :show-inheritance:
+   :noindex:

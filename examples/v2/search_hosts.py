@@ -1,6 +1,4 @@
 """Search hosts data set."""
-from pprint import pprint
-
 from censys.search import SearchClient
 
 c = SearchClient()
@@ -16,4 +14,4 @@ for page in query:
 
 # View all results
 query = c.v2.hosts.search("service.service_name: HTTP", per_page=5, pages=2)
-pprint(query.view_all())
+print(query.view_all())

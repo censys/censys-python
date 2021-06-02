@@ -99,7 +99,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         """Query class that is callable and iterable.
 
         Object Searches the given index for all records that match the given query.
-        For more details, see our documentation: https://search.censys.io/api/v2/docs
+        For more details, see our documentation: https://search.censys.io/api
 
         Args:
             api (CensysSearchAPIv2): Parent API object.
@@ -204,7 +204,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         """Search current index.
 
         Searches the given index for all records that match the given query.
-        For more details, see our documentation: https://search.censys.io/api/v2/docs
+        For more details, see our documentation: https://search.censys.io/api
 
         Args:
             query (str): The query to be executed.
@@ -225,7 +225,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         """View document from current index.
 
         View the current structured data we have on a specific document.
-        For more details, see our documentation: https://search.censys.io/api/v2/docs
+        For more details, see our documentation: https://search.censys.io/api
 
         Args:
             document_id (str): The ID of the document you are requesting.
@@ -249,7 +249,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         """Aggregate current index.
 
         Creates a report on the breakdown of the values of a field in a result set.
-        For more details, see our documentation: https://search.censys.io/api/v2/docs
+        For more details, see our documentation: https://search.censys.io/api
 
         Args:
             query (str): The query to be executed.
