@@ -28,8 +28,8 @@ The User Guide
    :maxdepth: 1
 
    quick-start
-   usage-v1
    usage-v2
+   usage-v1
    usage-asm
    advanced-usage
 

@@ -9,13 +9,23 @@
 
 An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://censys.io/)). Python 3.6+ is currently supported.
 
-## Getting Started
+## Installation
 
 The library can be installed using `pip`.
 
 ```bash
 pip install censys
 ```
+
+## Upgrading
+
+The library can be upgraded using `pip`.
+
+```bash
+pip install --upgrade censys
+```
+
+## Getting Started
 
 To configure your search credentials run `censys config` or set both `CENSYS_API_ID` and `CENSYS_API_SECRET` environment variables.
 
@@ -41,14 +51,6 @@ Successfully authenticated
 ## API Reference and User Guide available on [Read the Docs](https://censys-python.readthedocs.io/)
 
 [![Read the Docs](https://github.com/censys/censys-python/blob/main/docs/_static/readthedocs.png)](https://censys-python.readthedocs.io/)
-
-## Upgrading
-
-The library can be upgraded using `pip`.
-
-```bash
-pip install --upgrade censys
-```
 
 ## Resources
 
