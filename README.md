@@ -9,7 +9,17 @@
 
 An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://censys.io/)). Python 3.6+ is currently supported.
 
-## Installation
+## Features
+
+- [Search Censys data](https://censys-python.readthedocs.io/en/stable/usage-v2.html)
+- [Bullk Certificate lookups](https://censys-python.readthedocs.io/en/stable/usage-v1.html#bulk)
+- [Download Bulk Data](https://censys-python.readthedocs.io/en/stable/usage-v1.html#data)
+- [Manage assets, events, and seeds in Censys ASM](https://censys-python.readthedocs.io/en/stable/usage-asm.html)
+- [Command-line interface](https://censys-python.readthedocs.io/en/stable/cli.html)
+
+<a href="https://asciinema.org/a/418153" target="_blank"><img src="https://asciinema.org/a/418153.svg" width="600"/></a>
+
+## Getting Started
 
 The library can be installed using `pip`.
 
@@ -17,15 +27,11 @@ The library can be installed using `pip`.
 pip install censys
 ```
 
-## Upgrading
-
-The library can be upgraded using `pip`.
+To upgraded using `pip`.
 
 ```bash
 pip install --upgrade censys
 ```
-
-## Getting Started
 
 To configure your search credentials run `censys config` or set both `CENSYS_API_ID` and `CENSYS_API_SECRET` environment variables.
 
