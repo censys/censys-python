@@ -27,13 +27,13 @@ class DeprecationDecorator:
 
         @functools.wraps(func)
         def new_func(*args, **kwargs):
-            warnings.simplefilter("always", DeprecationWarning)
+            # warnings.simplefilter("always", DeprecationWarning)
             warnings.warn(
                 self.message or f"Call to deprecated function {func.__name__}.",
                 category=DeprecationWarning,
                 stacklevel=2,
             )
-            warnings.simplefilter("default", DeprecationWarning)
+            # warnings.simplefilter("default", DeprecationWarning)
             return func(*args, **kwargs)
 
         return new_func
