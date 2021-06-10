@@ -91,6 +91,11 @@ def get_parser() -> argparse.ArgumentParser:
         type=Path,
         help="output file path",
     )
+    search_parser.add_argument(
+        "--open",
+        action="store_true",
+        help="open query in browser",
+    )
 
     v1_group = search_parser.add_argument_group(
         f"v1 specific arguments ({', '.join(V1_INDEXES)})"
@@ -162,6 +167,11 @@ def get_parser() -> argparse.ArgumentParser:
         "--output",
         type=Path,
         help="output file path",
+    )
+    view_parser.add_argument(
+        "--open",
+        action="store_true",
+        help="open query in browser",
     )
     view_parser.set_defaults(func=cli_view)
 

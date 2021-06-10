@@ -4,6 +4,7 @@ import json
 import os
 from io import StringIO
 from unittest.mock import mock_open, patch
+from urllib.parse import urlencode
 
 import pytest
 import responses
@@ -76,7 +77,7 @@ class CensysCliSearchTest(CensysTestCase):
 
         json_path = cli_response.replace(WROTE_PREFIX, "").strip()
         assert json_path.endswith(".json")
-        assert json_path.startswith("censys-query-output.")
+        assert "censys-query-output." in json_path
 
         with open(json_path) as json_file:
             json_response = json.load(json_file)
@@ -119,7 +120,7 @@ class CensysCliSearchTest(CensysTestCase):
 
         csv_path = cli_response.replace(WROTE_PREFIX, "").strip()
         assert csv_path.endswith(".csv")
-        assert csv_path.startswith("censys-query-output.")
+        assert "censys-query-output." in csv_path
 
         with open(csv_path) as csv_file:
             csv_reader = csv.reader(csv_file)
@@ -374,3 +375,43 @@ class CensysCliSearchTest(CensysTestCase):
             match="The CSV file format is not valid for Search 2.0 responses.",
         ):
             cli_main()
+
+    @patch(
+        "argparse._sys.argv",
+        [
+            "censys",
+            "search",
+            "domain: censys.io AND ports: 443",
+            "--index-type",
+            "certs",
+            "--open",
+        ],
+    )
+    @patch("censys.cli.commands.search.webbrowser.open")
+    def test_open_v1(self, mock_open):
+        cli_main()
+        query_str = urlencode({"q": "domain: censys.io AND ports: 443"})
+        mock_open.assert_called_with(f"https://censys.io/certificates?{query_str}")
+
+    @patch(
+        "argparse._sys.argv",
+        [
+            "censys",
+            "search",
+            "service.service_name: HTTP",
+            "--index-type",
+            "hosts",
+            "--open",
+        ],
+    )
+    @patch("censys.cli.commands.search.webbrowser.open")
+    def test_open_v2(self, mock_open):
+        cli_main()
+        query_str = urlencode({"q": "service.service_name: HTTP", "resource": "hosts"})
+        mock_open.assert_called_with(f"https://search.censys.io/search?{query_str}")
+
+
+if __name__ == "__main__":
+    from unittest import main
+
+    main()

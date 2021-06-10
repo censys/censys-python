@@ -63,7 +63,7 @@ class CensysCliSearchTest(CensysTestCase):
 
         json_path = cli_response.replace(WROTE_PREFIX, "").strip()
         assert json_path.endswith(".json")
-        assert json_path.startswith("censys-view-8.8.8.8.")
+        assert "censys-view-8.8.8.8." in json_path
 
         with open(json_path) as json_file:
             json_response = json.load(json_file)
@@ -170,7 +170,7 @@ class CensysCliSearchTest(CensysTestCase):
         json_path = cli_response.replace(WROTE_PREFIX, "").strip()
         assert json_path.endswith(".json")
         assert "2021-05-20" in json_path
-        assert json_path.startswith("censys-view-8.8.8.8.")
+        assert "censys-view-8.8.8.8." in json_path
 
         with open(json_path) as json_file:
             json_response = json.load(json_file)
@@ -179,3 +179,12 @@ class CensysCliSearchTest(CensysTestCase):
 
         # Cleanup
         os.remove(json_path)
+
+    @patch(
+        "argparse._sys.argv",
+        ["censys", "view", "8.8.8.8", "--open"] + CensysTestCase.cli_args,
+    )
+    @patch("censys.cli.commands.search.webbrowser.open")
+    def test_open(self, mock_open):
+        cli_main()
+        mock_open.assert_called_with("https://search.censys.io/hosts/8.8.8.8")

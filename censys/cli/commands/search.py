@@ -1,6 +1,10 @@
 """Censys search CLI."""
 import argparse
+import webbrowser
 from typing import List
+from urllib.parse import urlencode
+
+from rich.console import Console
 
 from ..utils import V1_INDEXES, V2_INDEXES, write_file
 from censys.common.exceptions import CensysCLIException
@@ -52,6 +56,8 @@ DEFAULT_FIELDS = {
     ],
 }
 
+console = Console()
+
 
 def cli_search(args: argparse.Namespace):
     """Search subcommand.
@@ -59,6 +65,22 @@ def cli_search(args: argparse.Namespace):
     Args:
         args (Namespace): Argparse Namespace.
     """
+    index_type = args.index_type or args.query_type
+
+    if args.open:
+        url_query = {"q": args.query}
+        if index_type in V1_INDEXES:
+            if index_type == "certs":
+                index_type = "certificates"
+            return webbrowser.open(
+                f"https://censys.io/{index_type}?{urlencode(url_query)}"
+            )
+        elif index_type in V2_INDEXES:
+            url_query.update({"resource": index_type})
+            return webbrowser.open(
+                f"https://search.censys.io/search?{urlencode(url_query)}"
+            )
+
     censys_args = {}
 
     if args.api_id:
@@ -68,8 +90,6 @@ def cli_search(args: argparse.Namespace):
         censys_args["api_secret"] = args.api_secret
 
     c = SearchClient(**censys_args)
-
-    index_type = args.index_type or args.query_type
 
     search_args = {}
     write_args = {"file_format": args.format, "file_path": args.output}
@@ -85,7 +105,7 @@ def cli_search(args: argparse.Namespace):
             if args.overwrite:
                 fields = args.fields
             else:
-                fields = args.fields + DEFAULT_FIELDS.get(index_type)
+                fields = args.fields + DEFAULT_FIELDS[index_type]
                 # Remove duplicates
                 fields = list(set(fields))
             write_args["csv_fields"] = fields
@@ -97,7 +117,8 @@ def cli_search(args: argparse.Namespace):
 
         search_args["fields"] = fields
 
-        results = list(index.search(args.query, **search_args))
+        with console.status("Searching"):
+            results = list(index.search(args.query, **search_args))
     elif index_type in V2_INDEXES:
         if args.format == "csv":
             raise CensysCLIException(
@@ -108,11 +129,12 @@ def cli_search(args: argparse.Namespace):
         if args.pages:
             search_args["pages"] = args.pages
 
-        query = index.search(args.query, **search_args)
+        with console.status("Searching"):
+            query = index.search(args.query, **search_args)
 
-        results = []
-        for hits in query:
-            results += hits
+            results = []
+            for hits in query:
+                results += hits
 
     try:
         write_file(results, **write_args)

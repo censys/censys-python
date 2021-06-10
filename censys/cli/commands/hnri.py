@@ -3,6 +3,7 @@ import argparse
 from typing import List, Optional, Tuple
 
 import requests
+from rich import print
 
 from censys.common.exceptions import CensysCLIException, CensysNotFoundException
 from censys.search import CensysHosts
@@ -87,7 +88,7 @@ class CensysHNRI:
         if len_high_risk > 0:
             response = (
                 response
-                + "High Risks Found: \n"
+                + "[bold red]:exclamation: High Risks Found:[/bold red] \n"
                 + "\n".join([risk.get("string") for risk in high_risk])
             )
         else:
@@ -95,7 +96,7 @@ class CensysHNRI:
         if len_medium_risk > 0:
             response = (
                 response
-                + "Medium Risks Found: \n"
+                + "[bold orange]:grey_exclamation: Medium Risks Found:[/bold orange] \n"
                 + "\n".join([risk.get("string") for risk in medium_risk])
             )
         else:
@@ -116,7 +117,9 @@ class CensysHNRI:
             high_risk, medium_risk = self.translate_risk(services)
             return self.risks_to_string(high_risk, medium_risk)
         except (CensysNotFoundException, CensysCLIException):
-            return "No Risks were found on your network"
+            return (
+                "[green]:white_check_mark: No Risks were found on your network[/green]"
+            )
 
 
 def cli_hnri(args: argparse.Namespace):

@@ -3,8 +3,11 @@ import argparse
 import csv
 import datetime
 import json
+import os.path
 import time
 from typing import List, Optional
+
+import rich
 
 Fields = List[str]
 Results = List[dict]
@@ -12,6 +15,16 @@ Results = List[dict]
 V1_INDEXES = ["ipv4", "certs", "websites"]
 V2_INDEXES = ["hosts"]
 INDEXES = V1_INDEXES + V2_INDEXES
+
+
+def print_wrote_file(file_path: str):
+    """Print wrote file confirmation.
+
+    Args:
+        file_path (str): Name of the file to write to on the disk.
+    """
+    abs_file_path = os.path.abspath(file_path)
+    rich.print(f"Wrote results to file {abs_file_path}")
 
 
 def _write_csv(file_path: str, search_results: Results, fields: Fields):
@@ -35,7 +48,7 @@ def _write_csv(file_path: str, search_results: Results, fields: Fields):
                 # Use the Dict writer to process and write results to CSV
                 writer.writerow(result)
 
-    print(f"Wrote results to file {file_path}")
+    print_wrote_file(file_path)
 
 
 def _write_json(file_path: str, search_results: Results):
@@ -52,7 +65,7 @@ def _write_json(file_path: str, search_results: Results):
         # Since the results are already in JSON, just write them to a file.
         json.dump(search_results, output_file, indent=4)
 
-    print(f"Wrote results to file {file_path}")
+    print_wrote_file(file_path)
 
 
 def _write_screen(search_results: Results):
