@@ -171,7 +171,7 @@ def get_parser() -> argparse.ArgumentParser:
     view_parser.add_argument(
         "--open",
         action="store_true",
-        help="open query in browser",
+        help="open document in browser",
     )
     view_parser.set_defaults(func=cli_view)
 
@@ -181,6 +181,11 @@ def get_parser() -> argparse.ArgumentParser:
         description="Home Network Risk Identifier (H.N.R.I.)",
         help="home network risk identifier",
         parents=[auth],
+    )
+    hnri_parser.add_argument(
+        "--open",
+        action="store_true",
+        help="open your IP in browser",
     )
     hnri_parser.set_defaults(func=cli_hnri)
 

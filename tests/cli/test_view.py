@@ -184,7 +184,7 @@ class CensysCliSearchTest(CensysTestCase):
         "argparse._sys.argv",
         ["censys", "view", "8.8.8.8", "--open"] + CensysTestCase.cli_args,
     )
-    @patch("censys.cli.commands.search.webbrowser.open")
+    @patch("censys.cli.commands.view.webbrowser.open")
     def test_open(self, mock_open):
         cli_main()
         mock_open.assert_called_with("https://search.censys.io/hosts/8.8.8.8")

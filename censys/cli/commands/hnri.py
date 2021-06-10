@@ -1,5 +1,6 @@
 """Censys HNRI CLI."""
 import argparse
+import webbrowser
 from typing import List, Optional, Tuple
 
 import requests
@@ -128,6 +129,8 @@ def cli_hnri(args: argparse.Namespace):
     Args:
         args (Namespace): Argparse Namespace.
     """
+    if args.open:
+        return webbrowser.open("https://search.censys.io/me")
     client = CensysHNRI(args.api_id, args.api_secret)
 
     risks = client.view_current_ip_risks()

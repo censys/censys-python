@@ -114,3 +114,12 @@ class CensysCliHNRITest(CensysTestCase):
     def test_no_risks(self):
         with pytest.raises(CensysCLIException):
             self.api.risks_to_string([], [])
+
+    @patch(
+        "argparse._sys.argv",
+        ["censys", "hnri", "--open"],
+    )
+    @patch("censys.cli.commands.view.webbrowser.open")
+    def test_open(self, mock_open):
+        cli_main()
+        mock_open.assert_called_with("https://search.censys.io/me")
