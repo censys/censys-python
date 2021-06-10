@@ -4,9 +4,7 @@ import webbrowser
 from typing import List
 from urllib.parse import urlencode
 
-from rich.console import Console
-
-from ..utils import V1_INDEXES, V2_INDEXES, write_file
+from ..utils import V1_INDEXES, V2_INDEXES, console, write_file
 from censys.common.exceptions import CensysCLIException
 from censys.search import SearchClient
 
@@ -55,8 +53,6 @@ DEFAULT_FIELDS = {
         "updated_at",
     ],
 }
-
-console = Console()
 
 
 def cli_search(args: argparse.Namespace):
