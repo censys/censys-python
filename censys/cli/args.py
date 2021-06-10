@@ -58,7 +58,7 @@ def get_parser() -> argparse.ArgumentParser:
     )
 
     index_metavar = "|".join(INDEXES)
-    index_default = "ipv4"
+    index_default = "hosts"
     search_parser.add_argument(
         "--index-type",
         type=str,
