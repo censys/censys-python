@@ -2,6 +2,7 @@
 from typing import Iterator, Optional
 
 from ..api import CensysAsmAPI
+from censys.common.exceptions import CensysInvalidColorException
 
 
 class Assets(CensysAsmAPI):
@@ -102,7 +103,7 @@ class Assets(CensysAsmAPI):
         Args:
             asset_id (str): Asset ID to add tag to.
             name (str): New tag name.
-            color (str): Optional; New tag color.
+            color (str): Optional; New tag color (hex).
 
         Returns:
             dict: Added tag results.
@@ -132,12 +133,14 @@ def format_tag(name: str, color: Optional[str] = None) -> dict:
 
     Args:
         name (str): Tag name.
-        color (str): Optional; Tag color.
+        color (str): Optional; Tag color (hex).
 
     Returns:
         dict: Formatted tag request data.
     """
     if color:
+        if not color.startswith("#"):
+            raise CensysInvalidColorException(10037, f"{color} is not a valid color.")
         return {"name": str(name), "color": str(color)}
 
     return {"name": str(name)}

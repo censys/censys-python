@@ -2,6 +2,7 @@ import json
 import unittest
 from unittest.mock import patch
 
+import pytest
 from parameterized import parameterized
 
 from .utils import (
@@ -12,6 +13,7 @@ from .utils import (
     MockResponse,
 )
 from censys.asm.client import AsmClient
+from censys.common.exceptions import CensysInvalidColorException
 
 ASSETS_URL = f"{BASE_URL}/assets"
 ASSET_TYPE = "assets"
@@ -29,6 +31,7 @@ TEST_COMMENT_ID = 3
 TEST_COMMENT_TEXT = "This is a test comment"
 TEST_TAG_NAME = "asset-test-tag"
 TEST_TAG_COLOR = "#4287f5"
+TEST_INVALID_TAG_COLOR = "4287f5"
 
 
 class AssetsUnitTest(unittest.TestCase):
@@ -163,6 +166,13 @@ class AssetsUnitTest(unittest.TestCase):
             timeout=TEST_TIMEOUT,
             data=json.dumps({"name": TEST_TAG_NAME, "color": TEST_TAG_COLOR}),
         )
+
+    @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
+    def test_add_host_tag_with_invalid_color(self, asset_type):
+        with pytest.raises(CensysInvalidColorException):
+            getattr(self.client, asset_type).add_tag(
+                TEST_ASSET_IDS[asset_type], TEST_TAG_NAME, TEST_INVALID_TAG_COLOR
+            )
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
     @patch("censys.common.base.requests.Session.post")
