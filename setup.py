@@ -1,5 +1,6 @@
 """Censys Python Setup."""
 import os
+
 from setuptools import find_namespace_packages, setup
 
 NAME = "censys"
@@ -32,7 +33,7 @@ setup(
     include_package_data=True,
     package_data={"censys": ["py.typed"]},
     zip_safe=False,
-    install_requires=["requests>=2.25.1", "backoff==1.10.0"],
+    install_requires=["requests>=2.25.1", "backoff==1.10.0", "types-requests==0.1.9"],
     extras_require={
         "dev": [
             "flake8==3.9.2",
