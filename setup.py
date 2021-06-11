@@ -44,7 +44,7 @@ setup(
             "flake8-isort==4.0.0",
             "pep8-naming==0.11.1",
             "flake8-black==0.2.1",
-            "black==21.5b2",
+            "black==21.6b0",
             "pytest==6.2.4",
             "pytest-cov==2.12.1",
             "responses==0.13.3",
