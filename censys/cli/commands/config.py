@@ -39,7 +39,7 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
     api_secret = api_secret.strip()
 
     try:
-        client = CensysSearchAPIv1(api_id.strip(), api_secret)
+        client = CensysSearchAPIv1(api_id, api_secret)
         account = client.account()
         email = account.get("email")
 
