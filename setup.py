@@ -33,7 +33,12 @@ setup(
     include_package_data=True,
     package_data={"censys": ["py.typed"]},
     zip_safe=False,
-    install_requires=["requests>=2.25.1", "backoff==1.10.0", "types-requests==0.1.11"],
+    install_requires=[
+        "requests>=2.25.1",
+        "backoff==1.10.0",
+        "types-requests==0.1.11",
+        "rich==10.3.0",
+    ],
     extras_require={
         "dev": [
             "flake8==3.9.2",

@@ -91,6 +91,11 @@ def get_parser() -> argparse.ArgumentParser:
         type=Path,
         help="output file path",
     )
+    search_parser.add_argument(
+        "--open",
+        action="store_true",
+        help="open query in browser",
+    )
 
     v1_group = search_parser.add_argument_group(
         f"v1 specific arguments ({', '.join(V1_INDEXES)})"
@@ -163,6 +168,11 @@ def get_parser() -> argparse.ArgumentParser:
         type=Path,
         help="output file path",
     )
+    view_parser.add_argument(
+        "--open",
+        action="store_true",
+        help="open document in browser",
+    )
     view_parser.set_defaults(func=cli_view)
 
     # HNRI Specific Args
@@ -171,6 +181,11 @@ def get_parser() -> argparse.ArgumentParser:
         description="Home Network Risk Identifier (H.N.R.I.)",
         help="home network risk identifier",
         parents=[auth],
+    )
+    hnri_parser.add_argument(
+        "--open",
+        action="store_true",
+        help="open your IP in browser",
     )
     hnri_parser.set_defaults(func=cli_hnri)
 

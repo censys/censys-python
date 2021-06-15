@@ -2,6 +2,8 @@
 import argparse
 import sys
 
+from rich.prompt import Prompt
+
 from censys.common.config import DEFAULT, get_config, write_config
 from censys.common.exceptions import CensysUnauthorizedException
 from censys.search.v1.api import CensysSearchAPIv1
@@ -23,15 +25,18 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
     if api_id and api_secret:
         redacted_id = api_id.replace(api_id[:32], 32 * "*")
         redacted_secret = api_secret.replace(api_secret[:28], 28 * "*")
-        api_id_prompt = f"{api_id_prompt} [{redacted_id}]"
-        api_secret_prompt = f"{api_secret_prompt} [{redacted_secret}]"
+        api_id_prompt = f"{api_id_prompt} [cyan]({redacted_id})[/cyan]"
+        api_secret_prompt = f"{api_secret_prompt} [cyan]({redacted_secret})[/cyan]"
 
-    api_id = input(api_id_prompt + ": ").strip() or api_id
-    api_secret = input(api_secret_prompt + ": ").strip() or api_secret
+    api_id = Prompt.ask(api_id_prompt) or api_id
+    api_secret = Prompt.ask(api_secret_prompt) or api_secret
 
     if not (api_id and api_secret):
         print("Please enter valid credentials")
         sys.exit(1)
+
+    api_id = api_id.strip()
+    api_secret = api_secret.strip()
 
     try:
         client = CensysSearchAPIv1(api_id, api_secret)
@@ -64,9 +69,9 @@ def cli_asm_config(_: argparse.Namespace):  # pragma: no cover
     if api_key:
         key_len = len(api_key) - 4
         redacted_api_key = api_key.replace(api_key[:key_len], key_len * "*")
-        api_key_prompt = f"{api_key_prompt} [{redacted_api_key}]"
+        api_key_prompt = f"{api_key_prompt} [cyan]({redacted_api_key})[/cyan]"
 
-    api_key = input(api_key_prompt + ": ").strip() or api_key
+    api_key = Prompt.ask(api_key_prompt) or api_key
 
     if not api_key:
         print("Please enter valid credentials")

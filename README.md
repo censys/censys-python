@@ -83,6 +83,8 @@ pip install -e ".[dev]"
 
 ```bash
 pytest
+# With coverage report
+pytest --cov-report html
 ```
 
 ## License

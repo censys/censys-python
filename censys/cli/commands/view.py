@@ -1,5 +1,6 @@
 """Censys view CLI."""
 import argparse
+import webbrowser
 
 from ..utils import write_file
 from censys.search import SearchClient
@@ -11,6 +12,11 @@ def cli_view(args: argparse.Namespace):
     Args:
         args (Namespace): Argparse Namespace.
     """
+    if args.open:
+        return webbrowser.open(
+            f"https://search.censys.io/{args.index_type}/{args.document_id}"
+        )
+
     censys_args = {}
 
     if args.api_id:
