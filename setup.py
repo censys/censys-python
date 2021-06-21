@@ -37,7 +37,7 @@ setup(
         "requests>=2.25.1",
         "backoff==1.10.0",
         "types-requests==0.1.12",
-        "rich==10.3.0",
+        "rich==10.4.0",
     ],
     extras_require={
         "dev": [
