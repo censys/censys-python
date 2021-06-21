@@ -36,7 +36,7 @@ setup(
     install_requires=[
         "requests>=2.25.1",
         "backoff==1.10.0",
-        "types-requests==0.1.12",
+        "types-requests==2.25.0",
         "rich==10.4.0",
     ],
     extras_require={
