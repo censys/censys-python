@@ -57,7 +57,7 @@ setup(
             "backoff-stubs",
             "twine==3.4.1",
             "parameterized==0.8.1",
-            "isort==5.9.1",
+            "isort==5.9.2",
         ],
         "docs": ["sphinx"],
     },
