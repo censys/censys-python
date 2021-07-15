@@ -35,7 +35,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "requests>=2.25.1",
-        "backoff==1.11.0",
+        "backoff==1.11.1",
         "types-requests==2.25.0",
         "rich==10.6.0",
     ],
