@@ -34,9 +34,8 @@ setup(
     package_data={"censys": ["py.typed"]},
     zip_safe=False,
     install_requires=[
-        "requests>=2.25.1",
+        "requests>=2.26.0",
         "backoff==1.11.1",
-        "types-requests==2.25.0",
         "rich==10.6.0",
     ],
     extras_require={
@@ -54,12 +53,12 @@ setup(
             "pytest-cov==2.12.1",
             "responses==0.13.3",
             "mypy==0.910",
+            "types-requests==2.25.0",
             "backoff-stubs",
             "twine==3.4.1",
             "parameterized==0.8.1",
             "isort==5.9.2",
         ],
-        "docs": ["sphinx"],
     },
     entry_points={"console_scripts": ["censys = censys.cli:main"]},
     classifiers=[
@@ -88,6 +87,7 @@ setup(
     ],
     project_urls={
         "Censys Homepage": "https://censys.io/",
+        "Censys Search": "https://search.censys.io/",
         "Discussions": GIT_URL + "/discussions",
         "Documentation": "https://censys-python.rtfd.io",
         "Changelog": GIT_URL + "/releases",

@@ -5,4 +5,15 @@ multi_line_output = 3
 color_output = true
 known_first_party = ["censys"]
 known_local_folder = ["censys"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 extend_skip = ["setup.py", "conf.py"]
+
+[tool.mypy]
+python_version = "3.6"
+files = ["censys"]
+namespace_packages = true
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["parameterized"]
+ignore_missing_imports = true
