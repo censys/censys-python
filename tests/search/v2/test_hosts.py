@@ -8,6 +8,8 @@ from tests.utils import CensysTestCase
 from censys.search import SearchClient
 
 VIEW_HOST_JSON = {
+    "code": 200,
+    "status": "OK",
     "result": {
         "services": [
             {
@@ -37,10 +39,12 @@ VIEW_HOST_JSON = {
             "continent": "North America",
         },
         "last_updated_at": "2021-04-01T14:10:10.712Z",
-    }
+    },
 }
 
 HTTP_SEARCH_JSON = {
+    "code": 200,
+    "status": "OK",
     "result": {
         "query": "service.service_name: HTTP",
         "hits": [
@@ -68,6 +72,8 @@ HTTP_SEARCH_JSON = {
 }
 
 HTTP_AGGREGATE_JSON = {
+    "code": 200,
+    "status": "OK",
     "result": {
         "total_omitted": 358388380,
         "buckets": [
@@ -80,8 +86,17 @@ HTTP_AGGREGATE_JSON = {
         "field": "services.port",
         "query": "service.service_name: HTTP",
         "total": 149575980,
-    }
+    },
 }
+
+VIEW_HOST_NAMES_JSON = {
+    "code": 200,
+    "status": "OK",
+    "result": {"names": ["google.com", "google.co.uk", "google.com.au", "dns.google"]},
+    "links": {"prev": "prevCursorToken", "next": "nextCursorToken"},
+}
+
+TEST_HOST = "8.8.8.8"
 
 
 class TestHosts(CensysTestCase):
@@ -92,26 +107,26 @@ class TestHosts(CensysTestCase):
     def test_view(self):
         self.responses.add(
             responses.GET,
-            self.base_url + "/hosts/8.8.8.8",
+            f"{self.base_url}/hosts/{TEST_HOST}",
             status=200,
             json=VIEW_HOST_JSON,
         )
 
-        res = self.api.view("8.8.8.8")
+        res = self.api.view(TEST_HOST)
 
         assert res == VIEW_HOST_JSON["result"]
 
     def test_view_at_time(self):
         self.responses.add(
             responses.GET,
-            self.base_url + "/hosts/8.8.8.8?at_time=2021-03-01T00:00:00.000000Z",
+            f"{self.base_url}/hosts/{TEST_HOST}?at_time=2021-03-01T00:00:00.000000Z",
             status=200,
             json=VIEW_HOST_JSON,
         )
 
         date = datetime.date(2021, 3, 1)
 
-        res = self.api.view("8.8.8.8", at_time=date)
+        res = self.api.view(TEST_HOST, at_time=date)
 
         assert res == VIEW_HOST_JSON["result"]
 
@@ -217,8 +232,7 @@ class TestHosts(CensysTestCase):
         search_json["result"]["links"]["next"] = ""
         self.responses.add(
             responses.GET,
-            self.base_url
-            + f"/hosts/search?q=service.service_name: HTTP&per_page={test_per_page}",
+            f"{self.base_url}/hosts/search?q=service.service_name: HTTP&per_page={test_per_page}",
             status=200,
             json=search_json,
         )
@@ -238,3 +252,13 @@ class TestHosts(CensysTestCase):
         query = self.api.search("service.service_name: HTTP", per_page=test_per_page)
         results = query.view_all()
         assert results == expected
+
+    def test_view_host_names(self):
+        self.responses.add(
+            responses.GET,
+            f"{self.base_url}/hosts/{TEST_HOST}/names",
+            status=200,
+            json=VIEW_HOST_NAMES_JSON,
+        )
+        results = self.api.view_host_names(TEST_HOST)
+        assert results == VIEW_HOST_NAMES_JSON["result"]["names"]

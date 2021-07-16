@@ -1,4 +1,6 @@
 """Interact with the Censys Search Host API."""
+from typing import List
+
 from .api import CensysSearchAPIv2
 
 
@@ -57,3 +59,14 @@ class CensysHosts(CensysSearchAPIv2):
 
     INDEX_NAME = "hosts"
     """Name of Censys Index."""
+
+    def view_host_names(self, ip_address: str) -> List[str]:
+        """Fetches a list of host names for the specified IP address.
+
+        Args:
+            ip_address (str): The IP address of the requested host.
+
+        Returns:
+            List[str]: A list of host names.
+        """
+        return self._get(self.view_path + ip_address + "/names")["result"]["names"]
