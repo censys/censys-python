@@ -69,6 +69,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         self.view_path = f"/{self.INDEX_NAME}/"
         self.search_path = f"/{self.INDEX_NAME}/search"
         self.aggregate_path = f"/{self.INDEX_NAME}/aggregate"
+        self.metadata_path = f"/metadata/{self.INDEX_NAME}"
 
     def _get_exception_class(  # type: ignore
         self, res: Response
@@ -263,3 +264,11 @@ class CensysSearchAPIv2(CensysAPIBase):
         """
         args = {"q": query, "field": field, "num_buckets": num_buckets}
         return self._get(self.aggregate_path, args)["result"]
+
+    def metadata(self) -> dict:
+        """Get current index metadata.
+
+        Returns:
+            dict: The result set returned.
+        """
+        return self._get(self.metadata_path)["result"]

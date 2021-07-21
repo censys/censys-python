@@ -96,6 +96,12 @@ VIEW_HOST_NAMES_JSON = {
     "links": {"prev": "prevCursorToken", "next": "nextCursorToken"},
 }
 
+HOST_METADATA_JSON = {
+    "code": 200,
+    "status": "OK",
+    "result": {"services": ["HTTP", "IMAP", "MQTT", "SSH", "..."]},
+}
+
 TEST_HOST = "8.8.8.8"
 
 
@@ -262,3 +268,13 @@ class TestHosts(CensysTestCase):
         )
         results = self.api.view_host_names(TEST_HOST)
         assert results == VIEW_HOST_NAMES_JSON["result"]["names"]
+
+    def test_host_metadata(self):
+        self.responses.add(
+            responses.GET,
+            f"{self.base_url}/metadata/hosts",
+            status=200,
+            json=HOST_METADATA_JSON,
+        )
+        results = self.api.metadata()
+        assert results == HOST_METADATA_JSON["result"]
