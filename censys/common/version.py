@@ -4,4 +4,4 @@ try:
 except ImportError:
     import importlib.metadata as importlib_metadata  # type: ignore
 
-__version__ = importlib_metadata.version("censys")
+__version__: str = importlib_metadata.version("censys")

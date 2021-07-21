@@ -92,7 +92,7 @@ namespace_packages = true
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
-module = ["parameterized"]
+module = ["parameterized", "importlib_metadata"]
 ignore_missing_imports = true
 
 [build-system]
