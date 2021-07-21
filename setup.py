@@ -55,7 +55,7 @@ setup(
             "responses==0.13.3",
             "mypy==0.910",
             "backoff-stubs",
-            "twine==3.4.1",
+            "twine==3.4.2",
             "parameterized==0.8.1",
             "isort==5.9.2",
         ],
