@@ -2,7 +2,7 @@
 max-line-length = 88
 exclude = 
     docs,
-    venv,
+    .venv,
     # No need to traverse our git directory
     .git,
     # There's no value in checking cache directories

@@ -40,10 +40,12 @@ jobs:
           poetry install
 
       - name: Lint with flake8
+        if: startsWith(matrix.os, 'ubuntu')
         run: |
           poetry run flake8 --max-line-length=127
 
       - name: Type checking with mypy
+        if: startsWith(matrix.os, 'ubuntu')
         run: |
           poetry run mypy censys
 
