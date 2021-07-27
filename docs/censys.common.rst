@@ -23,10 +23,18 @@ censys.common.config module
    :undoc-members:
    :show-inheritance:
 
-censys.common.deprecation module
---------------------------------
+censys.common.types module
+--------------------------
 
-.. automodule:: censys.common.deprecation
+.. automodule:: censys.common.types
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+censys.common.utils module
+--------------------------
+
+.. automodule:: censys.common.utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -35,6 +43,14 @@ censys.common.exceptions module
 -------------------------------
 
 .. automodule:: censys.common.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+censys.common.deprecation module
+--------------------------------
+   
+.. automodule:: censys.common.deprecation
    :members:
    :undoc-members:
    :show-inheritance:

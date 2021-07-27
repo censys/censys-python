@@ -12,7 +12,7 @@ import os
 import sys
 from datetime import datetime
 
-import sphinx_rtd_theme
+import sphinx_rtd_theme  # noqa
 
 from censys.common import __version__
 
