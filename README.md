@@ -73,10 +73,12 @@ All contributions (no matter how small) are always welcome.
 
 ## Development
 
+This project uses [poetry](https://python-poetry.org/) for dependency management. Please ensure you have [installed the latest version](https://python-poetry.org/docs/#installation).
+
 ```bash
 git clone git@github.com:censys/censys-python.git
 cd censys-python/
-pip install -e ".[dev]"
+poetry install
 ```
 
 ## Testing

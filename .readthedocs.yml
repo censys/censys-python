@@ -11,13 +11,22 @@ sphinx:
 
 # Optionally build your docs in additional formats such as PDF
 formats:
-  - epub
   - pdf
 
 # Optionally set the version of Python and requirements required to build your docs
 python:
-  version: 3.7
+  version: "3.8"
   install:
     - requirements: docs/requirements.txt
     - method: pip
       path: .
+
+# Set a custom search rank over pages matching a pattern
+search:
+  ranking:
+    censys.asm.html: 5
+    usage-asm.html: 5
+    censys.search.v2.html: 5
+    usage-v2.html: 5
+    censys.search.v1.html: -1
+    usage-v1.html: -1

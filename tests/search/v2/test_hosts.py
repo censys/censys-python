@@ -2,12 +2,15 @@ import datetime
 
 import pytest
 import responses
+from parameterized import parameterized
 
 from tests.utils import CensysTestCase
 
 from censys.search import SearchClient
 
 VIEW_HOST_JSON = {
+    "code": 200,
+    "status": "OK",
     "result": {
         "services": [
             {
@@ -37,10 +40,12 @@ VIEW_HOST_JSON = {
             "continent": "North America",
         },
         "last_updated_at": "2021-04-01T14:10:10.712Z",
-    }
+    },
 }
 
-HTTP_SEARCH_JSON = {
+SEARCH_HOSTS_JSON = {
+    "code": 200,
+    "status": "OK",
     "result": {
         "query": "service.service_name: HTTP",
         "hits": [
@@ -67,7 +72,9 @@ HTTP_SEARCH_JSON = {
     },
 }
 
-HTTP_AGGREGATE_JSON = {
+AGGREGATE_HOSTS_JSON = {
+    "code": 200,
+    "status": "OK",
     "result": {
         "total_omitted": 358388380,
         "buckets": [
@@ -80,8 +87,63 @@ HTTP_AGGREGATE_JSON = {
         "field": "services.port",
         "query": "service.service_name: HTTP",
         "total": 149575980,
-    }
+    },
 }
+
+VIEW_HOST_NAMES_JSON = {
+    "code": 200,
+    "status": "OK",
+    "result": {"names": ["google.com", "google.co.uk", "google.com.au", "dns.google"]},
+    "links": {"prev": "prevCursorToken", "next": "nextCursorToken"},
+}
+
+HOST_METADATA_JSON = {
+    "code": 200,
+    "status": "OK",
+    "result": {"services": ["HTTP", "IMAP", "MQTT", "SSH", "..."]},
+}
+
+VIEW_HOST_EVENTS_JSON = {
+    "code": 200,
+    "status": "OK",
+    "result": {
+        "ip": "8.8.8.8",
+        "events": [
+            {
+                "_event": "service_observed",
+                "service_observed": {
+                    "id": {
+                        "port": 443,
+                        "transport_protocol": "TCP",
+                        "service_name": "HTTP",
+                    },
+                    "observed_at": "2021-07-27T18:00:11.296Z",
+                    "perspective_id": "PERSPECTIVE_NTT",
+                    "changed_fields": [{"field_name": "services.banner"}],
+                },
+                "timestamp": "2021-07-27T18:00:11.296Z",
+            },
+            {
+                "_event": "location_updated",
+                "location_updated": {
+                    "location": {
+                        "continent": "North America",
+                        "country": "United States",
+                        "country_code": "US",
+                        "postal_code": "48104",
+                        "timezone": "America/Michigan",
+                        "coordinates": {"latitude": "42.273", "longitude": "-83.751"},
+                        "registered_country": "United States",
+                        "registered_country_code": "US",
+                    }
+                },
+                "timestamp": "2021-07-27T18:00:11.297Z",
+            },
+        ],
+    },
+}
+
+TEST_HOST = "8.8.8.8"
 
 
 class TestHosts(CensysTestCase):
@@ -92,26 +154,26 @@ class TestHosts(CensysTestCase):
     def test_view(self):
         self.responses.add(
             responses.GET,
-            self.base_url + "/hosts/8.8.8.8",
+            f"{self.base_url}/hosts/{TEST_HOST}",
             status=200,
             json=VIEW_HOST_JSON,
         )
 
-        res = self.api.view("8.8.8.8")
+        res = self.api.view(TEST_HOST)
 
         assert res == VIEW_HOST_JSON["result"]
 
     def test_view_at_time(self):
         self.responses.add(
             responses.GET,
-            self.base_url + "/hosts/8.8.8.8?at_time=2021-03-01T00:00:00.000000Z",
+            f"{self.base_url}/hosts/{TEST_HOST}?at_time=2021-03-01T00:00:00.000000Z",
             status=200,
             json=VIEW_HOST_JSON,
         )
 
         date = datetime.date(2021, 3, 1)
 
-        res = self.api.view("8.8.8.8", at_time=date)
+        res = self.api.view(TEST_HOST, at_time=date)
 
         assert res == VIEW_HOST_JSON["result"]
 
@@ -120,11 +182,11 @@ class TestHosts(CensysTestCase):
             responses.GET,
             self.base_url + "/hosts/search?q=service.service_name: HTTP&per_page=100",
             status=200,
-            json=HTTP_SEARCH_JSON,
+            json=SEARCH_HOSTS_JSON,
         )
 
         query = self.api.search("service.service_name: HTTP")
-        assert query() == HTTP_SEARCH_JSON["result"]["hits"]
+        assert query() == SEARCH_HOSTS_JSON["result"]["hits"]
 
     def test_search_per_page(self):
         test_per_page = 50
@@ -133,15 +195,15 @@ class TestHosts(CensysTestCase):
             self.base_url
             + f"/hosts/search?q=service.service_name: HTTP&per_page={test_per_page}",
             status=200,
-            json=HTTP_SEARCH_JSON,
+            json=SEARCH_HOSTS_JSON,
         )
 
         query = self.api.search("service.service_name: HTTP", per_page=test_per_page)
-        assert next(query) == HTTP_SEARCH_JSON["result"]["hits"]
+        assert next(query) == SEARCH_HOSTS_JSON["result"]["hits"]
 
     def test_search_invalid_query(self):
         invalid_query = "some_bad_query"
-        no_hosts_json = HTTP_SEARCH_JSON.copy()
+        no_hosts_json = SEARCH_HOSTS_JSON.copy()
         no_hosts_json["result"]["hits"] = []
         no_hosts_json["result"]["total"] = 0
         no_hosts_json["result"]["links"]["next"] = ""
@@ -163,9 +225,9 @@ class TestHosts(CensysTestCase):
             responses.GET,
             self.base_url + "/hosts/search?q=service.service_name: HTTP&per_page=100",
             status=200,
-            json=HTTP_SEARCH_JSON,
+            json=SEARCH_HOSTS_JSON,
         )
-        page_2_json = HTTP_SEARCH_JSON.copy()
+        page_2_json = SEARCH_HOSTS_JSON.copy()
         hits = page_2_json["result"]["hits"]
         new_hits = [
             {
@@ -176,7 +238,7 @@ class TestHosts(CensysTestCase):
                 "ip": "1.0.0.2",
             }
         ]
-        next_cursor = HTTP_SEARCH_JSON["result"]["links"]["next"]
+        next_cursor = SEARCH_HOSTS_JSON["result"]["links"]["next"]
         page_2_json["result"]["hits"] = new_hits
         self.responses.add(
             responses.GET,
@@ -199,26 +261,25 @@ class TestHosts(CensysTestCase):
             self.base_url
             + "/hosts/aggregate?field=services.port&q=service.service_name: HTTP&num_buckets=4",
             status=200,
-            json=HTTP_AGGREGATE_JSON,
+            json=AGGREGATE_HOSTS_JSON,
         )
         self.maxDiff = None
         res = self.api.aggregate(
             "service.service_name: HTTP", "services.port", num_buckets=4
         )
 
-        assert res == HTTP_AGGREGATE_JSON["result"]
+        assert res == AGGREGATE_HOSTS_JSON["result"]
 
     def test_search_view_all(self):
         test_per_page = 50
         ips = ["1.1.1.1", "1.1.1.2"]
-        search_json = HTTP_SEARCH_JSON.copy()
+        search_json = SEARCH_HOSTS_JSON.copy()
         search_json["result"]["hits"] = [{"ip": ip} for ip in ips]
         search_json["result"]["total"] = len(ips)
         search_json["result"]["links"]["next"] = ""
         self.responses.add(
             responses.GET,
-            self.base_url
-            + f"/hosts/search?q=service.service_name: HTTP&per_page={test_per_page}",
+            f"{self.base_url}/hosts/search?q=service.service_name: HTTP&per_page={test_per_page}",
             status=200,
             json=search_json,
         )
@@ -238,3 +299,59 @@ class TestHosts(CensysTestCase):
         query = self.api.search("service.service_name: HTTP", per_page=test_per_page)
         results = query.view_all()
         assert results == expected
+
+    def test_view_host_names(self):
+        self.responses.add(
+            responses.GET,
+            f"{self.base_url}/hosts/{TEST_HOST}/names",
+            status=200,
+            json=VIEW_HOST_NAMES_JSON,
+        )
+        results = self.api.view_host_names(TEST_HOST)
+        assert results == VIEW_HOST_NAMES_JSON["result"]["names"]
+
+    def test_host_metadata(self):
+        self.responses.add(
+            responses.GET,
+            f"{self.base_url}/metadata/hosts",
+            status=200,
+            json=HOST_METADATA_JSON,
+        )
+        results = self.api.metadata()
+        assert results == HOST_METADATA_JSON["result"]
+
+    def test_view_host_events(self):
+        self.responses.add(
+            responses.GET,
+            f"{self.base_url}/experimental/hosts/{TEST_HOST}/events",
+            status=200,
+            json=VIEW_HOST_EVENTS_JSON,
+        )
+        results = self.api.view_host_events(TEST_HOST)
+        assert results == VIEW_HOST_EVENTS_JSON["result"]["events"]
+
+    @parameterized.expand(
+        [
+            ({"per_page": 50}, "per_page=50"),
+            (
+                {
+                    "start_time": datetime.date(2021, 7, 1),
+                    "end_time": datetime.date(2021, 7, 31),
+                },
+                "start_time=2021-07-01T00%3A00%3A00.000000Z&end_time=2021-07-31T00%3A00%3A00.000000Z",
+            ),
+            (
+                {"cursor": "nextCursor", "reversed": True},
+                "cursor=nextCursor&reversed=True",
+            ),
+        ]
+    )
+    def test_view_host_events_params(self, kwargs, query_params):
+        self.responses.add(
+            responses.GET,
+            f"{self.base_url}/experimental/hosts/{TEST_HOST}/events?{query_params}",
+            status=200,
+            json=VIEW_HOST_EVENTS_JSON,
+        )
+        results = self.api.view_host_events(TEST_HOST, **kwargs)
+        assert results == VIEW_HOST_EVENTS_JSON["result"]["events"]

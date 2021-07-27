@@ -11,12 +11,6 @@ Assuming you have Python already, install the package:
 
          pip install censys
 
-   .. tab:: from GitHub
-
-      .. prompt:: bash
-
-         pip install git+https://github.com/censys/censys-python@main
-
    .. tab:: from Kali Linux
 
       .. prompt:: bash

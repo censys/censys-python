@@ -9,7 +9,7 @@ from urllib.parse import urlencode
 import pytest
 import responses
 
-from tests.search.v2.test_hosts import HTTP_SEARCH_JSON
+from tests.search.v2.test_hosts import SEARCH_HOSTS_JSON
 from tests.utils import V1_URL, V2_URL, CensysTestCase
 
 from censys.cli import main as cli_main
@@ -343,7 +343,7 @@ class CensysCliSearchTest(CensysTestCase):
             responses.GET,
             V2_URL + "/hosts/search?q=service.service_name: HTTP&per_page=100",
             status=200,
-            json=HTTP_SEARCH_JSON,
+            json=SEARCH_HOSTS_JSON,
         )
 
         temp_stdout = StringIO()
@@ -352,7 +352,7 @@ class CensysCliSearchTest(CensysTestCase):
 
         json_response = json.loads(temp_stdout.getvalue().strip())
 
-        assert json_response == HTTP_SEARCH_JSON["result"]["hits"]
+        assert json_response == SEARCH_HOSTS_JSON["result"]["hits"]
 
     @patch(
         "argparse._sys.argv",

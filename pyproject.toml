@@ -1,8 +1,99 @@
+[tool.poetry]
+name = "censys"
+version = "2.0.4.beta1"
+description = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
+readme = "README.md"
+authors = ["Censys, Inc. <support@censys.io>"]
+license = "Apache-2.0"
+keywords = ["censys", "api", "search"]
+classifiers = [
+    "Typing :: Typed",
+    "Topic :: Internet",
+    "Topic :: Security",
+    "Topic :: Documentation :: Sphinx",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Framework :: Pytest",
+    "Framework :: Flake8",
+    "Environment :: Console",
+    "Natural Language :: English",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+include = ["README.md", "LICENSE", "censys/py.typed"]
+
+[tool.poetry.urls]
+"Censys Homepage" = "https://censys.io/"
+"Censys Search" = "https://search.censys.io/"
+"Discussions" = "https://github.com/censys/censys-python/discussions"
+"Documentation" = "https://censys-python.rtfd.io"
+"Changelog" = "https://github.com/censys/censys-python/releases"
+"Tracker" = "https://github.com/censys/censys-python/issues"
+"Source" = "https://github.com/censys/censys-python"
+
+[tool.poetry.scripts]
+censys = "censys.cli:main"
+
+[tool.poetry.dependencies]
+python = ">=3.6.2,<4.0"
+requests = ">=2.26.0"
+backoff = "1.11.1"
+rich = "10.6.0"
+importlib-metadata = { version = "^4.6.1", markers = "python_version < '3.8'" }
+
+[tool.poetry.dev-dependencies]
+# Lint
+flake8 = "^3.9.2"
+flake8-docstrings = "1.6.0"
+flake8-pytest-style = "1.5.0"
+flake8-simplify = "0.14.1"
+flake8-comprehensions = "3.5.0"
+flake8-isort = "4.0.0"
+isort = "5.9.2"
+pep8-naming = "0.12.0"
+flake8-black = "0.2.3"
+black = "21.7b0"
+
+# Tests
+pytest = "6.2.4"
+pytest-cov = "2.12.1"
+responses = "0.13.3"
+parameterized = "0.8.1"
+
+# Types
+mypy = "0.910"
+types-requests = "2.25.0"
+backoff-stubs = "*"
+
 [tool.isort]
 profile = "black"
 line_length = 88
 multi_line_output = 3
-color_output = true
 known_first_party = ["censys"]
 known_local_folder = ["censys"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 extend_skip = ["setup.py", "conf.py"]
+
+[tool.mypy]
+python_version = "3.6"
+files = ["censys"]
+namespace_packages = true
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["parameterized", "importlib_metadata"]
+ignore_missing_imports = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

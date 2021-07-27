@@ -87,3 +87,52 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
     )
     print(report)
 
+``view_host_names``
+-------------------
+
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
+
+.. code:: python
+
+    from censys.search import CensysHosts
+
+    h = CensysHosts()
+
+    # Fetch a list of host names for the specified IP address.
+    names = h.view_host_names("1.1.1.1")
+    print(names)
+    
+``view_host_events``
+--------------------
+
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
+
+.. code:: python
+
+    from censys.search import CensysHosts
+
+    h = CensysHosts()
+
+    # Fetch a list of events for the specified IP address.
+    events = h.view_host_events("1.1.1.1")
+    print(events)
+
+    # You can also pass in a date or datetime objects.
+    from datetime import date
+    events = h.view_host_events("1.1.1.1", start_time=date(2021, 7, 1), end_time=date(2021, 7, 31))
+    print(events)
+
+``metadata``
+-------------
+
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
+
+.. code:: python
+
+    from censys.search import CensysHosts
+
+    h = CensysHosts()
+
+    # Fetch metadata about hosts.
+    meta = h.metadata()
+    print(meta.get("services"))

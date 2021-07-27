@@ -1,5 +1,9 @@
 """Interact with the Censys Search Host API."""
+from typing import List, Optional
+
 from .api import CensysSearchAPIv2
+from censys.common.types import Datetime
+from censys.common.utils import format_rfc3339
 
 
 class CensysHosts(CensysSearchAPIv2):
@@ -57,3 +61,50 @@ class CensysHosts(CensysSearchAPIv2):
 
     INDEX_NAME = "hosts"
     """Name of Censys Index."""
+
+    def view_host_names(self, ip_address: str) -> List[str]:
+        """Fetches a list of host names for the specified IP address.
+
+        Args:
+            ip_address (str): The IP address of the requested host.
+
+        Returns:
+            List[str]: A list of host names.
+        """
+        return self._get(self.view_path + ip_address + "/names")["result"]["names"]
+
+    def view_host_events(
+        self,
+        ip_address: str,
+        start_time: Optional[Datetime] = None,
+        end_time: Optional[Datetime] = None,
+        per_page: Optional[int] = None,
+        cursor: Optional[str] = None,
+        reversed: Optional[bool] = None,
+    ) -> List[dict]:
+        """Fetches a list of events for the specified IP address.
+
+        Args:
+            ip_address (str): The IP address of the requested host.
+            start_time (Datetime): Optional; An RFC3339 timestamp which represents
+                the beginning chronological point-in-time (inclusive) from which events are returned.
+            end_time (Datetime): Optional; An RFC3339 timestamp which represents
+                the ending chronological point-in-time (exclusive) from which events are returned.
+            per_page (int): Optional; The maximum number of hits to return in each response
+                (minimum of 1, maximum of 50).
+            cursor (str): Optional; Cursor token from the API response.
+            reversed (bool): Optional; Reverse the order of the return events,
+                that is, return events in reversed chronological order.
+
+        Returns:
+            List[dict]: A list of events.
+        """
+        args = {"per_page": per_page, "cursor": cursor, "reversed": reversed}
+        if start_time:
+            args["start_time"] = format_rfc3339(start_time)
+        if end_time:
+            args["end_time"] = format_rfc3339(end_time)
+
+        return self._get(f"/experimental/{self.INDEX_NAME}/{ip_address}/events", args)[
+            "result"
+        ]["events"]
