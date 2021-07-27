@@ -1,8 +1,7 @@
 """Base for interacting with the Censys Search API."""
-import datetime
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Dict, Iterable, Iterator, List, Optional, Type, Union
+from typing import Dict, Iterable, Iterator, List, Optional, Type
 
 from requests.models import Response
 
@@ -13,6 +12,8 @@ from censys.common.exceptions import (
     CensysExceptionMapper,
     CensysSearchException,
 )
+from censys.common.types import Datetime
+from censys.common.utils import format_rfc3339
 
 Fields = Optional[List[str]]
 
@@ -223,7 +224,7 @@ class CensysSearchAPIv2(CensysAPIBase):
     def view(
         self,
         document_id: str,
-        at_time: Optional[Union[str, datetime.date, datetime.datetime]] = None,
+        at_time: Optional[Datetime] = None,
     ) -> dict:
         """View document from current index.
 
@@ -240,9 +241,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         """
         args = {}
         if at_time:
-            if isinstance(at_time, (datetime.date, datetime.datetime)):
-                at_time = at_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-            args["at_time"] = at_time
+            args["at_time"] = format_rfc3339(at_time)
 
         return self._get(self.view_path + document_id, args)["result"]
 

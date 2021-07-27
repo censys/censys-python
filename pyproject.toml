@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "censys"
-version = "2.0.4"
+version = "2.0.4.beta1"
 description = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
 readme = "README.md"
 authors = ["Censys, Inc. <support@censys.io>"]
@@ -79,7 +79,6 @@ backoff-stubs = "*"
 profile = "black"
 line_length = 88
 multi_line_output = 3
-color_output = true
 known_first_party = ["censys"]
 known_local_folder = ["censys"]
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
