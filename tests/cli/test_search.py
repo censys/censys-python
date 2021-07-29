@@ -10,7 +10,7 @@ import pytest
 import responses
 
 from tests.search.v2.test_hosts import SEARCH_HOSTS_JSON
-from tests.utils import V1_URL, V2_URL, CensysTestCase
+from tests.utils import V1_ENDPOINT_ON_V2_URL, V1_URL, V2_URL, CensysTestCase
 
 from censys.cli import main as cli_main
 from censys.common.exceptions import CensysCLIException, CensysException
@@ -63,7 +63,7 @@ class CensysCliSearchTest(CensysTestCase):
     def test_write_json(self):
         self.responses.add_callback(
             responses.POST,
-            V1_URL + "/search/certificates",
+            V1_ENDPOINT_ON_V2_URL + "/search/certificates",
             callback=search_callback,
             content_type="application/json",
         )
@@ -151,7 +151,7 @@ class CensysCliSearchTest(CensysTestCase):
     def test_write_output_path(self):
         self.responses.add_callback(
             responses.POST,
-            V1_URL + "/search/certificates",
+            V1_ENDPOINT_ON_V2_URL + "/search/certificates",
             callback=search_callback,
             content_type="application/json",
         )
@@ -383,7 +383,7 @@ class CensysCliSearchTest(CensysTestCase):
             "search",
             "domain: censys.io AND ports: 443",
             "--index-type",
-            "certs",
+            "ipv4",
             "--open",
         ],
     )
@@ -391,7 +391,26 @@ class CensysCliSearchTest(CensysTestCase):
     def test_open_v1(self, mock_open):
         cli_main()
         query_str = urlencode({"q": "domain: censys.io AND ports: 443"})
-        mock_open.assert_called_with(f"https://censys.io/certificates?{query_str}")
+        mock_open.assert_called_with(f"https://censys.io/ipv4?{query_str}")
+
+    @patch(
+        "argparse._sys.argv",
+        [
+            "censys",
+            "search",
+            "domain: censys.io AND ports: 443",
+            "--index-type",
+            "certs",
+            "--open",
+        ],
+    )
+    @patch("censys.cli.commands.search.webbrowser.open")
+    def test_open_certificates(self, mock_open):
+        cli_main()
+        query_str = urlencode({"q": "domain: censys.io AND ports: 443"})
+        mock_open.assert_called_with(
+            f"https://search.censys.io/certificates?{query_str}"
+        )
 
     @patch(
         "argparse._sys.argv",

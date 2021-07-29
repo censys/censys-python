@@ -5,6 +5,7 @@ import responses
 from censys.common.base import CensysAPIBase
 
 V1_URL = "https://censys.io/api/v1"
+V1_ENDPOINT_ON_V2_URL = "https://search.censys.io/api/v1"
 V2_URL = "https://search.censys.io/api/v2"
 
 

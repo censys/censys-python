@@ -14,6 +14,8 @@ class CensysCertificates(CensysSearchAPIv1):
         **kwargs: Arbitrary keyword arguments.
     """
 
+    DEFAULT_URL: str = "https://search.censys.io/api/v1"
+    """Default Search API base URL."""
     INDEX_NAME = "certificates"
     """Name of Censys Index."""
     MAX_PER_BULK_REQUEST = 50

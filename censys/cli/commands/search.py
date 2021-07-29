@@ -68,6 +68,10 @@ def cli_search(args: argparse.Namespace):
         if index_type in V1_INDEXES:
             if index_type == "certs":
                 index_type = "certificates"
+                # TODO: Remove when v1 is fully deprecated
+                return webbrowser.open(
+                    f"https://search.censys.io/{index_type}?{urlencode(url_query)}"
+                )
             return webbrowser.open(
                 f"https://censys.io/{index_type}?{urlencode(url_query)}"
             )
