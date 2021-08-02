@@ -1,7 +1,7 @@
 """Interact with all Search APIs."""
 from ..common.deprecation import DeprecationDecorator
 from .v1 import CensysCertificates, CensysData, CensysIPv4, CensysWebsites
-from .v2 import CensysHosts
+from .v2 import CensysCerts, CensysHosts
 
 
 class SearchClient:
@@ -22,6 +22,7 @@ class SearchClient:
         >>> ipv4 = c.v1.ipv4 # CensysIPv4()
         >>> websites = c.v1.websites # CensysWebsites()
         >>> hosts = c.v2.hosts # CensysHosts()
+        >>> certs = c.v2.certs # CensysCerts()
     """
 
     class _V1:
@@ -45,6 +46,7 @@ class SearchClient:
         def __init__(self, *args, **kwargs):
             """Inits V2."""
             self.hosts = CensysHosts(*args, **kwargs)
+            self.certs = CensysCerts(*args, **kwargs)
 
     def __init__(self, *args, **kwargs):
         """Inits SearchClient."""
