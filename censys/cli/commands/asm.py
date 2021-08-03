@@ -1,10 +1,11 @@
+"""Censys ASM CLI."""
 import argparse
 import json
 import sys
 
 from rich.prompt import Prompt
 
-from censys.asm.seeds import SEED_TYPES
+from censys.asm.seeds import SEED_TYPES, Seeds
 from censys.common.config import DEFAULT, get_config, write_config
 from censys.common.exceptions import CensysUnauthorizedException
 
@@ -67,14 +68,23 @@ def cli_add_seeds(args: argparse.Namespace):
     for seed in seeds:
         if isinstance(seed, dict):
             if "type" not in seed:
-                seed["type"] = args.type
+                seed["type"] = args.deafult_type
         elif isinstance(seed, str):
-            seed = {"value": seed, "type": args.type}
+            seed = {"value": seed, "type": args.deafult_type}
         else:
             print(f"Invalid seed {seed}")
+            sys.exit(1)
+        if "label" not in seed:
+            seed["label"] = args.label_all
         seeds_to_add.append(seed)
 
-    print(seeds_to_add)
+    s = Seeds(args.api_key)
+    res = s.add_seeds(seeds_to_add)
+    added_count = len(res["addedSeeds"])
+    added_str = None
+    if added_count < len(seeds_to_add):
+        added_str = f"{added_count}/{len(seeds_to_add)}"
+    print(f"Added {added_str or added_count} seeds")
 
 
 def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
@@ -97,12 +107,19 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
         "add-seeds",
         description="Add seeds to ASM",
         help="add seeds",
+        parents=[parents["asm_auth"]],
     )
     add_parser.add_argument(
-        "--type",
-        help="type of the seeds (default: %(default)s)",
+        "--deafult-type",
+        help="type of the seed(s) if type is not already provided (default: %(default)s)",
         choices=SEED_TYPES,
         default="IP_ADDRESS",
+    )
+    add_parser.add_argument(
+        "--label-all",
+        help="label to apply to all seeds (default: %(default)s)",
+        type=str,
+        default="",
     )
     seeds_group = add_parser.add_mutually_exclusive_group(required=True)
     seeds_group.add_argument(
