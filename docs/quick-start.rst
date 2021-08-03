@@ -31,4 +31,4 @@ Configure your credentials:
 
       .. prompt:: bash
       
-         censys config-asm
+         censys asm config

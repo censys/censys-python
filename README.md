@@ -44,10 +44,10 @@ Censys API Secret: XXX
 Successfully authenticated for your@email.com
 ```
 
-To configure your ASM credentials run `censys config-asm` or set the `CENSYS_ASM_API_KEY` environment variables.
+To configure your ASM credentials run `censys asm config` or set the `CENSYS_ASM_API_KEY` environment variables.
 
 ```bash
-$ censys config-asm
+$ censys asm config
 
 Censys ASM API Key: XXX
 
