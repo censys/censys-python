@@ -1,7 +1,6 @@
 """Censys view CLI."""
 import argparse
 import webbrowser
-from pathlib import Path
 
 from ..utils import V2_INDEXES, valid_datetime_type, write_file
 from censys.search import SearchClient
@@ -32,14 +31,13 @@ def cli_view(args: argparse.Namespace):
 
     view_args = {}
     write_args = {
-        "file_format": args.format,
+        "file_format": "json" if args.output else "screen",
         "file_path": args.output,
         "base_name": f"censys-view-{args.document_id}",
     }
 
     if args.at_time:
         view_args["at_time"] = args.at_time
-        write_args["time_str"] = args.at_time.strftime("%Y-%m-%d")
 
     document = index.view(args.document_id, **view_args)
 
@@ -78,19 +76,10 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
         help="Fetches a document at a given point in time",
     )
     view_parser.add_argument(
-        "-f",
-        "--format",
-        type=str,
-        default="screen",
-        choices=["screen", "json"],
-        metavar="screen|json",
-        help="format of output",
-    )
-    view_parser.add_argument(
         "-o",
         "--output",
-        type=Path,
-        help="output file path",
+        type=str,
+        help="json output file path",
     )
     view_parser.add_argument(
         "--open",

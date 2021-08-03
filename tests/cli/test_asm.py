@@ -250,4 +250,32 @@ class CensysASMCliTest(CensysTestCase):
         temp_stdout = StringIO()
         with contextlib.redirect_stdout(temp_stdout):
             cli_main()
-            assert "Added 3/4 seeds" in temp_stdout.getvalue()
+
+        assert "Added 3 seeds" in temp_stdout.getvalue()
+        assert "Seeds not added: 1" in temp_stdout.getvalue()
+
+    @patch(
+        "argparse._sys.argv",
+        ["censys", "asm", "add-seeds", "-j", json.dumps(SEEDS_JSON)]
+        + CensysTestCase.asm_cli_args,
+    )
+    def test_add_seeds_none(self):
+        partial_json = ADD_SEEDS_JSON.copy()
+        partial_json["addedSeeds"] = []
+        self.responses.add(
+            responses.POST,
+            self.base_url + "/seeds",
+            status=200,
+            json=partial_json,
+        )
+
+        temp_stdout = StringIO()
+        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
+            temp_stdout
+        ):
+            cli_main()
+
+        assert (
+            "No seeds were added. (Run with -v to get more info)"
+            in temp_stdout.getvalue()
+        )

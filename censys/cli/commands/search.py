@@ -1,7 +1,6 @@
 """Censys search CLI."""
 import argparse
 import webbrowser
-from pathlib import Path
 from typing import List
 from urllib.parse import urlencode
 
@@ -189,7 +188,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
     search_parser.add_argument(
         "-o",
         "--output",
-        type=Path,
+        type=str,
         help="output file path",
     )
     search_parser.add_argument(

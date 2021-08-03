@@ -86,12 +86,12 @@ def cli_add_seeds(args: argparse.Namespace):
     if not added_count:
         print("No seeds were added. (Run with -v to get more info)")
         if not args.verbose:
-            sys.exit(0)
+            sys.exit(1)
     else:
         print(f"Added {added_count} seeds.")
     if added_count < to_add_count:
         print(f"Seeds not added: {to_add_count - added_count}")
-        if args.verbose:
+        if args.verbose:  # pragma: no cover
             print(
                 "The following seed(s) were not able to be added as they already exist or are reserved."
             )
