@@ -68,9 +68,9 @@ def cli_add_seeds(args: argparse.Namespace):
     for seed in seeds:
         if isinstance(seed, dict):
             if "type" not in seed:
-                seed["type"] = args.deafult_type
+                seed["type"] = args.default_type
         elif isinstance(seed, str):
-            seed = {"value": seed, "type": args.deafult_type}
+            seed = {"value": seed, "type": args.default_type}
         else:
             print(f"Invalid seed {seed}")
             sys.exit(1)
@@ -79,12 +79,25 @@ def cli_add_seeds(args: argparse.Namespace):
         seeds_to_add.append(seed)
 
     s = Seeds(args.api_key)
+    to_add_count = len(seeds_to_add)
     res = s.add_seeds(seeds_to_add)
-    added_count = len(res["addedSeeds"])
-    added_str = None
-    if added_count < len(seeds_to_add):
-        added_str = f"{added_count}/{len(seeds_to_add)}"
-    print(f"Added {added_str or added_count} seeds")
+    added_seeds = res["addedSeeds"]
+    added_count = len(added_seeds)
+    if not added_count:
+        print("No seeds were added. (Run with -v to get more info)")
+        if not args.verbose:
+            sys.exit(0)
+    else:
+        print(f"Added {added_count} seeds.")
+    if added_count < to_add_count:
+        print(f"Seeds not added: {to_add_count - added_count}")
+        if args.verbose:
+            print(
+                "The following seed(s) were not able to be added as they already exist or are reserved."
+            )
+            for seed in seeds_to_add:
+                if not any([s for s in added_seeds if seed["value"] == s["value"]]):
+                    print(json.dumps(seed, indent=4))
 
 
 def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
@@ -110,16 +123,22 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
         parents=[parents["asm_auth"]],
     )
     add_parser.add_argument(
-        "--deafult-type",
+        "--default-type",
         help="type of the seed(s) if type is not already provided (default: %(default)s)",
         choices=SEED_TYPES,
         default="IP_ADDRESS",
     )
     add_parser.add_argument(
         "--label-all",
-        help="label to apply to all seeds (default: %(default)s)",
+        help='label to apply to all seeds (default: "")',
         type=str,
         default="",
+    )
+    add_parser.add_argument(
+        "-v",
+        "--verbose",
+        help="verbose output",
+        action="store_true",
     )
     seeds_group = add_parser.add_mutually_exclusive_group(required=True)
     seeds_group.add_argument(
