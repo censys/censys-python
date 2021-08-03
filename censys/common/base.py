@@ -78,12 +78,13 @@ class CensysAPIBase:
 
         # Create a session and set credentials
         self._session = requests.Session()
-        proxies = kwargs.get("proxies")
-        if proxies:
+        if proxies := kwargs.get("proxies"):
             if "http" in proxies:
                 warnings.warn("HTTP proxies will not be used.")
                 proxies.pop("http", None)
             self._session.proxies = proxies
+        if cookies := kwargs.get("cookies"):
+            self._session.cookies.update(cookies)
         self._session.headers.update(
             {
                 "accept": "application/json, */8",
@@ -148,8 +149,7 @@ class CensysAPIBase:
         }
 
         if data:
-            data = json.dumps(data)
-            request_kwargs["data"] = data
+            request_kwargs["json"] = data
 
         res = method(url, **request_kwargs)
 

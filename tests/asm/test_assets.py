@@ -1,4 +1,3 @@
-import json
 import unittest
 from unittest.mock import patch
 
@@ -149,7 +148,7 @@ class AssetsUnitTest(unittest.TestCase):
             f"{ASSETS_URL}/{asset_type}/{TEST_ASSET_IDS[asset_type]}/{COMMENT_TYPE}",
             params={},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({"markdown": TEST_COMMENT_TEXT}),
+            json={"markdown": TEST_COMMENT_TEXT},
         )
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
@@ -164,7 +163,7 @@ class AssetsUnitTest(unittest.TestCase):
             f"{ASSETS_URL}/{asset_type}/{TEST_ASSET_IDS[asset_type]}/tags",
             params={},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({"name": TEST_TAG_NAME, "color": TEST_TAG_COLOR}),
+            json={"name": TEST_TAG_NAME, "color": TEST_TAG_COLOR},
         )
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
@@ -186,7 +185,7 @@ class AssetsUnitTest(unittest.TestCase):
             f"{ASSETS_URL}/{asset_type}/{TEST_ASSET_IDS[asset_type]}/tags",
             params={},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({"name": TEST_TAG_NAME}),
+            json={"name": TEST_TAG_NAME},
         )
 
     @parameterized.expand([["hosts"], ["certificates"], ["domains"]])
