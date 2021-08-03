@@ -27,7 +27,7 @@ class CensysCliTest(CensysTestCase):
 
         stdout = temp_stdout.getvalue().strip()
         assert stdout.startswith("usage: censys")
-        assert "{search,view,hnri,config,config-asm}" in stdout
+        assert "{asm,config,hnri,search,view}" in stdout
         assert "-v, --version" in stdout
 
     @patch("argparse._sys.argv", ["censys", "-v"])

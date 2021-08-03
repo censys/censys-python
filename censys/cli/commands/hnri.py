@@ -136,3 +136,19 @@ def cli_hnri(args: argparse.Namespace):
     risks = client.view_current_ip_risks()
 
     print(risks)
+
+
+def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
+    """Include this subcommand into the parent parser."""
+    hnri_parser = parent_parser.add_parser(
+        "hnri",
+        description="Home Network Risk Identifier (H.N.R.I.)",
+        help="home network risk identifier",
+        parents=[parents["auth"]],
+    )
+    hnri_parser.add_argument(
+        "--open",
+        action="store_true",
+        help="open your IP in browser",
+    )
+    hnri_parser.set_defaults(func=cli_hnri)

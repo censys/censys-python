@@ -3,6 +3,8 @@ from typing import Optional
 
 from .api import CensysAsmAPI
 
+SEED_TYPES = ["IP_ADDRESS", "DOMAIN_NAME", "CIDR", "ASN"]
+
 
 class Seeds(CensysAsmAPI):
     """Seeds API class."""

@@ -1,8 +1,9 @@
 """Censys view CLI."""
 import argparse
 import webbrowser
+from pathlib import Path
 
-from ..utils import write_file
+from ..utils import V2_INDEXES, valid_datetime_type, write_file
 from censys.search import SearchClient
 
 
@@ -46,3 +47,54 @@ def cli_view(args: argparse.Namespace):
         write_file(document, **write_args)
     except ValueError as error:  # pragma: no cover
         print(f"Error writing log file. Error: {error}")
+
+
+def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
+    """Include this subcommand into the parent parser."""
+    view_parser = parent_parser.add_parser(
+        "view",
+        description="View a document in Censys Search by providing a document \
+            id and the resource index",
+        help="view document",
+        parents=[parents["auth"]],
+    )
+    view_parser.add_argument(
+        "document_id",
+        type=str,
+        help="a string written in Censys Search syntax",
+    )
+    view_parser.add_argument(
+        "--index-type",
+        type=str,
+        default="hosts",
+        choices=V2_INDEXES,
+        metavar="|".join(V2_INDEXES),
+        help="which resource index to query",
+    )
+    view_parser.add_argument(
+        "--at-time",
+        type=valid_datetime_type,
+        metavar="YYYY-MM-DD (HH:mm)",
+        help="Fetches a document at a given point in time",
+    )
+    view_parser.add_argument(
+        "-f",
+        "--format",
+        type=str,
+        default="screen",
+        choices=["screen", "json"],
+        metavar="screen|json",
+        help="format of output",
+    )
+    view_parser.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        help="output file path",
+    )
+    view_parser.add_argument(
+        "--open",
+        action="store_true",
+        help="open document in browser",
+    )
+    view_parser.set_defaults(func=cli_view)
