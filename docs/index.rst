@@ -32,6 +32,7 @@ The User Guide
    usage-v1
    usage-asm
    advanced-usage
+   usage-cli
 
 The API Documentation
 ---------------------

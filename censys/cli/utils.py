@@ -4,7 +4,6 @@ import csv
 import datetime
 import json
 import os.path
-import time
 from typing import List, Optional
 
 from rich.console import Console
@@ -86,7 +85,6 @@ def write_file(
     results_list: Results,
     file_format: str = "screen",
     file_path: Optional[str] = None,
-    time_str: str = str(time.time()),
     base_name: str = "censys-query-output",
     csv_fields: Fields = [],
 ):
@@ -105,7 +103,10 @@ def write_file(
 
     if not file_path:
         # This method just creates some dynamic file names
-        file_path = ".".join([base_name, time_str, file_format])
+        file_path = ".".join([base_name, file_format])
+    else:
+        if file_path.endswith(".json"):
+            file_format = "json"
 
     if file_format == "json":
         return _write_json(file_path, results_list)

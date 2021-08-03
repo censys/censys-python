@@ -4,7 +4,7 @@ import webbrowser
 from typing import List
 from urllib.parse import urlencode
 
-from ..utils import V1_INDEXES, V2_INDEXES, console, write_file
+from ..utils import INDEXES, V1_INDEXES, V2_INDEXES, console, write_file
 from censys.common.exceptions import CensysCLIException
 from censys.search import SearchClient
 
@@ -140,3 +140,88 @@ def cli_search(args: argparse.Namespace):
         write_file(results, **write_args)
     except ValueError as error:  # pragma: no cover
         print(f"Error writing log file. Error: {error}")
+
+
+def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
+    """Include this subcommand into the parent parser."""
+    search_parser = parent_parser.add_parser(
+        "search",
+        description="Query Censys Search for resource data by providing a query \
+            string, the resource index, and the fields to be returned",
+        help="query Censys search",
+        parents=[parents["auth"]],
+    )
+    search_parser.add_argument(
+        "query",
+        type=str,
+        help="a string written in Censys Search syntax",
+    )
+
+    index_metavar = "|".join(INDEXES)
+    index_default = "hosts"
+    search_parser.add_argument(
+        "--index-type",
+        type=str,
+        default=index_default,
+        choices=INDEXES,
+        metavar=index_metavar,
+        help="which resource index to query",
+    )
+    # Backwards compatibility
+    search_parser.add_argument(
+        "--query_type",
+        type=str,
+        default=index_default,
+        choices=INDEXES,
+        metavar=index_metavar,
+        help=argparse.SUPPRESS,
+    )
+    search_parser.add_argument(
+        "-f",
+        "--format",
+        type=str,
+        default="screen",
+        choices=["screen", "json", "csv"],
+        metavar="screen|json|csv",
+        help="format of output",
+    )
+    search_parser.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        help="output file path",
+    )
+    search_parser.add_argument(
+        "--open",
+        action="store_true",
+        help="open query in browser",
+    )
+
+    v1_group = search_parser.add_argument_group(
+        f"v1 specific arguments ({', '.join(V1_INDEXES)})"
+    )
+    v1_group.add_argument("--fields", nargs="+", help="list of index-specific fields")
+    v1_group.add_argument(
+        "--overwrite",
+        action="store_true",
+        default=False,
+        help="overwrite instead of append fields returned by default \
+            with fields provided in the fields argument",
+    )
+    v1_group.add_argument(
+        "--max-records",
+        type=int,
+        help="maximum number of results to return",
+    )
+
+    v2_group = search_parser.add_argument_group(
+        f"v2 specific arguments ({', '.join(V2_INDEXES)})"
+    )
+    v2_group.add_argument(
+        "--pages",
+        default=1,
+        type=int,
+        help="number of pages of results to return",
+    )
+
+    search_parser.set_defaults(func=cli_search)

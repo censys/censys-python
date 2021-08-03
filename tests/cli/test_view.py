@@ -41,8 +41,8 @@ class CensysCliSearchTest(CensysTestCase):
             "8.8.8.8",
             "--index-type",
             "hosts",
-            "--format",
-            "json",
+            "-o",
+            "censys-view-8.8.8.8.json",
         ]
         + CensysTestCase.cli_args,
     )
@@ -79,8 +79,6 @@ class CensysCliSearchTest(CensysTestCase):
             "censys",
             "view",
             "8.8.8.8",
-            "--format",
-            "json",
             "--output",
             "censys-google-dns.json",
         ]
@@ -116,8 +114,6 @@ class CensysCliSearchTest(CensysTestCase):
             "8.8.8.8",
             "--index-type",
             "hosts",
-            "--format",
-            "screen",
         ]
         + CensysTestCase.cli_args,
     )
@@ -145,8 +141,8 @@ class CensysCliSearchTest(CensysTestCase):
             "8.8.8.8",
             "--index-type",
             "hosts",
-            "--format",
-            "json",
+            "-o",
+            "censys-view-8.8.8.8.json",
             "--at-time",
             "2021-05-20",
         ]
@@ -169,7 +165,6 @@ class CensysCliSearchTest(CensysTestCase):
 
         json_path = cli_response.replace(WROTE_PREFIX, "").strip()
         assert json_path.endswith(".json")
-        assert "2021-05-20" in json_path
         assert "censys-view-8.8.8.8." in json_path
 
         with open(json_path) as json_file:

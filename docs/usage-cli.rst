@@ -1,0 +1,65 @@
+CLI Usage
+=========
+
+Before continuing please ensure you have successfully configured your credentials.
+
+.. prompt:: bash
+
+    censys config
+
+
+``search``
+----------
+
+Below we show an example of Searching from the CLI.
+
+.. prompt:: bash
+
+    censys search 'services.http.response.html_title: "Tesla Energy Powerpack"' --index-type hosts
+
+By combining the ``search`` command with ``jq`` we can easily manipulate the output to get the desired fields.
+
+.. prompt:: bash
+
+    censys search 'services.service_name: IKETTLE' --index-type hosts | jq -c '.[] | {ip: .ip}'
+
+``view``
+----------
+
+Below we show an example of Viewing a host from the CLI.
+
+.. prompt:: bash
+
+    censys view 8.8.8.8
+
+You can save results to a file using the ``-f`` and ``-o`` arguments.
+
+.. prompt:: bash
+
+    censys view 8.8.8.8 -f json -o google.json
+
+We can then parse this json with something like ``jq``.
+
+.. prompt:: bash
+
+    cat google.json | jq '[.services[] | {port: .port, protocol: .service_name}]'
+
+
+``asm``
+-------
+
+``add-seeds``
+^^^^^^^^^^^^^
+
+Below we show an example of adding seeds from the CLI.
+
+.. prompt:: bash
+
+    censys asm add-seeds -j '["1.1.1.1"]'
+
+You can also add seeds from STDIN using the ``-i -`` argument.
+In the example below we are adding IPs from a Censys Search.
+
+.. prompt:: bash
+
+    censys search 'services.tls.certificates.leaf_data.issuer.common_name: "Roomba CA"' | jq '[.[] | .ip]' | censys asm add-seeds -i -

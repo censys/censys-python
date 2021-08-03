@@ -69,3 +69,7 @@ class CensysAPIBaseTests(CensysTestCase):
     def test_proxies(self):
         base = CensysAPIBase(TEST_URL, proxies={"http": "test", "https": "tests"})
         assert list(base._session.proxies.keys()) == ["https"]
+
+    def test_cookies(self):
+        base = CensysAPIBase(TEST_URL, cookies={"_ga": "GA"})
+        assert list(base._session.cookies.keys()) == ["_ga"]

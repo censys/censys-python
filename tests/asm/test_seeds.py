@@ -1,4 +1,3 @@
-import json
 import unittest
 from unittest.mock import patch
 
@@ -69,7 +68,7 @@ class SeedsUnitTests(unittest.TestCase):
             SEEDS_URL,
             params={"force": None},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({"seeds": [TEST_SEED]}),
+            json={"seeds": [TEST_SEED]},
         )
 
     @patch("censys.common.base.requests.Session.post")
@@ -81,7 +80,7 @@ class SeedsUnitTests(unittest.TestCase):
             SEEDS_URL,
             params={"force": None},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({"seeds": TEST_SEED_LIST}),
+            json={"seeds": TEST_SEED_LIST},
         )
 
     @patch("censys.common.base.requests.Session.post")
@@ -93,7 +92,7 @@ class SeedsUnitTests(unittest.TestCase):
             SEEDS_URL,
             params={"force": True},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({"seeds": TEST_SEED_LIST}),
+            json={"seeds": TEST_SEED_LIST},
         )
 
     @patch("censys.common.base.requests.Session.put")
@@ -105,7 +104,7 @@ class SeedsUnitTests(unittest.TestCase):
             SEEDS_URL,
             params={"label": "seed-test-label", "force": None},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({"seeds": [TEST_SEED_NO_LABEL]}),
+            json={"seeds": [TEST_SEED_NO_LABEL]},
         )
 
     @patch("censys.common.base.requests.Session.put")
@@ -119,7 +118,7 @@ class SeedsUnitTests(unittest.TestCase):
             SEEDS_URL,
             params={"label": "seed-test-label", "force": True},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({"seeds": TEST_SEED_LIST_NO_LABEL}),
+            json={"seeds": TEST_SEED_LIST_NO_LABEL},
         )
 
     @patch("censys.common.base.requests.Session.delete")

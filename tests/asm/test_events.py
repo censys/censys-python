@@ -1,4 +1,3 @@
-import json
 import unittest
 from unittest.mock import patch
 
@@ -44,7 +43,7 @@ class EventsUnitTests(unittest.TestCase):
             EVENTS_CURSOR_URL,
             params={},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({"dateFrom": TEST_START_DATE}),
+            json={"dateFrom": TEST_START_DATE},
         )
 
     @patch("censys.common.base.requests.Session.post")
@@ -56,7 +55,7 @@ class EventsUnitTests(unittest.TestCase):
             EVENTS_CURSOR_URL,
             params={},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({"idFrom": TEST_START_ID}),
+            json={"idFrom": TEST_START_ID},
         )
 
     @patch("censys.common.base.requests.Session.post")
@@ -69,7 +68,7 @@ class EventsUnitTests(unittest.TestCase):
             EVENTS_CURSOR_URL,
             params={},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({"filter": {"type": filters}}),
+            json={"filter": {"type": filters}},
         )
 
     @patch("censys.common.base.requests.Session.post")
@@ -82,7 +81,7 @@ class EventsUnitTests(unittest.TestCase):
             EVENTS_CURSOR_URL,
             params={},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({"filter": {"type": filters}, "dateFrom": TEST_START_DATE}),
+            json={"filter": {"type": filters}, "dateFrom": TEST_START_DATE},
         )
 
     @patch("censys.common.base.requests.Session.post")
@@ -95,7 +94,7 @@ class EventsUnitTests(unittest.TestCase):
             EVENTS_CURSOR_URL,
             params={},
             timeout=TEST_TIMEOUT,
-            data=json.dumps({"filter": {"type": filters}, "idFrom": TEST_START_ID}),
+            json={"filter": {"type": filters}, "idFrom": TEST_START_ID},
         )
 
     @patch("censys.common.base.requests.Session.get")

@@ -55,35 +55,11 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
         sys.exit(1)
 
 
-def cli_asm_config(_: argparse.Namespace):  # pragma: no cover
-    """Config asm subcommand.
-
-    Args:
-        _: Argparse Namespace.
-    """
-    api_key_prompt = "Censys ASM API Key"
-
-    config = get_config()
-    api_key = config.get(DEFAULT, "asm_api_key")
-
-    if api_key:
-        key_len = len(api_key) - 4
-        redacted_api_key = api_key.replace(api_key[:key_len], key_len * "*")
-        api_key_prompt = f"{api_key_prompt} [cyan]({redacted_api_key})[/cyan]"
-
-    api_key = Prompt.ask(api_key_prompt) or api_key
-
-    if not api_key:
-        print("Please enter valid credentials")
-        sys.exit(1)
-
-    try:
-        # Assumes that login was successfully
-        config.set(DEFAULT, "asm_api_key", api_key)
-
-        write_config(config)
-        print("\nSuccessfully configured credentials")
-        sys.exit(0)
-    except CensysUnauthorizedException:
-        print("Failed to authenticate")
-        sys.exit(1)
+def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
+    """Include this subcommand into the parent parser."""
+    config_parser = parent_parser.add_parser(
+        "config",
+        description="Configure Censys Search API Settings",
+        help="configure Censys search API settings",
+    )
+    config_parser.set_defaults(func=cli_config)

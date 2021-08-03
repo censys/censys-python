@@ -19,6 +19,10 @@ class CensysTestCase(unittest.TestCase):
         "--api-secret",
         api_secret,
     ]
+    asm_cli_args = [
+        "--api-key",
+        api_key,
+    ]
 
     def setUp(self):
         self.responses = responses.RequestsMock()
