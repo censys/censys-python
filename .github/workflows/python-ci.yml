@@ -3,16 +3,16 @@ name: Python CI
 on:
   push:
     paths-ignore:
-      - "docs/**"
+      - "**.rst"
       - "**.md"
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v2
