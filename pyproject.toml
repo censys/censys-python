@@ -72,7 +72,7 @@ parameterized = "^0.8.1"
 
 # Types
 mypy = "0.910"
-types-requests = "^2.25.2"
+types-requests = "^2.25.6"
 backoff-stubs = "*"
 
 [tool.isort]
