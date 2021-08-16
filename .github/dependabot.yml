@@ -15,15 +15,3 @@ updates:
       - "type: dependencies"
     reviewers:
       - "censys/public-repo-admins"
-
-  - package-ecosystem: "pip" # See documentation for possible values
-    directory: "/docs" # Location of package manifests
-    schedule:
-      interval: "daily"
-      time: "08:00"
-      timezone: "US/Michigan"
-    labels:
-      - "type: dependencies"
-      - "type: documentation"
-    reviewers:
-      - "censys/public-repo-admins"
