@@ -240,6 +240,7 @@ class TestHosts(CensysTestCase):
         ]
         next_cursor = SEARCH_HOSTS_JSON["result"]["links"]["next"]
         page_2_json["result"]["hits"] = new_hits
+        page_2_json["result"]["links"]["next"] = None
         self.responses.add(
             responses.GET,
             self.base_url
@@ -251,7 +252,7 @@ class TestHosts(CensysTestCase):
 
         expected = [hits, new_hits]
 
-        query = self.api.search("service.service_name: HTTP", pages=2)
+        query = self.api.search("service.service_name: HTTP", pages=-1)
         for i, page in enumerate(query):
             assert expected[i] == page
 

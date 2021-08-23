@@ -129,7 +129,10 @@ class CensysSearchAPIv2(CensysAPIBase):
             self.cursor = cursor
             self.nextCursor: Optional[str] = None
             self.page = 1
-            self.pages = pages
+            if pages == -1:
+                self.pages = float("inf")
+            else:
+                self.pages = pages
 
         def __call__(self, per_page: Optional[int] = None) -> List[dict]:
             """Search current index.
