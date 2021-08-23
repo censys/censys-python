@@ -1,5 +1,6 @@
 """Censys CLI utilities."""
 import argparse
+from censys.common.deprecation import DeprecationDecorator
 import csv
 import datetime
 import json
@@ -28,6 +29,7 @@ def print_wrote_file(file_path: str):
     console.print(f"Wrote results to file {abs_file_path}", soft_wrap=True)
 
 
+@DeprecationDecorator("CSV output is deprecated and will be removed in the future.")
 def _write_csv(file_path: str, search_results: Results, fields: Fields):
     """Write search results to a new file in CSV format.
 
