@@ -1,6 +1,5 @@
 """Censys CLI utilities."""
 import argparse
-from censys.common.deprecation import DeprecationDecorator
 import csv
 import datetime
 import json
@@ -8,6 +7,8 @@ import os.path
 from typing import List, Optional
 
 from rich.console import Console
+
+from censys.common.deprecation import DeprecationDecorator
 
 Fields = List[str]
 Results = List[dict]
