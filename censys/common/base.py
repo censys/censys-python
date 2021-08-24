@@ -44,20 +44,7 @@ def _backoff_wrapper(method: Callable):
 
 
 class CensysAPIBase:
-    """This is the base class for API queries.
-
-    Args:
-        url (str): Optional; The URL to make API requests.
-        timeout (int): Optional; Timeout for API requests in seconds.
-        max_retries (int):
-            Optional; Max number of times to retry failed API requests.
-        user_agent (str): Optional; Override User-Agent string.
-        proxies (dict): Optional; Configure HTTP proxies.
-        **kwargs: Arbitrary keyword arguments.
-
-    Raises:
-        CensysException: Base Exception Class for the Censys API.
-    """
+    """This is the base class for API queries."""
 
     DEFAULT_TIMEOUT: int = 30
     """Default API timeout."""
@@ -66,11 +53,34 @@ class CensysAPIBase:
     DEFAULT_MAX_RETRIES: int = 10
     """Default max number of API retries."""
 
-    def __init__(self, url: Optional[str] = None, **kwargs):
-        """Inits CensysAPIBase."""
+    def __init__(
+        self,
+        url: Optional[str] = None,
+        timeout: Optional[int] = DEFAULT_TIMEOUT,
+        max_retries: Optional[int] = DEFAULT_MAX_RETRIES,
+        user_agent: Optional[str] = DEFAULT_USER_AGENT,
+        proxies: Optional[dict] = None,
+        cookies: Optional[dict] = None,
+        **kwargs,
+    ):
+        """Inits CensysAPIBase.
+
+        Args:
+            url (str): Optional; The URL to make API requests.
+            timeout (int): Optional; Timeout for API requests in seconds.
+            max_retries (int):
+                Optional; Max number of times to retry failed API requests.
+            user_agent (str): Optional; Override User-Agent string.
+            proxies (dict): Optional; Configure HTTP proxies.
+            cookies (dict): Optional; Configure cookies.
+            **kwargs: Arbitrary keyword arguments.
+
+        Raises:
+            CensysException: Base Exception Class for the Censys API.
+        """
         # Get common request settings
-        self.timeout = kwargs.get("timeout") or self.DEFAULT_TIMEOUT
-        self.max_retries = kwargs.get("max_retries") or self.DEFAULT_MAX_RETRIES
+        self.timeout = timeout
+        self.max_retries = max_retries
         self._api_url = url or os.getenv("CENSYS_API_URL")
 
         if not self._api_url:
@@ -78,12 +88,12 @@ class CensysAPIBase:
 
         # Create a session and set credentials
         self._session = requests.Session()
-        if proxies := kwargs.get("proxies"):
+        if proxies:
             if "http" in proxies:
                 warnings.warn("HTTP proxies will not be used.")
                 proxies.pop("http", None)
-            self._session.proxies = proxies
-        if cookies := kwargs.get("cookies"):
+            self._session.proxies.update(proxies)
+        if cookies:
             self._session.cookies.update(cookies)
         self._session.headers.update(
             {
@@ -91,7 +101,7 @@ class CensysAPIBase:
                 "User-Agent": " ".join(
                     [
                         requests.utils.default_user_agent(),
-                        kwargs.get("user_agent")
+                        user_agent
                         or kwargs.get("user_agent_identifier")
                         or self.DEFAULT_USER_AGENT,
                     ]
@@ -133,7 +143,8 @@ class CensysAPIBase:
             data (Any): Optional; JSON data to serialize with request.
 
         Raises:
-            CensysException: Base Exception Class for the Censys API.
+            censys_exception: Exception Class for the Censys API.
+            CensysJSONDecodeException: Exception for decoding JSON.
 
         Returns:
             dict: Results from an API request.

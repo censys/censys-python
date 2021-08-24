@@ -1,5 +1,6 @@
 """Censys HNRI CLI."""
 import argparse
+import sys
 import webbrowser
 from typing import List, Optional, Tuple
 
@@ -11,18 +12,18 @@ from censys.search import CensysHosts
 
 
 class CensysHNRI:
-    """Searches the Censys API for the user's current IP to scan for risks.
-
-    Args:
-        api_id (str): Optional; The API ID provided by Censys.
-        api_secret (str): Optional; The API secret provided by Censys.
-    """
+    """Searches the Censys API for the user's current IP to scan for risks."""
 
     HIGH_RISK_DEFINITION: List[str] = ["TELNET", "REDIS", "POSTGRES", "VNC"]
     MEDIUM_RISK_DEFINITION: List[str] = ["SSH", "HTTP", "HTTPS"]
 
     def __init__(self, api_id: Optional[str] = None, api_secret: Optional[str] = None):
-        """Inits CensysHNRI."""
+        """Inits CensysHNRI.
+
+        Args:
+            api_id (str): Optional; The API ID provided by Censys.
+            api_secret (str): Optional; The API secret provided by Censys.
+        """
         self.index = CensysHosts(api_id, api_secret)
 
     @staticmethod
@@ -130,7 +131,9 @@ def cli_hnri(args: argparse.Namespace):
         args (Namespace): Argparse Namespace.
     """
     if args.open:
-        return webbrowser.open("https://search.censys.io/me")
+        webbrowser.open("https://search.censys.io/me")
+        sys.exit(0)
+
     client = CensysHNRI(args.api_id, args.api_secret)
 
     risks = client.view_current_ip_risks()
@@ -138,8 +141,13 @@ def cli_hnri(args: argparse.Namespace):
     print(risks)
 
 
-def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
-    """Include this subcommand into the parent parser."""
+def include(parent_parser: argparse._SubParsersAction, parents: dict):
+    """Include this subcommand into the parent parser.
+
+    Args:
+        parent_parser (argparse._SubParsersAction): Parent parser.
+        parents (dict): Parent arg parsers.
+    """
     hnri_parser = parent_parser.add_parser(
         "hnri",
         description="Home Network Risk Identifier (H.N.R.I.)",

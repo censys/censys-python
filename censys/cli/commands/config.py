@@ -55,8 +55,13 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
         sys.exit(1)
 
 
-def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
-    """Include this subcommand into the parent parser."""
+def include(parent_parser: argparse._SubParsersAction, parents: dict):
+    """Include this subcommand into the parent parser.
+
+    Args:
+        parent_parser (argparse._SubParsersAction): Parent parser.
+        parents (dict): Parent arg parsers.
+    """
     config_parser = parent_parser.add_parser(
         "config",
         description="Configure Censys Search API Settings",

@@ -1,5 +1,4 @@
 """Base for interacting with the Censys ASM API."""
-# pylint: disable=too-many-arguments
 import os
 from math import inf
 from typing import Iterator, Optional, Type
@@ -16,21 +15,21 @@ from censys.common.exceptions import (
 
 
 class CensysAsmAPI(CensysAPIBase):
-    """This is the base class for ASM's Seeds, Assets, and Events classes.
-
-    Args:
-        api_key (str): Optional; The API Key provided by Censys.
-        **kwargs: Arbitrary keyword arguments.
-
-    Raises:
-        CensysException: Base Exception Class for the Censys API.
-    """
+    """This is the base class for ASM's Seeds, Assets, and Events classes."""
 
     DEFAULT_URL: str = "https://app.censys.io/api/v1"
     """Default ASM API base URL."""
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
-        """Inits CensysAsmAPI."""
+        """Inits CensysAsmAPI.
+
+        Args:
+            api_key (str): Optional; The API Key provided by Censys.
+            **kwargs: Arbitrary keyword arguments.
+
+        Raises:
+            CensysException: Base Exception Class for the Censys API.
+        """
         url = kwargs.pop("url", self.DEFAULT_URL)
         CensysAPIBase.__init__(self, url=url, **kwargs)
 

@@ -5,15 +5,15 @@ from .assets import Assets
 
 
 class DomainsAssets(Assets):
-    """Domains Assets API class.
-
-    Args:
-        *args: Variable length argument list.
-        **kwargs: Arbitrary keyword arguments.
-    """
+    """Domains Assets API class."""
 
     def __init__(self, *args, **kwargs):
-        """Inits DomainsAssets."""
+        """Inits DomainsAssets.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
         super().__init__("domains", *args, **kwargs)
 
     def get_subdomains(
@@ -26,8 +26,8 @@ class DomainsAssets(Assets):
             page_number (int): Optional; Page number to begin at when searching.
             page_size (int): Optional; Page size for retrieving assets.
 
-        Returns:
-            generator: Asset search results.
+        Yields:
+            dict: The assets result returned.
         """
         yield from self._get_page(
             f"{self.base_path}/{domain}/subdomains",

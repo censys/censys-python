@@ -16,19 +16,7 @@ Fields = Optional[List[str]]
 
 
 class CensysSearchAPIv1(CensysAPIBase):
-    """This class is the base class for all v1 API indexes.
-
-    See CensysAPIBase for additional arguments.
-
-    Args:
-        api_id (str): Optional; The API ID provided by Censys.
-        api_secret (str): Optional; The API secret provided by Censys.
-        *args: Variable length argument list.
-        **kwargs: Arbitrary keyword arguments.
-
-    Raises:
-        CensysException: Base Exception Class for the Censys API.
-    """
+    """This class is the base class for all v1 API indexes."""
 
     DEFAULT_URL: str = "https://censys.io/api/v1"
     """Default Search API base URL."""
@@ -38,7 +26,18 @@ class CensysSearchAPIv1(CensysAPIBase):
     def __init__(
         self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
     ):
-        """Inits CensysSearchAPIv1."""
+        """Inits CensysSearchAPIv1.
+
+        See CensysAPIBase for additional arguments.
+
+        Args:
+            api_id (str): Optional; The API ID provided by Censys.
+            api_secret (str): Optional; The API secret provided by Censys.
+            **kwargs: Arbitrary keyword arguments.
+
+        Raises:
+            CensysException: Base Exception Class for the Censys API.
+        """
         CensysAPIBase.__init__(self, kwargs.pop("url", self.DEFAULT_URL), **kwargs)
 
         # Gets config file
@@ -103,7 +102,6 @@ class CensysSearchAPIv1(CensysAPIBase):
         data = {"query": query, "page": 1, "fields": []}
         return self._post(self.search_path, data=data).get("metadata", {})
 
-    # pylint: disable=too-many-arguments
     def search(
         self,
         query: str,

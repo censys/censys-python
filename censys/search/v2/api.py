@@ -24,15 +24,6 @@ INDEX_TO_KEY = {"hosts": "ip"}
 class CensysSearchAPIv2(CensysAPIBase):
     """This class is the base class for the Hosts index.
 
-    See CensysAPIBase for additional arguments.
-
-    Args:
-        *args: Variable length argument list.
-        **kwargs: Arbitrary keyword arguments.
-
-    Raises:
-        CensysException: Base Exception Class for the Censys API.
-
     Examples:
         >>> c = CensysSearchAPIv2()
     """
@@ -45,7 +36,18 @@ class CensysSearchAPIv2(CensysAPIBase):
     def __init__(
         self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
     ):
-        """Inits CensysSearchAPIv2."""
+        """Inits CensysSearchAPIv2.
+
+        See CensysAPIBase for additional arguments.
+
+        Args:
+            api_id (str): Optional; The API ID provided by Censys.
+            api_secret (str): Optional; The API secret provided by Censys.
+            **kwargs: Arbitrary keyword arguments.
+
+        Raises:
+            CensysException: Base Exception Class for the Censys API.
+        """
         CensysAPIBase.__init__(self, kwargs.pop("url", self.DEFAULT_URL), **kwargs)
 
         # Gets config file
@@ -92,9 +94,6 @@ class CensysSearchAPIv2(CensysAPIBase):
     def quota(self) -> dict:
         """Returns metadata of a given search query.
 
-        Args:
-            query (str): The query to be executed.
-
         Returns:
             dict: The metadata of the result set returned.
         """
@@ -105,13 +104,6 @@ class CensysSearchAPIv2(CensysAPIBase):
 
         Object Searches the given index for all records that match the given query.
         For more details, see our documentation: https://search.censys.io/api
-
-        Args:
-            api (CensysSearchAPIv2): Parent API object.
-            query (str): The query to be executed.
-            per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
-            cursor (int): Optional; The cursor of the desired result set.
-            pages (int): Optional; The number of pages returned. Defaults to 1.
         """
 
         def __init__(
@@ -122,7 +114,15 @@ class CensysSearchAPIv2(CensysAPIBase):
             cursor: Optional[str] = None,
             pages: int = 1,
         ):
-            """Inits Query."""
+            """Inits Query.
+
+            Args:
+                api (CensysSearchAPIv2): Parent API object.
+                query (str): The query to be executed.
+                per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
+                cursor (int): Optional; The cursor of the desired result set.
+                pages (int): Optional; The number of pages returned. Defaults to 1.
+            """
             self.api = api
             self.query = query
             self.per_page = per_page

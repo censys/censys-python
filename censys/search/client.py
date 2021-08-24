@@ -32,7 +32,12 @@ class SearchClient:
             "The v1 Search API is deprecated and will be removed in the future."
         )
         def __init__(self, *args, **kwargs):
-            """Inits V1."""
+            """Inits V1.
+
+            Args:
+                *args: Variable length argument list.
+                **kwargs: Arbitrary keyword arguments.
+            """
             self.certificates = CensysCertificates(*args, **kwargs)
             # Alias certs to certificates
             self.certs = self.certificates
@@ -44,12 +49,22 @@ class SearchClient:
         """Class for v2 Search APIs."""
 
         def __init__(self, *args, **kwargs):
-            """Inits V2."""
+            """Inits V2.
+
+            Args:
+                *args: Variable length argument list.
+                **kwargs: Arbitrary keyword arguments.
+            """
             self.hosts = CensysHosts(*args, **kwargs)
             self.certs = CensysCerts(*args, **kwargs)
 
     def __init__(self, *args, **kwargs):
-        """Inits SearchClient."""
+        """Inits SearchClient.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
         # Backwards compatability
         if len(args) == 2:
             kwargs["api_id"] = args[0]

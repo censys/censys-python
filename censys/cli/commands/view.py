@@ -1,5 +1,6 @@
 """Censys view CLI."""
 import argparse
+import sys
 import webbrowser
 
 from ..utils import V2_INDEXES, valid_datetime_type, write_file
@@ -13,9 +14,10 @@ def cli_view(args: argparse.Namespace):
         args (Namespace): Argparse Namespace.
     """
     if args.open:
-        return webbrowser.open(
+        webbrowser.open(
             f"https://search.censys.io/{args.index_type}/{args.document_id}"
         )
+        sys.exit(0)
 
     censys_args = {}
 
@@ -47,8 +49,13 @@ def cli_view(args: argparse.Namespace):
         print(f"Error writing log file. Error: {error}")
 
 
-def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
-    """Include this subcommand into the parent parser."""
+def include(parent_parser: argparse._SubParsersAction, parents: dict):
+    """Include this subcommand into the parent parser.
+
+    Args:
+        parent_parser (argparse._SubParsersAction): Parent parser.
+        parents (dict): Parent arg parsers.
+    """
     view_parser = parent_parser.add_parser(
         "view",
         description="View a document in Censys Search by providing a document \

@@ -100,8 +100,13 @@ def cli_add_seeds(args: argparse.Namespace):
                     print(json.dumps(seed, indent=4))
 
 
-def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
-    """Include this subcommand into the parent parser."""
+def include(parent_parser: argparse._SubParsersAction, parents: dict):
+    """Include this subcommand into the parent parser.
+
+    Args:
+        parent_parser (argparse._SubParsersAction): Parent parser.
+        parents (dict): Parent arg parsers.
+    """
     asm_parser = parent_parser.add_parser(
         "asm", description="Interact with the Censys ASM API", help="interact with ASM"
     )
