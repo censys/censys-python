@@ -33,4 +33,5 @@ class DomainsAssets(Assets):
             f"{self.base_path}/{domain}/subdomains",
             page_number=page_number,
             page_size=page_size,
+            keyword="subdomains",
         )

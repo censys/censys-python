@@ -56,7 +56,7 @@ class CensysAsmAPITests(CensysTestCase):
             == "404 (Error Code: 10014), Unable to Find Seed. [{id: 999}]"  # noqa: FS003
         )
 
-    @parameterized.expand([("assets"), ("comments"), ("tags"), ("subdomains")])
+    @parameterized.expand([("assets")])
     def test_page_keywords(self, keyword):
         page_json = {
             "pageNumber": 1,

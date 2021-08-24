@@ -69,7 +69,9 @@ class Assets(CensysAsmAPI):
         """
         path = f"{self.base_path}/{asset_id}/comments"
 
-        return self._get_page(path, page_number=page_number, page_size=page_size)
+        return self._get_page(
+            path, page_number=page_number, page_size=page_size, keyword="comments"
+        )
 
     def get_comment_by_id(self, asset_id: str, comment_id: int) -> dict:
         """Requests a comment on a specified asset by comment ID.

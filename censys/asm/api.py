@@ -58,7 +58,12 @@ class CensysAsmAPI(CensysAPIBase):
         )
 
     def _get_page(
-        self, path: str, page_number: int = 1, page_size: Optional[int] = None
+        self,
+        path: str,
+        page_number: int = 1,
+        page_size: Optional[int] = None,
+        args: Optional[dict] = None,
+        keyword: str = "assets",
     ) -> Iterator[dict]:
         """Fetches paginated ASM resource API results.
 
@@ -67,26 +72,21 @@ class CensysAsmAPI(CensysAPIBase):
             page_number (int): Optional; Page number to begin at when getting results.
             page_size (int):
                 Optional; Number of results to return per HTTP request. Defaults to 500.
+            args (dict): Optional; URL args that are mapped to params.
+            keyword (str): Optional; The keyword to iterate over in the results.
 
         Yields:
             dict: The resource result returned.
         """
         total_pages = inf
+        args = args or {}
 
         while page_number <= total_pages:
-            args = {"pageNumber": page_number, "pageSize": page_size or 500}
+            args.update({"pageNumber": page_number, "pageSize": page_size or 500})
 
             res = self._get(path, args=args)
             page_number = int(res["pageNumber"]) + 1
             total_pages = int(res["totalPages"])
-
-            keyword = "assets"
-            if "comments" in path:
-                keyword = "comments"
-            elif "tags" in path:
-                keyword = "tags"
-            elif "subdomains" in path:
-                keyword = "subdomains"
 
             yield from res[keyword]
 
