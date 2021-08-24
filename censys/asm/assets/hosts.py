@@ -3,13 +3,13 @@ from .assets import Assets
 
 
 class HostsAssets(Assets):
-    """Hosts Assets API class.
-
-    Args:
-        *args: Variable length argument list.
-        **kwargs: Arbitrary keyword arguments.
-    """
+    """Hosts Assets API class."""
 
     def __init__(self, *args, **kwargs):
-        """Inits HostsAssets."""
+        """Inits HostsAssets.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
         super().__init__("hosts", *args, **kwargs)

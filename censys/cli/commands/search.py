@@ -1,5 +1,6 @@
 """Censys search CLI."""
 import argparse
+import sys
 import webbrowser
 from typing import List
 from urllib.parse import urlencode
@@ -60,6 +61,9 @@ def cli_search(args: argparse.Namespace):
 
     Args:
         args (Namespace): Argparse Namespace.
+
+    Raises:
+        CensysCLIException: If invalid options are provided.
     """
     index_type = args.index_type or args.query_type
 
@@ -69,17 +73,16 @@ def cli_search(args: argparse.Namespace):
             if index_type == "certs":
                 index_type = "certificates"
                 # TODO: Remove when v1 is fully deprecated
-                return webbrowser.open(
+                webbrowser.open(
                     f"https://search.censys.io/{index_type}?{urlencode(url_query)}"
                 )
-            return webbrowser.open(
-                f"https://censys.io/{index_type}?{urlencode(url_query)}"
-            )
+                sys.exit(0)
+            webbrowser.open(f"https://censys.io/{index_type}?{urlencode(url_query)}")
+            sys.exit(0)
         elif index_type in V2_INDEXES:
             url_query.update({"resource": index_type})
-            return webbrowser.open(
-                f"https://search.censys.io/search?{urlencode(url_query)}"
-            )
+            webbrowser.open(f"https://search.censys.io/search?{urlencode(url_query)}")
+            sys.exit(0)
 
     censys_args = {}
 
@@ -142,8 +145,13 @@ def cli_search(args: argparse.Namespace):
         print(f"Error writing log file. Error: {error}")
 
 
-def include(parent_parser: argparse._SubParsersAction, parents: dict) -> None:
-    """Include this subcommand into the parent parser."""
+def include(parent_parser: argparse._SubParsersAction, parents: dict):
+    """Include this subcommand into the parent parser.
+
+    Args:
+        parent_parser (argparse._SubParsersAction): Parent parser.
+        parents (dict): Parent arg parsers.
+    """
     search_parser = parent_parser.add_parser(
         "search",
         description="Query Censys Search for resource data by providing a query \

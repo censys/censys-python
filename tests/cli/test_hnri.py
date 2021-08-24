@@ -121,5 +121,6 @@ class CensysCliHNRITest(CensysTestCase):
     )
     @patch("censys.cli.commands.view.webbrowser.open")
     def test_open(self, mock_open):
-        cli_main()
+        with pytest.raises(SystemExit, match="0"):
+            cli_main()
         mock_open.assert_called_with("https://search.censys.io/me")

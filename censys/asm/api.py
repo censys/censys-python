@@ -1,5 +1,4 @@
 """Base for interacting with the Censys ASM API."""
-# pylint: disable=too-many-arguments
 import os
 from math import inf
 from typing import Iterator, Optional, Type
@@ -16,21 +15,21 @@ from censys.common.exceptions import (
 
 
 class CensysAsmAPI(CensysAPIBase):
-    """This is the base class for ASM's Seeds, Assets, and Events classes.
-
-    Args:
-        api_key (str): Optional; The API Key provided by Censys.
-        **kwargs: Arbitrary keyword arguments.
-
-    Raises:
-        CensysException: Base Exception Class for the Censys API.
-    """
+    """This is the base class for ASM's Seeds, Assets, and Events classes."""
 
     DEFAULT_URL: str = "https://app.censys.io/api/v1"
     """Default ASM API base URL."""
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
-        """Inits CensysAsmAPI."""
+        """Inits CensysAsmAPI.
+
+        Args:
+            api_key (str): Optional; The API Key provided by Censys.
+            **kwargs: Arbitrary keyword arguments.
+
+        Raises:
+            CensysException: Base Exception Class for the Censys API.
+        """
         url = kwargs.pop("url", self.DEFAULT_URL)
         CensysAPIBase.__init__(self, url=url, **kwargs)
 
@@ -59,7 +58,12 @@ class CensysAsmAPI(CensysAPIBase):
         )
 
     def _get_page(
-        self, path: str, page_number: int = 1, page_size: Optional[int] = None
+        self,
+        path: str,
+        page_number: int = 1,
+        page_size: Optional[int] = None,
+        args: Optional[dict] = None,
+        keyword: str = "assets",
     ) -> Iterator[dict]:
         """Fetches paginated ASM resource API results.
 
@@ -68,26 +72,21 @@ class CensysAsmAPI(CensysAPIBase):
             page_number (int): Optional; Page number to begin at when getting results.
             page_size (int):
                 Optional; Number of results to return per HTTP request. Defaults to 500.
+            args (dict): Optional; URL args that are mapped to params.
+            keyword (str): Optional; The keyword to iterate over in the results.
 
         Yields:
             dict: The resource result returned.
         """
         total_pages = inf
+        args = args or {}
 
         while page_number <= total_pages:
-            args = {"pageNumber": page_number, "pageSize": page_size or 500}
+            args.update({"pageNumber": page_number, "pageSize": page_size or 500})
 
             res = self._get(path, args=args)
             page_number = int(res["pageNumber"]) + 1
             total_pages = int(res["totalPages"])
-
-            keyword = "assets"
-            if "comments" in path:
-                keyword = "comments"
-            elif "tags" in path:
-                keyword = "tags"
-            elif "subdomains" in path:
-                keyword = "subdomains"
 
             yield from res[keyword]
 

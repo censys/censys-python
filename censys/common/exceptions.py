@@ -11,18 +11,8 @@ class CensysCLIException(CensysException):
 
 
 class CensysAPIException(CensysException):
-    """Base Exception for Censys APIs.
+    """Base Exception for Censys APIs."""
 
-    Args:
-        status_code (int): HTTP status code.
-        message (str): HTTP message.
-        body (str): Optional; HTTP body.
-        const (str): Optional; Constant for manual errors.
-        error_code (int): Optional; Error code.
-        details (str): Optional; Additional details.
-    """
-
-    # pylint: disable=too-many-arguments
     def __init__(
         self,
         status_code: int,
@@ -32,7 +22,16 @@ class CensysAPIException(CensysException):
         error_code: Optional[int] = None,
         details: Optional[str] = None,
     ):
-        """Inits CensysAPIException."""
+        """Inits CensysAPIException.
+
+        Args:
+            status_code (int): HTTP status code.
+            message (str): HTTP message.
+            body (str): Optional; HTTP body.
+            const (str): Optional; Constant for manual errors.
+            error_code (int): Optional; Error code.
+            details (str): Optional; Additional details.
+        """
         self.status_code = status_code
         self.message = message
         self.body = body

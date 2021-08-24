@@ -5,14 +5,14 @@ from typing import Callable, Optional
 
 
 class DeprecationDecorator:
-    """Deprecation Decorator for classes and functions.
-
-    Args:
-        message (str): Optional; Message to display to user.
-    """
+    """Deprecation Decorator for classes and functions."""
 
     def __init__(self, message: Optional[str] = None):
-        """Inits DeprecationDecorator."""
+        """Inits DeprecationDecorator.
+
+        Args:
+            message (str): Optional; Message to display to user.
+        """
         self.message = message
 
     def __call__(self, func: Callable) -> Callable:

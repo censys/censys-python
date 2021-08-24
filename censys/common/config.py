@@ -46,14 +46,11 @@ def get_config() -> configparser.ConfigParser:
     return config
 
 
-def check_config(config: configparser.ConfigParser) -> None:
+def check_config(config: configparser.ConfigParser):
     """Checks config against default config for fields.
 
     Args:
         config (configparser.ConfigParser): Configuration to write.
-
-    Returns:
-        configparser.ConfigParser: Config for Censys.
     """
     for key in default_config:
         try:
