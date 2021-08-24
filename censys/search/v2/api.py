@@ -14,6 +14,7 @@ from censys.common.exceptions import (
 )
 from censys.common.types import Datetime
 from censys.common.utils import format_rfc3339
+from censys.search.v1.api import CensysSearchAPIv1
 
 Fields = Optional[List[str]]
 
@@ -45,9 +46,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
     ):
         """Inits CensysSearchAPIv2."""
-        if "url" not in kwargs:
-            kwargs["url"] = self.DEFAULT_URL
-        CensysAPIBase.__init__(self, **kwargs)
+        CensysAPIBase.__init__(self, kwargs.pop("url", self.DEFAULT_URL), **kwargs)
 
         # Gets config file
         config = get_config()
@@ -79,25 +78,27 @@ class CensysSearchAPIv2(CensysAPIBase):
             res.status_code, CensysSearchException
         )
 
-    # def account(self) -> dict:
-    #     """
-    #     Gets the current account information. Including email and quota.
+    def account(self) -> dict:
+        """Gets the current account's query quota.
 
-    #     Returns:
-    #         dict: Account response.
-    #     """
+        Returns:
+            dict: Quota response.
+        """
+        # Make account call to v1 endpoint
+        return CensysSearchAPIv1(
+            self._api_id, self._api_secret, url="https://search.censys.io/api/v1"
+        ).account()
 
-    #     return self._get("account")
+    def quota(self) -> dict:
+        """Returns metadata of a given search query.
 
-    # def quota(self) -> dict:
-    #     """
-    #     Gets the current account's query quota.
+        Args:
+            query (str): The query to be executed.
 
-    #     Returns:
-    #         dict: Quota response.
-    #     """
-
-    #     return self.account()["quota"]
+        Returns:
+            dict: The metadata of the result set returned.
+        """
+        return self.account()["quota"]
 
     class Query(Iterable):
         """Query class that is callable and iterable.
@@ -128,7 +129,10 @@ class CensysSearchAPIv2(CensysAPIBase):
             self.cursor = cursor
             self.nextCursor: Optional[str] = None
             self.page = 1
-            self.pages = pages
+            if pages == -1:
+                self.pages = float("inf")
+            else:
+                self.pages = pages
 
         def __call__(self, per_page: Optional[int] = None) -> List[dict]:
             """Search current index.

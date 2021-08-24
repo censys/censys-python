@@ -39,7 +39,7 @@ class CensysSearchAPIv1(CensysAPIBase):
         self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
     ):
         """Inits CensysSearchAPIv1."""
-        CensysAPIBase.__init__(self, kwargs.get("url", self.DEFAULT_URL), **kwargs)
+        CensysAPIBase.__init__(self, kwargs.pop("url", self.DEFAULT_URL), **kwargs)
 
         # Gets config file
         config = get_config()
