@@ -389,7 +389,8 @@ class CensysCliSearchTest(CensysTestCase):
     )
     @patch("censys.cli.commands.search.webbrowser.open")
     def test_open_v1(self, mock_open):
-        cli_main()
+        with pytest.raises(SystemExit, match="0"):
+            cli_main()
         query_str = urlencode({"q": "domain: censys.io AND ports: 443"})
         mock_open.assert_called_with(f"https://censys.io/ipv4?{query_str}")
 
@@ -406,7 +407,8 @@ class CensysCliSearchTest(CensysTestCase):
     )
     @patch("censys.cli.commands.search.webbrowser.open")
     def test_open_certificates(self, mock_open):
-        cli_main()
+        with pytest.raises(SystemExit, match="0"):
+            cli_main()
         query_str = urlencode({"q": "domain: censys.io AND ports: 443"})
         mock_open.assert_called_with(
             f"https://search.censys.io/certificates?{query_str}"
@@ -425,7 +427,8 @@ class CensysCliSearchTest(CensysTestCase):
     )
     @patch("censys.cli.commands.search.webbrowser.open")
     def test_open_v2(self, mock_open):
-        cli_main()
+        with pytest.raises(SystemExit, match="0"):
+            cli_main()
         query_str = urlencode({"q": "service.service_name: HTTP", "resource": "hosts"})
         mock_open.assert_called_with(f"https://search.censys.io/search?{query_str}")
 
