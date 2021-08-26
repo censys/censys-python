@@ -274,7 +274,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "importlib-metadata"
-version = "4.6.4"
+version = "4.7.0"
 description = "Read metadata from Python packages"
 category = "main"
 optional = false
@@ -650,7 +650,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<4.0"
-content-hash = "e3eb02c40d998f5a7a97135a1d30d2d50abb98d540e23a25e73a46254e7043d0"
+content-hash = "4749c45cc7121d055dd99910b4db8bb06f7c212c2eea3541339320b3fbc679d2"
 
 [metadata.files]
 appdirs = [
@@ -803,8 +803,8 @@ idna = [
     {file = "idna-3.2.tar.gz", hash = "sha256:467fbad99067910785144ce333826c71fb0e63a425657295239737f7ecd125f3"},
 ]
 importlib-metadata = [
-    {file = "importlib_metadata-4.6.4-py3-none-any.whl", hash = "sha256:ed5157fef23a4bc4594615a0dd8eba94b2bb36bf2a343fa3d8bb2fa0a62a99d5"},
-    {file = "importlib_metadata-4.6.4.tar.gz", hash = "sha256:7b30a78db2922d78a6f47fb30683156a14f3c6aa5cc23f77cc8967e9ab2d002f"},
+    {file = "importlib_metadata-4.7.0-py3-none-any.whl", hash = "sha256:a69df6d94f8ac09cd46fdf79a955c153164b312442f7594a3eeeec46f230fe2b"},
+    {file = "importlib_metadata-4.7.0.tar.gz", hash = "sha256:1be82867064622fe56c7046bb5280063949f56c0abcdfc3cd33875efd4fc5498"},
 ]
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
