@@ -1,4 +1,5 @@
 import unittest
+from typing import Type
 
 import responses
 
@@ -23,6 +24,7 @@ class CensysTestCase(unittest.TestCase):
         "--api-key",
         api_key,
     ]
+    api: Type[CensysAPIBase]
 
     def setUp(self):
         self.responses = responses.RequestsMock()
@@ -31,6 +33,6 @@ class CensysTestCase(unittest.TestCase):
         self.addCleanup(self.responses.stop)
         self.addCleanup(self.responses.reset)
 
-    def setUpApi(self, api: CensysAPIBase):  # noqa: N802
+    def setUpApi(self, api: Type[CensysAPIBase]):  # noqa: N802
         self.api = api
         self.base_url = self.api._api_url

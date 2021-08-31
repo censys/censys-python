@@ -6,7 +6,7 @@ from rich.prompt import Prompt
 
 from censys.common.config import DEFAULT, get_config, write_config
 from censys.common.exceptions import CensysUnauthorizedException
-from censys.search.v1.api import CensysSearchAPIv1
+from censys.search.v2.api import CensysSearchAPIv2
 
 
 def cli_config(_: argparse.Namespace):  # pragma: no cover
@@ -39,7 +39,7 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
     api_secret = api_secret.strip()
 
     try:
-        client = CensysSearchAPIv1(api_id, api_secret)
+        client = CensysSearchAPIv2(api_id, api_secret)
         account = client.account()
         email = account.get("email")
 
