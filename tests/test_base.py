@@ -1,10 +1,12 @@
 from unittest.mock import patch
 
 import pytest
+import requests.utils
 import responses
 from requests.models import Response
 
 from .utils import CensysTestCase
+from censys.common import __version__
 from censys.common.base import CensysAPIBase
 from censys.common.exceptions import CensysAPIException, CensysException
 
@@ -66,6 +68,21 @@ class CensysAPIBaseTests(CensysTestCase):
         ):
             base._get(TEST_ENDPOINT)
 
+    def test_default_user_agent(self):
+        base = CensysAPIBase(TEST_URL)
+        assert (
+            base._session.headers["User-Agent"]
+            == f"{requests.utils.default_user_agent()} censys/{__version__}"
+        )
+
+    def test_user_agent(self):
+        base = CensysAPIBase(TEST_URL, user_agent="test")
+        assert (
+            base._session.headers["User-Agent"]
+            == requests.utils.default_user_agent() + " test"
+        )
+
+    @pytest.mark.filterwarnings("ignore:HTTP proxies will not be used.")
     def test_proxies(self):
         base = CensysAPIBase(TEST_URL, proxies={"http": "test", "https": "tests"})
         assert list(base._session.proxies.keys()) == ["https"]

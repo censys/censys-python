@@ -1,4 +1,5 @@
 import unittest
+from typing import Type
 from unittest.mock import mock_open, patch
 
 import pytest
@@ -19,6 +20,8 @@ SearchExceptionParams = [
 
 
 class CensysSearchAPITests(CensysTestCase):
+    api: Type[CensysSearchAPIv2]
+
     def setUp(self):
         super().setUp()
         self.setUpApi(CensysSearchAPIv2(self.api_id, self.api_secret))
@@ -42,6 +45,22 @@ class CensysSearchAPITests(CensysTestCase):
 
         results = self.api.quota()
         assert results == ACCOUNT_JSON["quota"]
+
+    def test_v1_endpoint_on_v2_url(self):
+        # Asserts that the API URL was set correctly
+        assert self.api.v1._api_url == V1_ENDPOINT_ON_V2_URL
+
+        # Asserts that proxies get set correctly
+        api_with_proxy = CensysSearchAPIv2(
+            self.api_id, self.api_secret, proxies={"https": "test.proxy.com"}
+        )
+        assert list(api_with_proxy.v1._session.proxies.keys()) == ["https"]
+
+        # Asserts that cookies get set correctly
+        api_with_cookies = CensysSearchAPIv2(
+            self.api_id, self.api_secret, cookies={"_ga": "GA"}
+        )
+        assert list(api_with_cookies.v1._session.cookies.keys()) == ["_ga"]
 
 
 @patch.dict("os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""})
