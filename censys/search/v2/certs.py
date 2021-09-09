@@ -1,4 +1,4 @@
-"""Interact with the Censys Search Host API."""
+"""Interact with the Censys Search Cert API."""
 from typing import List, Optional, Tuple
 
 from .api import CensysSearchAPIv2
@@ -58,3 +58,15 @@ class CensysCerts(CensysSearchAPIv2):
         args = {"cursor": cursor}
         result = self._get(self.view_path + sha256fp + "/hosts", args)["result"]
         return result["hosts"], result["links"]
+
+    def list_certs_with_tag(self, tag_id: str) -> List[str]:
+        """Returns a list of certs which are tagged with the specified tag.
+
+        Args:
+            tag_id (str): The ID of the tag.
+
+        Returns:
+            List[str]: A list of certificate SHA 256 fingerprints.
+        """
+        certs = self._list_documents_with_tag(tag_id, "certificates", "certs")
+        return [cert["fingerprint"] for cert in certs]

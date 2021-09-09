@@ -3,7 +3,7 @@ import json
 import os
 import warnings
 from functools import wraps
-from typing import Any, Callable, List, Optional, Type
+from typing import Any, Callable, List, Optional, Protocol, Type
 
 import backoff
 import requests
@@ -41,6 +41,11 @@ def _backoff_wrapper(method: Callable):
         return _impl()
 
     return _wrapper
+
+
+class RequestsMethod(Protocol):  # noqa: D101
+    def __call__(self, path: str, **kwargs) -> requests.Response:  # noqa: D102
+        ...  # pragma: no cover
 
 
 class CensysAPIBase:
@@ -126,7 +131,7 @@ class CensysAPIBase:
     @_backoff_wrapper
     def _make_call(
         self,
-        method: Callable,
+        method: RequestsMethod,
         endpoint: str,
         args: Optional[dict] = None,
         data: Optional[Any] = None,
@@ -137,7 +142,7 @@ class CensysAPIBase:
         and decoding the responses.
 
         Args:
-            method (Callable): Method to send HTTP request.
+            method (RequestsMethod): Method to send HTTP request.
             endpoint (str): The path of API endpoint.
             args (dict): Optional; URL args that are mapped to params.
             data (Any): Optional; JSON data to serialize with request.
@@ -164,7 +169,7 @@ class CensysAPIBase:
 
         res = method(url, **request_kwargs)
 
-        if res.status_code == 200:
+        if res.status_code in range(200, 300):
             # Check for a returned json body
             try:
                 json_data = res.json()
@@ -172,7 +177,10 @@ class CensysAPIBase:
                     return json_data
             # Successful request returned no json body in response
             except ValueError:
-                return {}
+                return {
+                    "code": res.status_code,
+                    "status": res.reason,
+                }
 
         try:
             json_data = res.json()
