@@ -5,6 +5,7 @@ from unittest.mock import mock_open, patch
 
 import pytest
 import responses
+from responses.matchers import json_params_matcher
 
 from tests.asm.utils import BASE_URL
 from tests.utils import CensysTestCase
@@ -91,7 +92,7 @@ class CensysASMCliTest(CensysTestCase):
             status=200,
             json=ADD_SEEDS_JSON,
             match=[
-                responses.json_params_matcher(
+                json_params_matcher(
                     {"seeds": [{"value": "1.1.1.1", "type": "IP_ADDRESS", "label": ""}]}
                 )
             ],
@@ -119,7 +120,7 @@ class CensysASMCliTest(CensysTestCase):
             status=200,
             json=ADD_SEEDS_JSON,
             match=[
-                responses.json_params_matcher(
+                json_params_matcher(
                     {
                         "seeds": [
                             {"value": "1.1.1.1", "type": "IP_ADDRESS", "label": ""},
@@ -158,7 +159,7 @@ class CensysASMCliTest(CensysTestCase):
             status=200,
             json=ADD_SEEDS_JSON,
             match=[
-                responses.json_params_matcher(
+                json_params_matcher(
                     {
                         "seeds": [
                             {"value": "1.1.1.1", "type": "IP_ADDRESS", "label": ""},
@@ -196,7 +197,7 @@ class CensysASMCliTest(CensysTestCase):
             status=200,
             json=ADD_SEEDS_JSON,
             match=[
-                responses.json_params_matcher(
+                json_params_matcher(
                     {
                         "seeds": [
                             {"value": "1.1.1.1", "type": "IP_ADDRESS", "label": ""},
