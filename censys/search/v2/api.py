@@ -1,7 +1,7 @@
 """Base for interacting with the Censys Search API."""
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Dict, Iterable, Iterator, List, Optional, Type
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Type
 
 from requests.models import Response
 
@@ -327,19 +327,20 @@ class CensysSearchAPIv2(CensysAPIBase):
         """
         return self._get(self.tags_path)["result"]["tags"]
 
-    def create_tag(self, name: str, color: str) -> dict:
+    def create_tag(self, name: str, color: Optional[str] = None) -> dict:
         """Create a tag.
 
         Args:
             name (str): The name of the tag.
-            color (str): The color of the tag.
+            color (str): Optional; The color of the tag.
 
         Returns:
             dict: The result set returned.
         """
-        return self._post(
-            self.tags_path, data={"name": name, "metadata": {"color": color}}
-        )["result"]
+        tag_def: Dict[str, Any] = {"name": name}
+        if color:
+            tag_def["metadata"] = {"color": color}
+        return self._post(self.tags_path, data=tag_def)["result"]
 
     def get_tag(self, tag_id: str) -> dict:
         """Get a tag.
@@ -363,9 +364,12 @@ class CensysSearchAPIv2(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
+        tag_def: Dict[str, Any] = {"name": name}
+        if color:
+            tag_def["metadata"] = {"color": color}
         return self._put(
             self.tags_path + "/" + tag_id,
-            data={"name": name, "metadata": {"color": color}},
+            data=tag_def,
         )["result"]
 
     def delete_tag(self, tag_id: str):

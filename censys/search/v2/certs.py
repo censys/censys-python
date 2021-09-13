@@ -16,14 +16,19 @@ class CensysCerts(CensysSearchAPIv2):
         Search for hosts by sha256fp.
 
         >>> c.get_hosts_by_cert("fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426")
-        [
+        (
+            [
+                {
+                    "ip": "string",
+                    "name": "string",
+                    "observed_at": "2021-08-02T14:56:38.711Z",
+                    "first_observed_at": "2021-08-02T14:56:38.711Z",
+                }
+            ],
             {
-                "ip": "string",
-                "name": "string",
-                "observed_at": "2021-08-02T14:56:38.711Z",
-                "first_observed_at": "2021-08-02T14:56:38.711Z",
-            }
-        ]
+                "next": "nextCursorToken",
+            },
+        )
     """
 
     INDEX_NAME = "certificates"

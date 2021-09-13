@@ -132,7 +132,7 @@ Below we show an example using the :attr:`CensysIPv4 <censys.search.v1.CensysIPv
 ``bulk``
 --------
 
-**Please note this method is only available only for the certificate index**
+**Please note this method is only available only for the CensysCertificates index**
 
 Below we show an example using the :attr:`CensysCertificates <censys.search.v1.CensysCertificates>` index.
 
