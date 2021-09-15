@@ -353,7 +353,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         """
         return self._get(self.tags_path + "/" + tag_id)["result"]
 
-    def update_tag(self, tag_id: str, name: str, color: str) -> dict:
+    def update_tag(self, tag_id: str, name: str, color: Optional[str] = None) -> dict:
         """Update a tag.
 
         Args:
