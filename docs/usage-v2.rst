@@ -87,8 +87,27 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
     )
     print(report)
 
+``metadata``
+-------------
+
+**Please note this method is only available only for the CensysHosts index**
+
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
+
+.. code:: python
+
+    from censys.search import CensysHosts
+
+    h = CensysHosts()
+
+    # Fetch metadata about hosts.
+    meta = h.metadata()
+    print(meta.get("services"))
+
 ``view_host_names``
 -------------------
+
+**Please note this method is only available only for the CensysHosts index**
 
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
@@ -104,6 +123,8 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
     
 ``view_host_events``
 --------------------
+
+**Please note this method is only available only for the CensysHosts index**
 
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
@@ -122,8 +143,43 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
     events = h.view_host_events("1.1.1.1", start_time=date(2021, 7, 1), end_time=date(2021, 7, 31))
     print(events)
 
-``metadata``
--------------
+``get_hosts_by_cert``
+---------------------
+
+**Please note this method is only available only for the CensysCerts index**
+
+Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCerts>` index.
+
+.. code:: python
+
+    from censys.search import CensysCerts
+
+    c = CensysCerts()
+
+    # Fetch a list of events for the specified IP address.
+    hosts, links = c.get_hosts_by_cert("fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426")
+    print(hosts)
+
+Comments
+--------
+
+``get_comments``
+^^^^^^^^^^^^^^^^
+
+Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCerts>` index.
+
+.. code:: python
+
+    from censys.search import CensysCerts
+
+    c = CensysCerts()
+
+    # Fetch a list of comments for the specified certificate.
+    comments = c.get_comments("fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426")
+    print(comments)
+
+``add_comment``
+^^^^^^^^^^^^^^^^
 
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
@@ -133,6 +189,168 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
 
     h = CensysHosts()
 
-    # Fetch metadata about hosts.
-    meta = h.metadata()
-    print(meta.get("services"))
+    # Add a comment to a host.
+    comment = h.add_comment("1.1.1.1", "This is a test comment")
+    print(comment)
+
+Tags
+----
+
+``list_all_tags``
+^^^^^^^^^^^^^^^^^
+
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
+
+.. code:: python
+
+    from censys.search import CensysHosts
+
+    h = CensysHosts()
+
+    # Fetch a list of all tags.
+    tags = h.list_all_tags()
+    print(tags)
+
+``create_tag``
+^^^^^^^^^^^^^^
+
+Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCerts>` index.
+
+.. code:: python
+
+    from censys.search import CensysCerts
+
+    c = CensysCerts()
+
+    # Create a new tag.
+    tag = c.create_tag("test-tag")
+    print(tag)
+
+    # Optionally you can specify a color for the tag.
+    tag = c.create_tag("test-tag", color="#00FF00")
+    print(tag)
+
+``get_tag``
+^^^^^^^^^^^
+
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
+
+.. code:: python
+
+    from censys.search import CensysHosts
+
+    h = CensysHosts()
+
+    # Fetch a tag.
+    tag = h.get_tag("123")
+    print(tag)
+
+``update_tag``
+^^^^^^^^^^^^^^
+
+Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCerts>` index.
+
+.. code:: python
+
+    from censys.search import CensysCerts
+
+    c = CensysCerts()
+
+    # Update a tag.
+    tag = c.update_tag("123", "test-tag")
+    print(tag)
+
+    # Optionally you can specify a color for the tag.
+    tag = c.update_tag("123", "test-tag", color="#00FF00")
+    print(tag)
+
+``delete_tag``
+^^^^^^^^^^^^^^
+
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
+
+.. code:: python
+
+    from censys.search import CensysHosts
+
+    h = CensysHosts()
+
+    # Delete a tag.
+    h.delete_tag("123)
+
+``list_tags_on_document``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCerts>` index.
+
+.. code:: python
+
+    from censys.search import CensysCerts
+
+    c = CensysCerts()
+
+    # Fetch a list of tags for a document.
+    tags = c.list_tags_on_document("fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426")
+    print(tags)
+
+``add_tag_to_document``
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
+
+.. code:: python
+
+    from censys.search import CensysHosts
+
+    h = CensysHosts()
+
+    # Add a tag to a document.
+    h.add_tag_to_document("123)
+
+``remove_tag_from_document``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCerts>` index.
+
+.. code:: python
+
+    from censys.search import CensysCerts
+
+    c = CensysCerts()
+
+    # Remove a tag from a document.
+    c.remove_tag_from_document("fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426")
+
+``list_certs_with_tag``
+^^^^^^^^^^^^^^^^^^^^^^^
+
+**Please note this method is only available only for the CensysCerts index**
+
+Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCerts>` index.
+
+.. code:: python
+
+    from censys.search import CensysCerts
+
+    c = CensysCerts()
+
+    # Fetch a list of certs with the specified tag.
+    certs = c.list_certs_with_tag("123")
+    print(certs)
+
+``list_hosts_with_tag``
+^^^^^^^^^^^^^^^^^^^^^^^
+
+**Please note this method is only available only for the CensysHosts index**
+
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
+
+.. code:: python
+
+    from censys.search import CensysHosts
+
+    h = CensysHosts()
+
+    # Fetch a list of hosts with the specified tag.
+    hosts = h.list_hosts_with_tag("123")
+    print(hosts)

@@ -1,7 +1,7 @@
 """Base for interacting with the Censys Search API."""
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Dict, Iterable, Iterator, List, Optional, Type
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Type
 
 from requests.models import Response
 
@@ -74,6 +74,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         self.search_path = f"/{self.INDEX_NAME}/search"
         self.aggregate_path = f"/{self.INDEX_NAME}/aggregate"
         self.metadata_path = f"/metadata/{self.INDEX_NAME}"
+        self.tags_path = "/tags"
 
         # Set up the v1 API
         v1_kwargs = kwargs.copy()
@@ -286,3 +287,141 @@ class CensysSearchAPIv2(CensysAPIBase):
             dict: The result set returned.
         """
         return self._get(self.metadata_path)["result"]
+
+    # Comments
+
+    def get_comments(self, document_id: str) -> List[dict]:
+        """Get comments for a document.
+
+        Args:
+            document_id (str): The ID of the document you are requesting.
+
+        Returns:
+            List[dict]: The list of comments.
+        """
+        return self._get(self.view_path + document_id + "/comments")["result"][
+            "comments"
+        ]
+
+    def add_comment(self, document_id: str, contents: str) -> dict:
+        """Add comment to a document.
+
+        Args:
+            document_id (str): The ID of the document you are requesting.
+            contents (str): The contents of the comment.
+
+        Returns:
+            dict: The result set returned.
+        """
+        return self._post(
+            self.view_path + document_id + "/comments", data={"contents": contents}
+        )["result"]
+
+    # Tags
+
+    def list_all_tags(self) -> List[dict]:
+        """List all tags.
+
+        Returns:
+            List[dict]: The list of tags.
+        """
+        return self._get(self.tags_path)["result"]["tags"]
+
+    def create_tag(self, name: str, color: Optional[str] = None) -> dict:
+        """Create a tag.
+
+        Args:
+            name (str): The name of the tag.
+            color (str): Optional; The color of the tag.
+
+        Returns:
+            dict: The result set returned.
+        """
+        tag_def: Dict[str, Any] = {"name": name}
+        if color:
+            tag_def["metadata"] = {"color": color}
+        return self._post(self.tags_path, data=tag_def)["result"]
+
+    def get_tag(self, tag_id: str) -> dict:
+        """Get a tag.
+
+        Args:
+            tag_id (str): The ID of the tag.
+
+        Returns:
+            dict: The result set returned.
+        """
+        return self._get(self.tags_path + "/" + tag_id)["result"]
+
+    def update_tag(self, tag_id: str, name: str, color: Optional[str] = None) -> dict:
+        """Update a tag.
+
+        Args:
+            tag_id (str): The ID of the tag.
+            name (str): The name of the tag.
+            color (str): The color of the tag.
+
+        Returns:
+            dict: The result set returned.
+        """
+        tag_def: Dict[str, Any] = {"name": name}
+        if color:
+            tag_def["metadata"] = {"color": color}
+        return self._put(
+            self.tags_path + "/" + tag_id,
+            data=tag_def,
+        )["result"]
+
+    def delete_tag(self, tag_id: str):
+        """Delete a tag.
+
+        Args:
+            tag_id (str): The ID of the tag.
+        """
+        self._delete(self.tags_path + "/" + tag_id)
+
+    def _list_documents_with_tag(
+        self, tag_id: str, endpoint: str, keyword: str
+    ) -> List[dict]:
+        """List documents by tag.
+
+        Args:
+            tag_id (str): The ID of the tag.
+            endpoint (str): The endpoint to be called.
+            keyword (str): The keyword to be used in the endpoint.
+
+        Returns:
+            List[dict]: The list of documents.
+        """
+        return self._get(self.tags_path + "/" + tag_id + "/" + endpoint)["result"][
+            keyword
+        ]
+
+    def list_tags_on_document(self, document_id: str) -> List[dict]:
+        """List tags on a document.
+
+        Args:
+            document_id (str): The ID of the document.
+
+        Returns:
+            List[dict]: The list of tags.
+        """
+        return self._get(self.view_path + document_id + "/tags")["result"]["tags"]
+
+    def add_tag_to_document(self, document_id: str, tag_id: str):
+        """Add a tag to a document.
+
+        Args:
+            document_id (str): The ID of the document.
+            tag_id (str): The ID of the tag.
+        """
+        self._put(self.view_path + document_id + "/tags/" + tag_id)
+
+    def remove_tag_from_document(self, document_id: str, tag_id: str):
+        """Remove a tag from a document.
+
+        Args:
+            document_id (str): The ID of the document.
+            tag_id (str): The ID of the tag.
+        """
+        self._delete(self.view_path + document_id + "/tags/" + tag_id)

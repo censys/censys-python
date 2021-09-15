@@ -31,7 +31,7 @@ class CensysHosts(CensysSearchAPIv2):
             ...
         ]
 
-        View specific host.
+        Fetch a specific host and its services
 
         >>> h.view("1.0.0.0")
         {
@@ -57,6 +57,16 @@ class CensysHosts(CensysSearchAPIv2):
             'query': 'service.service_name: HTTP',
             'total': 172588754
         }
+
+        Fetch a list of host names for the specified IP address.
+
+        >>> h.view_host_names("1.1.1.1")
+        ['one.one.one.one']
+
+        Fetch a list of events for the specified IP address.
+
+        >>> h.view_host_events("1.1.1.1")
+        [{'timestamp': '2019-01-01T00:00:00.000Z'}]
     """
 
     INDEX_NAME = "hosts"
@@ -108,3 +118,15 @@ class CensysHosts(CensysSearchAPIv2):
         return self._get(f"/experimental/{self.INDEX_NAME}/{ip_address}/events", args)[
             "result"
         ]["events"]
+
+    def list_hosts_with_tag(self, tag_id: str) -> List[str]:
+        """Returns a list of hosts which are tagged with the specified tag.
+
+        Args:
+            tag_id (str): The ID of the tag.
+
+        Returns:
+            List[str]: A list of host IP addresses.
+        """
+        hosts = self._list_documents_with_tag(tag_id, "hosts", "hosts")
+        return [host["ip"] for host in hosts]

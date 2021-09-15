@@ -1,4 +1,4 @@
-"""Interact with the Censys Search Host API."""
+"""Interact with the Censys Search Cert API."""
 from typing import List, Optional, Tuple
 
 from .api import CensysSearchAPIv2
@@ -16,14 +16,19 @@ class CensysCerts(CensysSearchAPIv2):
         Search for hosts by sha256fp.
 
         >>> c.get_hosts_by_cert("fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426")
-        [
+        (
+            [
+                {
+                    "ip": "string",
+                    "name": "string",
+                    "observed_at": "2021-08-02T14:56:38.711Z",
+                    "first_observed_at": "2021-08-02T14:56:38.711Z",
+                }
+            ],
             {
-                "ip": "string",
-                "name": "string",
-                "observed_at": "2021-08-02T14:56:38.711Z",
-                "first_observed_at": "2021-08-02T14:56:38.711Z",
-            }
-        ]
+                "next": "nextCursorToken",
+            },
+        )
     """
 
     INDEX_NAME = "certificates"
@@ -58,3 +63,15 @@ class CensysCerts(CensysSearchAPIv2):
         args = {"cursor": cursor}
         result = self._get(self.view_path + sha256fp + "/hosts", args)["result"]
         return result["hosts"], result["links"]
+
+    def list_certs_with_tag(self, tag_id: str) -> List[str]:
+        """Returns a list of certs which are tagged with the specified tag.
+
+        Args:
+            tag_id (str): The ID of the tag.
+
+        Returns:
+            List[str]: A list of certificate SHA 256 fingerprints.
+        """
+        certs = self._list_documents_with_tag(tag_id, "certificates", "certs")
+        return [cert["fingerprint"] for cert in certs]

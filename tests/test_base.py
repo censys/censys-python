@@ -40,7 +40,10 @@ class CensysAPIBaseTests(CensysTestCase):
         )
         base = CensysAPIBase(TEST_URL)
 
-        assert base._get(TEST_ENDPOINT) == {}
+        assert base._get(TEST_ENDPOINT) == {
+            "status": "OK",
+            "code": 200,
+        }
 
     def test_successful_error_json_response(self):
         self.responses.add(
