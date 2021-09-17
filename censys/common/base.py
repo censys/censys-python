@@ -33,7 +33,7 @@ def _backoff_wrapper(method: Callable):
                 requests.exceptions.Timeout,
             ),
             max_tries=self.max_retries,
-            max_time=30,
+            max_time=self.timeout,
         )
         def _impl():
             return method(self, *args, *kwargs)
