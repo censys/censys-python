@@ -249,7 +249,7 @@ flake8-plugin-utils = ">=1.3.2,<2.0.0"
 
 [[package]]
 name = "flake8-simplify"
-version = "0.14.1"
+version = "0.14.2"
 description = "flake8 plugin which checks for code that can be simplified"
 category = "dev"
 optional = false
@@ -658,7 +658,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<4.0"
-content-hash = "20cd6a0fadb4720e86ce8837c0e93e3cd48ae0e14d27a36b90fdd58cd37f11cf"
+content-hash = "23c3815253d463f1b384e15bae42873036f119e4ee3d32b27bcfa72d82fe0e84"
 
 [metadata.files]
 astor = [
@@ -799,8 +799,8 @@ flake8-pytest-style = [
     {file = "flake8_pytest_style-1.5.0-py3-none-any.whl", hash = "sha256:ec287a7dc4fe95082af5e408c8b2f8f4b6bcb366d5a17ff6c34112eb03446580"},
 ]
 flake8-simplify = [
-    {file = "flake8_simplify-0.14.1-py3-none-any.whl", hash = "sha256:ba5d2905dc277cd4800c6e7f4859f96322d83dd37991ae5f8305750132084dd6"},
-    {file = "flake8_simplify-0.14.1.tar.gz", hash = "sha256:d8b38feb97fd6c5943b5d9b2ab352acea83ec036a93215c0576b9e48c6aa2dcc"},
+    {file = "flake8_simplify-0.14.2-py3-none-any.whl", hash = "sha256:6584f3d49350659caaf2a42129f820dc64e60d4bdcb316f621b4e1cfae27e33a"},
+    {file = "flake8_simplify-0.14.2.tar.gz", hash = "sha256:4a8f103607195c3d0743a2fd8beeebe24926e19fb3e24521042cfc35771a8d4d"},
 ]
 idna = [
     {file = "idna-3.2-py3-none-any.whl", hash = "sha256:14475042e284991034cb48e06f6851428fb14c4dc953acd9be9a5e95c7b6dd7a"},
