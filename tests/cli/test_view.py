@@ -15,7 +15,7 @@ from censys.cli import main as cli_main
 from censys.common.exceptions import CensysException
 
 
-class CensysCliSearchTest(CensysTestCase):
+class CensysCliViewTest(CensysTestCase):
     @patch("argparse._sys.argv", ["censys", "view", "--help"])
     def test_search_help(self):
         temp_stdout = StringIO()

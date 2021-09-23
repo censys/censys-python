@@ -6,6 +6,7 @@ import json
 import os.path
 from typing import List, Optional
 
+from rich import print_json
 from rich.console import Console
 
 from censys.common.deprecation import DeprecationDecorator
@@ -72,7 +73,7 @@ def _write_screen(search_results: Results):
     Args:
         search_results (Results): A list of results from the query.
     """
-    print(json.dumps(search_results, indent=4))
+    print_json(data=search_results)
 
 
 def write_file(
