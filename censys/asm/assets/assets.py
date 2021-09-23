@@ -1,6 +1,6 @@
 """Base for interacting with the Censys Assets API."""
 import re
-from typing import Iterator, Optional
+from typing import Any, Dict, Iterator, List, Optional
 
 from ..api import CensysAsmAPI
 from censys.common.exceptions import CensysInvalidColorException
@@ -23,19 +23,34 @@ class Assets(CensysAsmAPI):
         self.base_path = f"assets/{asset_type}"
 
     def get_assets(
-        self, page_number: int = 1, page_size: Optional[int] = None
+        self,
+        page_number: int = 1,
+        page_size: Optional[int] = None,
+        tag: Optional[List[str]] = None,
+        tag_operator: Optional[str] = None,
+        source: Optional[List[str]] = None,
     ) -> Iterator[dict]:
         """Requests assets data.
 
         Args:
             page_number (int): Optional; Page number to begin at when searching.
             page_size (int): Optional; Page size for retrieving assets.
+            tag (list): Optional; List of tags to search for.
+            tag_operator (str): Optional; Operator to use when searching for tags.
+            source (list): Optional; List of sources to search for.
 
         Yields:
             dict: The assets result returned.
         """
+        args: Dict[str, Any] = {}
+        if tag:
+            args["tag"] = tag
+        if tag_operator:
+            args["tagOperator"] = tag_operator
+        if source:
+            args["source"] = source
         yield from self._get_page(
-            self.base_path, page_number=page_number, page_size=page_size
+            self.base_path, page_number=page_number, page_size=page_size, args=args
         )
 
     def get_asset_by_id(self, asset_id: str) -> dict:

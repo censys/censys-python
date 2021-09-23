@@ -11,18 +11,24 @@ class Seeds(CensysAsmAPI):
 
     base_path = "seeds"
 
-    def get_seeds(self, seed_type: Optional[str] = None) -> dict:
+    def get_seeds(
+        self, seed_type: Optional[str] = None, label: Optional[str] = None
+    ) -> dict:
         """Requests seed data.
 
         Args:
             seed_type (str):
                 Optional; Seed type ['IP_ADDRESS', 'DOMAIN_NAME', 'CIDR', 'ASN'].
+            label (str): Optional; Seed label.
 
         Returns:
             dict: Seed search results.
         """
-        args = {"type": seed_type}
-
+        args = {}
+        if seed_type:
+            args["type"] = seed_type
+        if label:
+            args["label"] = label
         return self._get(self.base_path, args=args)["seeds"]
 
     def get_seed_by_id(self, seed_id: int) -> dict:

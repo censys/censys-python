@@ -39,7 +39,18 @@ class SeedsUnitTests(unittest.TestCase):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, SEED_RESOURCE_TYPE)
         self.client.seeds.get_seeds()
 
-        mock.assert_called_with(SEEDS_URL, params={"type": None}, timeout=TEST_TIMEOUT)
+        mock.assert_called_with(SEEDS_URL, params={}, timeout=TEST_TIMEOUT)
+
+    @patch("censys.common.base.requests.Session.get")
+    def test_get_seeds_with_label(self, mock):
+        mock.return_value = MockResponse(TEST_SUCCESS_CODE, SEED_RESOURCE_TYPE)
+        self.client.seeds.get_seeds(seed_type="ASN", label=TEST_SEED_LABEL)
+
+        mock.assert_called_with(
+            SEEDS_URL,
+            params={"type": "ASN", "label": TEST_SEED_LABEL},
+            timeout=TEST_TIMEOUT,
+        )
 
     @patch("censys.common.base.requests.Session.get")
     def test_get_seeds_by_type(self, mock):

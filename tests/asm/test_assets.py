@@ -59,6 +59,27 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @patch("censys.common.base.requests.Session.get")
+    def test_get_assets_by_tag(self, mock):
+        mock.return_value = MockResponse(TEST_SUCCESS_CODE, ASSET_TYPE)
+        assets = getattr(self.client, self.asset_type).get_assets(
+            tag=[TEST_TAG_NAME], tag_operator="is", source=["Seed"]
+        )
+        res = list(assets)
+
+        assert RESOURCE_PAGING_RESULTS == res
+        mock.assert_called_with(
+            f"{ASSETS_URL}/{self.asset_type}",
+            params={
+                "pageNumber": 3,
+                "pageSize": 500,
+                "tag": [TEST_TAG_NAME],
+                "tagOperator": "is",
+                "source": ["Seed"],
+            },
+            timeout=TEST_TIMEOUT,
+        )
+
+    @patch("censys.common.base.requests.Session.get")
     def test_get_hosts_by_page(self, mock):
         mock.return_value = MockResponse(
             TEST_SUCCESS_CODE, ASSET_TYPE, TEST_PAGE_NUMBER
