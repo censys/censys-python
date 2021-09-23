@@ -5,6 +5,8 @@ on:
     paths-ignore:
       - "**.rst"
       - "**.md"
+    tags-ignore:
+      - "*"
 
 jobs:
   build:
