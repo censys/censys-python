@@ -3,7 +3,7 @@ import json
 import os
 import warnings
 from functools import wraps
-from typing import Any, Callable, List, Optional, Protocol, Type
+from typing import Any, Callable, List, Optional, Type
 
 import backoff
 import requests
@@ -41,11 +41,6 @@ def _backoff_wrapper(method: Callable):
         return _impl()
 
     return _wrapper
-
-
-class RequestsMethod(Protocol):  # noqa: D101
-    def __call__(self, path: str, **kwargs) -> requests.Response:  # noqa: D102
-        ...  # pragma: no cover
 
 
 class CensysAPIBase:
@@ -131,7 +126,7 @@ class CensysAPIBase:
     @_backoff_wrapper
     def _make_call(
         self,
-        method: RequestsMethod,
+        method: Callable[..., Response],
         endpoint: str,
         args: Optional[dict] = None,
         data: Optional[Any] = None,
@@ -142,7 +137,7 @@ class CensysAPIBase:
         and decoding the responses.
 
         Args:
-            method (RequestsMethod): Method to send HTTP request.
+            method (Callable): Method to send HTTP request.
             endpoint (str): The path of API endpoint.
             args (dict): Optional; URL args that are mapped to params.
             data (Any): Optional; JSON data to serialize with request.
