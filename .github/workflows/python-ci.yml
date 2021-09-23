@@ -5,8 +5,6 @@ on:
     paths-ignore:
       - "**.rst"
       - "**.md"
-    tags-ignore:
-      - "*"
 
 jobs:
   build:
@@ -28,15 +26,6 @@ jobs:
           python -m pip install --upgrade pip poetry
           poetry config virtualenvs.in-project true
 
-      - name: Cache poetry
-        id: cached-poetry-dependencies
-        uses: actions/cache@v2
-        with:
-          # This path is specific to Ubuntu
-          path: .venv
-          # Look to see if there is a cache hit for the corresponding requirements file
-          key: venv-${{ runner.os }}-py${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}
-
       - name: Install dependencies
         run: |
           poetry install
@@ -53,4 +42,4 @@ jobs:
 
       - name: Test with pytest
         run: |
-          poetry run pytest
+          poetry run pytest --cov --cov-fail-under=100
