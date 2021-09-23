@@ -1,5 +1,6 @@
 """Censys config CLI."""
 import argparse
+import os
 import sys
 
 from rich.prompt import Prompt
@@ -21,6 +22,17 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
     config = get_config()
     api_id = config.get(DEFAULT, "api_id")
     api_secret = config.get(DEFAULT, "api_secret")
+
+    api_id_env = os.getenv("CENSYS_API_ID")
+    api_secret_env = os.getenv("CENSYS_API_SECRET")
+
+    if api_id_env is not None or api_secret_env is not None:
+        print(
+            "Please note environment variables (CENSYS_API_ID & CENSYS_API_SECRET) "
+            "will take priority over configured credentials."
+        )
+        api_id = api_id_env or api_id
+        api_secret = api_secret_env or api_secret
 
     if api_id and api_secret:
         redacted_id = api_id.replace(api_id[:32], 32 * "*")
