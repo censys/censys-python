@@ -2,11 +2,13 @@
 import argparse
 import sys
 import webbrowser
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 import requests
-from rich import print
+from rich import box
+from rich.table import Table
 
+from censys.cli.utils import console
 from censys.common.exceptions import CensysCLIException, CensysNotFoundException
 from censys.search import CensysHosts
 
@@ -50,76 +52,87 @@ class CensysHNRI:
         medium_risk = []
 
         for service in services:
-            port = service.get("port")
-            protocol = service.get("service_name")
-            string = f"{protocol} on {port}"
-            if protocol in self.HIGH_RISK_DEFINITION:
-                high_risk.append({"port": port, "protocol": protocol, "string": string})
-            elif protocol in self.MEDIUM_RISK_DEFINITION:
-                medium_risk.append(
-                    {"port": port, "protocol": protocol, "string": string}
-                )
+            service_name = service.get("service_name")
+            if service_name in self.HIGH_RISK_DEFINITION:
+                high_risk.append(service)
+            elif service_name in self.MEDIUM_RISK_DEFINITION:
+                medium_risk.append(service)
             else:
-                medium_risk.append(
-                    {"port": port, "protocol": protocol, "string": string}
-                )
+                medium_risk.append(service)
 
         return high_risk, medium_risk
 
-    @staticmethod
-    def risks_to_string(high_risk: list, medium_risk: list) -> str:
+    def make_risks_into_table(self, title: str, risks: List[dict]) -> Table:
+        """Creates a table of risks.
+
+        Args:
+            title (str): Title of the table.
+            risks (list): List of risks.
+
+        Returns:
+            Table: Table of risks.
+        """
+        table = Table("Port", "Service Name", title=title, box=box.SQUARE)
+        for risk in risks:
+            table.add_row(str(risk.get("port")), risk.get("service_name"))
+        return table
+
+    def risks_to_string(self, high_risks: list, medium_risks: list) -> List[Any]:
         """Risks to printable string.
 
         Args:
-            high_risk (list): Lists of high risks.
-            medium_risk (list): Lists of medium risks.
+            high_risks (list): Lists of high risks.
+            medium_risks (list): Lists of medium risks.
 
         Raises:
             CensysCLIException: No information/risks found.
 
         Returns:
-            str: Printable string for CLI.
+            list: Printable objects for CLI.
         """
-        len_high_risk = len(high_risk)
-        len_medium_risk = len(medium_risk)
+        len_high_risk = len(high_risks)
+        len_medium_risk = len(medium_risks)
 
         if len_high_risk + len_medium_risk == 0:
             raise CensysCLIException
 
-        response = ""
+        response: List[Any] = []
         if len_high_risk > 0:
-            response = (
-                response
-                + "[bold red]:exclamation: High Risks Found:[/bold red] \n"
-                + "\n".join([risk.get("string") for risk in high_risk])
+            response.append(
+                self.make_risks_into_table(
+                    ":exclamation: High Risks Found",
+                    high_risks,
+                )
             )
         else:
-            response = response + "You don't have any High Risks in your network\n"
+            response.append("You don't have any High Risks in your network\n")
         if len_medium_risk > 0:
-            response = (
-                response
-                + "[bold orange]:grey_exclamation: Medium Risks Found:[/bold orange] \n"
-                + "\n".join([risk.get("string") for risk in medium_risk])
+            response.append(
+                self.make_risks_into_table(
+                    ":grey_exclamation: Medium Risks Found",
+                    medium_risks,
+                )
             )
         else:
-            response = response + "You don't have any Medium Risks in your network\n"
+            response.append("You don't have any Medium Risks in your network\n")
         return response
 
-    def view_current_ip_risks(self) -> str:
-        """Gets protocol information for the current IP and returns any risks.
-
-        Returns:
-            str: Printable
-        """
+    def view_current_ip_risks(self):
+        """Gets protocol information for the current IP and returns any risks."""
         current_ip = self.get_current_ip()
 
         try:
+            console.print(f"Searching for information on {current_ip}...")
             results = self.index.view(current_ip)
             services = results.get("services", [])
             high_risk, medium_risk = self.translate_risk(services)
-            return self.risks_to_string(high_risk, medium_risk)
+            for res in self.risks_to_string(high_risk, medium_risk):
+                console.print(res)
+            console.print(
+                f"\nFor more information, please visit: https://search.censys.io/hosts/{current_ip}"
+            )
         except (CensysNotFoundException, CensysCLIException):
-            return (
+            console.print(
                 "[green]:white_check_mark: No Risks were found on your network[/green]"
             )
 
@@ -136,9 +149,7 @@ def cli_hnri(args: argparse.Namespace):
 
     client = CensysHNRI(args.api_id, args.api_secret)
 
-    risks = client.view_current_ip_risks()
-
-    print(risks)
+    client.view_current_ip_risks()
 
 
 def include(parent_parser: argparse._SubParsersAction, parents: dict):
