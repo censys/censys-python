@@ -19,6 +19,7 @@ Python class objects can be used individually, but must be initialized for each 
    -  :attr:`CertificatesAssets <censys.asm.CertificatesAssets>`
    -  :attr:`DomainsAssets <censys.asm.DomainsAssets>`
    -  :attr:`HostsAssets <censys.asm.HostsAssets>`
+   -  :attr:`SubdomainsAssets <censys.asm.SubdomainsAssets>`
 
 -  :attr:`Events <censys.asm.events.Events>`
 
@@ -96,7 +97,7 @@ Below we show examples for **deleting seeds** from the Censys ASM platform.
 
 ``Assets``
 ----------
-There are three types of assets (Hosts, Certificates, Domains). Each asset type shares the same API interface so we will use a mixture of asset types in the following examples.
+There are four types of assets (Hosts, Certificates, Domains, and Subdomains). Each asset type shares the same API interface so we will use a mixture of asset types in the following examples.
 
 Below we show examples for **viewing assets** on the Censys ASM platform.
 
@@ -156,6 +157,19 @@ Below we show examples for **managing asset tags** via the ASM API.
     # Delete a tag by tag name
     # Here we delete tag name="New" from certificate with ID=cert_sha
     c.delete_tag(cert_sha, "New")
+
+Below we show examples for **subdomain asset tags** via the ASM API.
+
+.. code:: python
+
+    from censys.asm import AsmClient
+
+    client = AsmClient()
+
+    sub = client.get_subdomains("my_domain.com")
+
+    # Add a tag to a subdomain under my_domain.com
+    sub.add_tag("sub.my_domain.com", "New")
 
 ``Events``
 ----------

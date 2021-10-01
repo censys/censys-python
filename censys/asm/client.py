@@ -1,7 +1,7 @@
 """Interact with the Censys Seeds, Assets, and Logbook APIs."""
 from typing import Optional
 
-from .assets import CertificatesAssets, DomainsAssets, HostsAssets
+from .assets import CertificatesAssets, DomainsAssets, HostsAssets, SubdomainsAssets
 from .clouds import Clouds
 from .events import Events
 from .risks import Risks
@@ -25,3 +25,18 @@ class AsmClient:
         self.events = Events(api_key, **kwargs)
         self.clouds = Clouds(api_key, **kwargs)
         self.risks = Risks(api_key, **kwargs)
+
+        # Save the arguments for parameterized client usage
+        self.__api_key = api_key
+        self.__api_kwargs = kwargs
+
+    def get_subdomains(self, domain: str):
+        """Get an API instance for subdomains of the parent domain.
+
+        Args:
+            domain: (str): Parent domain to access.
+
+        Returns:
+            SubdomainsAssets: A Subdomains Assets API instance .
+        """
+        return SubdomainsAssets(domain, self.__api_key, **self.__api_kwargs)
