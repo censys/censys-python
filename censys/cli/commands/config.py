@@ -3,8 +3,9 @@ import argparse
 import os
 import sys
 
-from rich.prompt import Prompt
+from rich.prompt import Confirm, Prompt
 
+from censys.cli.utils import console
 from censys.common.config import DEFAULT, get_config, write_config
 from censys.common.exceptions import CensysUnauthorizedException
 from censys.search.v2.api import CensysSearchAPIv2
@@ -27,7 +28,7 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
     api_secret_env = os.getenv("CENSYS_API_SECRET")
 
     if api_id_env is not None or api_secret_env is not None:
-        print(
+        console.print(
             "Please note environment variables (CENSYS_API_ID & CENSYS_API_SECRET) "
             "will take priority over configured credentials."
         )
@@ -40,15 +41,20 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
         api_id_prompt = f"{api_id_prompt} [cyan]({redacted_id})[/cyan]"
         api_secret_prompt = f"{api_secret_prompt} [cyan]({redacted_secret})[/cyan]"
 
-    api_id = Prompt.ask(api_id_prompt) or api_id
-    api_secret = Prompt.ask(api_secret_prompt) or api_secret
+    api_id = Prompt.ask(api_id_prompt, console=console) or api_id
+    api_secret = Prompt.ask(api_secret_prompt, console=console) or api_secret
 
     if not (api_id and api_secret):
-        print("Please enter valid credentials")
+        console.print("Please enter valid credentials")
         sys.exit(1)
 
     api_id = api_id.strip()
     api_secret = api_secret.strip()
+
+    color = Confirm.ask(
+        "Do you want color output?", default=True, show_default=False, console=console
+    )
+    config.set(DEFAULT, "color", "auto" if color else "")
 
     try:
         client = CensysSearchAPIv2(api_id, api_secret)
@@ -60,10 +66,10 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
         config.set(DEFAULT, "api_secret", api_secret)
 
         write_config(config)
-        print(f"\nSuccessfully authenticated for {email}")
+        console.print(f"\nSuccessfully authenticated for {email}")
         sys.exit(0)
     except CensysUnauthorizedException:
-        print("Failed to authenticate")
+        console.print("Failed to authenticate")
         sys.exit(1)
 
 

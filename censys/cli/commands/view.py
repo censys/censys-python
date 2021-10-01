@@ -3,8 +3,9 @@ import argparse
 import sys
 import webbrowser
 
-from ..utils import V2_INDEXES, valid_datetime_type, write_file
+from censys.cli.utils import V2_INDEXES, console, valid_datetime_type, write_file
 from censys.search import SearchClient
+from censys.search.v2.api import CensysSearchAPIv2
 
 
 def cli_view(args: argparse.Namespace):
@@ -29,7 +30,7 @@ def cli_view(args: argparse.Namespace):
 
     c = SearchClient(**censys_args)
 
-    index = getattr(c.v2, args.index_type)
+    index: CensysSearchAPIv2 = getattr(c.v2, args.index_type)
 
     view_args = {}
     write_args = {
@@ -46,7 +47,7 @@ def cli_view(args: argparse.Namespace):
     try:
         write_file(document, **write_args)
     except ValueError as error:  # pragma: no cover
-        print(f"Error writing log file. Error: {error}")
+        console.print(f"Error writing log file. Error: {error}")
 
 
 def include(parent_parser: argparse._SubParsersAction, parents: dict):

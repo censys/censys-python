@@ -2,9 +2,10 @@
 import argparse
 import sys
 
-from rich import box, print, print_json
+from rich import box
 from rich.table import Table
 
+from censys.cli.utils import console
 from censys.common.exceptions import CensysUnauthorizedException
 from censys.search.v2.api import CensysSearchAPIv2
 
@@ -19,7 +20,7 @@ def cli_account(args: argparse.Namespace):  # pragma: no cover
         client = CensysSearchAPIv2(args.api_id, args.api_secret)
         account = client.account()
         if args.json:
-            print_json(data=account)
+            console.print_json(data=account)
         else:
             table = Table("Key", "Value", show_header=False, box=box.SQUARE)
             table.add_row("Email", account["email"])
@@ -29,10 +30,10 @@ def cli_account(args: argparse.Namespace):  # pragma: no cover
             quota = account["quota"]
             table.add_row("Query Quota", f"{quota['used']} / {quota['allowance']}")
             table.add_row("Quota Resets At", quota["resets_at"])
-            print(table)
+            console.print(table)
         sys.exit(0)
     except CensysUnauthorizedException:
-        print("Failed to authenticate")
+        console.print("Failed to authenticate")
         sys.exit(1)
 
 

@@ -13,6 +13,7 @@ default_config = {
     "api_id": "",
     "api_secret": "",
     "asm_api_key": "",
+    "color": "auto",
 }
 
 
