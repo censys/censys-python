@@ -237,8 +237,8 @@ class AssetsUnitTest(unittest.TestCase):
 
     @patch("censys.common.base.requests.Session.get")
     def test_get_subdomains(self, mock):
-        if self.asset_type != "hosts":
-            pytest.skip("Only applicable to hosts assets")
+        if self.asset_type != "domains":
+            pytest.skip("Only applicable to domains assets")
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, "subdomains")
         subdomains = self.client.domains.get_subdomains(self.test_asset_id)
         res = list(subdomains)
