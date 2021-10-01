@@ -80,7 +80,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @patch("censys.common.base.requests.Session.get")
-    def test_get_hosts_by_page(self, mock):
+    def test_get_assets_by_page(self, mock):
         mock.return_value = MockResponse(
             TEST_SUCCESS_CODE, ASSET_TYPE, TEST_PAGE_NUMBER
         )
@@ -98,7 +98,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @patch("censys.common.base.requests.Session.get")
-    def test_get_host_by_asset_id(self, mock):
+    def test_get_asset_by_asset_id(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, ASSET_TYPE)
         getattr(self.client, self.asset_type).get_asset_by_id(self.test_asset_id)
 
@@ -109,7 +109,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @patch("censys.common.base.requests.Session.get")
-    def test_get_host_comments(self, mock):
+    def test_get_asset_comments(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, COMMENT_TYPE)
         comments = getattr(self.client, self.asset_type).get_comments(
             self.test_asset_id
@@ -124,7 +124,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     @patch("censys.common.base.requests.Session.get")
-    def test_get_host_comments_by_page(self, mock):
+    def test_get_asset_comments_by_page(self, mock):
         mock.return_value = MockResponse(
             TEST_SUCCESS_CODE, COMMENT_TYPE, TEST_PAGE_NUMBER
         )
