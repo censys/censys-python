@@ -27,7 +27,6 @@ class AsmClient:
         self.risks = Risks(api_key, **kwargs)
 
         # Save the arguments for parameterized client usage
-        self.__api_key = api_key
         self.__api_kwargs = kwargs
 
     def get_subdomains(self, domain: str):
@@ -39,4 +38,4 @@ class AsmClient:
         Returns:
             SubdomainsAssets: A Subdomains Assets API instance .
         """
-        return SubdomainsAssets(domain, self.__api_key, **self.__api_kwargs)
+        return SubdomainsAssets(domain, self.domains._api_key, **self.__api_kwargs)
