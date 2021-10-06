@@ -5,6 +5,9 @@ on:
     paths-ignore:
       - "**.rst"
       - "**.md"
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
