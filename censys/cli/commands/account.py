@@ -22,13 +22,18 @@ def cli_account(args: argparse.Namespace):  # pragma: no cover
         if args.json:
             console.print_json(data=account)
         else:
-            table = Table("Key", "Value", show_header=False, box=box.SQUARE)
+            table = Table(
+                "Key", "Value", show_header=False, box=box.SQUARE, highlight=True
+            )
             table.add_row("Email", account["email"])
             table.add_row("Login ID", account["login"])
             table.add_row("First Login", account["first_login"])
             table.add_row("Last Login", account["last_login"][:-7])
             quota = account["quota"]
-            table.add_row("Query Quota", f"{quota['used']} / {quota['allowance']}")
+            table.add_row(
+                "Query Quota",
+                f"{quota['used']} / {quota['allowance']} ({quota['used']/quota['allowance']:.2f}%)",
+            )
             table.add_row("Quota Resets At", quota["resets_at"])
             console.print(table)
         sys.exit(0)
