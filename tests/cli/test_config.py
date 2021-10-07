@@ -17,7 +17,7 @@ os.path.exists = Mock(return_value=False)
 os.mkdir = Mock()
 
 
-def prompt_side_effect(arg):
+def prompt_side_effect(arg, **kwargs):
     if arg == "Censys API ID":
         return CensysTestCase.api_id
     if arg == "Censys API Secret":
@@ -29,13 +29,29 @@ def prompt_side_effect(arg):
     raise NotImplementedError(f"No prompt handler for {arg}")
 
 
+def confirm_side_effect(arg, **kwargs):
+    if arg == "Do you want color output?":
+        return True
+    return False
+
+
 Prompt = MagicMock()
 Prompt.ask = Mock(side_effect=prompt_side_effect)
+
+Confirm = MagicMock()
+Confirm.ask = Mock(side_effect=confirm_side_effect)
 
 test_config_path = config_path + ".test"
 
 
 @patch("censys.common.config.config_path", test_config_path)
+@patch(
+    "builtins.open",
+    new_callable=mock_open,
+    read_data="[DEFAULT]\napi_id =\napi_secret =\nasm_api_key =",
+)
+@patch("rich.prompt.Prompt.ask", Prompt.ask)
+@patch("rich.prompt.Confirm.ask", Confirm.ask)
 class CensysConfigCliTest(CensysTestCase):
     @patch(
         "argparse._sys.argv",
@@ -44,13 +60,7 @@ class CensysConfigCliTest(CensysTestCase):
             "config",
         ],
     )
-    @patch(
-        "builtins.open",
-        new_callable=mock_open,
-        read_data="[DEFAULT]\napi_id =\napi_secret =\nasm_api_key =",
-    )
     @patch("censys.common.config.write_config")
-    @patch("rich.prompt.Prompt.ask", Prompt.ask)
     def test_search_config(self, mock_write_config, mock_file):
         self.responses.add(
             responses.GET,
@@ -78,12 +88,6 @@ class CensysConfigCliTest(CensysTestCase):
             "config",
         ],
     )
-    @patch(
-        "builtins.open",
-        new_callable=mock_open,
-        read_data="[DEFAULT]\napi_id =\napi_secret =\nasm_api_key =",
-    )
-    @patch("rich.prompt.Prompt.ask", Prompt.ask)
     def test_search_config_failed(self, mock_file):
         self.responses.add(
             responses.GET,

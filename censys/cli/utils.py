@@ -4,21 +4,23 @@ import csv
 import datetime
 import json
 import os.path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Union
 
-from rich import print_json
 from rich.console import Console
 
+from censys.common.config import DEFAULT, get_config
 from censys.common.deprecation import DeprecationDecorator
 
 Fields = List[str]
-Results = List[dict]
+Results = Union[List[dict], Dict[str, Any]]
 
 V1_INDEXES = ["ipv4", "certs", "websites"]
 V2_INDEXES = ["hosts"]
 INDEXES = V1_INDEXES + V2_INDEXES
 
-console = Console()
+config = get_config()
+color = config.get(DEFAULT, "color")
+console = Console(color_system=("auto" if color else None))
 
 
 def print_wrote_file(file_path: str):
@@ -73,7 +75,7 @@ def _write_screen(search_results: Results):
     Args:
         search_results (Results): A list of results from the query.
     """
-    print_json(data=search_results)
+    console.print_json(data=search_results)
 
 
 def write_file(

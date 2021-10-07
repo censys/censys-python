@@ -3,9 +3,10 @@ import argparse
 import json
 import sys
 
-from rich.prompt import Prompt
+from rich.prompt import Confirm, Prompt
 
 from censys.asm.seeds import SEED_TYPES, Seeds
+from censys.cli.utils import console
 from censys.common.config import DEFAULT, get_config, write_config
 from censys.common.exceptions import CensysUnauthorizedException
 
@@ -26,21 +27,26 @@ def cli_asm_config(_: argparse.Namespace):  # pragma: no cover
         redacted_api_key = api_key.replace(api_key[:key_len], key_len * "*")
         api_key_prompt = f"{api_key_prompt} [cyan]({redacted_api_key})[/cyan]"
 
-    api_key = Prompt.ask(api_key_prompt) or api_key
+    api_key = Prompt.ask(api_key_prompt, console=console) or api_key
 
     if not api_key:
-        print("Please enter valid credentials")
+        console.print("Please enter valid credentials")
         sys.exit(1)
+
+    color = Confirm.ask(
+        "Do you want color output?", default=True, show_default=False, console=console
+    )
+    config.set(DEFAULT, "color", "auto" if color else "")
 
     try:
         # Assumes that login was successfully
         config.set(DEFAULT, "asm_api_key", api_key)
 
         write_config(config)
-        print("\nSuccessfully configured credentials")
+        console.print("\nSuccessfully configured credentials")
         sys.exit(0)
     except CensysUnauthorizedException:
-        print("Failed to authenticate")
+        console.print("Failed to authenticate")
         sys.exit(1)
 
 
@@ -61,7 +67,7 @@ def cli_add_seeds(args: argparse.Namespace):
     try:
         seeds = json.loads(data)
     except json.decoder.JSONDecodeError as e:
-        print(f"Invalid json {e}")
+        console.print(f"Invalid json {e}")
         sys.exit(1)
 
     seeds_to_add = []
@@ -72,7 +78,7 @@ def cli_add_seeds(args: argparse.Namespace):
         elif isinstance(seed, str):
             seed = {"value": seed, "type": args.default_type}
         else:
-            print(f"Invalid seed {seed}")
+            console.print(f"Invalid seed {seed}")
             sys.exit(1)
         if "label" not in seed:
             seed["label"] = args.label_all
@@ -84,20 +90,20 @@ def cli_add_seeds(args: argparse.Namespace):
     added_seeds = res["addedSeeds"]
     added_count = len(added_seeds)
     if not added_count:
-        print("No seeds were added. (Run with -v to get more info)")
+        console.print("No seeds were added. (Run with -v to get more info)")
         if not args.verbose:
             sys.exit(1)
     else:
-        print(f"Added {added_count} seeds.")
+        console.print(f"Added {added_count} seeds.")
     if added_count < to_add_count:
-        print(f"Seeds not added: {to_add_count - added_count}")
+        console.print(f"Seeds not added: {to_add_count - added_count}")
         if args.verbose:  # pragma: no cover
-            print(
+            console.print(
                 "The following seed(s) were not able to be added as they already exist or are reserved."
             )
             for seed in seeds_to_add:
                 if not any([s for s in added_seeds if seed["value"] == s["value"]]):
-                    print(json.dumps(seed, indent=4))
+                    console.print_json(seed)
 
 
 def include(parent_parser: argparse._SubParsersAction, parents: dict):

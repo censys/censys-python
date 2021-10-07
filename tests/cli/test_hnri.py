@@ -47,9 +47,12 @@ class CensysCliHNRITest(CensysTestCase):
             cli_main()
 
         stdout = temp_stdout.getvalue().strip()
-        assert "Medium Risks Found:" in stdout
-        assert "HTTPS on 443" in stdout
-        assert "DNS on 53" in stdout
+        assert self.IP_ADDRESS in stdout
+        assert "Medium Risks Found" in stdout
+        assert "HTTPS" in stdout
+        assert "443" in stdout
+        assert "DNS" in stdout
+        assert "53" in stdout
 
     @patch(
         "argparse._sys.argv",
@@ -73,8 +76,10 @@ class CensysCliHNRITest(CensysTestCase):
             cli_main()
 
         stdout = temp_stdout.getvalue().strip()
-        assert "High Risks Found:" in stdout
-        assert "VNC on 23" in stdout
+        assert self.IP_ADDRESS in stdout
+        assert "High Risks Found" in stdout
+        assert "VNC" in stdout
+        assert "23" in stdout
         assert "You don't have any Medium Risks in your network" in stdout
 
     @patch(
@@ -99,6 +104,7 @@ class CensysCliHNRITest(CensysTestCase):
             cli_main()
 
         stdout = temp_stdout.getvalue().strip()
+        assert self.IP_ADDRESS in stdout
         assert "No Risks were found on your network" in stdout
 
     def test_get_current_ip(self):
