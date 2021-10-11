@@ -9,6 +9,8 @@
 
 An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://censys.io/)). Python 3.6+ is currently supported.
 
+> **Notice:** The Censys Search v1 endpoints are going away on Nov. 30, 2021. Please begin using v2 endpoints to query hosts and certificates and check out our [support center](https://support.censys.io/hc/en-us/sections/360013076551-Censys-Search-2-0) for resources.
+
 ## Features
 
 - [Search Censys data](https://censys-python.readthedocs.io/en/stable/usage-v2.html)
