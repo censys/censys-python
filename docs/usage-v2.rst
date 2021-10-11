@@ -36,6 +36,10 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
     for page in h.search("service.service_name: HTTP", per_page=5, pages=2):
         print(page)
 
+    # You can also get all pages of results by using -1 for pages
+    for page in h.search("service.service_name: HTTP", pages=-1):
+        print(page)
+
     # View each result returned
     # For `hosts` this looks like a mapping of IPs to view results
     query = h.search("service.service_name: HTTP", per_page=5, pages=2)
