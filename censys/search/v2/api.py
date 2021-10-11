@@ -133,7 +133,7 @@ class CensysSearchAPIv2(CensysAPIBase):
                 query (str): The query to be executed.
                 per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
                 cursor (int): Optional; The cursor of the desired result set.
-                pages (int): Optional; The number of pages returned. Defaults to 1.
+                pages (int): Optional; The number of pages returned. Defaults to 1. If you set this to -1, it will return all pages.
             """
             self.api = api
             self.query = query

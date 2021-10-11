@@ -23,6 +23,12 @@ By combining the ``search`` command with ``jq`` we can easily manipulate the out
 
     censys search 'services.service_name: IKETTLE' --index-type hosts | jq -c '.[] | {ip: .ip}'
 
+By setting the ``--pages`` flag to ``-1`` we can get all pages of results.
+
+.. prompt:: bash
+
+    censys search 'ip: 8.8.8.0/16' --pages -1 | jq -c '[.[] | .ip]'
+
 ``view``
 ----------
 
@@ -44,6 +50,20 @@ We can then parse this json with something like ``jq``.
 
     cat google.json | jq '[.services[] | {port: .port, protocol: .service_name}]'
 
+``account``
+-----------
+
+Below we show an example of viewing your account information from the CLI.
+
+.. prompt:: bash
+
+    censys account
+
+You can also request the JSON version of your account information.
+
+.. prompt:: bash
+
+    censys account --json
 
 ``asm``
 -------

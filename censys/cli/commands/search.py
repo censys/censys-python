@@ -205,6 +205,16 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         help="open query in browser",
     )
 
+    v2_group = search_parser.add_argument_group(
+        f"v2 specific arguments ({', '.join(V2_INDEXES)})"
+    )
+    v2_group.add_argument(
+        "--pages",
+        default=1,
+        type=int,
+        help="number of pages of results to return (when set to -1 returns all pages available)",
+    )
+
     v1_group = search_parser.add_argument_group(
         f"v1 specific arguments ({', '.join(V1_INDEXES)})"
     )
@@ -220,16 +230,6 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         "--max-records",
         type=int,
         help="maximum number of results to return",
-    )
-
-    v2_group = search_parser.add_argument_group(
-        f"v2 specific arguments ({', '.join(V2_INDEXES)})"
-    )
-    v2_group.add_argument(
-        "--pages",
-        default=1,
-        type=int,
-        help="number of pages of results to return",
     )
 
     search_parser.set_defaults(func=cli_search)
