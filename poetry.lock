@@ -182,14 +182,14 @@ toml = "*"
 
 [[package]]
 name = "flake8-comprehensions"
-version = "3.6.1"
+version = "3.7.0"
 description = "A flake8 plugin to help you write better list/set/dict comprehensions."
 category = "dev"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-flake8 = ">=3.0,<3.2.0 || >3.2.0,<4"
+flake8 = ">=3.0,<3.2.0 || >3.2.0,<5"
 importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
 
 [[package]]
@@ -660,7 +660,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<4.0"
-content-hash = "46c0e21534d7f70f936bd514ca4f2b908f176d5a0abc3caffa377358c23e7832"
+content-hash = "2c158850ade60066e5e5556e128bbaee4d25c0b3f0ba44be1aa6de74dfb0a142"
 
 [metadata.files]
 astor = [
@@ -758,8 +758,8 @@ flake8-black = [
     {file = "flake8_black-0.2.3-py3-none-any.whl", hash = "sha256:cc080ba5b3773b69ba102b6617a00cc4ecbad8914109690cfda4d565ea435d96"},
 ]
 flake8-comprehensions = [
-    {file = "flake8-comprehensions-3.6.1.tar.gz", hash = "sha256:4888de89248b7f7535159189ff693c77f8354f6d37a02619fa28c9921a913aa0"},
-    {file = "flake8_comprehensions-3.6.1-py3-none-any.whl", hash = "sha256:e9a010b99aa90c05790d45281ad9953df44a4a08a1a8f6cd41f98b4fc6a268a0"},
+    {file = "flake8-comprehensions-3.7.0.tar.gz", hash = "sha256:6b3218b2dde8ac5959c6476cde8f41a79e823c22feb656be2710cd2a3232cef9"},
+    {file = "flake8_comprehensions-3.7.0-py3-none-any.whl", hash = "sha256:a5d7aea6315bbbd6fbcb2b4e80bff6a54d1600155e26236e555d0c6fe1d62522"},
 ]
 flake8-docstrings = [
     {file = "flake8-docstrings-1.6.0.tar.gz", hash = "sha256:9fe7c6a306064af8e62a055c2f61e9eb1da55f84bb39caef2b84ce53708ac34b"},
