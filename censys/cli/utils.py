@@ -69,13 +69,17 @@ def _write_json(file_path: str, search_results: Results):
     print_wrote_file(file_path)
 
 
-def _write_screen(search_results: Results):
+def _write_screen(search_results: Results):  # pragma: no cover
     """Writes search results to standard output.
 
     Args:
         search_results (Results): A list of results from the query.
     """
-    console.print_json(data=search_results)
+    config = get_config()
+    if config.get(DEFAULT, "color"):
+        console.print_json(data=search_results)
+    else:
+        print(json.dumps(search_results, indent=4))
 
 
 def write_file(
