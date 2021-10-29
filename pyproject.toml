@@ -68,7 +68,7 @@ darglint = "^1.8.0"
 # Tests
 pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
-responses = "^0.14.0"
+responses = "^0.15.0"
 parameterized = "^0.8.1"
 
 # Types
