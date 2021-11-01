@@ -62,7 +62,7 @@ flake8-isort = "^4.1.1"
 isort = "^5.9.3"
 pep8-naming = "^0.12.1"
 flake8-black = "^0.2.3"
-black = "^21.9b0"
+black = "^21.10b0"
 darglint = "^1.8.0"
 
 # Tests
