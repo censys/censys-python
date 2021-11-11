@@ -317,6 +317,34 @@ class CensysSearchAPIv2(CensysAPIBase):
             self.view_path + document_id + "/comments", data={"contents": contents}
         )["result"]
 
+    def delete_comment(self, document_id: str, comment_id: str) -> dict:
+        """Delete comment from a document.
+
+        Args:
+            document_id (str): The ID of the document you are requesting.
+            comment_id (str): The ID of the comment you are requesting.
+
+        Returns:
+            dict: The result set returned.
+        """
+        return self._delete(self.view_path + document_id + "/comments/" + comment_id)
+
+    def update_comment(self, document_id: str, comment_id: str, contents: str) -> dict:
+        """Update comment from a document.
+
+        Args:
+            document_id (str): The ID of the document you are requesting.
+            comment_id (str): The ID of the comment you are requesting.
+            contents (str): The contents of the comment.
+
+        Returns:
+            dict: The result set returned.
+        """
+        return self._put(
+            self.view_path + document_id + "/comments/" + comment_id,
+            data={"contents": contents},
+        )
+
     # Tags
 
     def list_all_tags(self) -> List[dict]:

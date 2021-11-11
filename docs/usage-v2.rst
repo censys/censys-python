@@ -197,6 +197,34 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
     comment = h.add_comment("1.1.1.1", "This is a test comment")
     print(comment)
 
+``update_comment``
+^^^^^^^^^^^^^^^^^^
+
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
+
+.. code:: python
+
+    from censys.search import CensysHosts
+
+    h = CensysHosts()
+
+    # Update a comment to a host.
+    comment = h.update_comment("1.1.1.1", 101, "This is an updated test comment")
+
+``delete_comment``
+^^^^^^^^^^^^^^^^^^
+
+Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCerts>` index.
+
+.. code:: python
+
+    from censys.search import CensysCerts
+
+    c = CensysCerts()
+
+    # Delete a comment for a certificate.
+    c.delete_comment("fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426", 102)
+
 Tags
 ----
 
