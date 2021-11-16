@@ -78,3 +78,22 @@ class CensysCommentsTests(CensysTestCase):
         )
         results = self.api.add_comment(self.document_id, TEST_COMMENT)
         assert results == ADD_COMMENTS_RESPONSE["result"]
+
+    def test_delete_comment(self):
+        self.responses.add(
+            responses.DELETE,
+            f"{self.base_url}/{self.index}/{self.document_id}/comments/comment-id",
+            status=209,
+        )
+        self.api.delete_comment(self.document_id, "comment-id")
+
+    def test_update_comment(self):
+        self.responses.add(
+            responses.PUT,
+            f"{self.base_url}/{self.index}/{self.document_id}/comments/comment-id",
+            status=200,
+            json={"code": 200, "status": "OK"},
+            match=[responses.json_params_matcher({"contents": TEST_COMMENT})],
+        )
+        results = self.api.update_comment(self.document_id, "comment-id", TEST_COMMENT)
+        assert results == {"code": 200, "status": "OK"}
