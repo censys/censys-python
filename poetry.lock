@@ -547,7 +547,7 @@ tests = ["coverage (>=3.7.1,<6.0.0)", "pytest-cov", "pytest-localserver", "flake
 
 [[package]]
 name = "rich"
-version = "10.15.0"
+version = "10.15.1"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 category = "main"
 optional = false
@@ -956,8 +956,8 @@ responses = [
     {file = "responses-0.16.0.tar.gz", hash = "sha256:a2e3aca2a8277e61257cd3b1c154b1dd0d782b1ae3d38b7fa37cbe3feb531791"},
 ]
 rich = [
-    {file = "rich-10.15.0-py3-none-any.whl", hash = "sha256:11516740a10dddead0c782dc11fdde552b19fd0614dbbba8f78ea7602d940720"},
-    {file = "rich-10.15.0.tar.gz", hash = "sha256:3f7b0851e097ae90e43216375db413c2f910a0f310705614bce1a2ae43c8264e"},
+    {file = "rich-10.15.1-py3-none-any.whl", hash = "sha256:a59fb2721c52c5061ac65f318c0afb709e098b1ab6ce5813ea38982654c4b6ee"},
+    {file = "rich-10.15.1.tar.gz", hash = "sha256:93d0ea3c35ecfd8703dbe52b76885e224ad8d68c7766c921c726b14b22a57b7d"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
