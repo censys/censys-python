@@ -14,7 +14,6 @@ from censys.common.exceptions import (
 )
 from censys.common.types import Datetime
 from censys.common.utils import format_rfc3339
-from censys.search.v1.api import CensysSearchAPIv1
 
 Fields = Optional[List[str]]
 
@@ -28,12 +27,10 @@ class CensysSearchAPIv2(CensysAPIBase):
         >>> c = CensysSearchAPIv2()
     """
 
-    DEFAULT_URL: str = "https://search.censys.io/api/v2"
+    DEFAULT_URL: str = "https://search.censys.io/api"
     """Default Search API base URL."""
     INDEX_NAME: str = ""
     """Name of Censys Index."""
-    v1: CensysSearchAPIv1
-    """Search V1 Endpoints on V2"""
 
     def __init__(
         self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
@@ -70,22 +67,12 @@ class CensysSearchAPIv2(CensysAPIBase):
         self._session.auth = (self._api_id, self._api_secret)
 
         # Generate concrete paths to be called
-        self.view_path = f"/{self.INDEX_NAME}/"
-        self.search_path = f"/{self.INDEX_NAME}/search"
-        self.aggregate_path = f"/{self.INDEX_NAME}/aggregate"
-        self.metadata_path = f"/metadata/{self.INDEX_NAME}"
-        self.tags_path = "/tags"
-
-        # Set up the v1 API
-        v1_kwargs = kwargs.copy()
-        v1_kwargs.update(
-            {
-                "url": "https://search.censys.io/api/v1",
-                "api_id": self._api_id,
-                "api_secret": self._api_secret,
-            }
-        )
-        self.v1 = CensysSearchAPIv1(**v1_kwargs)
+        self.view_path = f"/v2/{self.INDEX_NAME}/"
+        self.search_path = f"/v2/{self.INDEX_NAME}/search"
+        self.aggregate_path = f"/v2/{self.INDEX_NAME}/aggregate"
+        self.metadata_path = f"/v2/metadata/{self.INDEX_NAME}"
+        self.tags_path = "/v2/tags"
+        self.account_path = "/v1/account"
 
     def _get_exception_class(  # type: ignore
         self, res: Response
@@ -100,8 +87,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         Returns:
             dict: Quota response.
         """
-        # Make account call to v1 endpoint
-        return self.v1.account()
+        return self._get(self.account_path)
 
     def quota(self) -> dict:
         """Returns metadata of a given search query.

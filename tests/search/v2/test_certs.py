@@ -4,7 +4,7 @@ import pytest
 import responses
 from parameterized import parameterized
 
-from tests.utils import CensysTestCase
+from tests.utils import V2_URL, CensysTestCase
 
 from censys.search import SearchClient
 
@@ -43,7 +43,7 @@ class TestCerts(CensysTestCase):
     def test_get_hosts_by_cert(self):
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/certificates/{TEST_CERT}/hosts",
+            f"{V2_URL}/certificates/{TEST_CERT}/hosts",
             status=200,
             json=VIEW_HOSTS_BY_CERT_JSON,
         )
@@ -54,7 +54,7 @@ class TestCerts(CensysTestCase):
     def test_get_hosts_by_cert_with_cursor(self):
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/certificates/{TEST_CERT}/hosts?cursor=nextCursorToken",
+            f"{V2_URL}/certificates/{TEST_CERT}/hosts?cursor=nextCursorToken",
             status=200,
             json=VIEW_HOSTS_BY_CERT_JSON,
         )

@@ -4,7 +4,7 @@ import pytest
 import responses
 from parameterized import parameterized
 
-from tests.utils import CensysTestCase
+from tests.utils import V2_URL, CensysTestCase
 
 from censys.search import SearchClient
 
@@ -154,7 +154,7 @@ class TestHosts(CensysTestCase):
     def test_view(self):
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/hosts/{TEST_HOST}",
+            f"{V2_URL}/hosts/{TEST_HOST}",
             status=200,
             json=VIEW_HOST_JSON,
         )
@@ -166,7 +166,7 @@ class TestHosts(CensysTestCase):
     def test_view_at_time(self):
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/hosts/{TEST_HOST}?at_time=2021-03-01T00:00:00.000000Z",
+            f"{V2_URL}/hosts/{TEST_HOST}?at_time=2021-03-01T00:00:00.000000Z",
             status=200,
             json=VIEW_HOST_JSON,
         )
@@ -180,7 +180,7 @@ class TestHosts(CensysTestCase):
     def test_search(self):
         self.responses.add(
             responses.GET,
-            self.base_url + "/hosts/search?q=service.service_name: HTTP&per_page=100",
+            V2_URL + "/hosts/search?q=service.service_name: HTTP&per_page=100",
             status=200,
             json=SEARCH_HOSTS_JSON,
         )
@@ -192,7 +192,7 @@ class TestHosts(CensysTestCase):
         test_per_page = 50
         self.responses.add(
             responses.GET,
-            self.base_url
+            V2_URL
             + f"/hosts/search?q=service.service_name: HTTP&per_page={test_per_page}",
             status=200,
             json=SEARCH_HOSTS_JSON,
@@ -209,7 +209,7 @@ class TestHosts(CensysTestCase):
         no_hosts_json["result"]["links"]["next"] = ""
         self.responses.add(
             responses.GET,
-            self.base_url + f"/hosts/search?q={invalid_query}&per_page=100",
+            V2_URL + f"/hosts/search?q={invalid_query}&per_page=100",
             status=200,
             json=no_hosts_json,
         )
@@ -223,7 +223,7 @@ class TestHosts(CensysTestCase):
     def test_search_pages(self):
         self.responses.add(
             responses.GET,
-            self.base_url + "/hosts/search?q=service.service_name: HTTP&per_page=100",
+            V2_URL + "/hosts/search?q=service.service_name: HTTP&per_page=100",
             status=200,
             json=SEARCH_HOSTS_JSON,
         )
@@ -243,7 +243,7 @@ class TestHosts(CensysTestCase):
         page_2_json["result"]["links"]["next"] = None
         self.responses.add(
             responses.GET,
-            self.base_url
+            V2_URL
             + "/hosts/search?q=service.service_name: HTTP&per_page=100"
             + f"&cursor={next_cursor}",
             status=200,
@@ -259,7 +259,7 @@ class TestHosts(CensysTestCase):
     def test_aggregate(self):
         self.responses.add(
             responses.GET,
-            self.base_url
+            V2_URL
             + "/hosts/aggregate?field=services.port&q=service.service_name: HTTP&num_buckets=4",
             status=200,
             json=AGGREGATE_HOSTS_JSON,
@@ -280,7 +280,7 @@ class TestHosts(CensysTestCase):
         search_json["result"]["links"]["next"] = ""
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/hosts/search?q=service.service_name: HTTP&per_page={test_per_page}",
+            f"{V2_URL}/hosts/search?q=service.service_name: HTTP&per_page={test_per_page}",
             status=200,
             json=search_json,
         )
@@ -291,7 +291,7 @@ class TestHosts(CensysTestCase):
             view_json["result"]["ip"] = ip
             self.responses.add(
                 responses.GET,
-                f"{self.base_url}/hosts/{ip}",
+                f"{V2_URL}/hosts/{ip}",
                 status=200,
                 json=view_json,
             )
@@ -304,7 +304,7 @@ class TestHosts(CensysTestCase):
     def test_view_host_names(self):
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/hosts/{TEST_HOST}/names",
+            f"{V2_URL}/hosts/{TEST_HOST}/names",
             status=200,
             json=VIEW_HOST_NAMES_JSON,
         )
@@ -314,7 +314,7 @@ class TestHosts(CensysTestCase):
     def test_host_metadata(self):
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/metadata/hosts",
+            f"{V2_URL}/metadata/hosts",
             status=200,
             json=HOST_METADATA_JSON,
         )
@@ -324,7 +324,7 @@ class TestHosts(CensysTestCase):
     def test_view_host_events(self):
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/experimental/hosts/{TEST_HOST}/events",
+            f"{V2_URL}/experimental/hosts/{TEST_HOST}/events",
             status=200,
             json=VIEW_HOST_EVENTS_JSON,
         )
@@ -350,7 +350,7 @@ class TestHosts(CensysTestCase):
     def test_view_host_events_params(self, kwargs, query_params):
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/experimental/hosts/{TEST_HOST}/events?{query_params}",
+            f"{V2_URL}/experimental/hosts/{TEST_HOST}/events?{query_params}",
             status=200,
             json=VIEW_HOST_EVENTS_JSON,
         )

@@ -10,7 +10,7 @@ import pytest
 import responses
 
 from tests.search.v2.test_hosts import SEARCH_HOSTS_JSON
-from tests.utils import V1_ENDPOINT_ON_V2_URL, V1_URL, V2_URL, CensysTestCase
+from tests.utils import V1_URL, V2_URL, CensysTestCase
 
 from censys.cli import main as cli_main
 from censys.common.exceptions import CensysCLIException, CensysException
@@ -63,7 +63,7 @@ class CensysCliSearchTest(CensysTestCase):
     def test_write_json(self):
         self.responses.add_callback(
             responses.POST,
-            V1_ENDPOINT_ON_V2_URL + "/search/certificates",
+            V1_URL + "/search/certificates",
             callback=search_callback,
             content_type="application/json",
         )
@@ -93,9 +93,9 @@ class CensysCliSearchTest(CensysTestCase):
         [
             "censys",
             "search",
-            "8.8.8.8",
+            "parsed.names: censys.io",
             "--index-type",
-            "ipv4",
+            "certs",
             "--fields",
             "protocols",
             "--format",
@@ -106,7 +106,7 @@ class CensysCliSearchTest(CensysTestCase):
     def test_write_csv(self):
         self.responses.add_callback(
             responses.POST,
-            V1_URL + "/search/ipv4",
+            V1_URL + "/search/certificates",
             callback=search_callback,
             content_type="application/json",
         )
@@ -151,7 +151,7 @@ class CensysCliSearchTest(CensysTestCase):
     def test_write_output_path(self):
         self.responses.add_callback(
             responses.POST,
-            V1_ENDPOINT_ON_V2_URL + "/search/certificates",
+            V1_URL + "/search/certificates",
             callback=search_callback,
             content_type="application/json",
         )
@@ -178,7 +178,7 @@ class CensysCliSearchTest(CensysTestCase):
             "search",
             "domain: censys.io AND ports: 443",
             "--index-type",
-            "websites",
+            "certs",
             "--fields",
             "443.https.get.headers.server",
             "--format",
@@ -189,7 +189,7 @@ class CensysCliSearchTest(CensysTestCase):
     def test_write_screen(self):
         self.responses.add_callback(
             responses.POST,
-            V1_URL + "/search/websites",
+            V1_URL + "/search/certificates",
             callback=search_callback,
             content_type="application/json",
         )
@@ -208,9 +208,9 @@ class CensysCliSearchTest(CensysTestCase):
         [
             "censys",
             "search",
-            "domain: censys.io AND ports: 443",
+            "parsed.names: censys.io",
             "--index-type",
-            "websites",
+            "certs",
             "--overwrite",
             "--fields",
             "domain",
@@ -228,7 +228,7 @@ class CensysCliSearchTest(CensysTestCase):
     def test_overwrite(self):
         self.responses.add_callback(
             responses.POST,
-            V1_URL + "/search/websites",
+            V1_URL + "/search/certificates",
             callback=search_callback,
             content_type="application/json",
         )
@@ -297,9 +297,9 @@ class CensysCliSearchTest(CensysTestCase):
         [
             "censys",
             "search",
-            "domain: censys.io AND ports: 443",
+            "parsed.names: censys.io",
             "--index-type",
-            "websites",
+            "certs",
             "--format",
             "screen",
             "--max-records",
@@ -310,7 +310,7 @@ class CensysCliSearchTest(CensysTestCase):
     def test_max_records(self):
         self.responses.add_callback(
             responses.POST,
-            V1_URL + "/search/websites",
+            V1_URL + "/search/certificates",
             callback=search_callback,
             content_type="application/json",
         )
@@ -375,24 +375,6 @@ class CensysCliSearchTest(CensysTestCase):
             match="The CSV file format is not valid for Search 2.0 responses.",
         ):
             cli_main()
-
-    @patch(
-        "argparse._sys.argv",
-        [
-            "censys",
-            "search",
-            "domain: censys.io AND ports: 443",
-            "--index-type",
-            "ipv4",
-            "--open",
-        ],
-    )
-    @patch("censys.cli.commands.search.webbrowser.open")
-    def test_open_v1(self, mock_open):
-        with pytest.raises(SystemExit, match="0"):
-            cli_main()
-        query_str = urlencode({"q": "domain: censys.io AND ports: 443"})
-        mock_open.assert_called_with(f"https://censys.io/ipv4?{query_str}")
 
     @patch(
         "argparse._sys.argv",

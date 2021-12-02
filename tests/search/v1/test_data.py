@@ -1,6 +1,6 @@
 import responses
 
-from tests.utils import CensysTestCase
+from tests.utils import V1_URL, CensysTestCase
 
 from censys.search import SearchClient
 
@@ -28,7 +28,7 @@ class CensysDataTest(CensysTestCase):
     def test_get_series(self):
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/data",
+            f"{V1_URL}/data",
             status=200,
             json=SERIES_JSON,
         )
@@ -39,7 +39,7 @@ class CensysDataTest(CensysTestCase):
     def test_view_series(self):
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/data/{SERIES}",
+            f"{V1_URL}/data/{SERIES}",
             status=200,
             json=VIEW_JSON,
         )
@@ -50,7 +50,7 @@ class CensysDataTest(CensysTestCase):
     def test_view_result(self):
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/data/{SERIES}/{RESULT}",
+            f"{V1_URL}/data/{SERIES}/{RESULT}",
             status=200,
             json=RESULT_JSON,
         )

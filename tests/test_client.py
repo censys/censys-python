@@ -2,7 +2,7 @@ from .utils import CensysTestCase
 from censys.search import SearchClient
 
 ALL_INDEXES = {
-    "v1": ["certificates", "data", "ipv4", "websites"],
+    "v1": ["certificates", "data"],
     "v2": ["hosts"],
 }
 

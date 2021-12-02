@@ -14,7 +14,7 @@ from censys.common.deprecation import DeprecationDecorator
 Fields = List[str]
 Results = Union[List[dict], Dict[str, Any]]
 
-V1_INDEXES = ["ipv4", "certs", "websites"]
+V1_INDEXES = ["certs"]
 V2_INDEXES = ["hosts"]
 INDEXES = V1_INDEXES + V2_INDEXES
 

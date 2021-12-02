@@ -5,7 +5,7 @@ import pytest
 import responses
 
 from tests.search.v1.test_api import ACCOUNT_JSON
-from tests.utils import V1_ENDPOINT_ON_V2_URL, CensysTestCase
+from tests.utils import V1_URL, CensysTestCase
 
 from censys.cli import main as cli_main
 from censys.common.config import DEFAULT, censys_path, config_path, get_config
@@ -64,7 +64,7 @@ class CensysConfigCliTest(CensysTestCase):
     def test_search_config(self, mock_write_config, mock_file):
         self.responses.add(
             responses.GET,
-            V1_ENDPOINT_ON_V2_URL + "/account",
+            V1_URL + "/account",
             status=200,
             json=ACCOUNT_JSON,
         )
@@ -91,7 +91,7 @@ class CensysConfigCliTest(CensysTestCase):
     def test_search_config_failed(self, mock_file):
         self.responses.add(
             responses.GET,
-            V1_ENDPOINT_ON_V2_URL + "/account",
+            V1_URL + "/account",
             status=401,
             json={"error": "Unauthorized"},
         )

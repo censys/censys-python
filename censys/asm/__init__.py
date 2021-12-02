@@ -1,4 +1,4 @@
-"""An easy-to-use and lightweight API wrapper for Censys ASM (censys.io)."""
+"""An easy-to-use and lightweight API wrapper for Censys ASM (app.censys.io)."""
 from .assets import Assets, CertificatesAssets, DomainsAssets, HostsAssets
 from .client import AsmClient
 from .clouds import Clouds

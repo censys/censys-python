@@ -18,7 +18,7 @@ Fields = Optional[List[str]]
 class CensysSearchAPIv1(CensysAPIBase):
     """This class is the base class for all v1 API indexes."""
 
-    DEFAULT_URL: str = "https://censys.io/api/v1"
+    DEFAULT_URL: str = "https://search.censys.io/api/v1"
     """Default Search API base URL."""
     INDEX_NAME: Optional[str] = None
     """Name of Censys Index."""
@@ -112,7 +112,7 @@ class CensysSearchAPIv1(CensysAPIBase):
     ) -> Iterator[dict]:
         """Searches the given index for all records that match the given query.
 
-        For more details, see our documentation: https://censys.io/api/v1/docs/search
+        For more details, see our documentation: https://search.censys.io/api
 
         Args:
             query (str): The query to be executed.
@@ -152,7 +152,7 @@ class CensysSearchAPIv1(CensysAPIBase):
     def view(self, document_id: str) -> dict:
         """View the current structured data we have on a specific document.
 
-        For more details, see our documentation: https://censys.io/api/v1/docs/view
+        For more details, see our documentation: https://search.censys.io/api
 
         Args:
             document_id (str): The ID of the document you are requesting.
@@ -165,7 +165,7 @@ class CensysSearchAPIv1(CensysAPIBase):
     def report(self, query: str, field: str, buckets: int = 50) -> dict:
         """Creates a report on the breakdown of the values of a field in a result set.
 
-        For more details, see our documentation: https://censys.io/api/v1/docs/report
+        For more details, see our documentation: https://search.censys.io/api
 
         Args:
             query (str): The query to be executed.
@@ -177,6 +177,3 @@ class CensysSearchAPIv1(CensysAPIBase):
         """
         data = {"query": query, "field": field, "buckets": int(buckets)}
         return self._post(self.report_path, data=data)
-
-
-CensysSearchAPI = CensysSearchAPIv1
