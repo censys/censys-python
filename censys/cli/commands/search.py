@@ -5,7 +5,7 @@ import webbrowser
 from typing import List
 from urllib.parse import urlencode
 
-from censys.cli.utils import INDEXES, V1_INDEXES, V2_INDEXES, console, write_file
+from censys.cli.utils import INDEXES, V1_INDEXES, V2_INDEXES, err_console, write_file
 from censys.common.exceptions import CensysCLIException
 from censys.search import SearchClient
 
@@ -89,7 +89,7 @@ def cli_search(args: argparse.Namespace):
 
         search_args["fields"] = fields
 
-        with console.status("Searching"):
+        with err_console.status("Searching"):
             results = list(index.search(args.query, **search_args))
     elif index_type in V2_INDEXES:
         if args.format == "csv":
@@ -101,7 +101,7 @@ def cli_search(args: argparse.Namespace):
         if args.pages:
             search_args["pages"] = args.pages
 
-        with console.status("Searching"):
+        with err_console.status("Searching"):
             query = index.search(args.query, **search_args)
 
             results = []
@@ -111,7 +111,7 @@ def cli_search(args: argparse.Namespace):
     try:
         write_file(results, **write_args)
     except ValueError as error:  # pragma: no cover
-        console.print(f"Error writing log file. Error: {error}")
+        err_console.print(f"Error writing log file. Error: {error}")
 
 
 def include(parent_parser: argparse._SubParsersAction, parents: dict):
