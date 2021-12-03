@@ -48,7 +48,7 @@ censys = "censys.cli:main"
 python = ">=3.6.2,<4.0"
 requests = ">=2.26.0"
 backoff = "^1.11.1"
-rich = "^10.15.0"
+rich = "^10.15.2"
 importlib-metadata = { version = "^4.6.1", markers = "python_version < '3.8'" }
 
 [tool.poetry.dev-dependencies]
