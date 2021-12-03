@@ -247,6 +247,40 @@ class CensysSearchAPIv2(CensysAPIBase):
 
         return self._get(self.view_path + document_id, args)["result"]
 
+    def bulk_view(
+        self,
+        document_ids: List[str],
+        at_time: Optional[Datetime] = None,
+    ) -> Dict[str, dict]:
+        """Bulk view documents from current index.
+
+        View the current structured data we have on a list of documents.
+        For more details, see our documentation: https://search.censys.io/api
+
+        Args:
+            document_ids (List[str]): The IDs of the documents you are requesting.
+            at_time ([str, datetime.date, datetime.datetime]):
+                Optional; Fetches a document at a given point in time.
+
+        Returns:
+            Dict[str, dict]: Dictionary mapping document IDs to that document's result set.
+        """
+        args = {}
+        if at_time:
+            args["at_time"] = format_rfc3339(at_time)
+
+        threads = []
+        documents = {}
+        with ThreadPoolExecutor(max_workers=20) as executor:
+            for document_id in document_ids:
+                threads.append(executor.submit(self.view, document_id, at_time))
+
+            for task in as_completed(threads):
+                result = task.result()
+                documents[result["ip"]] = result
+
+        return documents
+
     def aggregate(
         self, query: str, field: str, num_buckets: Optional[int] = None
     ) -> dict:

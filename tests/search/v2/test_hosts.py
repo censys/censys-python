@@ -6,7 +6,7 @@ from parameterized import parameterized
 
 from tests.utils import V2_URL, CensysTestCase
 
-from censys.search import SearchClient
+from censys.search import CensysHosts, SearchClient
 
 VIEW_HOST_JSON = {
     "code": 200,
@@ -147,6 +147,8 @@ TEST_HOST = "8.8.8.8"
 
 
 class TestHosts(CensysTestCase):
+    api: CensysHosts
+
     def setUp(self):
         super().setUp()
         self.setUpApi(SearchClient(self.api_id, self.api_secret).v2.hosts)
@@ -176,6 +178,42 @@ class TestHosts(CensysTestCase):
         res = self.api.view(TEST_HOST, at_time=date)
 
         assert res == VIEW_HOST_JSON["result"]
+
+    def test_bulk_view(self):
+        ips = ["1.1.1.1", "1.1.1.2", "1.1.1.3"]
+        expected = {}
+        for ip in ips:
+            host_json = VIEW_HOST_JSON.copy()
+            host_json["result"]["ip"] = ip
+            self.responses.add(
+                responses.GET,
+                f"{V2_URL}/hosts/{ip}",
+                status=200,
+                json=host_json,
+            )
+            expected[ip] = host_json["result"].copy()
+
+        results = self.api.bulk_view(ips)
+        assert results == expected
+
+    def test_bulk_view_at_time(self):
+        ips = ["1.1.1.1", "1.1.1.2", "1.1.1.3"]
+        expected = {}
+        for ip in ips:
+            host_json = VIEW_HOST_JSON.copy()
+            host_json["result"]["ip"] = ip
+            self.responses.add(
+                responses.GET,
+                f"{V2_URL}/hosts/{ip}?at_time=2021-03-01T00:00:00.000000Z",
+                status=200,
+                json=host_json,
+            )
+            expected[ip] = host_json["result"].copy()
+
+        date = datetime.date(2021, 3, 1)
+
+        results = self.api.bulk_view(ips, at_time=date)
+        assert results == expected
 
     def test_search(self):
         self.responses.add(
