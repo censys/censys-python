@@ -181,9 +181,11 @@ class CensysSearchAPIv2(CensysAPIBase):
 
             Please note that each result returned by the query will be looked up using the view method.
 
+            Args:
+                max_workers (int): The number of workers to use. Defaults to 20.
+
             Returns:
                 Dict[str, dict]: Dictionary mapping documents to that document's result set.
-                max_workers (int): The number of workers to use. Defaults to 20.
             """
             threads = []
             results = {}
