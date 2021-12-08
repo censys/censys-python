@@ -115,9 +115,9 @@ class CensysHosts(CensysSearchAPIv2):
         if end_time:
             args["end_time"] = format_rfc3339(end_time)
 
-        return self._get(f"/experimental/{self.INDEX_NAME}/{ip_address}/events", args)[
-            "result"
-        ]["events"]
+        return self._get(
+            f"/v2/experimental/{self.INDEX_NAME}/{ip_address}/events", args
+        )["result"]["events"]
 
     def list_hosts_with_tag(self, tag_id: str) -> List[str]:
         """Returns a list of hosts which are tagged with the specified tag.

@@ -1,6 +1,6 @@
 import responses
 
-from tests.utils import CensysTestCase
+from tests.utils import V1_URL, CensysTestCase
 
 from censys.search import SearchClient
 
@@ -20,7 +20,7 @@ class CensysCertificatesTests(CensysTestCase):
     def test_bulk(self):
         self.responses.add(
             responses.POST,
-            f"{self.base_url}/bulk/certificates",
+            f"{V1_URL}/bulk/certificates",
             status=200,
             json=BULK_JSON,
         )

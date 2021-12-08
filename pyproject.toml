@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "censys"
-version = "2.0.9"
+version = "2.1.0"
 description = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
 readme = "README.md"
 authors = ["Censys, Inc. <support@censys.io>"]
@@ -48,7 +48,7 @@ censys = "censys.cli:main"
 python = ">=3.6.2,<4.0"
 requests = ">=2.26.0"
 backoff = "^1.11.1"
-rich = "^10.6.0"
+rich = "^10.15.2"
 importlib-metadata = { version = "^4.6.1", markers = "python_version < '3.8'" }
 
 [tool.poetry.dev-dependencies]
@@ -62,7 +62,7 @@ flake8-isort = "^4.1.1"
 isort = "^5.10.1"
 pep8-naming = "^0.12.1"
 flake8-black = "^0.2.3"
-black = "^21.11b1"
+black = "^21.12b0"
 darglint = "^1.8.1"
 
 # Tests

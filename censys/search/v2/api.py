@@ -14,7 +14,6 @@ from censys.common.exceptions import (
 )
 from censys.common.types import Datetime
 from censys.common.utils import format_rfc3339
-from censys.search.v1.api import CensysSearchAPIv1
 
 Fields = Optional[List[str]]
 
@@ -28,12 +27,10 @@ class CensysSearchAPIv2(CensysAPIBase):
         >>> c = CensysSearchAPIv2()
     """
 
-    DEFAULT_URL: str = "https://search.censys.io/api/v2"
+    DEFAULT_URL: str = "https://search.censys.io/api"
     """Default Search API base URL."""
     INDEX_NAME: str = ""
     """Name of Censys Index."""
-    v1: CensysSearchAPIv1
-    """Search V1 Endpoints on V2"""
 
     def __init__(
         self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
@@ -70,22 +67,12 @@ class CensysSearchAPIv2(CensysAPIBase):
         self._session.auth = (self._api_id, self._api_secret)
 
         # Generate concrete paths to be called
-        self.view_path = f"/{self.INDEX_NAME}/"
-        self.search_path = f"/{self.INDEX_NAME}/search"
-        self.aggregate_path = f"/{self.INDEX_NAME}/aggregate"
-        self.metadata_path = f"/metadata/{self.INDEX_NAME}"
-        self.tags_path = "/tags"
-
-        # Set up the v1 API
-        v1_kwargs = kwargs.copy()
-        v1_kwargs.update(
-            {
-                "url": "https://search.censys.io/api/v1",
-                "api_id": self._api_id,
-                "api_secret": self._api_secret,
-            }
-        )
-        self.v1 = CensysSearchAPIv1(**v1_kwargs)
+        self.view_path = f"/v2/{self.INDEX_NAME}/"
+        self.search_path = f"/v2/{self.INDEX_NAME}/search"
+        self.aggregate_path = f"/v2/{self.INDEX_NAME}/aggregate"
+        self.metadata_path = f"/v2/metadata/{self.INDEX_NAME}"
+        self.tags_path = "/v2/tags"
+        self.account_path = "/v1/account"
 
     def _get_exception_class(  # type: ignore
         self, res: Response
@@ -100,8 +87,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         Returns:
             dict: Quota response.
         """
-        # Make account call to v1 endpoint
-        return self.v1.account()
+        return self._get(self.account_path)
 
     def quota(self) -> dict:
         """Returns metadata of a given search query.
@@ -190,10 +176,13 @@ class CensysSearchAPIv2(CensysAPIBase):
             """
             return self
 
-        def view_all(self) -> Dict[str, dict]:
+        def view_all(self, max_workers: int = 20) -> Dict[str, dict]:
             """View each document returned from query.
 
             Please note that each result returned by the query will be looked up using the view method.
+
+            Args:
+                max_workers (int): The number of workers to use. Defaults to 20.
 
             Returns:
                 Dict[str, dict]: Dictionary mapping documents to that document's result set.
@@ -203,7 +192,7 @@ class CensysSearchAPIv2(CensysAPIBase):
 
             document_key = INDEX_TO_KEY.get(self.api.INDEX_NAME, "ip")
 
-            with ThreadPoolExecutor(max_workers=20) as executor:
+            with ThreadPoolExecutor(max_workers) as executor:
                 for hit in self.__call__():
                     document_id = hit[document_key]
                     threads.append(executor.submit(self.api.view, document_id))
@@ -260,6 +249,42 @@ class CensysSearchAPIv2(CensysAPIBase):
             args["at_time"] = format_rfc3339(at_time)
 
         return self._get(self.view_path + document_id, args)["result"]
+
+    def bulk_view(
+        self,
+        document_ids: List[str],
+        at_time: Optional[Datetime] = None,
+        max_workers: int = 20,
+    ) -> Dict[str, dict]:
+        """Bulk view documents from current index.
+
+        View the current structured data we have on a list of documents.
+        For more details, see our documentation: https://search.censys.io/api
+
+        Args:
+            document_ids (List[str]): The IDs of the documents you are requesting.
+            at_time ([str, datetime.date, datetime.datetime]):
+                Optional; Fetches a document at a given point in time.
+            max_workers (int): The number of workers to use. Defaults to 20.
+
+        Returns:
+            Dict[str, dict]: Dictionary mapping document IDs to that document's result set.
+        """
+        args = {}
+        if at_time:
+            args["at_time"] = format_rfc3339(at_time)
+
+        threads = []
+        documents = {}
+        with ThreadPoolExecutor(max_workers) as executor:
+            for document_id in document_ids:
+                threads.append(executor.submit(self.view, document_id, at_time))
+
+            for task in as_completed(threads):
+                result = task.result()
+                documents[result["ip"]] = result
+
+        return documents
 
     def aggregate(
         self, query: str, field: str, num_buckets: Optional[int] = None

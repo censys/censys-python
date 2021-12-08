@@ -4,7 +4,7 @@ import pytest
 import responses
 from parameterized import parameterized_class
 
-from tests.utils import CensysTestCase
+from tests.utils import BASE_URL, CensysTestCase
 
 from censys.search.v2 import CensysCerts, CensysHosts
 from censys.search.v2.api import CensysSearchAPIv2
@@ -82,7 +82,7 @@ class CensysTagsTests(CensysTestCase):
     def test_list_all_tags(self):
         self.responses.add(
             responses.GET,
-            self.base_url + self.api.tags_path,
+            BASE_URL + self.api.tags_path,
             status=200,
             json=LIST_TAGS_RESPONSE,
         )
@@ -92,7 +92,7 @@ class CensysTagsTests(CensysTestCase):
     def test_create_tag(self):
         self.responses.add(
             responses.POST,
-            self.base_url + self.api.tags_path,
+            BASE_URL + self.api.tags_path,
             status=200,
             json=CREATE_TAG_RESPONSE,
             match=[
@@ -107,7 +107,7 @@ class CensysTagsTests(CensysTestCase):
     def test_get_tag(self):
         self.responses.add(
             responses.GET,
-            self.base_url + self.api.tags_path + "/" + TEST_TAG_ID,
+            BASE_URL + self.api.tags_path + "/" + TEST_TAG_ID,
             status=200,
             json=CREATE_TAG_RESPONSE,
         )
@@ -117,7 +117,7 @@ class CensysTagsTests(CensysTestCase):
     def test_update_tag(self):
         self.responses.add(
             responses.PUT,
-            self.base_url + self.api.tags_path + "/" + TEST_TAG_ID,
+            BASE_URL + self.api.tags_path + "/" + TEST_TAG_ID,
             status=200,
             json=CREATE_TAG_RESPONSE,
             match=[
@@ -132,7 +132,7 @@ class CensysTagsTests(CensysTestCase):
     def test_delete_tag(self):
         self.responses.add(
             responses.DELETE,
-            self.base_url + self.api.tags_path + "/" + TEST_TAG_ID,
+            BASE_URL + self.api.tags_path + "/" + TEST_TAG_ID,
             status=204,
         )
         self.api.delete_tag(TEST_TAG_ID)
@@ -141,7 +141,7 @@ class CensysTagsTests(CensysTestCase):
     def test_list_tags_on_document(self):
         self.responses.add(
             responses.GET,
-            self.base_url + self.api.view_path + self.document_id + "/tags",
+            BASE_URL + self.api.view_path + self.document_id + "/tags",
             status=200,
             json=LIST_TAGS_RESPONSE,
         )
@@ -151,7 +151,7 @@ class CensysTagsTests(CensysTestCase):
     def test_add_tag_to_document(self):
         self.responses.add(
             responses.PUT,
-            f"{self.base_url}{self.api.view_path}{self.document_id}/tags/{TEST_TAG_ID}",
+            f"{BASE_URL}{self.api.view_path}{self.document_id}/tags/{TEST_TAG_ID}",
             status=200,
         )
         self.api.add_tag_to_document(self.document_id, TEST_TAG_ID)
@@ -160,7 +160,7 @@ class CensysTagsTests(CensysTestCase):
     def test_remove_tag_to_document(self):
         self.responses.add(
             responses.DELETE,
-            f"{self.base_url}{self.api.view_path}{self.document_id}/tags/{TEST_TAG_ID}",
+            f"{BASE_URL}{self.api.view_path}{self.document_id}/tags/{TEST_TAG_ID}",
             status=200,
         )
         self.api.remove_tag_from_document(self.document_id, TEST_TAG_ID)
@@ -171,7 +171,7 @@ class CensysTagsTests(CensysTestCase):
             pytest.skip("Only applicable to hosts assets")
         self.responses.add(
             responses.GET,
-            self.base_url + self.api.tags_path + "/" + TEST_TAG_ID + "/hosts",
+            BASE_URL + self.api.tags_path + "/" + TEST_TAG_ID + "/hosts",
             status=200,
             json=LIST_HOSTS_RESPONSE,
         )
@@ -185,7 +185,7 @@ class CensysTagsTests(CensysTestCase):
             pytest.skip("Only applicable to certs assets")
         self.responses.add(
             responses.GET,
-            self.base_url + self.api.tags_path + "/" + TEST_TAG_ID + "/certificates",
+            BASE_URL + self.api.tags_path + "/" + TEST_TAG_ID + "/certificates",
             status=200,
             json=LIST_CERTS_RESPONSE,
         )

@@ -6,14 +6,14 @@ import responses
 from parameterized import parameterized
 from requests.models import Response
 
-from tests.utils import CensysTestCase
+from tests.utils import V1_URL, CensysTestCase
 
 from censys.common.exceptions import (
     CensysException,
     CensysExceptionMapper,
     CensysSearchException,
 )
-from censys.search.v1.api import CensysSearchAPI
+from censys.search.v1.api import CensysSearchAPIv1
 
 ACCOUNT_JSON = {
     "login": "test@censys.io",
@@ -32,12 +32,12 @@ SearchExceptionParams = [
 class CensysSearchAPITests(CensysTestCase):
     def setUp(self):
         super().setUp()
-        self.setUpApi(CensysSearchAPI(self.api_id, self.api_secret))
+        self.setUpApi(CensysSearchAPIv1(self.api_id, self.api_secret))
 
     def test_account(self):
         self.responses.add(
             responses.GET,
-            self.base_url + "/account",
+            V1_URL + "/account",
             status=200,
             json=ACCOUNT_JSON,
         )
@@ -48,7 +48,7 @@ class CensysSearchAPITests(CensysTestCase):
     def test_quota(self):
         self.responses.add(
             responses.GET,
-            self.base_url + "/account",
+            V1_URL + "/account",
             status=200,
             json=ACCOUNT_JSON,
         )
@@ -76,4 +76,4 @@ class CensysAPIBaseTestsNoSearchEnv(unittest.TestCase):
         with pytest.raises(
             CensysException, match="No API ID or API secret configured."
         ):
-            CensysSearchAPI()
+            CensysSearchAPIv1()

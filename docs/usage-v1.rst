@@ -1,39 +1,37 @@
 Usage v1
 ========
 
-The Censys Search API provides functionality for interacting with Censys resources such as IPv4 addresses, Websites, and Certificates, and for viewing Account information such as query quota.
+The Censys Search API provides functionality for interacting with Censys resources such as Certificates, and for viewing Account information such as query quota.
 
 There are six API options that this library provides access to:
 
--  :attr:`search <censys.search.v1.api.CensysSearchAPIv1.search>` - Allows searches against the IPv4 addresses, Websites, and Certificates indexes using the same search syntax as the `web app <https://censys.io/ipv4>`__.
--  :attr:`view <censys.search.v1.api.CensysSearchAPIv1.view>` - Returns the structured data we have about a specific IPv4 address, Website, or Certificate, given the resource's natural ID.
--  :attr:`report <censys.search.v1.api.CensysSearchAPIv1.report>` - Allows you to view resources as a spectrum based on attributes of the resource, similar to the `Report Builder page <https://censys.io/ipv4/report>`__ on the web app.
+-  :attr:`search <censys.search.v1.api.CensysSearchAPIv1.search>` - Allows searches against the Certificates indexes using the same search syntax as the `web app <https://search.censys.io/certificates>`__.
+-  :attr:`view <censys.search.v1.api.CensysSearchAPIv1.view>` - Returns the structured data we have about a specific Certificate, given the resource's natural ID.
+-  :attr:`report <censys.search.v1.api.CensysSearchAPIv1.report>` - Allows you to view resources as a spectrum based on attributes of the resource, similar to the `Report Builder page <https://search.censys.io/certificates/report>`__ on the web app.
 -  :attr:`data <censys.search.v1.CensysData>` - Returns collections of scan series whose metadata includes a description of the data collected in the series and links to the individual scan results.
 -  :attr:`account <censys.search.v1.api.CensysSearchAPIv1.account>` - Returns information about your Censys account, including your current query quota usage. This function is available for all index types.
 -  :attr:`bulk <censys.search.v1.CensysCertificates.bulk>` - Returns the structured data for certificates in bulk, given the certificates' SHA-256 fingerprints.
 
-More details about each option can be found in the `Censys API documentation <https://censys.io/api>`__. A list of index fields can be found in the `Censys API definitions page <https://censys.io/ipv4/help/definitions>`__.
+More details about each option can be found in the `Censys API documentation <https://search.censys.io/api>`__. A list of index fields can be found in the `Censys API definitions page <https://search.censys.io/certificates/help>`__.
 
-Python class objects must be initialized for each resource index (IPv4 addresses, Websites, and Certificates).
+Python class objects must be initialized for each resource index (Certificates).
 
--  :attr:`CensysIPv4 <censys.search.v1.CensysIPv4>`
--  :attr:`CensysWebsites <censys.search.v1.CensysWebsites>`
 -  :attr:`CensysCertificates <censys.search.v1.CensysCertificates>`
 -  :attr:`CensysData <censys.search.v1.CensysData>`
 
 ``search``
 ----------
 
-Below we show an example using the :attr:`CensysIPv4 <censys.search.v1.CensysIPv4>` index.
+Below we show an example using the :attr:`CensysCertificates <censys.search.v1.CensysCertificates>` index.
 
 .. code:: python
 
-    from censys.search import CensysIPv4
+    from censys.search import CensysCertificates
 
-    c = CensysIPv4()
+    c = CensysCertificates()
 
     for page in c.search(
-        "443.https.get.headers.server: Apache AND location.country: Japan", 
+        "validation.nss.valid: true and validation.nss.type: intermediate", 
         max_records=10
     ):
         print(page)
@@ -42,19 +40,16 @@ Below we show an example using the :attr:`CensysIPv4 <censys.search.v1.CensysIPv
     # returned in the matching results. Default behavior is to return a map
     # including `location` and `protocol`.
     fields = [
-        "ip",
-        "updated_at",
-        "443.https.get.title",
-        "443.https.get.headers.server",
-        "443.https.get.headers.x_powered_by",
-        "443.https.get.metadata.description",
-        "443.https.tls.certificate.parsed.subject_dn",
-        "443.https.tls.certificate.parsed.names",
-        "443.https.tls.certificate.parsed.subject.common_name",
+        "fingerprint_sha256",
+        "parsed.validity.start",
+        "parsed.validity.end",
+        "parsed.subject_dn",
+        "parsed.names",
+        "parsed.subject.common_name",
     ]
 
     for page in c.search(
-            "443.https.get.headers.server: Apache AND location.country: Japan",
+            "censys.io and tags: trusted",
             fields,
             max_records=10,
         ):
@@ -78,22 +73,22 @@ Below we show an example using the :attr:`CensysCertificates <censys.search.v1.C
 ``report``
 ----------
 
-Below we show an example using the :attr:`CensysWebsites <censys.search.v1.CensysWebsites>` index.
+Below we show an example using the :attr:`CensysCertificates <censys.search.v1.CensysCertificates>` index.
 
 .. code:: python
 
-    from censys.search import CensysWebsites
+    from censys.search import CensysCertificates
 
-    c = CensysWebsites()
+    c = CensysCertificates()
 
     # The report method constructs a report using a query, an aggregation field, and the
     # number of buckets to bin.
-    websites = c.report(
-        """ "welcome to" AND tags.raw: "http" """,
-        field="80.http.get.headers.server.raw",
+    certificates = c.report(
+        """censys.io and tags: trusted""",
+        field="parsed.version",
         buckets=5,
     )
-    print(websites)
+    print(certificates)
 
 ``data``
 --------
@@ -113,13 +108,13 @@ Below we show an example using the :attr:`CensysData <censys.search.v1.CensysDat
 ``account``
 -----------
 
-Below we show an example using the :attr:`CensysIPv4 <censys.search.v1.CensysIPv4>` index.
+Below we show an example using the :attr:`CensysCertificates <censys.search.v1.CensysCertificates>` index.
 
 .. code:: python
 
-    from censys.search import CensysIPv4
+    from censys.search import CensysCertificates
 
-    c = CensysIPv4()
+    c = CensysCertificates()
 
     # Gets account data
     account = c.account()

@@ -2,7 +2,7 @@ import pytest
 import responses
 from parameterized import parameterized_class
 
-from tests.utils import CensysTestCase
+from tests.utils import V1_URL, CensysTestCase
 
 from censys.common.exceptions import CensysException
 from censys.search import SearchClient
@@ -55,8 +55,6 @@ REPORT_JSON = {
             "certificates",
             "fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70",
         ),
-        ("ipv4", "8.8.8.8"),
-        ("websites", "google.com"),
     ],
 )
 class CensysIndexTests(CensysTestCase):
@@ -72,7 +70,7 @@ class CensysIndexTests(CensysTestCase):
     def test_view(self):
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/view/{self.index}/{self.document_id}",
+            f"{V1_URL}/view/{self.index}/{self.document_id}",
             status=200,
             json=VIEW_JSON,
         )
@@ -84,7 +82,7 @@ class CensysIndexTests(CensysTestCase):
     def test_search(self):
         self.responses.add(
             responses.POST,
-            f"{self.base_url}/search/{self.index}",
+            f"{V1_URL}/search/{self.index}",
             status=200,
             json=SEARCH_JSON,
         )
@@ -96,7 +94,7 @@ class CensysIndexTests(CensysTestCase):
     def test_report(self):
         self.responses.add(
             responses.POST,
-            f"{self.base_url}/report/{self.index}",
+            f"{V1_URL}/report/{self.index}",
             status=200,
             json=REPORT_JSON,
         )
@@ -108,7 +106,7 @@ class CensysIndexTests(CensysTestCase):
     def test_metadata(self):
         self.responses.add(
             responses.POST,
-            f"{self.base_url}/search/{self.index}",
+            f"{V1_URL}/search/{self.index}",
             status=200,
             json=SEARCH_JSON,
         )
@@ -126,7 +124,7 @@ class CensysIndexTests(CensysTestCase):
         temp_json["results"] = [{"sample": "results"} for _ in range(MAX_RECORDS + 5)]
         self.responses.add(
             responses.POST,
-            f"{self.base_url}/search/{self.index}",
+            f"{V1_URL}/search/{self.index}",
             status=200,
             json=temp_json,
         )

@@ -6,7 +6,7 @@ import pytest
 import responses
 
 from tests.search.v2.test_hosts import VIEW_HOST_JSON
-from tests.utils import CensysTestCase
+from tests.utils import V2_URL, CensysTestCase
 
 from censys.cli import main as cli_main
 from censys.cli.commands.hnri import CensysHNRI
@@ -20,7 +20,6 @@ class CensysCliHNRITest(CensysTestCase):
     def setUp(self):
         super().setUp()
         self.api = CensysHNRI(self.api_id, self.api_secret)
-        self.base_url = self.api.index._api_url
 
     @patch(
         "argparse._sys.argv",
@@ -37,7 +36,7 @@ class CensysCliHNRITest(CensysTestCase):
         ]
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/hosts/{self.IP_ADDRESS}",
+            f"{V2_URL}/hosts/{self.IP_ADDRESS}",
             status=200,
             json=response,
         )
@@ -66,7 +65,7 @@ class CensysCliHNRITest(CensysTestCase):
         response["result"]["services"] = [{"port": 23, "service_name": "VNC"}]
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/hosts/{self.IP_ADDRESS}",
+            f"{V2_URL}/hosts/{self.IP_ADDRESS}",
             status=200,
             json=response,
         )
@@ -94,7 +93,7 @@ class CensysCliHNRITest(CensysTestCase):
         response["result"]["services"] = []
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/hosts/{self.IP_ADDRESS}",
+            f"{V2_URL}/hosts/{self.IP_ADDRESS}",
             status=200,
             json=response,
         )

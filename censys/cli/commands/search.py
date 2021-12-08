@@ -5,7 +5,7 @@ import webbrowser
 from typing import List
 from urllib.parse import urlencode
 
-from censys.cli.utils import INDEXES, V1_INDEXES, V2_INDEXES, console, write_file
+from censys.cli.utils import INDEXES, V1_INDEXES, V2_INDEXES, err_console, write_file
 from censys.common.exceptions import CensysCLIException
 from censys.search import SearchClient
 
@@ -13,23 +13,6 @@ Fields = List[str]
 Results = List[dict]
 
 DEFAULT_FIELDS = {
-    "ipv4": [
-        "updated_at",
-        "protocols",
-        "metadata.description",
-        "autonomous_system.name",
-        "23.telnet.banner.banner",
-        "80.http.get.title",
-        "80.http.get.metadata.description",
-        "8080.http.get.metadata.description",
-        "8888.http.get.metadata.description",
-        "443.https.get.metadata.description",
-        "443.https.get.title",
-        "443.https.tls.certificate.parsed.subject_dn",
-        "443.https.tls.certificate.parsed.names",
-        "443.https.tls.certificate.parsed.subject.common_name",
-        "443.https.tls.certificate.parsed.extensions.subject_alt_name.dns_names",
-    ],
     "certs": [
         "metadata.updated_at",
         "parsed.issuer.common_name",
@@ -43,15 +26,6 @@ DEFAULT_FIELDS = {
         "metadata.source",
         "metadata.seen_in_scan",
         "tags",
-    ],
-    "websites": [
-        "443.https.tls.version",
-        "alexa_rank",
-        "domain",
-        "ports",
-        "protocols",
-        "tags",
-        "updated_at",
     ],
 }
 
@@ -69,17 +43,12 @@ def cli_search(args: argparse.Namespace):
 
     if args.open:
         url_query = {"q": args.query}
-        if index_type in V1_INDEXES:
-            if index_type == "certs":
-                index_type = "certificates"
-                # TODO: Remove when v1 is fully deprecated
-                webbrowser.open(
-                    f"https://search.censys.io/{index_type}?{urlencode(url_query)}"
-                )
-                sys.exit(0)
-            webbrowser.open(f"https://censys.io/{index_type}?{urlencode(url_query)}")
+        if index_type in {"certs", "certificates"}:
+            webbrowser.open(
+                f"https://search.censys.io/certificates?{urlencode(url_query)}"
+            )
             sys.exit(0)
-        elif index_type in V2_INDEXES:
+        if index_type in V2_INDEXES:
             url_query.update({"resource": index_type})
             webbrowser.open(f"https://search.censys.io/search?{urlencode(url_query)}")
             sys.exit(0)
@@ -120,7 +89,7 @@ def cli_search(args: argparse.Namespace):
 
         search_args["fields"] = fields
 
-        with console.status("Searching"):
+        with err_console.status("Searching"):
             results = list(index.search(args.query, **search_args))
     elif index_type in V2_INDEXES:
         if args.format == "csv":
@@ -132,7 +101,7 @@ def cli_search(args: argparse.Namespace):
         if args.pages:
             search_args["pages"] = args.pages
 
-        with console.status("Searching"):
+        with err_console.status("Searching"):
             query = index.search(args.query, **search_args)
 
             results = []
@@ -142,7 +111,7 @@ def cli_search(args: argparse.Namespace):
     try:
         write_file(results, **write_args)
     except ValueError as error:  # pragma: no cover
-        console.print(f"Error writing log file. Error: {error}")
+        err_console.print(f"Error writing log file. Error: {error}")
 
 
 def include(parent_parser: argparse._SubParsersAction, parents: dict):

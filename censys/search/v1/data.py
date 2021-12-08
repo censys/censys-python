@@ -5,7 +5,7 @@ from .api import CensysSearchAPIv1
 class CensysData(CensysSearchAPIv1):
     """Interacts with the Data index.
 
-    For more details, see our documentation: https://censys.io/api/v1/docs/data
+    For more details, see our documentation: https://search.censys.io/api
     """
 
     _PREFIX = "/data"

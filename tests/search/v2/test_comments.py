@@ -3,7 +3,7 @@ from typing import Type
 import responses
 from parameterized import parameterized_class
 
-from tests.utils import CensysTestCase
+from tests.utils import V2_URL, CensysTestCase
 
 from censys.search.v2 import CensysCerts, CensysHosts
 from censys.search.v2.api import CensysSearchAPIv2
@@ -61,7 +61,7 @@ class CensysCommentsTests(CensysTestCase):
     def test_get_comments(self):
         self.responses.add(
             responses.GET,
-            f"{self.base_url}/{self.index}/{self.document_id}/comments",
+            f"{V2_URL}/{self.index}/{self.document_id}/comments",
             status=200,
             json=GET_COMMENTS_RESPONSE,
         )
@@ -71,7 +71,7 @@ class CensysCommentsTests(CensysTestCase):
     def test_add_comment(self):
         self.responses.add(
             responses.POST,
-            f"{self.base_url}/{self.index}/{self.document_id}/comments",
+            f"{V2_URL}/{self.index}/{self.document_id}/comments",
             status=200,
             json=ADD_COMMENTS_RESPONSE,
             match=[responses.json_params_matcher({"contents": TEST_COMMENT})],
@@ -82,7 +82,7 @@ class CensysCommentsTests(CensysTestCase):
     def test_delete_comment(self):
         self.responses.add(
             responses.DELETE,
-            f"{self.base_url}/{self.index}/{self.document_id}/comments/comment-id",
+            f"{V2_URL}/{self.index}/{self.document_id}/comments/comment-id",
             status=209,
         )
         self.api.delete_comment(self.document_id, "comment-id")
@@ -90,7 +90,7 @@ class CensysCommentsTests(CensysTestCase):
     def test_update_comment(self):
         self.responses.add(
             responses.PUT,
-            f"{self.base_url}/{self.index}/{self.document_id}/comments/comment-id",
+            f"{V2_URL}/{self.index}/{self.document_id}/comments/comment-id",
             status=200,
             json={"code": 200, "status": "OK"},
             match=[responses.json_params_matcher({"contents": TEST_COMMENT})],

@@ -4,6 +4,7 @@ import csv
 import datetime
 import json
 import os.path
+import sys
 from typing import Any, Dict, List, Optional, Union
 
 from rich.console import Console
@@ -14,13 +15,15 @@ from censys.common.deprecation import DeprecationDecorator
 Fields = List[str]
 Results = Union[List[dict], Dict[str, Any]]
 
-V1_INDEXES = ["ipv4", "certs", "websites"]
+V1_INDEXES = ["certs"]
 V2_INDEXES = ["hosts"]
 INDEXES = V1_INDEXES + V2_INDEXES
 
 config = get_config()
 color = config.get(DEFAULT, "color")
-console = Console(color_system=("auto" if color else None))
+color_system = "auto" if color else None
+console = Console(color_system=color_system)  # type: ignore
+err_console = Console(color_system=color_system, file=sys.stderr)  # type: ignore
 
 
 def print_wrote_file(file_path: str):
