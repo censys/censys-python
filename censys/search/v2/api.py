@@ -176,20 +176,21 @@ class CensysSearchAPIv2(CensysAPIBase):
             """
             return self
 
-        def view_all(self) -> Dict[str, dict]:
+        def view_all(self, max_workers: int = 20) -> Dict[str, dict]:
             """View each document returned from query.
 
             Please note that each result returned by the query will be looked up using the view method.
 
             Returns:
                 Dict[str, dict]: Dictionary mapping documents to that document's result set.
+                max_workers (int): The number of workers to use. Defaults to 20.
             """
             threads = []
             results = {}
 
             document_key = INDEX_TO_KEY.get(self.api.INDEX_NAME, "ip")
 
-            with ThreadPoolExecutor(max_workers=20) as executor:
+            with ThreadPoolExecutor(max_workers) as executor:
                 for hit in self.__call__():
                     document_id = hit[document_key]
                     threads.append(executor.submit(self.api.view, document_id))
@@ -251,6 +252,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         self,
         document_ids: List[str],
         at_time: Optional[Datetime] = None,
+        max_workers: int = 20,
     ) -> Dict[str, dict]:
         """Bulk view documents from current index.
 
@@ -261,6 +263,7 @@ class CensysSearchAPIv2(CensysAPIBase):
             document_ids (List[str]): The IDs of the documents you are requesting.
             at_time ([str, datetime.date, datetime.datetime]):
                 Optional; Fetches a document at a given point in time.
+            max_workers (int): The number of workers to use. Defaults to 20.
 
         Returns:
             Dict[str, dict]: Dictionary mapping document IDs to that document's result set.
@@ -271,7 +274,7 @@ class CensysSearchAPIv2(CensysAPIBase):
 
         threads = []
         documents = {}
-        with ThreadPoolExecutor(max_workers=20) as executor:
+        with ThreadPoolExecutor(max_workers) as executor:
             for document_id in document_ids:
                 threads.append(executor.submit(self.view, document_id, at_time))
 
