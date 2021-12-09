@@ -270,9 +270,8 @@ class CensysSearchAPIv2(CensysAPIBase):
         Returns:
             Dict[str, dict]: Dictionary mapping document IDs to that document's result set.
         """
-        args = {}
         if at_time:
-            args["at_time"] = format_rfc3339(at_time)
+            at_time = format_rfc3339(at_time)
 
         threads = []
         documents = {}
