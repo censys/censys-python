@@ -10,6 +10,7 @@ IPS = [
 ]
 
 hosts = h.bulk_view(IPS)
+print(hosts)
 # {
 #     "1.1.1.1": {...},
 #     "1.1.1.2": {...},
