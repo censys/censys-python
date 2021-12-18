@@ -341,7 +341,42 @@ class CensysCliSearchTest(CensysTestCase):
     def test_write_screen_v2(self):
         self.responses.add(
             responses.GET,
-            V2_URL + "/hosts/search?q=service.service_name: HTTP&per_page=100",
+            V2_URL
+            + "/hosts/search?q=service.service_name: HTTP&per_page=100&virtual_hosts=EXCLUDE",
+            status=200,
+            json=SEARCH_HOSTS_JSON,
+        )
+
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        json_response = json.loads(temp_stdout.getvalue().strip())
+
+        assert json_response == SEARCH_HOSTS_JSON["result"]["hits"]
+
+    @patch(
+        "argparse._sys.argv",
+        [
+            "censys",
+            "search",
+            "service.service_name: HTTP",
+            "--index-type",
+            "hosts",
+            "--format",
+            "screen",
+            "--pages",
+            "1",
+            "--virtual-hosts",
+            "ONLY",
+        ]
+        + CensysTestCase.cli_args,
+    )
+    def test_search_virtual_hosts(self):
+        self.responses.add(
+            responses.GET,
+            V2_URL
+            + "/hosts/search?q=service.service_name%3A+HTTP&per_page=100&virtual_hosts=ONLY",
             status=200,
             json=SEARCH_HOSTS_JSON,
         )

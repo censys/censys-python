@@ -101,6 +101,9 @@ def cli_search(args: argparse.Namespace):
         if args.pages:
             search_args["pages"] = args.pages
 
+        if args.virtual_hosts:
+            search_args["virtual_hosts"] = args.virtual_hosts
+
         with err_console.status("Searching"):
             query = index.search(args.query, **search_args)
 
@@ -182,6 +185,14 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         default=1,
         type=int,
         help="number of pages of results to return (when set to -1 returns all pages available)",
+    )
+    v2_group.add_argument(
+        "--virtual-hosts",
+        type=str,
+        default="EXCLUDE",
+        choices=["INCLUDE", "EXCLUDE", "ONLY"],
+        metavar="INCLUDE|EXCLUDE|ONLY",
+        help="whether to include virtual hosts in the results",
     )
 
     v1_group = search_parser.add_argument_group(
