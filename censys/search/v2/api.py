@@ -111,6 +111,7 @@ class CensysSearchAPIv2(CensysAPIBase):
             per_page: Optional[int] = None,
             cursor: Optional[str] = None,
             pages: int = 1,
+            **kwargs: Any,
         ):
             """Inits Query.
 
@@ -120,6 +121,7 @@ class CensysSearchAPIv2(CensysAPIBase):
                 per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
                 cursor (int): Optional; The cursor of the desired result set.
                 pages (int): Optional; The number of pages returned. Defaults to 1. If you set this to -1, it will return all pages.
+                **kwargs (Any): Optional; Additional arguments to be passed to the query.
             """
             self.api = api
             self.query = query
@@ -131,6 +133,7 @@ class CensysSearchAPIv2(CensysAPIBase):
                 self.pages = float("inf")
             else:
                 self.pages = pages
+            self.extra_args = kwargs
 
         def __call__(self, per_page: Optional[int] = None) -> List[dict]:
             """Search current index.
@@ -151,6 +154,7 @@ class CensysSearchAPIv2(CensysAPIBase):
                 "q": self.query,
                 "per_page": per_page or self.per_page or 100,
                 "cursor": self.nextCursor or self.cursor,
+                **self.extra_args,
             }
             payload = self.api._get(self.api.search_path, args)
             self.page += 1
@@ -209,6 +213,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         per_page: Optional[int] = None,
         cursor: Optional[str] = None,
         pages: int = 1,
+        **kwargs: Any,
     ) -> Query:
         """Search current index.
 
@@ -220,11 +225,12 @@ class CensysSearchAPIv2(CensysAPIBase):
             per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
             cursor (int): Optional; The cursor of the desired result set.
             pages (int): Optional; The number of pages returned. Defaults to 1.
+            **kwargs (Any): Optional; Additional arguments to be passed to the query.
 
         Returns:
             Query: Query object that can be a callable or an iterable.
         """
-        return self.Query(self, query, per_page, cursor, pages)
+        return self.Query(self, query, per_page, cursor, pages, **kwargs)
 
     def view(
         self,
