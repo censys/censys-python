@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "censys"
-version = "2.1.0"
+version = "2.1.1"
 description = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
 readme = "README.md"
 authors = ["Censys, Inc. <support@censys.io>"]
