@@ -261,7 +261,7 @@ class TestHosts(CensysTestCase):
     def test_search_pages(self):
         self.responses.add(
             responses.GET,
-            V2_URL + "/hosts/search?q=service.service_name: HTTP&per_page=100",
+            V2_URL + "/hosts/search?q=service.service_name%3A+HTTP&per_page=100",
             status=200,
             json=SEARCH_HOSTS_JSON,
         )
@@ -282,7 +282,7 @@ class TestHosts(CensysTestCase):
         self.responses.add(
             responses.GET,
             V2_URL
-            + "/hosts/search?q=service.service_name: HTTP&per_page=100"
+            + "/hosts/search?q=service.service_name%3A+HTTP&per_page=100"
             + f"&cursor={next_cursor}",
             status=200,
             json=page_2_json,
@@ -293,6 +293,18 @@ class TestHosts(CensysTestCase):
         query = self.api.search("service.service_name: HTTP", pages=-1)
         for i, page in enumerate(query):
             assert expected[i] == page
+
+    def test_search_virtual_hosts(self):
+        self.responses.add(
+            responses.GET,
+            V2_URL
+            + "/hosts/search?q=service.service_name%3A+HTTP&per_page=100&virtual_hosts=EXCLUDE",
+            status=200,
+            json=SEARCH_HOSTS_JSON,
+        )
+
+        query = self.api.search("service.service_name: HTTP", virtual_hosts="EXCLUDE")
+        assert query() == SEARCH_HOSTS_JSON["result"]["hits"]
 
     def test_aggregate(self):
         self.responses.add(

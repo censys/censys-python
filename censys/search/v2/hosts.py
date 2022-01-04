@@ -1,5 +1,5 @@
 """Interact with the Censys Search Host API."""
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from .api import CensysSearchAPIv2
 from censys.common.types import Datetime
@@ -71,6 +71,35 @@ class CensysHosts(CensysSearchAPIv2):
 
     INDEX_NAME = "hosts"
     """Name of Censys Index."""
+
+    def search(
+        self,
+        query: str,
+        per_page: Optional[int] = None,
+        cursor: Optional[str] = None,
+        pages: int = 1,
+        virtual_hosts: Optional[str] = None,
+        **kwargs: Any,
+    ) -> CensysSearchAPIv2.Query:
+        """Search host index.
+
+        Searches the given index for all records that match the given query.
+        For more details, see our documentation: https://search.censys.io/api
+
+        Args:
+            query (str): The query to be executed.
+            per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
+            cursor (int): Optional; The cursor of the desired result set.
+            virtual_hosts (str): Optional; Whether to include virtual hosts in the results. Valid values are "EXCLUDE", "INCLUDE", and "ONLY".
+            pages (int): Optional; The number of pages returned. Defaults to 1.
+            **kwargs (Any): Optional; Additional arguments to be passed to the query.
+
+        Returns:
+            Query: Query object that can be a callable or an iterable.
+        """
+        if virtual_hosts:
+            kwargs["virtual_hosts"] = virtual_hosts
+        return super().search(query, per_page, cursor, pages, **kwargs)
 
     def view_host_names(self, ip_address: str) -> List[str]:
         """Fetches a list of host names for the specified IP address.

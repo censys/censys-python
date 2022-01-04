@@ -8,11 +8,10 @@ name: Mark stale issues and pull requests
 on:
   workflow_dispatch:
   schedule:
-  - cron: '30 12 * * *'
+    - cron: "30 12 * * *"
 
 jobs:
   stale:
-
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -20,10 +19,10 @@ jobs:
       pull-requests: write
 
     steps:
-    - uses: actions/stale@v3
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        days-before-stale: 60
-        days-before-close: 7
-        stale-issue-label: 'stale'
-        stale-pr-label: 'stale'
+      - uses: actions/stale@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          days-before-stale: 60
+          days-before-close: 7
+          stale-issue-label: "stale"
+          stale-pr-label: "stale"
