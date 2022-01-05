@@ -73,7 +73,7 @@ pytest-cov = "^3.0.0"
 responses = "^0.16.0"
 parameterized = "^0.8.1"
 # Types
-mypy = "^0.920"
+mypy = "^0.930"
 types-requests = "^2.26.3"
 backoff-stubs = "*"
 
