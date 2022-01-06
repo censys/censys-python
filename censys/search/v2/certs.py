@@ -7,6 +7,8 @@ from .api import CensysSearchAPIv2
 class CensysCerts(CensysSearchAPIv2):
     """Interacts with the Certs index.
 
+    Please note that this class represents only the v2 API endpoints. The v1 API endpoints (search, view, and report) are avilable only from CensysCertificates.
+
     Examples:
         Inits Censys Certs.
 
@@ -35,17 +37,57 @@ class CensysCerts(CensysSearchAPIv2):
     """Name of Censys Index."""
 
     def view(self, document_id: str):  # type: ignore # noqa: D102
-        raise NotImplementedError("CensysCerts.view is not implemented yet.")
+        """This function acts as a placeholder for the upcoming Censys Search Cert v2 API.
+
+        To view a certificate, please use `CensysCertificates`.
+
+        Raises:
+            NotImplementedError: CensysCerts.view is not implemented yet. Please use CensysCertificates.view instead.
+
+        :meta private:
+        """
+        raise NotImplementedError(
+            "CensysCerts.view is not implemented yet. Please use CensysCertificates.view instead."
+        )
 
     def search(  # type: ignore # noqa: D102
         self, query: str, per_page: Optional[int], cursor: Optional[str], pages: int
     ):
-        raise NotImplementedError("CensysCerts.search is not implemented yet.")
+        """This function acts as a placeholder for the upcoming Censys Search Cert v2 API.
+
+        To search for certificates, please use `CensysCertificates`.
+
+        Raises:
+            NotImplementedError: CensysCerts.search is not implemented yet. Please use CensysCertificates.search instead.
+
+        :meta private:
+        """
+        raise NotImplementedError(
+            "CensysCerts.search is not implemented yet. Please use CensysCertificates.search instead."
+        )
 
     def aggregate(self, query: str, field: str, num_buckets: Optional[int]):  # type: ignore # noqa: D102
-        raise NotImplementedError("CensysCerts.aggregate is not implemented yet.")
+        """This function acts as a placeholder for the upcoming Censys Search Cert v2 API.
+
+        To aggregate/report certificates, please use `CensysCertificates`.
+
+        Raises:
+            NotImplementedError: CensysCerts.aggregate is not implemented yet. Please use CensysCertificates.report instead.
+
+        :meta private:
+        """
+        raise NotImplementedError(
+            "CensysCerts.aggregate is not implemented yet. Please use CensysCertificates.report instead."
+        )
 
     def metadata(self):  # noqa: D102
+        """This function acts as a placeholder for the upcoming Censys Search Cert v2 API.
+
+        Raises:
+            NotImplementedError: CensysCerts.metadata is not implemented yet.
+
+        :meta private:
+        """
         raise NotImplementedError("CensysCerts.metadata is not implemented yet.")
 
     def get_hosts_by_cert(

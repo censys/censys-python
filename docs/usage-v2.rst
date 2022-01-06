@@ -15,6 +15,11 @@ Python class objects must be initialized for each resource index (Hosts).
 
 -  :attr:`CensysHosts <censys.search.v2.CensysHosts>`
 
+.. note::
+
+   Please note that the Censys Search v2 API does not support searching, viewing, or aggregating the Certificates index. Please use the :attr:`CensysCertificates (v1) <censys.search.v1.CensysCertificates>` for this functionality.
+
+
 ``search``
 ----------
 
