@@ -101,20 +101,49 @@ class CensysHosts(CensysSearchAPIv2):
             kwargs["virtual_hosts"] = virtual_hosts
         return super().search(query, per_page, cursor, pages, **kwargs)
 
-    def view_host_names(self, ip_address: str) -> List[str]:
+    def view_host_names(self, ip: str) -> List[str]:
         """Fetches a list of host names for the specified IP address.
 
         Args:
-            ip_address (str): The IP address of the requested host.
+            ip (str): The IP address of the requested host.
 
         Returns:
             List[str]: A list of host names.
         """
-        return self._get(self.view_path + ip_address + "/names")["result"]["names"]
+        return self._get(self.view_path + ip + "/names")["result"]["names"]
+
+    def view_host_diff(
+        self,
+        ip: str,
+        ip_b: Optional[str] = None,
+        at_time: Optional[Datetime] = None,
+        at_time_b: Optional[Datetime] = None,
+    ):
+        """Fetches a diff of the specified IP address.
+
+        Args:
+            ip (str): The IP address of the requested host.
+            ip_b (str): Optional; The IP address of the second host.
+            at_time (Datetime): Optional; An RFC3339 timestamp which represents
+                the point-in-time used as the basis for Host A.
+            at_time_b (Datetime): Optional; An RFC3339 timestamp which represents
+                the point-in-time used as the basis for Host B.
+
+        Returns:
+            dict: A diff of the hosts.
+        """
+        args = {}
+        if ip_b:
+            args["ip_b"] = ip_b
+        if at_time:
+            args["at_time"] = format_rfc3339(at_time)
+        if at_time_b:
+            args["at_time_b"] = format_rfc3339(at_time_b)
+        return self._get(self.view_path + ip + "/diff", args)["result"]
 
     def view_host_events(
         self,
-        ip_address: str,
+        ip: str,
         start_time: Optional[Datetime] = None,
         end_time: Optional[Datetime] = None,
         per_page: Optional[int] = None,
@@ -124,7 +153,7 @@ class CensysHosts(CensysSearchAPIv2):
         """Fetches a list of events for the specified IP address.
 
         Args:
-            ip_address (str): The IP address of the requested host.
+            ip (str): The IP address of the requested host.
             start_time (Datetime): Optional; An RFC3339 timestamp which represents
                 the beginning chronological point-in-time (inclusive) from which events are returned.
             end_time (Datetime): Optional; An RFC3339 timestamp which represents
@@ -144,9 +173,9 @@ class CensysHosts(CensysSearchAPIv2):
         if end_time:
             args["end_time"] = format_rfc3339(end_time)
 
-        return self._get(
-            f"/v2/experimental/{self.INDEX_NAME}/{ip_address}/events", args
-        )["result"]["events"]
+        return self._get(f"/v2/experimental/{self.INDEX_NAME}/{ip}/events", args)[
+            "result"
+        ]["events"]
 
     def list_hosts_with_tag(self, tag_id: str) -> List[str]:
         """Returns a list of hosts which are tagged with the specified tag.

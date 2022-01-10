@@ -103,6 +103,16 @@ HOST_METADATA_JSON = {
     "result": {"services": ["HTTP", "IMAP", "MQTT", "SSH", "..."]},
 }
 
+VIEW_HOST_DIFF_JSON = {
+    "code": 200,
+    "status": "OK",
+    "result": {
+        "a": {"ip": "1.1.1.1", "last_updated_at": "2022-01-10T15:41:27.416Z"},
+        "b": {"ip": "1.1.1.2", "last_updated_at": "2022-01-10T15:41:27.416Z"},
+        "patch": [{}],
+    },
+}
+
 VIEW_HOST_EVENTS_JSON = {
     "code": 200,
     "status": "OK",
@@ -370,6 +380,38 @@ class TestHosts(CensysTestCase):
         )
         results = self.api.metadata()
         assert results == HOST_METADATA_JSON["result"]
+
+    def test_view_host_diff(self):
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/hosts/{TEST_HOST}/diff",
+            status=200,
+            json=VIEW_HOST_DIFF_JSON,
+        )
+        results = self.api.view_host_diff(TEST_HOST)
+        assert results == VIEW_HOST_DIFF_JSON["result"]
+
+    @parameterized.expand(
+        [
+            ({"ip_b": "1.1.1.2"}, "ip_b=1.1.1.2"),
+            (
+                {
+                    "at_time": datetime.date(2021, 7, 1),
+                    "at_time_b": datetime.date(2021, 7, 31),
+                },
+                "at_time=2021-07-01T00%3A00%3A00.000000Z&at_time_b=2021-07-31T00%3A00%3A00.000000Z",
+            ),
+        ]
+    )
+    def test_view_host_diff_params(self, kwargs, query_params):
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/hosts/{TEST_HOST}/diff?{query_params}",
+            status=200,
+            json=VIEW_HOST_DIFF_JSON,
+        )
+        results = self.api.view_host_diff(TEST_HOST, **kwargs)
+        assert results == VIEW_HOST_DIFF_JSON["result"]
 
     def test_view_host_events(self):
         self.responses.add(
