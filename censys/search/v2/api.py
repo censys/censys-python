@@ -15,8 +15,6 @@ from censys.common.exceptions import (
 from censys.common.types import Datetime
 from censys.common.utils import format_rfc3339
 
-Fields = Optional[List[str]]
-
 INDEX_TO_KEY = {"hosts": "ip"}
 
 
@@ -191,19 +189,22 @@ class CensysSearchAPIv2(CensysAPIBase):
             Returns:
                 Dict[str, dict]: Dictionary mapping documents to that document's result set.
             """
-            threads = []
             results = {}
 
             document_key = INDEX_TO_KEY.get(self.api.INDEX_NAME, "ip")
 
             with ThreadPoolExecutor(max_workers) as executor:
-                for hit in self.__call__():
-                    document_id = hit[document_key]
-                    threads.append(executor.submit(self.api.view, document_id))
+                threads = {
+                    executor.submit(self.api.view, hit[document_key]): hit[document_key]
+                    for hit in self.__call__()
+                }
 
                 for task in as_completed(threads):
-                    result = task.result()
-                    results[result[document_key]] = result
+                    document_id = threads[task]
+                    try:
+                        results[document_id] = task.result()
+                    except Exception as e:
+                        results[document_id] = {"error": str(e)}
 
             return results
 
@@ -279,15 +280,19 @@ class CensysSearchAPIv2(CensysAPIBase):
         if at_time:
             at_time = format_rfc3339(at_time)
 
-        threads = []
         documents = {}
         with ThreadPoolExecutor(max_workers) as executor:
-            for document_id in document_ids:
-                threads.append(executor.submit(self.view, document_id, at_time))
+            threads = {
+                executor.submit(self.view, document_id, at_time): document_id
+                for document_id in document_ids
+            }
 
             for task in as_completed(threads):
-                result = task.result()
-                documents[result["ip"]] = result
+                document_id = threads[task]
+                try:
+                    documents[document_id] = task.result()
+                except Exception as e:
+                    documents[document_id] = {"error": str(e)}
 
         return documents
 

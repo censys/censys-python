@@ -3,7 +3,7 @@ import json
 import os
 import warnings
 from functools import wraps
-from typing import Any, Callable, List, Optional, Type
+from typing import Any, Callable, Optional, Type
 
 import backoff
 import requests
@@ -13,12 +13,9 @@ from .exceptions import (
     CensysAPIException,
     CensysException,
     CensysJSONDecodeException,
-    CensysRateLimitExceededException,
     CensysTooManyRequestsException,
 )
 from .version import __version__
-
-Fields = Optional[List[str]]
 
 
 # Wrapper to make max_retries configurable at runtime
@@ -28,7 +25,6 @@ def _backoff_wrapper(method: Callable):
         @backoff.on_exception(
             backoff.expo,
             (
-                CensysRateLimitExceededException,
                 CensysTooManyRequestsException,
                 requests.exceptions.Timeout,
             ),
@@ -50,7 +46,7 @@ class CensysAPIBase:
     """Default API timeout."""
     DEFAULT_USER_AGENT: str = f"censys/{__version__}"
     """Default API user agent."""
-    DEFAULT_MAX_RETRIES: int = 10
+    DEFAULT_MAX_RETRIES: int = 5
     """Default max number of API retries."""
 
     def __init__(
