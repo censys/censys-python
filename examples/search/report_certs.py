@@ -1,9 +1,7 @@
 """View specific certificate."""
-from censys.search import SearchClient
+from censys.search import CensysCertificates
 
-c = SearchClient()
+c = CensysCertificates()
 
-res = c.v1.certificates.report(
-    "github.com and tags: trusted", "parsed.validity.start", 5
-)
+res = c.report("github.com and tags: trusted", "parsed.validity.start", 5)
 print(res)
