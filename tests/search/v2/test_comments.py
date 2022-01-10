@@ -1,5 +1,3 @@
-from typing import Type
-
 import responses
 from parameterized import parameterized_class
 
@@ -50,9 +48,9 @@ ADD_COMMENTS_RESPONSE = {
 )
 class CensysCommentsTests(CensysTestCase):
     index: str
-    index_cls: Type[CensysSearchAPIv2]
+    index_cls: CensysSearchAPIv2
     document_id: str
-    api: Type[CensysSearchAPIv2]
+    api: CensysSearchAPIv2
 
     def setUp(self):
         super().setUp()

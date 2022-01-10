@@ -1,5 +1,4 @@
 import unittest
-from typing import Type
 from unittest.mock import mock_open, patch
 
 import pytest
@@ -20,7 +19,7 @@ SearchExceptionParams = [
 
 
 class CensysSearchAPITests(CensysTestCase):
-    api: Type[CensysSearchAPIv2]
+    api: CensysSearchAPIv2
 
     def setUp(self):
         super().setUp()
