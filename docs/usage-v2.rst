@@ -73,6 +73,7 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
 
     # You can also pass in a date or datetime object.
     from datetime import date
+
     host = h.view("8.8.8.8", at_time=date(2021, 3, 1))
     print(host)
 
@@ -129,7 +130,7 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
     # Fetch a list of host names for the specified IP address.
     names = h.view_host_names("1.1.1.1")
     print(names)
-    
+
 ``view_host_events``
 --------------------
 
@@ -149,7 +150,10 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
 
     # You can also pass in a date or datetime objects.
     from datetime import date
-    events = h.view_host_events("1.1.1.1", start_time=date(2021, 7, 1), end_time=date(2021, 7, 31))
+
+    events = h.view_host_events(
+        "1.1.1.1", start_time=date(2021, 7, 1), end_time=date(2021, 7, 31)
+    )
     print(events)
 
 ``get_hosts_by_cert``
@@ -166,7 +170,9 @@ Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCe
     c = CensysCerts()
 
     # Fetch a list of events for the specified IP address.
-    hosts, links = c.get_hosts_by_cert("fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426")
+    hosts, links = c.get_hosts_by_cert(
+        "fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426"
+    )
     print(hosts)
 
 Comments
@@ -184,7 +190,9 @@ Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCe
     c = CensysCerts()
 
     # Fetch a list of comments for the specified certificate.
-    comments = c.get_comments("fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426")
+    comments = c.get_comments(
+        "fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426"
+    )
     print(comments)
 
 ``add_comment``
@@ -228,7 +236,9 @@ Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCe
     c = CensysCerts()
 
     # Delete a comment for a certificate.
-    c.delete_comment("fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426", 102)
+    c.delete_comment(
+        "fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426", 102
+    )
 
 Tags
 ----
@@ -313,7 +323,7 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
     h = CensysHosts()
 
     # Delete a tag.
-    h.delete_tag("123)
+    h.delete_tag("123")
 
 ``list_tags_on_document``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -327,7 +337,9 @@ Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCe
     c = CensysCerts()
 
     # Fetch a list of tags for a document.
-    tags = c.list_tags_on_document("fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426")
+    tags = c.list_tags_on_document(
+        "fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426"
+    )
     print(tags)
 
 ``add_tag_to_document``
@@ -342,7 +354,7 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
     h = CensysHosts()
 
     # Add a tag to a document.
-    h.add_tag_to_document("123)
+    h.add_tag_to_document("123")
 
 ``remove_tag_from_document``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -356,7 +368,9 @@ Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCe
     c = CensysCerts()
 
     # Remove a tag from a document.
-    c.remove_tag_from_document("fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426")
+    c.remove_tag_from_document(
+        "fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426"
+    )
 
 ``list_certs_with_tag``
 ^^^^^^^^^^^^^^^^^^^^^^^

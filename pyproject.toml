@@ -56,6 +56,7 @@ importlib-metadata = [
 
 [tool.poetry.dev-dependencies]
 # Lint
+pre-commit = "^2.16.0"
 flake8 = "*"
 flake8-docstrings = "^1.6.0"
 flake8-pytest-style = "^1.6.0"
@@ -66,7 +67,9 @@ isort = "^5.10.1"
 pep8-naming = "^0.12.1"
 flake8-black = "^0.2.3"
 black = "^21.12b0"
+blacken-docs = "^1.12.0"
 darglint = "^1.8.1"
+pyupgrade = "^2.31.0"
 # Tests
 pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
