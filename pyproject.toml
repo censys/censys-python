@@ -63,6 +63,7 @@ isort = "^5.10.1"
 pep8-naming = "^0.12.1"
 flake8-black = "^0.2.3"
 black = "^21.12b0"
+blacken-docs = "^1.12.0"
 darglint = "^1.8.1"
 # Tests
 pytest = "^6.2.5"
@@ -71,7 +72,7 @@ responses = "^0.16.0"
 parameterized = "^0.8.1"
 # Types
 mypy = "^0.920"
-types-requests = "^2.26.3"
+types-requests = ">=2.26.0"
 backoff-stubs = "*"
 
 [tool.isort]
