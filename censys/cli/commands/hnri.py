@@ -166,6 +166,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         parents=[parents["auth"]],
     )
     hnri_parser.add_argument(
+        "-O",
         "--open",
         action="store_true",
         help="open your IP in browser",

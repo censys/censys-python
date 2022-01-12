@@ -67,7 +67,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     view_parser.add_argument(
         "document_id",
         type=str,
-        help="a string written in Censys Search syntax",
+        help="a document id (IP address) to view",
     )
     view_parser.add_argument(
         "--index-type",
@@ -90,6 +90,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         help="json output file path",
     )
     view_parser.add_argument(
+        "-O",
         "--open",
         action="store_true",
         help="open document in browser",

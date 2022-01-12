@@ -171,6 +171,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         help="output file path",
     )
     search_parser.add_argument(
+        "-O",
         "--open",
         action="store_true",
         help="open query in browser",

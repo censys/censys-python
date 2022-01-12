@@ -7,6 +7,7 @@ import pytest
 from tests.utils import CensysTestCase
 
 from censys.cli import main as cli_main
+from censys.cli.commands import __all__ as cli_commands
 from censys.common import __version__
 
 
@@ -27,7 +28,7 @@ class CensysCliTest(CensysTestCase):
 
         stdout = temp_stdout.getvalue().strip()
         assert stdout.startswith("usage: censys")
-        assert "{account,asm,config,hnri,search,view}" in stdout
+        assert "{" + ",".join(sorted(cli_commands)) + "}" in stdout
         assert "-v, --version" in stdout
 
     @patch("argparse._sys.argv", ["censys", "-v"])
