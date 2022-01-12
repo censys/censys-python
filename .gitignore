@@ -75,6 +75,10 @@ dmypy.json
 
 # IDE
 .vscode/
+.idea/
+
+# pre-commit
+.pre-commit-config.yaml
 
 # Output
 censys-query-output.*

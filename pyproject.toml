@@ -74,6 +74,7 @@ parameterized = "^0.8.1"
 mypy = "^0.920"
 types-requests = ">=2.26.0"
 backoff-stubs = "*"
+pyupgrade = "^2.31.0"
 
 [tool.isort]
 profile = "black"
