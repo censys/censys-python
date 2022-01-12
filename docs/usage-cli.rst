@@ -15,13 +15,13 @@ Below we show an example of Searching from the CLI.
 
 .. prompt:: bash
 
-    censys search 'services.http.response.html_title: "Tesla Energy Powerpack"' --index-type hosts
+    censys search 'services.http.response.html_title: "Dashboard"'
 
 By combining the ``search`` command with ``jq`` we can easily manipulate the output to get the desired fields.
 
 .. prompt:: bash
 
-    censys search 'services.service_name: IKETTLE' --index-type hosts | jq -c '.[] | {ip: .ip}'
+    censys search 'services.service_name: ELASTICSEARCH' | jq -c '.[] | {ip: .ip}'
 
 By setting the ``--pages`` flag to ``-1`` we can get all pages of results.
 
@@ -30,7 +30,7 @@ By setting the ``--pages`` flag to ``-1`` we can get all pages of results.
     censys search 'ip: 8.8.8.0/16' --pages -1 | jq -c '[.[] | .ip]'
 
 ``view``
-----------
+--------
 
 Below we show an example of Viewing a host from the CLI.
 

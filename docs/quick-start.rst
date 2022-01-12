@@ -5,13 +5,16 @@ Assuming you have Python already, install the package:
 
 .. tabs::
 
-   .. tab:: from PyPi
+   .. tab:: pip
 
       .. prompt:: bash
 
          pip install censys
 
-   .. tab:: from Kali Linux
+
+      If you do not have pip installed, get it `here <https://pip.pypa.io/en/stable/installation/>`_.
+
+   .. tab:: on Kali Linux
 
       .. prompt:: bash
 
