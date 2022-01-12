@@ -46,7 +46,13 @@ def get_parser() -> argparse.ArgumentParser:
         default=False,
         help="display version",
     )
-    parser.set_defaults()
+
+    def print_help(_: argparse.Namespace):
+        """Prints help."""
+        parser.print_help()
+        parser.exit()
+
+    parser.set_defaults(func=print_help)
 
     subparsers = parser.add_subparsers()
 
