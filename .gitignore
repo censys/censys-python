@@ -77,7 +77,8 @@ dmypy.json
 .vscode/
 .idea/
 
-# pre-commit
+# Config
+*.cfg
 .pre-commit-config.yaml
 
 # Output

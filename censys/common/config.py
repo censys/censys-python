@@ -4,10 +4,9 @@ import os
 from pathlib import Path
 
 DEFAULT = "DEFAULT"
-
-xdg_config_path = os.path.join(str(Path.home()), ".config")
-censys_path = os.path.join(xdg_config_path, "censys")
-config_path = os.path.join(censys_path, "censys.cfg")
+HOME_PATH = str(Path.home())
+CENSYS_PATH = os.path.join(HOME_PATH, ".config", "censys")
+CONFIG_PATH = os.path.join(CENSYS_PATH, "censys.cfg")
 
 default_config = {
     "api_id": "",
@@ -17,12 +16,35 @@ default_config = {
 }
 
 
+def get_config_path() -> str:
+    """Returns the path to the config file.
+
+    Returns:
+        str: Path to config file.
+    """
+    alt_path = os.getenv("CENSYS_CONFIG_PATH")
+    if alt_path:
+        return alt_path
+    return CONFIG_PATH
+
+
 def write_config(config: configparser.ConfigParser) -> None:
     """Writes config to file.
 
     Args:
-        config: Configuration to write.
+        config (configparser.ConfigParser): Configuration to write.
+
+    Raises:
+        PermissionError: If the config file is not writable.
     """
+    config_path = get_config_path()
+    if config_path == CONFIG_PATH:
+        if not os.access(HOME_PATH, os.W_OK):
+            raise PermissionError(
+                "Cannot write to home directory. Please set the `CENSYS_CONFIG_PATH` environmental variable to a writeable location."
+            )
+        elif not os.path.isdir(CENSYS_PATH):
+            os.makedirs(CENSYS_PATH)
     with open(config_path, "w") as configfile:
         config.write(configfile)
 
@@ -34,13 +56,9 @@ def get_config() -> configparser.ConfigParser:
         configparser.ConfigParser: Config for Censys.
     """
     config = configparser.ConfigParser()
-    if not os.path.isdir(xdg_config_path):
-        os.mkdir(xdg_config_path)
-    if not os.path.isdir(censys_path):
-        os.mkdir(censys_path)
-    if not os.path.exists(config_path):
+    config_path = get_config_path()
+    if not os.path.isfile(config_path):
         config[DEFAULT] = default_config
-        write_config(config)
     else:
         config.read(config_path)
     check_config(config)

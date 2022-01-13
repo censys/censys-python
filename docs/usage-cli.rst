@@ -7,6 +7,12 @@ Before continuing please ensure you have successfully configured your credential
 
     censys config
 
+The configuration file by default is writen to ``~/.config/censys/censys.cfg``, but you can change this by setting the ``CENSYS_CONFIG_PATH`` environment variable.
+
+.. prompt:: bash
+
+    export CENSYS_CONFIG_PATH=/path/to/config/file
+
 
 ``search``
 ----------

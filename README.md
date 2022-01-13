@@ -68,6 +68,7 @@ Successfully authenticated
 - [Documentation](https://censys-python.rtfd.io)
 - [Discussions](https://github.com/censys/censys-python/discussions)
 - [Censys Homepage](https://censys.io/)
+- [Censys Search](https://search.censys.io/)
 
 ## Contributing
 
