@@ -167,6 +167,6 @@ class CensysConfigTest(unittest.TestCase):
     @patch("censys.common.config.os.path.isfile", os.path.isfile)
     def test_config_default(self):
         config = get_config()
+        os.path.isfile.assert_called_with(test_config_path)
         for key, value in default_config.items():
             assert value == config.get(DEFAULT, key)
-        os.path.isfile.ASSERT_CALLED_WITH(test_config_path)

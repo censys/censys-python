@@ -1,4 +1,4 @@
-Quick Start 
+Quick Start
 ===========
 
 Assuming you have Python already, install the package:
@@ -42,7 +42,7 @@ Configure your credentials:
    .. tab:: ASM API
 
       .. prompt:: bash
-      
+
          censys asm config
 
       Or you can set the environment variables:

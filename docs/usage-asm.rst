@@ -256,4 +256,3 @@ Below we show how to initialize the AsmClient class object as well as a couple e
     # Get all events
     events = client.events.get_events()
     print(next(events))
-

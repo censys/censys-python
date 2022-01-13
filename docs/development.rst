@@ -1,4 +1,4 @@
-Development 
+Development
 ===========
 
 Clone the repository:
@@ -14,13 +14,13 @@ Clone the repository:
    .. tab:: HTTPS
 
       .. prompt:: bash $
-      
+
         git clone https://github.com/censys/censys-python.git
-   
+
    .. tab:: GitHub CLI
 
       .. prompt:: bash $
-      
+
         gh repo clone censys/censys-python
 
 Install dependencies via ``pip``:
