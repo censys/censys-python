@@ -1,4 +1,3 @@
-import unittest
 from unittest.mock import MagicMock, Mock, mock_open, patch
 
 import pytest
@@ -163,7 +162,7 @@ class CensysConfigCliTest(CensysTestCase):
 
 
 @patch("censys.common.config.CONFIG_PATH", test_config_path)
-class CensysConfigTest(unittest.TestCase):
+class CensysConfigTest(CensysTestCase):
     @patch("censys.common.config.os.path.isfile", os.path.isfile)
     def test_config_default(self):
         config = get_config()

@@ -1,2 +1,6 @@
 [run]
-include = censys/*
+include =
+    censys/*
+
+[report]
+show_missing = true
