@@ -57,7 +57,7 @@ flake8 = "*"
 flake8-docstrings = "^1.6.0"
 flake8-pytest-style = "^1.6.0"
 flake8-simplify = "^0.14.2"
-flake8-comprehensions = "^3.7.0"
+flake8-comprehensions = "^3.7.0" # Last version to support Python 3.6
 flake8-isort = "^4.1.1"
 isort = "^5.10.1"
 pep8-naming = "^0.12.1"
@@ -68,13 +68,16 @@ darglint = "^1.8.1"
 # Tests
 pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
-responses = "^0.16.0"
+responses = "^0.17.0"
 parameterized = "^0.8.1"
 # Types
-mypy = "^0.920"
+mypy = "^0.931"
 types-requests = ">=2.26.0"
 backoff-stubs = "*"
 pyupgrade = "^2.31.0"
+
+[tool.black]
+target-version = ['py36']
 
 [tool.isort]
 profile = "black"
