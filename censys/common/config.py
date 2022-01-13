@@ -55,24 +55,8 @@ def get_config() -> configparser.ConfigParser:
     Returns:
         configparser.ConfigParser: Config for Censys.
     """
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(defaults=default_config, default_section=DEFAULT)
     config_path = get_config_path()
-    if not os.path.isfile(config_path):
-        config[DEFAULT] = default_config
-    else:
+    if os.path.isfile(config_path):
         config.read(config_path)
-    check_config(config)
     return config
-
-
-def check_config(config: configparser.ConfigParser):
-    """Checks config against default config for fields.
-
-    Args:
-        config (configparser.ConfigParser): Configuration to write.
-    """
-    for key in default_config:
-        try:
-            config.get(DEFAULT, key)
-        except configparser.NoOptionError:
-            config.set(DEFAULT, key, default_config.get(key))

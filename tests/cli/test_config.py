@@ -65,7 +65,7 @@ class CensysConfigCliTest(CensysTestCase):
             "config",
         ],
     )
-    def test_search_config(self, mock_file):
+    def test_search_config(self, mock_file: MagicMock):
         self.responses.add(
             responses.GET,
             V1_URL + "/account",
@@ -86,7 +86,7 @@ class CensysConfigCliTest(CensysTestCase):
             "config",
         ],
     )
-    def test_search_config_failed(self, mock_file):
+    def test_search_config_failed(self, mock_file: MagicMock):
         self.responses.add(
             responses.GET,
             V1_URL + "/account",
@@ -106,7 +106,9 @@ class CensysConfigCliTest(CensysTestCase):
     )
     @patch("censys.common.config.os.path.isdir", Mock(return_value=False))
     @patch("censys.common.config.os.makedirs")
-    def test_search_config_makedirs(self, mock_makedirs, mock_file):
+    def test_search_config_makedirs(
+        self, mock_makedirs: MagicMock, mock_file: MagicMock
+    ):
         self.responses.add(
             responses.GET,
             V1_URL + "/account",
@@ -119,6 +121,16 @@ class CensysConfigCliTest(CensysTestCase):
 
         mock_makedirs.assert_called_with(CENSYS_PATH)
 
+    @patch("censys.common.config.os.path.isfile", os.path.isfile)
+    def test_config_default(self, mock_file: MagicMock):
+        os.path.isfile.return_value = True
+        config = get_config()
+        os.path.isfile.return_value = False
+        os.path.isfile.assert_called_with(test_config_path)
+        mock_file.assert_called_once()
+        for key, value in default_config.items():
+            assert value == config.get(DEFAULT, key)
+
     @patch(
         "argparse._sys.argv",
         [
@@ -127,7 +139,7 @@ class CensysConfigCliTest(CensysTestCase):
         ],
     )
     @patch.dict("censys.common.config.os.environ", {"CENSYS_CONFIG_PATH": "censys.cfg"})
-    def test_search_config_custom_config(self, mock_file):
+    def test_search_config_custom_config(self, mock_file: MagicMock):
         self.responses.add(
             responses.GET,
             V1_URL + "/account",
@@ -149,7 +161,7 @@ class CensysConfigCliTest(CensysTestCase):
         ],
     )
     @patch("censys.common.config.os.access", Mock(return_value=False))
-    def test_search_config_perm_error(self, mock_file):
+    def test_search_config_perm_error(self, mock_file: MagicMock):
         self.responses.add(
             responses.GET,
             V1_URL + "/account",
@@ -159,13 +171,3 @@ class CensysConfigCliTest(CensysTestCase):
 
         with pytest.raises(SystemExit, match="1"):
             cli_main()
-
-
-@patch("censys.common.config.CONFIG_PATH", test_config_path)
-class CensysConfigTest(CensysTestCase):
-    @patch("censys.common.config.os.path.isfile", os.path.isfile)
-    def test_config_default(self):
-        config = get_config()
-        os.path.isfile.assert_called_with(test_config_path)
-        for key, value in default_config.items():
-            assert value == config.get(DEFAULT, key)
