@@ -1,4 +1,4 @@
-Testing 
+Testing
 =======
 
 Testing is done using `pytest <https://docs.pytest.org/en/stable/>`__.

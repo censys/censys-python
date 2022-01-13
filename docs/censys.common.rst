@@ -49,7 +49,7 @@ censys.common.exceptions module
 
 censys.common.deprecation module
 --------------------------------
-   
+
 .. automodule:: censys.common.deprecation
    :members:
    :undoc-members:

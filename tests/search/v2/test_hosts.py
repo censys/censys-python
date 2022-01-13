@@ -103,6 +103,16 @@ HOST_METADATA_JSON = {
     "result": {"services": ["HTTP", "IMAP", "MQTT", "SSH", "..."]},
 }
 
+VIEW_HOST_DIFF_JSON = {
+    "code": 200,
+    "status": "OK",
+    "result": {
+        "a": {"ip": "1.1.1.1", "last_updated_at": "2022-01-10T15:41:27.416Z"},
+        "b": {"ip": "1.1.1.2", "last_updated_at": "2022-01-10T15:41:27.416Z"},
+        "patch": [{}],
+    },
+}
+
 VIEW_HOST_EVENTS_JSON = {
     "code": 200,
     "status": "OK",
@@ -141,6 +151,12 @@ VIEW_HOST_EVENTS_JSON = {
             },
         ],
     },
+}
+RATE_LIMIT_ERROR_JSON = {
+    "error": "Rate limit exceeded. See https://search.censys.io/account "
+    "for rate limit details.",
+    "status": "error",
+    "error_type": "rate_limit_exceeded",
 }
 
 TEST_HOST = "8.8.8.8"
@@ -213,6 +229,33 @@ class TestHosts(CensysTestCase):
         date = datetime.date(2021, 3, 1)
 
         results = self.api.bulk_view(ips, at_time=date)
+        assert results == expected
+
+    def test_bulk_view_with_error(self):
+        ips = ["1.1.1.1", "1.1.1.2", "1.1.1.3"]
+        expected = {}
+        for ip in ips[:-1]:
+            host_json = VIEW_HOST_JSON.copy()
+            host_json["result"]["ip"] = ip
+            self.responses.add(
+                responses.GET,
+                f"{V2_URL}/hosts/{ip}",
+                status=200,
+                json=host_json,
+            )
+            expected[ip] = host_json["result"].copy()
+
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/hosts/{ips[-1]}",
+            status=429,
+            json=RATE_LIMIT_ERROR_JSON,
+        )
+        expected[ips[-1]] = {
+            "error": "429 (rate_limit_exceeded): Rate limit exceeded. See https://search.censys.io/account for rate limit details."
+        }
+
+        results = self.api.bulk_view(ips)
         assert results == expected
 
     def test_search(self):
@@ -351,6 +394,46 @@ class TestHosts(CensysTestCase):
         results = query.view_all()
         assert results == expected
 
+    def test_search_view_all_error(self):
+        test_per_page = 50
+        ips = ["1.1.1.1", "1.1.1.2", "1.1.1.3"]
+        search_json = SEARCH_HOSTS_JSON.copy()
+        search_json["result"]["hits"] = [{"ip": ip} for ip in ips]
+        search_json["result"]["total"] = len(ips)
+        search_json["result"]["links"]["next"] = ""
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/hosts/search?q=service.service_name: HTTP&per_page={test_per_page}",
+            status=200,
+            json=search_json,
+        )
+
+        expected = {}
+        for ip in ips[:-1]:
+            view_json = VIEW_HOST_JSON.copy()
+            view_json["result"]["ip"] = ip
+            self.responses.add(
+                responses.GET,
+                f"{V2_URL}/hosts/{ip}",
+                status=200,
+                json=view_json,
+            )
+            expected[ip] = view_json["result"].copy()
+
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/hosts/{ips[-1]}",
+            status=429,
+            json=RATE_LIMIT_ERROR_JSON,
+        )
+        expected[ips[-1]] = {
+            "error": "429 (rate_limit_exceeded): Rate limit exceeded. See https://search.censys.io/account for rate limit details."
+        }
+
+        query = self.api.search("service.service_name: HTTP", per_page=test_per_page)
+        results = query.view_all()
+        assert results == expected
+
     def test_view_host_names(self):
         self.responses.add(
             responses.GET,
@@ -370,6 +453,38 @@ class TestHosts(CensysTestCase):
         )
         results = self.api.metadata()
         assert results == HOST_METADATA_JSON["result"]
+
+    def test_view_host_diff(self):
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/hosts/{TEST_HOST}/diff",
+            status=200,
+            json=VIEW_HOST_DIFF_JSON,
+        )
+        results = self.api.view_host_diff(TEST_HOST)
+        assert results == VIEW_HOST_DIFF_JSON["result"]
+
+    @parameterized.expand(
+        [
+            ({"ip_b": "1.1.1.2"}, "ip_b=1.1.1.2"),
+            (
+                {
+                    "at_time": datetime.date(2021, 7, 1),
+                    "at_time_b": datetime.date(2021, 7, 31),
+                },
+                "at_time=2021-07-01T00%3A00%3A00.000000Z&at_time_b=2021-07-31T00%3A00%3A00.000000Z",
+            ),
+        ]
+    )
+    def test_view_host_diff_params(self, kwargs, query_params):
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/hosts/{TEST_HOST}/diff?{query_params}",
+            status=200,
+            json=VIEW_HOST_DIFF_JSON,
+        )
+        results = self.api.view_host_diff(TEST_HOST, **kwargs)
+        assert results == VIEW_HOST_DIFF_JSON["result"]
 
     def test_view_host_events(self):
         self.responses.add(

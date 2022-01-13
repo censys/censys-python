@@ -31,8 +31,7 @@ Below we show an example using the :attr:`CensysCertificates <censys.search.v1.C
     c = CensysCertificates()
 
     for page in c.search(
-        "validation.nss.valid: true and validation.nss.type: intermediate", 
-        max_records=10
+        "validation.nss.valid: true and validation.nss.type: intermediate", max_records=10
     ):
         print(page)
 
@@ -49,10 +48,10 @@ Below we show an example using the :attr:`CensysCertificates <censys.search.v1.C
     ]
 
     for page in c.search(
-            "censys.io and tags: trusted",
-            fields,
-            max_records=10,
-        ):
+        "censys.io and tags: trusted",
+        fields,
+        max_records=10,
+    ):
         print(page)
 
 ``view``
@@ -139,7 +138,7 @@ Below we show an example using the :attr:`CensysCertificates <censys.search.v1.C
 
     fingerprints = [
         "fce621c0dc1c666d03d660472f636ce91e66e96460545f0da7eb1a24873e2f70",
-        "a762bf68f167f6fbdf2ab00fdefeb8b96f91335ad6b483b482dfd42c179be076"
+        "a762bf68f167f6fbdf2ab00fdefeb8b96f91335ad6b483b482dfd42c179be076",
     ]
 
     # Get bulk certificate data

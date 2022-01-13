@@ -9,7 +9,6 @@ from censys.cli.utils import INDEXES, V1_INDEXES, V2_INDEXES, err_console, write
 from censys.common.exceptions import CensysCLIException
 from censys.search import SearchClient
 
-Fields = List[str]
 Results = List[dict]
 
 DEFAULT_FIELDS = {
@@ -72,7 +71,7 @@ def cli_search(args: argparse.Namespace):
         if args.max_records:
             search_args["max_records"] = args.max_records
 
-        fields: Fields = []
+        fields: List[str] = []
         if args.fields:
             if args.overwrite:
                 fields = args.fields
@@ -172,6 +171,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         help="output file path",
     )
     search_parser.add_argument(
+        "-O",
         "--open",
         action="store_true",
         help="open query in browser",

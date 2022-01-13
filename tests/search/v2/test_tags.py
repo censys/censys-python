@@ -1,5 +1,3 @@
-from typing import Type
-
 import pytest
 import responses
 from parameterized import parameterized_class
@@ -71,9 +69,9 @@ LIST_CERTS_RESPONSE = {
 )
 class CensysTagsTests(CensysTestCase):
     index: str
-    index_cls: Type[CensysSearchAPIv2]
+    index_cls: CensysSearchAPIv2
     document_id: str
-    api: Type[CensysSearchAPIv2]
+    api: CensysSearchAPIv2
 
     def setUp(self):
         super().setUp()

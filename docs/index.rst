@@ -28,11 +28,11 @@ The User Guide
    :maxdepth: 1
 
    quick-start
+   usage-cli
    usage-v2
    usage-v1
    usage-asm
    advanced-usage
-   usage-cli
 
 The API Documentation
 ---------------------

@@ -45,7 +45,7 @@ Below we show examples for **listing seeds** from the Censys ASM platform.
 
     # Get a specific type of seed. Optional seed types are ["IP_ADDRESS", "DOMAIN_NAME", "CIDR", "ASN"]
     # Here we get IP address seeds.
-    seeds = s.get_seeds('IP_ADDRESS')
+    seeds = s.get_seeds("IP_ADDRESS")
     print(seeds)
 
     # Get a single seed by its ID (here we get seed with ID=3)
@@ -64,17 +64,14 @@ Below we show examples for **adding seeds** to the Censys ASM platform.
     # Here, we add two ASN seeds.
     seed_list = [
         {"type": "ASN", "value": 99998, "label": "seed-test-label"},
-        {"type": "ASN", "value": 99999, "label": "seed-test-label"}
+        {"type": "ASN", "value": 99999, "label": "seed-test-label"},
     ]
     s.add_seeds(seed_list)
 
     # Add a list of seeds, replacing existing seeds with a specified label
     # Here, all seeds with label="seed-test-label" will be removed and then
     # Seeds 99996 and 99997 will be added.
-        seed_list = [
-        {"type": "ASN", "value": 99996},
-        {"type": "ASN", "value": 99997}
-    ]
+    seed_list = [{"type": "ASN", "value": 99996}, {"type": "ASN", "value": 99997}]
     s.replace_seeds_by_label("seed-test-label", seed_list)
 
 Below we show examples for **deleting seeds** from the Censys ASM platform.
@@ -259,4 +256,3 @@ Below we show how to initialize the AsmClient class object as well as a couple e
     # Get all events
     events = client.events.get_events()
     print(next(events))
-

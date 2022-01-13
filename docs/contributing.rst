@@ -1,4 +1,4 @@
-Contributing 
+Contributing
 ============
 
 All contributions (no matter how small) are always welcome.

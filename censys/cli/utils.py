@@ -12,7 +12,6 @@ from rich.console import Console
 from censys.common.config import DEFAULT, get_config
 from censys.common.deprecation import DeprecationDecorator
 
-Fields = List[str]
 Results = Union[List[dict], Dict[str, Any]]
 
 V1_INDEXES = ["certs"]
@@ -37,13 +36,13 @@ def print_wrote_file(file_path: str):
 
 
 @DeprecationDecorator("CSV output is deprecated and will be removed in the future.")
-def _write_csv(file_path: str, search_results: Results, fields: Fields):
+def _write_csv(file_path: str, search_results: Results, fields: List[str]):
     """Write search results to a new file in CSV format.
 
     Args:
         file_path (str): Name of the file to write to on the disk.
         search_results (Results): A list of results from the query.
-        fields (Fields): A list of fields to write as headers.
+        fields (List[str]): A list of fields to write as headers.
     """
     with open(file_path, "w") as output_file:
         if search_results and isinstance(search_results, list):
@@ -90,7 +89,7 @@ def write_file(
     file_format: str = "screen",
     file_path: Optional[str] = None,
     base_name: str = "censys-query-output",
-    csv_fields: Fields = [],
+    csv_fields: List[str] = [],
 ):
     """Maps formats and writes results.
 
@@ -99,7 +98,7 @@ def write_file(
         file_format (str): Optional; The format of the output.
         file_path (str): Optional; A path to write results to.
         base_name (str): Optional; The base name of the output file.
-        csv_fields (Fields): Optional; A list of fields to write to CSV.
+        csv_fields (List[str]): Optional; A list of fields to write to CSV.
     """
     if file_format and isinstance(file_format, str):
         file_format = file_format.lower()

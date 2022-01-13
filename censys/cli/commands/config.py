@@ -60,16 +60,23 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
         client = CensysSearchAPIv2(api_id, api_secret)
         account = client.account()
         email = account.get("email")
+        console.print(f"\nSuccessfully authenticated for {email}")
 
         # Assumes that login was successfully
         config.set(DEFAULT, "api_id", api_id)
         config.set(DEFAULT, "api_secret", api_secret)
 
         write_config(config)
-        console.print(f"\nSuccessfully authenticated for {email}")
         sys.exit(0)
     except CensysUnauthorizedException:
         console.print("Failed to authenticate")
+        sys.exit(1)
+    except PermissionError as e:
+        console.print(e)
+        console.print(
+            "Cannot write config file to directory. "
+            + "Please set the `CENSYS_CONFIG_PATH` environmental variable to a writeable location."
+        )
         sys.exit(1)
 
 

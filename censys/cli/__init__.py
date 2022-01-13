@@ -19,9 +19,6 @@ def main():
 
     try:
         args.func(args)
-    except AttributeError:
-        parser.print_help()
-        parser.exit()
     except KeyboardInterrupt:  # pragma: no cover
         sys.exit(1)
 

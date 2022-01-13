@@ -60,7 +60,7 @@ def cli_add_seeds(args: argparse.Namespace):
         if args.input_file == "-":
             data = sys.stdin.read()
         else:
-            with open(args.input_file, "r") as f:
+            with open(args.input_file) as f:
                 data = f.read()
     else:
         data = args.json
