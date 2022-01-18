@@ -1,5 +1,5 @@
 """Interact with the Censys Search Host API."""
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from .api import CensysSearchAPIv2
 from censys.common.types import Datetime
@@ -101,16 +101,21 @@ class CensysHosts(CensysSearchAPIv2):
             kwargs["virtual_hosts"] = virtual_hosts
         return super().search(query, per_page, cursor, pages, **kwargs)
 
-    def view_host_names(self, ip: str) -> List[str]:
+    def view_host_names(
+        self, ip: str, per_page: Optional[int] = None, cursor: Optional[str] = None
+    ) -> List[str]:
         """Fetches a list of host names for the specified IP address.
 
         Args:
             ip (str): The IP address of the requested host.
+            per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
+            cursor (int): Optional; The cursor of the desired result set.
 
         Returns:
             List[str]: A list of host names.
         """
-        return self._get(self.view_path + ip + "/names")["result"]["names"]
+        args = {"per_page": per_page, "cursor": cursor}
+        return self._get(self.view_path + ip + "/names", args)["result"]["names"]
 
     def view_host_diff(
         self,
@@ -132,7 +137,7 @@ class CensysHosts(CensysSearchAPIv2):
         Returns:
             dict: A diff of the hosts.
         """
-        args = {}
+        args: Dict[str, Any] = {}
         if ip_b:
             args["ip_b"] = ip_b
         if at_time:

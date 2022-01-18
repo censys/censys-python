@@ -444,6 +444,16 @@ class TestHosts(CensysTestCase):
         results = self.api.view_host_names(TEST_HOST)
         assert results == VIEW_HOST_NAMES_JSON["result"]["names"]
 
+    def test_view_host_names_pages(self):
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/hosts/{TEST_HOST}/names?per_page=50",
+            status=200,
+            json=VIEW_HOST_NAMES_JSON,
+        )
+        results = self.api.view_host_names(TEST_HOST, per_page=50)
+        assert results == VIEW_HOST_NAMES_JSON["result"]["names"]
+
     def test_host_metadata(self):
         self.responses.add(
             responses.GET,
