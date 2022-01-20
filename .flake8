@@ -14,6 +14,7 @@ exclude =
 per-file-ignores =
     tests/*.py:E501,D100,D101,D102,D103,D104,D107,
     __init__.py:F401,F403,
+    examples/*.py:E402
     censys/search/v2/certs.py:DAR101
 docstring-convention = google
 docstring_style = google

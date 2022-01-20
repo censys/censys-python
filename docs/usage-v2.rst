@@ -3,7 +3,7 @@ Usage v2
 
 The Censys Search API provides functionality for interacting with Censys resources such as Hosts.
 
-There are three API options that this library provides access to:
+There are three main API endpoints that this library provides access to:
 
 -  :attr:`search <censys.search.v2.api.CensysSearchAPIv2.search>` - Allows searches against the Hosts index using the same search syntax as the `web app <https://search.censys.io/search/language?resource=hosts>`__.
 -  :attr:`view <censys.search.v2.api.CensysSearchAPIv2.view>` - Returns the structured data we have about a specific Host, given the resource's natural ID.
@@ -23,173 +23,83 @@ Python class objects must be initialized for each resource index (Hosts).
 ``search``
 ----------
 
+**Please note this method is only available only for the CensysHosts index.**
+
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
-.. code:: python
-
-    #!/usr/bin/env python3
-    from censys.search import CensysHosts
-
-    h = CensysHosts()
-
-    # Single page of search results
-    query = h.search("service.service_name: HTTP", per_page=5)
-    print(query())
-
-    # Multiple pages of search results
-    # You can optionally pass in a number of results to be returned
-    # each page and the number of pages you want returned.
-    for page in h.search("service.service_name: HTTP", per_page=5, pages=2):
-        print(page)
-
-    # You can also get all pages of results by using -1 for pages
-    for page in h.search("service.service_name: HTTP", pages=-1):
-        print(page)
-
-    # View each result returned
-    # For `hosts` this looks like a mapping of IPs to view results
-    query = h.search("service.service_name: HTTP", per_page=5, pages=2)
-    print(query.view_all())
+.. include:: ../examples/search/search_hosts.py
+   :literal:
 
 ``view``
 --------
 
+**Please note this method is only available only for the CensysHosts index.**
+
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
-.. code:: python
+.. include:: ../examples/search/view_host.py
+   :literal:
 
-    from censys.search import CensysHosts
+``bulk_view``
+-------------
 
-    h = CensysHosts()
+**Please note this method is only available only for the CensysHosts index.**
 
-    # Fetch a specific host and its services
-    host = h.view("8.8.8.8")
-    print(host)
+Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
-    # You can optionally pass in a RFC3339 timestamp to
-    # fetch a host at the given point in time.
-    # Please note historical API access is required.
-    host = h.view("8.8.8.8", at_time="2021-03-01T17:49:05Z")
-    print(host)
-
-    # You can also pass in a date or datetime object.
-    from datetime import date
-
-    host = h.view("8.8.8.8", at_time=date(2021, 3, 1))
-    print(host)
+.. include:: ../examples/search/bulk_view_hosts.py
+   :literal:
 
 ``aggregate``
 -------------
 
+**Please note this method is only available only for the CensysHosts index.**
+
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
-.. code:: python
-
-    from censys.search import CensysHosts
-
-    h = CensysHosts()
-
-    # The aggregate method constructs a report using a query, an aggregation field, and the
-    # number of buckets to bin.
-    report = h.aggregate(
-        "service.service_name: HTTP",
-        "services.port",
-        num_buckets=5,
-    )
-    print(report)
+.. include:: ../examples/search/aggregate_hosts.py
+   :literal:
 
 ``metadata``
 -------------
 
-**Please note this method is only available only for the CensysHosts index**
+**Please note this method is only available only for the CensysHosts index.**
 
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
-.. code:: python
-
-    from censys.search import CensysHosts
-
-    h = CensysHosts()
-
-    # Fetch metadata about hosts.
-    meta = h.metadata()
-    print(meta.get("services"))
+.. include:: ../examples/search/metadata_hosts.py
+   :literal:
 
 ``view_host_names``
 -------------------
 
-**Please note this method is only available only for the CensysHosts index**
+**Please note this method is only available only for the CensysHosts index.**
 
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
-.. code:: python
-
-    from censys.search import CensysHosts
-
-    h = CensysHosts()
-
-    # Fetch a list of host names for the specified IP address.
-    names = h.view_host_names("1.1.1.1")
-    print(names)
+.. include:: ../examples/search/view_host_names.py
+   :literal:
 
 ``view_host_events``
 --------------------
 
-**Please note this method is only available only for the CensysHosts index**
+**Please note this method is only available only for the CensysHosts index.**
 
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
-.. code:: python
-
-    from censys.search import CensysHosts
-
-    h = CensysHosts()
-
-    # Fetch a list of events for the specified IP address.
-    events = h.view_host_events("1.1.1.1")
-    print(events)
-
-    # You can also pass in a date or datetime objects.
-    from datetime import date
-
-    events = h.view_host_events(
-        "1.1.1.1", start_time=date(2021, 7, 1), end_time=date(2021, 7, 31)
-    )
-    print(events)
+.. include:: ../examples/search/view_host_events.py
+   :literal:
 
 ``view_host_diff``
 ------------------
 
-**Please note this method is only available only for the CensysHosts index**
+**Please note this method is only available only for the CensysHosts index.**
 
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
-.. code:: python
+.. include:: ../examples/search/view_host_diff.py
+    :literal:
 
-    from censys.search import CensysHosts
-
-    h = CensysHosts()
-
-    # Compare a single host between two timestamps
-    diff = c.view_host_diff("1.1.1.1", at_time=date(2022, 1, 1), at_time_b=date(2022, 1, 2))
-    print(diff)
-
-    # Compare a single host between its current timestamp and a timestamp
-    diff = c.view_host_diff("1.1.1.2", at_time=date(2022, 1, 2))
-    print(diff)
-
-    # Compare two hosts
-    diff = c.view_host_diff("1.1.1.1", ip_b="1.1.1.2")
-    print(diff)
-
-    # Compare two hosts between two timestamps
-    diff = c.view_host_diff(
-        "1.1.1.1",
-        ip_b="1.1.1.2",
-        at_time=date(2022, 1, 1),
-        at_time_b=date(2022, 1, 2),
-    )
-    print(diff)
 
 ``get_hosts_by_cert``
 ---------------------
@@ -427,7 +337,7 @@ Below we show an example using the :attr:`CensysCerts <censys.search.v2.CensysCe
 ``list_hosts_with_tag``
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-**Please note this method is only available only for the CensysHosts index**
+**Please note this method is only available only for the CensysHosts index.**
 
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
