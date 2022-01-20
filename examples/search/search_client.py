@@ -3,10 +3,10 @@ from censys.search import SearchClient
 
 c = SearchClient()
 
-# v1
-certs = c.v1.certificates  # or c.v1.certs
+# v2 indexes
+hosts = c.v2.hosts  # Same as hosts = CensysHosts()
 
-data = c.v1.data
+# v1 indexes
+certs = c.v1.certificates  # Same as certs = CensysCertificates()
 
-# v2
-hosts = c.v2.hosts
+data = c.v1.data  # Same as data = CensysData()

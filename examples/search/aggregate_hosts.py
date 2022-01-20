@@ -11,3 +11,17 @@ report = c.v2.hosts.aggregate(
     num_buckets=5,
 )
 print(report)
+# {
+#     "total": 987342156,
+#     "total_omitted": 836949090,
+#     "potential_deviation": 3965103,
+#     "buckets": [
+#         {"key": "80", "count": 58727150},
+#         {"key": "443", "count": 46716751},
+#         {"key": "7547", "count": 19185117},
+#         {"key": "22", "count": 13276559},
+#         {"key": "30005", "count": 12487489},
+#     ],
+#     "query": "service.service_name: HTTP",
+#     "field": "services.port",
+# }
