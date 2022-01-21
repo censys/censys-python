@@ -101,6 +101,33 @@ class CensysHosts(CensysSearchAPIv2):
             kwargs["virtual_hosts"] = virtual_hosts
         return super().search(query, per_page, cursor, pages, **kwargs)
 
+    def aggregate(
+        self,
+        query: str,
+        field: str,
+        num_buckets: Optional[int] = None,
+        virtual_hosts: Optional[str] = None,
+        **kwargs: Any,
+    ) -> dict:
+        """Aggregate host index.
+
+        Creates a report on the breakdown of the values of a field in a result set.
+        For more details, see our documentation: https://search.censys.io/api
+
+        Args:
+            query (str): The query to be executed.
+            field (str): The field you are running a breakdown on.
+            num_buckets (int): Optional; The maximum number of values. Defaults to 50.
+            virtual_hosts (str): Optional; Whether to include virtual hosts in the results. Valid values are "EXCLUDE", "INCLUDE", and "ONLY".
+            **kwargs (Any): Optional; Additional arguments to be passed to the query.
+
+        Returns:
+            dict: The result set returned.
+        """
+        if virtual_hosts:
+            kwargs["virtual_hosts"] = virtual_hosts
+        return super().aggregate(query, field, num_buckets, **kwargs)
+
     def view_host_names(
         self, ip: str, per_page: Optional[int] = None, cursor: Optional[str] = None
     ) -> List[str]:
