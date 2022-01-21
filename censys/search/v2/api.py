@@ -297,7 +297,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         return documents
 
     def aggregate(
-        self, query: str, field: str, num_buckets: Optional[int] = None
+        self, query: str, field: str, num_buckets: Optional[int] = None, **kwargs: Any
     ) -> dict:
         """Aggregate current index.
 
@@ -308,11 +308,12 @@ class CensysSearchAPIv2(CensysAPIBase):
             query (str): The query to be executed.
             field (str): The field you are running a breakdown on.
             num_buckets (int): Optional; The maximum number of values. Defaults to 50.
+            **kwargs (Any): Optional; Additional arguments to be passed to the query.
 
         Returns:
             dict: The result set returned.
         """
-        args = {"q": query, "field": field, "num_buckets": num_buckets}
+        args = {"q": query, "field": field, "num_buckets": num_buckets, **kwargs}
         return self._get(self.aggregate_path, args)["result"]
 
     def metadata(self) -> dict:

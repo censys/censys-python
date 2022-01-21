@@ -364,6 +364,25 @@ class TestHosts(CensysTestCase):
 
         assert res == AGGREGATE_HOSTS_JSON["result"]
 
+    def test_aggregate_virtual_hosts(self):
+        self.responses.add(
+            responses.GET,
+            V2_URL
+            + "/hosts/aggregate?field=services.port&q=service.service_name: HTTP&num_buckets=5"
+            + "&virtual_hosts=INCLUDE",
+            status=200,
+            json=AGGREGATE_HOSTS_JSON,
+        )
+        self.maxDiff = None
+        res = self.api.aggregate(
+            "service.service_name: HTTP",
+            "services.port",
+            num_buckets=5,
+            virtual_hosts="INCLUDE",
+        )
+
+        assert res == AGGREGATE_HOSTS_JSON["result"]
+
     def test_search_view_all(self):
         test_per_page = 50
         ips = ["1.1.1.1", "1.1.1.2"]
