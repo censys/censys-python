@@ -25,3 +25,12 @@ print(report)
 #     "query": "service.service_name: HTTP",
 #     "field": "services.port",
 # }
+
+# You can also specify whether to include virtual hosts in the report.
+report = c.v2.hosts.aggregate(
+    "service.service_name: HTTP",
+    "services.port",
+    num_buckets=5,
+    virtual_hosts="INCLUDE",
+)
+print(report)
