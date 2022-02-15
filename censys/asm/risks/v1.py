@@ -1,11 +1,11 @@
-"""Interact with the Censys Risks API."""
+"""Interact with the Censys Risks v1 API."""
 from typing import Iterator, Optional
 
-from .api import CensysAsmAPI
+from ..api import CensysAsmAPI
 
 
-class Risks(CensysAsmAPI):
-    """Risks API class."""
+class Risksv1(CensysAsmAPI):
+    """Risks v1 API class."""
 
     base_path = "/v1/risks"
 
