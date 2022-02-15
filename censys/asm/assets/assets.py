@@ -20,7 +20,7 @@ class Assets(CensysAsmAPI):
             **kwargs: Arbitrary keyword arguments.
         """
         CensysAsmAPI.__init__(self, *args, **kwargs)
-        self.base_path = f"assets/{asset_type}"
+        self.base_path = f"/v1/assets/{asset_type}"
 
     def get_assets(
         self,

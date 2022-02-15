@@ -9,7 +9,7 @@ SEED_TYPES = ["IP_ADDRESS", "DOMAIN_NAME", "CIDR", "ASN"]
 class Seeds(CensysAsmAPI):
     """Seeds API class."""
 
-    base_path = "seeds"
+    base_path = "/v1/seeds"
 
     def get_seeds(
         self, seed_type: Optional[str] = None, label: Optional[str] = None

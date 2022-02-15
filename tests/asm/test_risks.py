@@ -2,7 +2,7 @@ import responses
 from parameterized import parameterized
 
 from ..utils import CensysTestCase
-from .utils import BASE_URL
+from .utils import V1_URL
 from censys.asm.client import AsmClient
 
 TEST_RISKS_JSON = {
@@ -68,7 +68,7 @@ class CloudsUnitTest(CensysTestCase):
     def test_get_risks(self, kwargs, params):
         self.responses.add(
             responses.GET,
-            BASE_URL + f"/risks?pageNumber=1&pageSize=100{params}",
+            V1_URL + f"/risks?pageNumber=1&pageSize=100{params}",
             status=200,
             json=TEST_RISKS_JSON,
         )

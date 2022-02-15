@@ -2,17 +2,17 @@ import unittest
 from unittest.mock import patch
 
 from .utils import (
-    BASE_URL,
     RESOURCE_PAGING_RESULTS,
     TEST_SUCCESS_CODE,
     TEST_TIMEOUT,
+    V1_URL,
     MockResponse,
 )
 from censys.asm.client import AsmClient
 from censys.asm.events import Filters
 
-EVENTS_URL = f"{BASE_URL}/logbook"
-EVENTS_CURSOR_URL = f"{BASE_URL}/logbook-cursor"
+EVENTS_URL = f"{V1_URL}/logbook"
+EVENTS_CURSOR_URL = f"{V1_URL}/logbook-cursor"
 EVENTS_RESOURCE_TYPE = "events"
 
 TEST_CURSOR = "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MH0"

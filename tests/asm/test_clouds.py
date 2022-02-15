@@ -4,7 +4,7 @@ import responses
 from parameterized import parameterized
 
 from ..utils import CensysTestCase
-from .utils import BASE_URL
+from .utils import V1_URL
 from censys.asm.client import AsmClient
 from censys.asm.clouds import format_since_date
 
@@ -37,7 +37,7 @@ class CloudsUnitTest(CensysTestCase):
     def test_get_host_counts(self):
         self.responses.add(
             responses.GET,
-            BASE_URL + "/clouds/hostCounts/2021-01-01",
+            V1_URL + "/clouds/hostCounts/2021-01-01",
             status=200,
             json=TEST_COUNT_JSON,
         )
@@ -48,7 +48,7 @@ class CloudsUnitTest(CensysTestCase):
     def test_get_domain_counts(self):
         self.responses.add(
             responses.GET,
-            BASE_URL + "/clouds/domainCounts/2021-01-01",
+            V1_URL + "/clouds/domainCounts/2021-01-01",
             status=200,
             json=TEST_COUNT_JSON,
         )
@@ -59,7 +59,7 @@ class CloudsUnitTest(CensysTestCase):
     def test_get_object_store_counts(self):
         self.responses.add(
             responses.GET,
-            BASE_URL + "/clouds/objectStoreCounts/2021-01-01",
+            V1_URL + "/clouds/objectStoreCounts/2021-01-01",
             status=200,
             json=TEST_COUNT_JSON,
         )
@@ -70,7 +70,7 @@ class CloudsUnitTest(CensysTestCase):
     def test_get_subdomain_counts(self):
         self.responses.add(
             responses.GET,
-            BASE_URL + "/clouds/subdomainCounts/2021-01-01",
+            V1_URL + "/clouds/subdomainCounts/2021-01-01",
             status=200,
             json=TEST_COUNT_JSON,
         )
@@ -81,7 +81,7 @@ class CloudsUnitTest(CensysTestCase):
     def test_get_unknown_counts(self):
         self.responses.add(
             responses.GET,
-            BASE_URL + "/clouds/unknownCounts",
+            V1_URL + "/clouds/unknownCounts",
             status=200,
             json=TEST_COUNT_JSON,
         )

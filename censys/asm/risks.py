@@ -7,7 +7,7 @@ from .api import CensysAsmAPI
 class Risks(CensysAsmAPI):
     """Risks API class."""
 
-    base_path = "risks"
+    base_path = "/v1/risks"
 
     def get_risks(
         self,

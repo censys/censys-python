@@ -24,7 +24,7 @@ def format_since_date(since: Since) -> str:
 class Clouds(CensysAsmAPI):
     """Clouds API class."""
 
-    base_path = "clouds"
+    base_path = "/v1/clouds"
 
     def get_host_counts(
         self,

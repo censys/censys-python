@@ -7,7 +7,7 @@ import pytest
 import responses
 from responses.matchers import json_params_matcher
 
-from tests.asm.utils import BASE_URL
+from tests.asm.utils import V1_URL
 from tests.utils import CensysTestCase
 
 from censys.cli import main as cli_main
@@ -60,7 +60,6 @@ ADD_SEEDS_JSON = {
 class CensysASMCliTest(CensysTestCase):
     def setUp(self):
         super().setUp()
-        self.base_url = BASE_URL
 
     @patch(
         "argparse._sys.argv",
@@ -70,7 +69,7 @@ class CensysASMCliTest(CensysTestCase):
     def test_add_seeds(self):
         self.responses.add(
             responses.POST,
-            self.base_url + "/seeds",
+            V1_URL + "/seeds",
             status=200,
             json=ADD_SEEDS_JSON,
         )
@@ -88,7 +87,7 @@ class CensysASMCliTest(CensysTestCase):
     def test_add_seeds_no_type(self):
         self.responses.add(
             responses.POST,
-            self.base_url + "/seeds",
+            V1_URL + "/seeds",
             status=200,
             json=ADD_SEEDS_JSON,
             match=[
@@ -116,7 +115,7 @@ class CensysASMCliTest(CensysTestCase):
     def test_add_seeds_multi_type(self):
         self.responses.add(
             responses.POST,
-            self.base_url + "/seeds",
+            V1_URL + "/seeds",
             status=200,
             json=ADD_SEEDS_JSON,
             match=[
@@ -155,7 +154,7 @@ class CensysASMCliTest(CensysTestCase):
     def test_add_seeds_from_stdin(self):
         self.responses.add(
             responses.POST,
-            self.base_url + "/seeds",
+            V1_URL + "/seeds",
             status=200,
             json=ADD_SEEDS_JSON,
             match=[
@@ -193,7 +192,7 @@ class CensysASMCliTest(CensysTestCase):
     def test_add_seeds_from_file(self, mock_file):
         self.responses.add(
             responses.POST,
-            self.base_url + "/seeds",
+            V1_URL + "/seeds",
             status=200,
             json=ADD_SEEDS_JSON,
             match=[
@@ -243,7 +242,7 @@ class CensysASMCliTest(CensysTestCase):
         partial_json["addedSeeds"] = partial_json["addedSeeds"][1:]
         self.responses.add(
             responses.POST,
-            self.base_url + "/seeds",
+            V1_URL + "/seeds",
             status=200,
             json=partial_json,
         )
@@ -265,7 +264,7 @@ class CensysASMCliTest(CensysTestCase):
         partial_json["addedSeeds"] = []
         self.responses.add(
             responses.POST,
-            self.base_url + "/seeds",
+            V1_URL + "/seeds",
             status=200,
             json=partial_json,
         )
