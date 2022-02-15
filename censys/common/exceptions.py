@@ -100,6 +100,10 @@ class CensysInvalidAuthTokenException(CensysAsmException):
     """Exception raised when the auth token is invalid."""
 
 
+class CensysAsmUnauthorizedException(CensysAsmException):
+    """Exception raised when the ASM API is unauthorized."""
+
+
 class CensysInvalidAPIKeyException(CensysAsmException):
     """Exception raised when the ASM API key is invalid."""
 
@@ -152,6 +156,10 @@ class CensysInvalidLogbookCursorException(CensysAsmException):
     """Exception raised when the logbook cursor is invalid."""
 
 
+class CensysTeamNotFoundException(CensysAsmException):
+    """Exception raised when the team is not found."""
+
+
 class CensysPageNumberOutOfRangeException(CensysAsmException):
     """Exception raised when the page number is out of range [1 - totalPages]."""
 
@@ -168,12 +176,20 @@ class CensysInvalidIPv4AddressException(CensysAsmException):
     """Exception raised when the IPv4 address is invalid."""
 
 
+class CensysAssetExludedException(CensysAsmException):
+    """Exception raised when the asset is excluded."""
+
+
 class CensysInvalidCommentException(CensysAsmException):
     """Exception raised when the comment is invalid."""
 
 
 class CensysCommentNotFoundException(CensysAsmException):
     """Exception raised when the requested comment is not found."""
+
+
+class CensysSubdomainNotFoundException(CensysAsmException):
+    """Exception raised when the requested subdomain is not found."""
 
 
 class CensysInvalidColorException(CensysAsmException):
@@ -244,6 +260,38 @@ class CensysInvalidCloudException(CensysAsmException):
     """Exception raised when an invalid cloud is submitted."""
 
 
+class CensysAssetNotFoundException(CensysAsmException):
+    """Exception raised when the asset is not found."""
+
+
+class CensysInvalidKeywordsInBodyException(CensysAsmException):
+    """Exception raised when invalid keywords are in the body."""
+
+
+class CensysSearchAPITimeoutException(CensysAsmException):
+    """Exception raised when the search API times out."""
+
+
+class CensysSearchAPIErrorException(CensysAsmException):
+    """Exception raised when the search API returns an error."""
+
+
+class CensysInternalServerErrorException(CensysAsmException):
+    """Exception raised when the search API returns an error."""
+
+
+class CensysInvalidCommentHTMLException(CensysAsmException):
+    """Exception raised when the comment contains invalid HTML."""
+
+
+class CensysInvalidSearchAPIResponseException(CensysAsmException):
+    """Exception raised when the search API returns an error."""
+
+
+class CensysTooSoonToResendInviteException(CensysAsmException):
+    """Exception raised when it is too soon to resend the invite."""
+
+
 class CensysExceptionMapper:
     """Map status code to Exception for the ASM and Search API."""
 
@@ -251,6 +299,7 @@ class CensysExceptionMapper:
         10000: CensysMissingApiKeyException,
         10001: CensysInvalidAPIKeyException,
         10002: CensysInvalidAuthTokenException,
+        10006: CensysAsmUnauthorizedException,
         10007: CensysInvalidSeedDataException,
         10008: CensysInvalidRequestException,
         10011: CensysCannotRemoveNonSeedsException,
@@ -264,6 +313,7 @@ class CensysExceptionMapper:
         10019: CensysDomainNotFoundException,
         10020: CensysCertificateNotFoundException,
         10021: CensysInvalidIPv4AddressException,
+        10022: CensysAssetExludedException,
         10025: CensysTagHasTrailingOrLeadingWhitespaceException,
         10026: CensysTagIsEmptyStringException,
         10027: CensysTagLabelsDifferOnlyInCasingException,
@@ -276,10 +326,12 @@ class CensysExceptionMapper:
         10038: CensysInvalidSeedTypeException,
         10039: CensysTooManyRequestsException,
         10040: CensysInvalidLogbookCursorException,
+        10045: CensysTeamNotFoundException,
         10050: CensysInvalidPageSizeException,
         10051: CensysPageNumberOutOfRangeException,
         10054: CensysInvalidCommentException,
         10055: CensysCommentNotFoundException,
+        10057: CensysSubdomainNotFoundException,
         10059: CensysInvalidCloudAssetDataException,
         10060: CensysInvalidObjectStorageAssetIdentifierException,
         10061: CensysInvalidObjectStorageAssetNotFoundException,
@@ -287,6 +339,14 @@ class CensysExceptionMapper:
         10073: CensysRiskNotFoundException,
         10078: CensysInvalidDateException,
         10082: CensysInvalidCloudException,
+        10086: CensysAssetNotFoundException,
+        10091: CensysInvalidKeywordsInBodyException,
+        10096: CensysSearchAPITimeoutException,
+        10097: CensysSearchAPIErrorException,
+        10098: CensysInternalServerErrorException,
+        10099: CensysInvalidCommentHTMLException,
+        10107: CensysInvalidSearchAPIResponseException,
+        10120: CensysTooSoonToResendInviteException,
     }
     """Map of status code to ASM Exception."""
 
