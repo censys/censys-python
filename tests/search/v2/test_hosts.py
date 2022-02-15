@@ -413,6 +413,39 @@ class TestHosts(CensysTestCase):
         results = query.view_all()
         assert results == expected
 
+    def test_search_view_all_virtual_hosts(self):
+        test_per_page = 50
+        search_json = SEARCH_HOSTS_JSON.copy()
+        hits = [{"ip": "1.1.1.1", "name": "one.one.one.one"}, {"ip": "1.0.0.1"}]
+        search_json["result"]["hits"] = hits
+        search_json["result"]["total"] = len(hits)
+        search_json["result"]["links"]["next"] = ""
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/hosts/search?q=service.service_name: HTTP&per_page={test_per_page}",
+            status=200,
+            json=search_json,
+        )
+
+        expected = {}
+        for hit in hits:
+            view_json = VIEW_HOST_JSON.copy()
+            view_json["result"]["ip"] = hit["ip"]
+            document_key = hit["ip"]
+            if "name" in hit:
+                document_key += "+" + hit["name"]
+            self.responses.add(
+                responses.GET,
+                f"{V2_URL}/hosts/{document_key}",
+                status=200,
+                json=view_json,
+            )
+            expected[document_key] = view_json["result"].copy()
+
+        query = self.api.search("service.service_name: HTTP", per_page=test_per_page)
+        results = query.view_all()
+        assert results == expected
+
     def test_search_view_all_error(self):
         test_per_page = 50
         ips = ["1.1.1.1", "1.1.1.2", "1.1.1.3"]

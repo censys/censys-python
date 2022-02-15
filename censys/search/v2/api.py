@@ -148,13 +148,12 @@ class CensysSearchAPIv2(CensysAPIBase):
             if self.page > self.pages:
                 raise StopIteration
 
-            args = {
-                "q": self.query,
-                "per_page": per_page or self.per_page or 100,
-                "cursor": self.nextCursor or self.cursor,
+            payload = self.api.raw_search(
+                query=self.query,
+                per_page=per_page or self.per_page or 100,
+                cursor=self.nextCursor or self.cursor,
                 **self.extra_args,
-            }
-            payload = self.api._get(self.api.search_path, args)
+            )
             self.page += 1
             result = payload["result"]
             self.nextCursor = result["links"]["next"]
@@ -194,10 +193,12 @@ class CensysSearchAPIv2(CensysAPIBase):
             document_key = INDEX_TO_KEY.get(self.api.INDEX_NAME, "ip")
 
             with ThreadPoolExecutor(max_workers) as executor:
-                threads = {
-                    executor.submit(self.api.view, hit[document_key]): hit[document_key]
-                    for hit in self.__call__()
-                }
+                threads = {}
+                for hit in self.__call__():
+                    hit_key = hit[document_key]
+                    if "name" in hit:
+                        hit_key += "+" + hit["name"]
+                    threads[executor.submit(self.api.view, hit_key)] = hit_key
 
                 for task in as_completed(threads):
                     document_id = threads[task]
@@ -232,6 +233,35 @@ class CensysSearchAPIv2(CensysAPIBase):
             Query: Query object that can be a callable or an iterable.
         """
         return self.Query(self, query, per_page, cursor, pages, **kwargs)
+
+    def raw_search(
+        self,
+        query: str,
+        per_page: Optional[int] = None,
+        cursor: Optional[str] = None,
+        **kwargs: Any,
+    ) -> dict:
+        """Search current index.
+
+        Searches the given index for all records that match the given query.
+        This method does no automatic pagination or post processing.
+
+        Args:
+            query (str): The query to be executed.
+            per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
+            cursor (int): Optional; The cursor of the desired result set.
+            **kwargs (Any): Optional; Additional arguments to be passed to the query.
+
+        Returns:
+            dict: The raw result set.
+        """
+        args = {
+            "q": query,
+            "per_page": per_page or 100,
+            "cursor": cursor,
+            **kwargs,
+        }
+        return self._get(self.search_path, args)
 
     def view(
         self,
