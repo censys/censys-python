@@ -407,7 +407,7 @@ class CensysCliSearchTest(CensysTestCase):
     def test_write_csv_v2(self):
         with pytest.raises(
             CensysCLIException,
-            match="The CSV file format is not valid for Search 2.0 responses.",
+            match="CSV output is not supported for the hosts index.",
         ):
             cli_main()
 
