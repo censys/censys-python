@@ -8,7 +8,7 @@ from .api import CensysAsmAPI
 class Events(CensysAsmAPI):
     """Events API class."""
 
-    base_path = "logbook"
+    base_path = "/v1/logbook"
 
     def get_cursor(
         self,

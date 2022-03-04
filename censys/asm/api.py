@@ -17,7 +17,7 @@ from censys.common.exceptions import (
 class CensysAsmAPI(CensysAPIBase):
     """This is the base class for ASM's Seeds, Assets, and Events classes."""
 
-    DEFAULT_URL: str = "https://app.censys.io/api/v1"
+    DEFAULT_URL: str = "https://app.censys.io/api"
     """Default ASM API base URL."""
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):

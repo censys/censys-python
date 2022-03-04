@@ -32,7 +32,7 @@ def _backoff_wrapper(method: Callable):
             max_time=self.timeout,
         )
         def _impl():
-            return method(self, *args, *kwargs)
+            return method(self, *args, **kwargs)
 
         return _impl()
 
@@ -126,6 +126,7 @@ class CensysAPIBase:
         endpoint: str,
         args: Optional[dict] = None,
         data: Optional[Any] = None,
+        **kwargs,
     ) -> dict:
         """Make API call.
 
@@ -137,6 +138,7 @@ class CensysAPIBase:
             endpoint (str): The path of API endpoint.
             args (dict): Optional; URL args that are mapped to params.
             data (Any): Optional; JSON data to serialize with request.
+            **kwargs: Arbitrary keyword arguments to pass to method.
 
         Raises:
             censys_exception: Exception Class for the Censys API.
@@ -153,6 +155,7 @@ class CensysAPIBase:
         request_kwargs = {
             "params": args or {},
             "timeout": self.timeout,
+            **kwargs,
         }
 
         if data:
@@ -200,18 +203,35 @@ class CensysAPIBase:
             details=details,
         )
 
-    def _get(self, endpoint: str, args: Optional[dict] = None) -> dict:
-        return self._make_call(self._session.get, endpoint, args)
+    def _get(self, endpoint: str, args: Optional[dict] = None, **kwargs) -> dict:
+        return self._make_call(self._session.get, endpoint, args, **kwargs)
 
     def _post(
-        self, endpoint: str, args: Optional[dict] = None, data: Optional[dict] = None
+        self,
+        endpoint: str,
+        args: Optional[dict] = None,
+        data: Optional[dict] = None,
+        **kwargs,
     ) -> dict:
-        return self._make_call(self._session.post, endpoint, args, data)
+        return self._make_call(self._session.post, endpoint, args, data, **kwargs)
 
     def _put(
-        self, endpoint: str, args: Optional[dict] = None, data: Optional[dict] = None
+        self,
+        endpoint: str,
+        args: Optional[dict] = None,
+        data: Optional[dict] = None,
+        **kwargs,
     ) -> dict:
-        return self._make_call(self._session.put, endpoint, args, data)
+        return self._make_call(self._session.put, endpoint, args, data, **kwargs)
 
-    def _delete(self, endpoint: str, args: Optional[dict] = None) -> dict:
-        return self._make_call(self._session.delete, endpoint, args)
+    def _patch(
+        self,
+        endpoint: str,
+        args: Optional[dict] = None,
+        data: Optional[dict] = None,
+        **kwargs,
+    ) -> dict:
+        return self._make_call(self._session.patch, endpoint, args, data, **kwargs)
+
+    def _delete(self, endpoint: str, args: Optional[dict] = None, **kwargs) -> dict:
+        return self._make_call(self._session.delete, endpoint, args, **kwargs)

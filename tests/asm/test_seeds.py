@@ -1,10 +1,10 @@
 import unittest
 from unittest.mock import patch
 
-from .utils import BASE_URL, TEST_SUCCESS_CODE, TEST_TIMEOUT, MockResponse
+from .utils import TEST_SUCCESS_CODE, TEST_TIMEOUT, V1_URL, MockResponse
 from censys.asm.client import AsmClient
 
-SEEDS_URL = f"{BASE_URL}/seeds"
+SEEDS_URL = f"{V1_URL}/seeds"
 SEED_RESOURCE_TYPE = "seeds"
 
 TEST_SEED_ID = 6

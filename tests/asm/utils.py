@@ -1,7 +1,9 @@
 RESOURCE_PAGING_RESULTS = ["a", "b", "c", "a", "b", "c", "a", "b", "c"]
 TEST_TIMEOUT = 30
 TEST_SUCCESS_CODE = 200
-BASE_URL = "https://app.censys.io/api/v1"
+BASE_URL = "https://app.censys.io/api"
+V1_URL = f"{BASE_URL}/v1"
+V2_URL = f"{BASE_URL}/v2"
 
 
 class MockResponse:

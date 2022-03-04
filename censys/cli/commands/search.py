@@ -93,7 +93,7 @@ def cli_search(args: argparse.Namespace):
     elif index_type in V2_INDEXES:
         if args.format == "csv":
             raise CensysCLIException(
-                "The CSV file format is not valid for Search 2.0 responses."
+                f"CSV output is not supported for the {index_type} index."
             )
         index = getattr(c.v2, index_type)
 
@@ -162,7 +162,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         default="screen",
         choices=["screen", "json", "csv"],
         metavar="screen|json|csv",
-        help="format of output",
+        help="format of output (csv is only supported for the certificates index)",
     )
     search_parser.add_argument(
         "-o",

@@ -15,9 +15,8 @@ class SubdomainsAssets(Assets):
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
         """
-        super().__init__("subdomains", *args, **kwargs)
         # Rewrite the path because it chains off of the parent domain
-        self.base_path = f"assets/domains/{domain}/subdomains"
+        super().__init__(f"domains/{domain}/subdomains", *args, **kwargs)
 
     def get_assets(
         self,

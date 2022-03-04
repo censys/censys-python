@@ -62,20 +62,20 @@ importlib-metadata = { version = "*", python = "<3.8" }
 flake8 = "^4.0.1"
 flake8-docstrings = "^1.6.0"
 flake8-pytest-style = "^1.6.0"
-flake8-simplify = "^0.17.0"
-flake8-comprehensions = "^3.7.0" # Last version to support Python 3.6
+flake8-simplify = "^0.18.1"
+flake8-comprehensions = "3.7.0" # Last version to support Python 3.6
 flake8-isort = "^4.1.1"
 isort = "^5.10.1"
 pep8-naming = "^0.12.1"
-flake8-black = "^0.2.4"
+flake8-black = "0.3.1" # Last version to support Python 3.6
 black = "^22.1.0"
-blacken-docs = "^1.12.0" # Last version to support Python 3.6
+blacken-docs = "1.12.0" # Last version to support Python 3.6
 darglint = "^1.8.1"
 pyupgrade = "^2.31.0"
 # Tests
 pytest = "^7.0.1"
 pytest-cov = "^3.0.0"
-responses = "^0.17.0"
+responses = "0.17.0" # Last version to support Python 3.6
 parameterized = "^0.8.1"
 # Types
 mypy = "^0.931"

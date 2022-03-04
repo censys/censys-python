@@ -3,7 +3,7 @@ from .client import SearchClient
 from .v1 import CensysCertificates, CensysData
 from .v2 import CensysCerts, CensysHosts
 
-__copyright__ = "Copyright 2021 Censys, Inc."
+__copyright__ = "Copyright 2022 Censys, Inc."
 __all__ = [
     "SearchClient",
     "CensysCertificates",

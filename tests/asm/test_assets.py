@@ -5,16 +5,16 @@ import pytest
 from parameterized import parameterized_class
 
 from .utils import (
-    BASE_URL,
     RESOURCE_PAGING_RESULTS,
     TEST_SUCCESS_CODE,
     TEST_TIMEOUT,
+    V1_URL,
     MockResponse,
 )
 from censys.asm.client import AsmClient
 from censys.common.exceptions import CensysInvalidColorException
 
-ASSETS_URL = f"{BASE_URL}/assets"
+ASSETS_URL = f"{V1_URL}/assets"
 ASSET_TYPE = "assets"
 SUBDOMAIN_ASSET_TYPE = "subdomains"
 COMMENT_TYPE = "comments"
