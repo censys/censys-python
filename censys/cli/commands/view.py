@@ -36,7 +36,6 @@ def cli_view(args: argparse.Namespace):
     write_args = {
         "file_format": "json" if args.output else "screen",
         "file_path": args.output,
-        "base_name": f"censys-view-{args.document_id}",
     }
 
     if args.at_time:
@@ -69,7 +68,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         type=str,
         help="a document id (IP address) to view",
     )
-    view_parser.add_argument(
+    view_parser.add_argument(  # ?? there is only one choice, so can only do json
         "--index-type",
         type=str,
         default="hosts",
@@ -87,7 +86,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         "-o",
         "--output",
         type=str,
-        help="json output file path",
+        help="json output file path",  # ?? is this always json?
     )
     view_parser.add_argument(
         "-O",

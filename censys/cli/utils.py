@@ -86,9 +86,8 @@ def _write_screen(search_results: Results):  # pragma: no cover
 
 def write_file(
     results_list: Results,
-    file_format: str = "screen",
+    file_format: Optional[str] = None,
     file_path: Optional[str] = None,
-    base_name: str = "censys-query-output",
     csv_fields: List[str] = [],
 ):
     """Maps formats and writes results.
@@ -102,12 +101,6 @@ def write_file(
     """
     if file_format and isinstance(file_format, str):
         file_format = file_format.lower()
-
-    if not file_path:
-        # This method just creates some dynamic file names
-        file_path = ".".join([base_name, file_format])
-    elif file_path.endswith(".json"):
-        file_format = "json"
 
     if file_format == "json":
         _write_json(file_path, results_list)

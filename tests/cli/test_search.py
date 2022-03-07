@@ -55,8 +55,8 @@ class CensysCliSearchTest(CensysTestCase):
             "certs",
             "--fields",
             "parsed.issuer.country",
-            "--format",
-            "json",
+            "--output",
+            "censys-certs.json",
         ]
         + CensysTestCase.cli_args,
     )
@@ -77,7 +77,7 @@ class CensysCliSearchTest(CensysTestCase):
 
         json_path = cli_response.replace(WROTE_PREFIX, "").strip()
         assert json_path.endswith(".json")
-        assert "censys-query-output." in json_path
+        assert "censys-certs." in json_path
 
         with open(json_path) as json_file:
             json_response = json.load(json_file)
@@ -98,8 +98,8 @@ class CensysCliSearchTest(CensysTestCase):
             "certs",
             "--fields",
             "protocols",
-            "--format",
-            "csv",
+            "--output",
+            "censys-certs.csv",
         ]
         + CensysTestCase.cli_args,
     )
@@ -120,7 +120,7 @@ class CensysCliSearchTest(CensysTestCase):
 
         csv_path = cli_response.replace(WROTE_PREFIX, "").strip()
         assert csv_path.endswith(".csv")
-        assert "censys-query-output." in csv_path
+        assert "censys-certs." in csv_path
 
         with open(csv_path) as csv_file:
             csv_reader = csv.reader(csv_file)
@@ -141,8 +141,6 @@ class CensysCliSearchTest(CensysTestCase):
             "certs",
             "--fields",
             "parsed.issuer.country",
-            "--format",
-            "json",
             "--output",
             "censys-certs.json",
         ]
@@ -181,8 +179,6 @@ class CensysCliSearchTest(CensysTestCase):
             "certs",
             "--fields",
             "443.https.get.headers.server",
-            "--format",
-            "screen",
         ]
         + CensysTestCase.cli_args,
     )
@@ -220,8 +216,6 @@ class CensysCliSearchTest(CensysTestCase):
             "443.https.tls.cipher_suite.name",
             "443.https.get.title",
             "443.https.get.headers.server",
-            "--format",
-            "screen",
         ]
         + CensysTestCase.cli_args,
     )
@@ -300,8 +294,6 @@ class CensysCliSearchTest(CensysTestCase):
             "parsed.names: censys.io",
             "--index-type",
             "certs",
-            "--format",
-            "screen",
             "--max-records",
             "2",
         ]
@@ -331,8 +323,6 @@ class CensysCliSearchTest(CensysTestCase):
             "service.service_name: HTTP",
             "--index-type",
             "hosts",
-            "--format",
-            "screen",
             "--pages",
             "1",
         ]
@@ -363,8 +353,6 @@ class CensysCliSearchTest(CensysTestCase):
             "service.service_name: HTTP",
             "--index-type",
             "hosts",
-            "--format",
-            "screen",
             "--pages",
             "1",
             "--virtual-hosts",
@@ -397,17 +385,17 @@ class CensysCliSearchTest(CensysTestCase):
             "service.service_name: HTTP",
             "--index-type",
             "hosts",
-            "--format",
-            "csv",
             "--pages",
             "1",
+            "--output",
+            "censys-hosts.csv",
         ]
         + CensysTestCase.cli_args,
     )
     def test_write_csv_v2(self):
         with pytest.raises(
             CensysCLIException,
-            match="CSV output is not supported for the hosts index.",
+            match="JSON is the only valid file format for Search 2.0 responses.",
         ):
             cli_main()
 
