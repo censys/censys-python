@@ -44,11 +44,11 @@ Below we show an example of Viewing a host from the CLI.
 
     censys view 8.8.8.8
 
-You can save results to a file using the ``-f`` and ``-o`` arguments.
+You can save results to a file using the ``-o`` argument.
 
 .. prompt:: bash
 
-    censys view 8.8.8.8 -f json -o google.json
+    censys view 8.8.8.8 -o google.json
 
 We can then parse this json with something like ``jq``.
 
