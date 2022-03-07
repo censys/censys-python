@@ -100,6 +100,8 @@ def write_file(
     """
     if file_format and isinstance(file_format, str):
         file_format = file_format.lower()
+    else:
+        file_path = "temp-out.json"
 
     if file_format == "json":
         _write_json(file_path, results_list)
