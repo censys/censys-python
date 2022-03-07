@@ -25,19 +25,19 @@ An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://
 
 The library can be installed using `pip`.
 
-```bash
+```sh
 pip install censys
 ```
 
 To upgraded using `pip`.
 
-```bash
+```sh
 pip install --upgrade censys
 ```
 
 To configure your search credentials run `censys config` or set both `CENSYS_API_ID` and `CENSYS_API_SECRET` environment variables.
 
-```bash
+```sh
 $ censys config
 
 Censys API ID: XXX
@@ -48,7 +48,7 @@ Successfully authenticated for your@email.com
 
 To configure your ASM credentials run `censys asm config` or set the `CENSYS_ASM_API_KEY` environment variables.
 
-```bash
+```sh
 $ censys asm config
 
 Censys ASM API Key: XXX
@@ -72,13 +72,13 @@ Successfully authenticated
 
 ## Contributing
 
-All contributions (no matter how small) are always welcome.
+All contributions (no matter how small) are always welcome. See [Contributing to Censys Python](.github/CONTRIBUTING.md)
 
 ## Development
 
 This project uses [poetry](https://python-poetry.org/) for dependency management. Please ensure you have [installed the latest version](https://python-poetry.org/docs/#installation).
 
-```bash
+```sh
 git clone git@github.com:censys/censys-python.git
 cd censys-python/
 poetry install
@@ -86,7 +86,8 @@ poetry install
 
 ## Testing
 
-```bash
+```sh
+# Run tests
 pytest
 # With coverage report
 pytest --cov-report html
@@ -96,4 +97,4 @@ pytest --cov-report html
 
 This software is licensed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-- Copyright (C) 2021 Censys, Inc.
+- Copyright (C) 2022 Censys, Inc.
