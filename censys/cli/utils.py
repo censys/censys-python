@@ -87,7 +87,7 @@ def _write_screen(search_results: Results):  # pragma: no cover
 def write_file(
     results_list: Results,
     file_format: Optional[str] = None,
-    file_path: Optional[str] = None,
+    file_path: str = "censys-certs.json",
     csv_fields: List[str] = [],
 ):
     """Maps formats and writes results.
