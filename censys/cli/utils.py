@@ -96,7 +96,6 @@ def write_file(
         results_list (Results): A list of results from the API query.
         file_format (str): Optional; The format of the output.
         file_path (str): Optional; A path to write results to.
-        base_name (str): Optional; The base name of the output file.
         csv_fields (List[str]): Optional; A list of fields to write to CSV.
     """
     if file_format and isinstance(file_format, str):
