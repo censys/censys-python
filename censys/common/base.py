@@ -163,7 +163,7 @@ class CensysAPIBase:
 
         res = method(url, **request_kwargs)
 
-        if res.status_code in range(200, 300):
+        if res.ok:
             # Check for a returned json body
             try:
                 json_data = res.json()
@@ -179,16 +179,13 @@ class CensysAPIBase:
         try:
             json_data = res.json()
             message = json_data.get("error") or json_data.get("message")
-            const = json_data.get("error_type") or json_data.get("status") or "unknown"
+            const = json_data.get("error_type") or json_data.get("status") or res.reason
             error_code = json_data.get("errorCode", "unknown")
             details = json_data.get("details", "unknown")
         except (ValueError, json.decoder.JSONDecodeError) as error:
-            message = (
-                f"Response from {res.url} is not valid JSON and cannot be decoded."
-            )
             raise CensysJSONDecodeException(
                 status_code=res.status_code,
-                message=message,
+                message=f"Response from {res.url} is not valid JSON and cannot be decoded.",
                 body=res.text,
                 const="badjson",
             ) from error
