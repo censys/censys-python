@@ -142,11 +142,11 @@ class CensysCliSearchTest(CensysTestCase):
             "--fields",
             "parsed.issuer.country",
             "--output",
-            "censys-certs.json",
+            "censys-certs.html",
         ]
         + CensysTestCase.cli_args,
     )
-    def test_write_output_path(self):
+    def test_write_invalid_output_path(self):
         self.responses.add_callback(
             responses.POST,
             V1_URL + "/search/certificates",
@@ -154,20 +154,25 @@ class CensysCliSearchTest(CensysTestCase):
             content_type="application/json",
         )
 
-        output_path = "censys-certs.json"
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
 
-        cli_main()
+        cli_response = temp_stdout.getvalue().strip()
+        assert cli_response.startswith(WROTE_PREFIX)
 
-        assert os.path.isfile(output_path)
+        json_path = cli_response.replace(WROTE_PREFIX, "").strip()
+        assert json_path.endswith(".html")
+        assert "censys-certs." in json_path
 
-        with open(output_path) as json_file:
+        with open(json_path) as json_file:
             json_response = json.load(json_file)
 
         assert len(json_response) >= 1
         assert "parsed.issuer.country" in json_response[0]
 
         # Cleanup
-        os.remove(output_path)
+        os.remove(json_path)
 
     @patch(
         "argparse._sys.argv",
@@ -376,6 +381,50 @@ class CensysCliSearchTest(CensysTestCase):
         json_response = json.loads(temp_stdout.getvalue().strip())
 
         assert json_response == SEARCH_HOSTS_JSON["result"]["hits"]
+
+    @patch(
+        "argparse._sys.argv",
+        [
+            "censys",
+            "search",
+            "service.service_name: HTTP",
+            "--index-type",
+            "hosts",
+            "--pages",
+            "1",
+            "--output",
+            "censys-hosts.json",
+        ]
+        + CensysTestCase.cli_args,
+    )
+    def test_write_json_v2(self):
+        self.responses.add(
+            responses.GET,
+            V2_URL
+            + "/hosts/search?q=service.service_name: HTTP&per_page=100&virtual_hosts=EXCLUDE",
+            status=200,
+            json=SEARCH_HOSTS_JSON,
+        )
+
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        cli_response = temp_stdout.getvalue().strip()
+        assert cli_response.startswith(WROTE_PREFIX)
+
+        json_path = cli_response.replace(WROTE_PREFIX, "").strip()
+        assert json_path.endswith(".json")
+        assert "censys-hosts." in json_path
+
+        with open(json_path) as json_file:
+            json_response = json.load(json_file)
+
+        assert len(json_response) >= 1
+        assert json_response == SEARCH_HOSTS_JSON["result"]["hits"]
+
+        # Cleanup
+        os.remove(json_path)
 
     @patch(
         "argparse._sys.argv",

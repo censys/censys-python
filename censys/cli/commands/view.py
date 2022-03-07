@@ -68,7 +68,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         type=str,
         help="a document id (IP address) to view",
     )
-    view_parser.add_argument(  # ?? there is only one choice, so can only do json
+    view_parser.add_argument(
         "--index-type",
         type=str,
         default="hosts",
@@ -86,7 +86,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         "-o",
         "--output",
         type=str,
-        help="json output file path",  # ?? is this always json?
+        help="json output file path",
     )
     view_parser.add_argument(
         "-O",
