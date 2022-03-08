@@ -28,6 +28,10 @@ class MockResponse:
             "endOfEvents": False,
         }
 
+    @property
+    def ok(self):
+        return 200 <= self.status_code <= 400
+
     def json(self):
         self.json_data["endOfEvents"] = next(self.end_of_events_generator)
         self.json_data["pageNumber"] = next(self.number_generator)

@@ -53,3 +53,4 @@ from censys.asm import AsmClient
 - [Get Cloud Host Counts](asm/cloud_host_count.py)
 - [Get Host Ricks](asm/get_host_risks.py)
 - [Get Domains and Subdomains](asm/get_subdomains.py)
+- [Add Seeds in Bulk (from CSV)](asm/add_seeds_bulk.py)
