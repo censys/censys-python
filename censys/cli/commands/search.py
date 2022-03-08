@@ -71,6 +71,14 @@ def cli_search(args: argparse.Namespace):
         if args.max_records:
             search_args["max_records"] = args.max_records
 
+        if args.output:
+            if args.output.endswith(".csv"):
+                write_args["file_format"] = "csv"
+            else:
+                write_args["file_format"] = "json"
+        else:
+            write_args["file_format"] = "screen"
+
         fields: List[str] = []
         if args.fields:
             if args.overwrite:
@@ -91,11 +99,16 @@ def cli_search(args: argparse.Namespace):
         with err_console.status("Searching"):
             results = list(index.search(args.query, **search_args))
     elif index_type in V2_INDEXES:
-        if args.format == "csv":
+        if args.format == "csv" or (args.output and not args.output.endswith(".json")):
             raise CensysCLIException(
-                f"CSV output is not supported for the {index_type} index."
+                "JSON is the only valid file format for Search 2.0 responses."
             )
         index = getattr(c.v2, index_type)
+
+        if args.output:
+            write_args["file_format"] = "json"
+        else:
+            write_args["file_format"] = "screen"
 
         if args.pages:
             search_args["pages"] = args.pages
@@ -162,7 +175,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         default="screen",
         choices=["screen", "json", "csv"],
         metavar="screen|json|csv",
-        help="format of output (csv is only supported for the certificates index)",
+        help=argparse.SUPPRESS,
     )
     search_parser.add_argument(
         "-o",

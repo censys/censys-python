@@ -36,7 +36,6 @@ def cli_view(args: argparse.Namespace):
     write_args = {
         "file_format": "json" if args.output else "screen",
         "file_path": args.output,
-        "base_name": f"censys-view-{args.document_id}",
     }
 
     if args.at_time:
