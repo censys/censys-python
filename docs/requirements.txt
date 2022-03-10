@@ -3,5 +3,5 @@ sphinxcontrib-napoleon==0.7
 sphinxcontrib-autoprogram==0.1.7
 sphinx-rtd-theme==1.0.0
 sphinx-prompt==1.5.0
-sphinx-tabs==3.2.0
+sphinx-tabs==3.3.0
 sphinx-copybutton==0.5.0
