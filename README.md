@@ -88,9 +88,9 @@ poetry install
 
 ```sh
 # Run tests
-pytest
+poetry run pytest
 # With coverage report
-pytest --cov-report html
+poetry run pytest --cov-report html
 ```
 
 ## License
