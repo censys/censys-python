@@ -630,7 +630,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "types-requests"
-version = "2.27.20"
+version = "2.27.23"
 description = "Typing stubs for requests"
 category = "dev"
 optional = false
@@ -1015,8 +1015,8 @@ typed-ast = [
     {file = "typed_ast-1.5.2.tar.gz", hash = "sha256:525a2d4088e70a9f75b08b3f87a51acc9cde640e19cc523c7e41aa355564ae27"},
 ]
 types-requests = [
-    {file = "types-requests-2.27.20.tar.gz", hash = "sha256:63344573cde6c4efd44d867c0158d9fb7e6beb95721cbe9882f3f857ee8a5398"},
-    {file = "types_requests-2.27.20-py3-none-any.whl", hash = "sha256:68b8de86552116424ec23b77afc925e111afb6496d3821b183b7d151b3b834d4"},
+    {file = "types-requests-2.27.23.tar.gz", hash = "sha256:13f750ed6a450c9c39a620fe901349f73cde680c8de2ee7c4319d5e77a593618"},
+    {file = "types_requests-2.27.23-py3-none-any.whl", hash = "sha256:018dc26464fd4d07fc67a230bd050e4fa250fd26fdf1f7d09b1ddbd29d06c825"},
 ]
 types-urllib3 = [
     {file = "types-urllib3-1.26.9.tar.gz", hash = "sha256:abd2d4857837482b1834b4817f0587678dcc531dbc9abe4cde4da28cef3f522c"},
