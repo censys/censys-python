@@ -78,7 +78,7 @@ pytest-cov = "^3.0.0"
 responses = "0.17.0" # Last version to support Python 3.6
 parameterized = "^0.8.1"
 # Types
-mypy = "^0.942"
+mypy = "^0.950"
 types-requests = ">=2.26.0"
 backoff-stubs = "*"
 
