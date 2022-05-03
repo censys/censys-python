@@ -37,6 +37,7 @@ class SubdomainsAssets(Assets):
             tag (list): Optional; List of tags to search for.
             tag_operator (str): Optional; Operator to use when searching for tags.
             source (list): Optional; List of sources to search for.
+            discovery_trail (bool): Optional; Bool indicating whether to return discovery trail.
 
         Yields:
             dict: The assets result returned.
