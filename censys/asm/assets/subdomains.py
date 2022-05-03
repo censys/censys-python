@@ -25,6 +25,7 @@ class SubdomainsAssets(Assets):
         tag: Optional[List[str]] = None,
         tag_operator: Optional[str] = None,
         source: Optional[List[str]] = None,
+        discovery_trail: Optional[bool] = None,
     ) -> Iterator[dict]:
         """Requests assets data.
 
@@ -36,6 +37,7 @@ class SubdomainsAssets(Assets):
             tag (list): Optional; List of tags to search for.
             tag_operator (str): Optional; Operator to use when searching for tags.
             source (list): Optional; List of sources to search for.
+            discovery_trail (bool): Optional; Bool indicating whether to return discovery trail.
 
         Yields:
             dict: The assets result returned.
@@ -47,6 +49,8 @@ class SubdomainsAssets(Assets):
             args["tagOperator"] = tag_operator
         if source:
             args["source"] = source
+        if discovery_trail:
+            args["discoveryTrail"] = discovery_trail
         yield from self._get_page(
             self.base_path,
             page_number=page_number,
