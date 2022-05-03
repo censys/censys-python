@@ -80,7 +80,7 @@ class AssetsUnitTest(unittest.TestCase):
     def test_get_assets_by_tag(self, mock):
         mock.return_value = MockResponse(TEST_SUCCESS_CODE, self.resource_type)
         assets = self.get_asset_accessor().get_assets(
-            tag=[TEST_TAG_NAME], tag_operator="is", source=["Seed"]
+            tag=[TEST_TAG_NAME], tag_operator="is", source=["Seed"], discovery_trail=True
         )
         res = list(assets)
 
@@ -93,6 +93,7 @@ class AssetsUnitTest(unittest.TestCase):
                 "tag": [TEST_TAG_NAME],
                 "tagOperator": "is",
                 "source": ["Seed"],
+                "discoveryTrail": True,
             },
             timeout=TEST_TIMEOUT,
         )
