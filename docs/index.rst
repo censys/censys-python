@@ -11,7 +11,7 @@ Release v\ |version|. (:ref:`quick-start:Quick Start`)
 .. image:: https://img.shields.io/pypi/v/censys?color=orange&logo=pypi&logoColor=orange
    :target: https://pypi.org/project/censys/
 
-.. image:: https://img.shields.io/badge/python-3.6%2B-blue?logo=python
+.. image:: https://img.shields.io/badge/python-3.7%2B-blue?logo=python
    :target: https://www.python.org/downloads/
 
 .. image:: https://img.shields.io/github/license/censys/censys-python?logo=apache
