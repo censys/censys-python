@@ -79,7 +79,6 @@ dmypy.json
 
 # Config
 *.cfg
-.pre-commit-config.yaml
 
 # Output
 censys-query-output.*
