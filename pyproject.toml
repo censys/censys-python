@@ -52,7 +52,7 @@ censys = "censys.cli:main"
 [tool.poetry.dependencies]
 python = "^3.7"
 requests = ">=2.26.0"
-backoff = ">=1.11.1"
+backoff = "^2.0.1"
 rich = ">=10.16.2"
 importlib-metadata = { version = "*", python = "<3.8" }
 
@@ -79,7 +79,6 @@ parameterized = "^0.8.1"
 # Types
 mypy = "^0.950"
 types-requests = ">=2.26.0"
-backoff-stubs = "*"
 
 [tool.black]
 target-version = ["py37"]
