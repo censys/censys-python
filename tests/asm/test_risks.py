@@ -125,7 +125,7 @@ TEST_RISK_TYPE_JSON = {
     "type": "string",
 }
 TEST_RISK_TYPES_JSON = {
-    "constants": [TEST_RISK_TYPE_JSON],
+    "type": [TEST_RISK_TYPE_JSON],
 }
 TEST_PATCH_RISK_TYPE_JSON = {
     "changes": 0,
