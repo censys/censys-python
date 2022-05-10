@@ -1,0 +1,55 @@
+# Install pre-commit hook
+#   pre-commit install
+# Apply to all files without committing:
+#   pre-commit run --all-files
+# Update this file:
+#   pre-commit autoupdate
+fail_fast: true
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.2.0
+    hooks:
+      - id: check-case-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.32.1
+    hooks:
+      - id: pyupgrade
+        args: [--py37-plus]
+  - repo: local
+    hooks:
+      - id: system
+        name: black
+        entry: poetry run black .
+        pass_filenames: false
+        language: system
+        types: [python]
+  - repo: local
+    hooks:
+      - id: system
+        name: isort
+        entry: poetry run isort .
+        pass_filenames: false
+        language: system
+        types: [python]
+  - repo: local
+    hooks:
+      - id: system
+        name: flake8
+        entry: poetry run flake8 .
+        pass_filenames: false
+        language: system
+        types: [python]
+  - repo: local
+    hooks:
+      - id: system
+        name: mypy
+        entry: poetry run mypy censys
+        pass_filenames: false
+        language: system
+        types: [python]
