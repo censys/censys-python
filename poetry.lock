@@ -171,7 +171,7 @@ tomli = "*"
 
 [[package]]
 name = "flake8-comprehensions"
-version = "3.9.0"
+version = "3.10.0"
 description = "A flake8 plugin to help you write better list/set/dict comprehensions."
 category = "dev"
 optional = false
@@ -656,7 +656,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "105b90322194e621899654ab22279ca2cc057a7b27f3b596169d77650051e99d"
+content-hash = "4aae9cebc10c6c07d2a75013e716bbee89e88659244f3c0235e9e7b9ecdfcf7e"
 
 [metadata.files]
 astor = [
@@ -780,8 +780,8 @@ flake8-black = [
     {file = "flake8_black-0.3.3-py3-none-any.whl", hash = "sha256:7d667d0059fd1aa468de1669d77cc934b7f1feeac258d57bdae69a8e73c4cd90"},
 ]
 flake8-comprehensions = [
-    {file = "flake8-comprehensions-3.9.0.tar.gz", hash = "sha256:20c2f6846090e8f265e757f0aa500614c88b0f9ffb0d954d330dcd8abd8f874e"},
-    {file = "flake8_comprehensions-3.9.0-py3-none-any.whl", hash = "sha256:ef3a069809d4eb60805cd9b0ea2aa1aae21b527a460e704c01e0dd3416c99aeb"},
+    {file = "flake8-comprehensions-3.10.0.tar.gz", hash = "sha256:181158f7e7aa26a63a0a38e6017cef28c6adee71278ce56ce11f6ec9c4905058"},
+    {file = "flake8_comprehensions-3.10.0-py3-none-any.whl", hash = "sha256:dad454fd3d525039121e98fa1dd90c46bc138708196a4ebbc949ad3c859adedb"},
 ]
 flake8-docstrings = [
     {file = "flake8-docstrings-1.6.0.tar.gz", hash = "sha256:9fe7c6a306064af8e62a055c2f61e9eb1da55f84bb39caef2b84ce53708ac34b"},
