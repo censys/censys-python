@@ -1,6 +1,8 @@
 import unittest
 
+import pytest
 import responses
+from pytest_mock import MockerFixture
 
 from censys.common.base import CensysAPIBase
 
@@ -24,6 +26,17 @@ class CensysTestCase(unittest.TestCase):
         api_key,
     ]
     api: CensysAPIBase
+    mocker: MockerFixture
+
+    @pytest.fixture(autouse=True)
+    def __inject_fixtures(self, mocker: MockerFixture):
+        """Injects fixtures into the test case.
+
+        Args:
+            mocker (MockerFixture): pytest-mock fixture.
+        """
+        # Inject mocker fixture
+        self.mocker = mocker
 
     def setUp(self):
         self.responses = responses.RequestsMock()

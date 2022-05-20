@@ -88,7 +88,7 @@ def write_file(
     results_list: Results,
     file_format: Optional[str] = None,
     file_path: Optional[str] = None,
-    csv_fields: List[str] = [],
+    csv_fields: List[str] = None,
 ):
     """Maps formats and writes results.
 
