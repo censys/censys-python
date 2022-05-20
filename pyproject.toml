@@ -74,6 +74,7 @@ pyupgrade = "^2.31.0"
 # Tests
 pytest = "^7.1.2"
 pytest-cov = "^3.0.0"
+pytest-mock = "^3.7.0"
 responses = "^0.20.0"
 parameterized = "^0.8.1"
 # Types

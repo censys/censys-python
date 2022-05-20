@@ -55,11 +55,6 @@ class CensysCliSubdomainsTest(CensysTestCase):
             for subdomain in test_subdomains:
                 mock_print.assert_any_call(f"  - {subdomain}")
 
-    # one that tests core logic of search (searching right string) (done)
-    # make sure it prints out in a list (done)
-    # testing json - (json_loads) check to make sure output json is the same one from search
-    # mock censys certificates .search function
-
     @patch(
         "argparse._sys.argv",
         ["censys", "subdomains", "censys.io"] + CensysTestCase.cli_args,

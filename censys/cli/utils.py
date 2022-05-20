@@ -88,7 +88,7 @@ def write_file(
     results_list: Results,
     file_format: Optional[str] = None,
     file_path: Optional[str] = None,
-    csv_fields: List[str] = None,
+    csv_fields: Optional[List[str]] = None,
 ):
     """Maps formats and writes results.
 
@@ -107,6 +107,8 @@ def write_file(
     if file_format == "json":
         _write_json(file_path, results_list)
     elif file_format == "csv":
+        if csv_fields is None:  # pragma: no cover
+            csv_fields = []
         _write_csv(file_path, results_list, fields=csv_fields)
     else:
         _write_screen(results_list)
