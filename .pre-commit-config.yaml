@@ -4,7 +4,6 @@
 #   pre-commit run --all-files
 # Update this file:
 #   pre-commit autoupdate
-fail_fast: true
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.2.0
