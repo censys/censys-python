@@ -1,7 +1,6 @@
 import contextlib
 import json
 from io import StringIO
-from unittest.mock import patch
 
 import pytest
 import responses
@@ -13,15 +12,13 @@ from censys.cli import main as cli_main
 
 
 class CensysCliAccountTest(CensysTestCase):
-    @patch(
-        "argparse._sys.argv",
-        [
+
+    def test_table(self):
+        # Mock 
+        self.patch_args([
             "censys",
             "account",
-        ]
-        + CensysTestCase.cli_args,
-    )
-    def test_table(self):
+        ], search_auth=True)
         self.responses.add(
             responses.GET,
             V1_URL + "/account",
@@ -30,27 +27,26 @@ class CensysCliAccountTest(CensysTestCase):
         )
 
         temp_stdout = StringIO()
+        # Actual call 
         with contextlib.redirect_stdout(temp_stdout), pytest.raises(
             SystemExit, match="0"
         ):
             cli_main()
 
         cli_response = temp_stdout.getvalue().strip()
+        # Assertions 
         assert ACCOUNT_JSON["email"] in cli_response
         assert ACCOUNT_JSON["login"] in cli_response
         quota = ACCOUNT_JSON["quota"]
         assert f"{quota['used']} / {quota['allowance']}" in cli_response
 
-    @patch(
-        "argparse._sys.argv",
-        [
+    def test_json(self):
+        # Mock 
+        self.patch_args([
             "censys",
             "account",
             "--json",
-        ]
-        + CensysTestCase.cli_args,
-    )
-    def test_json(self):
+        ], search_auth=True)
         self.responses.add(
             responses.GET,
             V1_URL + "/account",
@@ -59,10 +55,12 @@ class CensysCliAccountTest(CensysTestCase):
         )
 
         temp_stdout = StringIO()
+        # Actual call 
         with contextlib.redirect_stdout(temp_stdout), pytest.raises(
             SystemExit, match="0"
         ):
             cli_main()
 
         cli_response = temp_stdout.getvalue().strip()
+        # Assertions 
         assert ACCOUNT_JSON == json.loads(cli_response)

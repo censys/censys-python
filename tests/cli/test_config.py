@@ -1,5 +1,3 @@
-from unittest.mock import MagicMock, Mock, mock_open, patch
-
 import pytest
 import responses
 
@@ -15,11 +13,7 @@ from censys.common.config import (
     get_config,
 )
 
-os = MagicMock()
-os.path = MagicMock()
-os.path.isfile = Mock(return_value=False)
-os.path.exists = Mock(return_value=False)
-os.makedirs = Mock()
+TEST_CONFIG_PATH = CONFIG_PATH + ".test"
 
 
 def prompt_side_effect(arg, **kwargs):
@@ -40,32 +34,30 @@ def confirm_side_effect(arg, **kwargs):
     return False
 
 
-Prompt = MagicMock()
-Prompt.ask = Mock(side_effect=prompt_side_effect)
-
-Confirm = MagicMock()
-Confirm.ask = Mock(side_effect=confirm_side_effect)
-
-test_config_path = CONFIG_PATH + ".test"
-
-
-@patch("censys.common.config.CONFIG_PATH", test_config_path)
-@patch(
-    "builtins.open",
-    new_callable=mock_open,
-    read_data="[DEFAULT]\napi_id =\napi_secret =\nasm_api_key =",
-)
-@patch("rich.prompt.Prompt.ask", Prompt.ask)
-@patch("rich.prompt.Confirm.ask", Confirm.ask)
 class CensysConfigCliTest(CensysTestCase):
-    @patch(
-        "argparse._sys.argv",
-        [
-            "censys",
-            "config",
-        ],
-    )
-    def test_search_config(self, mock_file: MagicMock):
+    def setUp(self):
+        super().setUp()
+        self.mocker.patch("censys.common.config.CONFIG_PATH", TEST_CONFIG_PATH)
+        self.mock_open = self.mocker.patch(
+            "builtins.open",
+            new_callable=self.mocker.mock_open,
+            read_data="[DEFAULT]\napi_id =\napi_secret =\nasm_api_key =",
+        )
+        mock_prompt = self.mocker.patch(
+            "rich.prompt.Prompt.ask", side_effect=prompt_side_effect
+        )
+        mock_confirm = self.mocker.patch(
+            "rich.prompt.Confirm.ask", side_effect=confirm_side_effect
+        )
+
+    def test_search_config(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "config",
+            ]
+        )
         self.responses.add(
             responses.GET,
             V1_URL + "/account",
@@ -77,16 +69,16 @@ class CensysConfigCliTest(CensysTestCase):
             cli_main()
 
         # Assert that the config file was read from the right place
-        mock_file.assert_called_with(test_config_path, "w")
+        self.mock_open.assert_called_with(TEST_CONFIG_PATH, "w")
 
-    @patch(
-        "argparse._sys.argv",
-        [
-            "censys",
-            "config",
-        ],
-    )
-    def test_search_config_failed(self, mock_file: MagicMock):
+    def test_search_config_failed(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "config",
+            ]
+        )
         self.responses.add(
             responses.GET,
             V1_URL + "/account",
@@ -94,21 +86,20 @@ class CensysConfigCliTest(CensysTestCase):
             json={"error": "Unauthorized"},
         )
 
+        # Actual call/error raising
         with pytest.raises(SystemExit, match="1"):
             cli_main()
 
-    @patch(
-        "argparse._sys.argv",
-        [
-            "censys",
-            "config",
-        ],
-    )
-    @patch("censys.common.config.os.path.isdir", Mock(return_value=False))
-    @patch("censys.common.config.os.makedirs")
-    def test_search_config_makedirs(
-        self, mock_makedirs: MagicMock, mock_file: MagicMock
-    ):
+    def test_search_config_makedirs(self):
+        self.patch_args(
+            [
+                "censys",
+                "config",
+            ]
+        )
+        self.mocker.patch("censys.common.config.os.path.isdir", return_value=False)
+        mock_makedirs = self.mocker.patch("censys.common.config.os.makedirs")
+
         self.responses.add(
             responses.GET,
             V1_URL + "/account",
@@ -121,25 +112,28 @@ class CensysConfigCliTest(CensysTestCase):
 
         mock_makedirs.assert_called_with(CENSYS_PATH)
 
-    @patch("censys.common.config.os.path.isfile", os.path.isfile)
-    def test_config_default(self, mock_file: MagicMock):
-        os.path.isfile.return_value = True
+    def test_config_default(self):
+        mock_isfile = self.mocker.patch(
+            "censys.common.config.os.path.isfile", return_value=True
+        )
         config = get_config()
-        os.path.isfile.return_value = False
-        os.path.isfile.assert_called_with(test_config_path)
-        mock_file.assert_called_once()
+        mock_isfile.return_value = False
+        mock_isfile.assert_called_with(TEST_CONFIG_PATH)
+        self.mock_open.assert_called_once()
         for key, value in default_config.items():
             assert value == config.get(DEFAULT, key)
 
-    @patch(
-        "argparse._sys.argv",
-        [
-            "censys",
-            "config",
-        ],
-    )
-    @patch.dict("censys.common.config.os.environ", {"CENSYS_CONFIG_PATH": "censys.cfg"})
-    def test_search_config_custom_config(self, mock_file: MagicMock):
+    def test_search_config_custom_config(self):
+        self.patch_args(
+            [
+                "censys",
+                "config",
+            ]
+        )
+        self.mocker.patch.dict(
+            "censys.common.config.os.environ", {"CENSYS_CONFIG_PATH": "censys.cfg"}
+        )
+
         self.responses.add(
             responses.GET,
             V1_URL + "/account",
@@ -151,17 +145,16 @@ class CensysConfigCliTest(CensysTestCase):
             cli_main()
 
         # Assert that the config file was read from the right place
-        mock_file.assert_called_with("censys.cfg", "w")
+        self.mock_open.assert_called_with("censys.cfg", "w")
 
-    @patch(
-        "argparse._sys.argv",
-        [
-            "censys",
-            "config",
-        ],
-    )
-    @patch("censys.common.config.os.access", Mock(return_value=False))
-    def test_search_config_perm_error(self, mock_file: MagicMock):
+    def test_search_config_perm_error(self):
+        self.patch_args(
+            [
+                "censys",
+                "config",
+            ]
+        )
+        self.mocker.patch("censys.common.config.os.access", return_value=False)
         self.responses.add(
             responses.GET,
             V1_URL + "/account",

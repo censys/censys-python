@@ -1,4 +1,5 @@
 import unittest
+from typing import List, Optional
 
 import pytest
 import responses
@@ -48,3 +49,23 @@ class CensysTestCase(unittest.TestCase):
     def setUpApi(self, api: CensysAPIBase):  # noqa: N802
         self.api = api
         self.base_url = self.api._api_url
+
+    def patch_args(
+        self,
+        args: List[str],
+        search_auth: Optional[bool] = False,
+        asm_auth: Optional[bool] = False,
+    ):
+        """Patches the arguments of the API.
+
+        Args:
+            args (List[str]): List of arguments to patch.
+            search_auth (bool, optional): Whether to patch the search API key. Defaults to False.
+            asm_auth (bool, optional): Whether to patch the ASM API key. Defaults to False.
+        """
+        if search_auth:
+            args.extend(self.cli_args)
+        if asm_auth:
+            args.extend(self.asm_cli_args)
+
+        self.mocker.patch("argparse._sys.argv", args)
