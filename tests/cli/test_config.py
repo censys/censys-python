@@ -43,12 +43,8 @@ class CensysConfigCliTest(CensysTestCase):
             new_callable=self.mocker.mock_open,
             read_data="[DEFAULT]\napi_id =\napi_secret =\nasm_api_key =",
         )
-        mock_prompt = self.mocker.patch(
-            "rich.prompt.Prompt.ask", side_effect=prompt_side_effect
-        )
-        mock_confirm = self.mocker.patch(
-            "rich.prompt.Confirm.ask", side_effect=confirm_side_effect
-        )
+        self.mocker.patch("rich.prompt.Prompt.ask", side_effect=prompt_side_effect)
+        self.mocker.patch("rich.prompt.Confirm.ask", side_effect=confirm_side_effect)
 
     def test_search_config(self):
         # Mock

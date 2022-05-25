@@ -12,13 +12,15 @@ from censys.cli import main as cli_main
 
 
 class CensysCliAccountTest(CensysTestCase):
-
     def test_table(self):
-        # Mock 
-        self.patch_args([
-            "censys",
-            "account",
-        ], search_auth=True)
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "account",
+            ],
+            search_auth=True,
+        )
         self.responses.add(
             responses.GET,
             V1_URL + "/account",
@@ -27,26 +29,29 @@ class CensysCliAccountTest(CensysTestCase):
         )
 
         temp_stdout = StringIO()
-        # Actual call 
+        # Actual call
         with contextlib.redirect_stdout(temp_stdout), pytest.raises(
             SystemExit, match="0"
         ):
             cli_main()
 
         cli_response = temp_stdout.getvalue().strip()
-        # Assertions 
+        # Assertions
         assert ACCOUNT_JSON["email"] in cli_response
         assert ACCOUNT_JSON["login"] in cli_response
         quota = ACCOUNT_JSON["quota"]
         assert f"{quota['used']} / {quota['allowance']}" in cli_response
 
     def test_json(self):
-        # Mock 
-        self.patch_args([
-            "censys",
-            "account",
-            "--json",
-        ], search_auth=True)
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "account",
+                "--json",
+            ],
+            search_auth=True,
+        )
         self.responses.add(
             responses.GET,
             V1_URL + "/account",
@@ -55,12 +60,12 @@ class CensysCliAccountTest(CensysTestCase):
         )
 
         temp_stdout = StringIO()
-        # Actual call 
+        # Actual call
         with contextlib.redirect_stdout(temp_stdout), pytest.raises(
             SystemExit, match="0"
         ):
             cli_main()
 
         cli_response = temp_stdout.getvalue().strip()
-        # Assertions 
+        # Assertions
         assert ACCOUNT_JSON == json.loads(cli_response)

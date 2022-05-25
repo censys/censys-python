@@ -17,9 +17,9 @@ class CensysCliUtilsTest(CensysTestCase):
         ]
     )
     def test_valid_datetime(self, string, expected):
-        # Actual call 
+        # Actual call
         actual = valid_datetime_type(string)
-        # Assertions 
+        # Assertions
         assert actual == expected
 
     @parameterized.expand(
@@ -29,6 +29,6 @@ class CensysCliUtilsTest(CensysTestCase):
         ]
     )
     def test_invalid_datetime(self, string):
-        # Actuall call/error raising 
+        # Actuall call/error raising
         with pytest.raises(argparse.ArgumentTypeError):
             valid_datetime_type(string)
