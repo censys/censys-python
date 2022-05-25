@@ -1,7 +1,6 @@
 import contextlib
 import json
 from io import StringIO
-from unittest.mock import MagicMock, mock_open
 
 import pytest
 import responses
@@ -59,7 +58,7 @@ ADD_SEEDS_JSON = {
 
 class CensysASMCliTest(CensysTestCase):
     def setUp(self):
-        super().setUp()        
+        super().setUp()
 
     def test_add_seeds(self):
         # Mock
@@ -191,7 +190,7 @@ class CensysASMCliTest(CensysTestCase):
         )
         self.mocker.patch(
             "builtins.open",
-            new_callable= self.mocker.mock_open,
+            new_callable=self.mocker.mock_open,
             read_data=json.dumps(
                 [{"value": "1.1.1.1"}, {"value": "192.168. 0.15/24", "type": "CIDR"}]
             ),
