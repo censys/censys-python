@@ -191,7 +191,7 @@ class CensysASMCliTest(CensysTestCase):
         )
         self.mocker.patch(
             "builtins.open",
-            new_callable=mock_open,
+            new_callable= self.mocker.mock_open,
             read_data=json.dumps(
                 [{"value": "1.1.1.1"}, {"value": "192.168. 0.15/24", "type": "CIDR"}]
             ),
