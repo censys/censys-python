@@ -1,7 +1,7 @@
 import contextlib
 import json
 from io import StringIO
-from unittest.mock import mock_open
+from unittest.mock import MagicMock, mock_open
 
 import pytest
 import responses
@@ -59,7 +59,7 @@ ADD_SEEDS_JSON = {
 
 class CensysASMCliTest(CensysTestCase):
     def setUp(self):
-        super().setUp()
+        super().setUp()        
 
     def test_add_seeds(self):
         # Mock
