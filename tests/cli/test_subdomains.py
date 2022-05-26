@@ -2,7 +2,6 @@ import contextlib
 import json
 from io import StringIO
 from typing import Set
-from unittest import TestCase
 
 import responses
 from parameterized import parameterized
