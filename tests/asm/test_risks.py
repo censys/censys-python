@@ -68,14 +68,16 @@ class Risksv1Tests(CensysTestCase):
         ]
     )
     def test_get_risks(self, kwargs, params):
+        # Setup response
         self.responses.add(
             responses.GET,
             V1_URL + f"/risks?pageNumber=1&pageSize=100{params}",
             status=200,
             json=TEST_RISKS_JSON,
         )
-
+        # Actual call
         res = list(self.client.risks.get_risks(**kwargs))
+        # Assertions
         assert res == TEST_RISKS_JSON["data"]
 
 
@@ -151,53 +153,63 @@ class Risksv2Tests(CensysTestCase):
         ]
     )
     def test_get_risk_instances(self, kwargs, params):
+        # Setup response
         self.responses.add(
             responses.GET,
             V2_URL + f"/risk-instances{params}",
             status=200,
             json=TEST_RISK_INSTANCES_JSON,
         )
-
+        # Actual call
         res = self.api.get_risk_instances(**kwargs)
+        # Assertions
         assert res == TEST_RISK_INSTANCES_JSON
 
     def test_patch_risk_instances(self):
-        test_patch = {
-            "id": 0,
-            "categories": ["test-patch"],
-        }
+        # Mock
+        mock_patch = self.mocker.patch.dict(
+            {
+                "id": 0,
+                "categories": ["test-patch"],
+            }
+        )
         self.responses.add(
             responses.PATCH,
             V2_URL + "/risk-instances",
             status=200,
             json=TEST_PATCH_RISK_INSTANCE_JSON,
-            match=[matchers.json_params_matcher(test_patch)],
+            match=[matchers.json_params_matcher(mock_patch)],
         )
-
-        res = self.api.patch_risk_instances(test_patch)
+        # Actual call
+        res = self.api.patch_risk_instances(mock_patch)
+        # Assertions
         assert res == TEST_PATCH_RISK_INSTANCE_JSON
 
     def test_search_risk_instances(self):
-        test_search = {
-            "fields": ["id", "context", "type", "metadata", "events"],
-            "limit": 1000,
-            "page": 1,
-            "query": {
-                "field": "firstComputedAt",
-                "operator": "=",
-                "value": "2022-02-15T17:46:10.328Z",
-            },
-            "sort": ["severity", {"context.type": "asc"}],
-        }
+        # Mock
+        mock_search = self.mocker.patch.dict(
+            {
+                "fields": ["id", "context", "type", "metadata", "events"],
+                "limit": 1000,
+                "page": 1,
+                "query": {
+                    "field": "firstComputedAt",
+                    "operator": "=",
+                    "value": "2022-02-15T17:46:10.328Z",
+                },
+                "sort": ["severity", {"context.type": "asc"}],
+            }
+        )
         self.responses.add(
             responses.POST,
             V2_URL + "/risk-instances/search",
             status=200,
             json=TEST_RISK_TYPE_JSON,
-            match=[matchers.json_params_matcher(test_search)],
+            match=[matchers.json_params_matcher(mock_search)],
         )
-
-        res = self.api.search_risk_instances(test_search)
+        # Actual call
+        res = self.api.search_risk_instances(mock_search)
+        # Assertions
         assert res == TEST_RISK_TYPE_JSON
 
     @parameterized.expand(
@@ -208,31 +220,37 @@ class Risksv2Tests(CensysTestCase):
         ]
     )
     def test_get_risk_instance(self, kwargs, params):
+        # Setup response
         self.responses.add(
             responses.GET,
             V2_URL + f"/risk-instances/{params}",
             status=200,
             json=TEST_RISK_INSTANCE_JSON,
         )
-
+        # Actual call
         res = self.api.get_risk_instance(**kwargs)
+        # Assertions
         assert res == TEST_RISK_INSTANCE_JSON
 
     def test_patch_risk_instance(self):
-        test_risk_id = 0
-        test_patch = {
-            "id": test_risk_id,
-            "categories": ["test-patch"],
-        }
+        # Mock
+        mock_risk_id = 0
+        mock_patch = self.mocker.patch.dict(
+            {
+                "id": mock_risk_id,
+                "categories": ["mock-patch"],
+            }
+        )
         self.responses.add(
             responses.PATCH,
-            V2_URL + f"/risk-instances/{test_risk_id}",
+            V2_URL + f"/risk-instances/{mock_risk_id}",
             status=200,
             json=TEST_PATCH_RISK_INSTANCE_JSON,
-            match=[matchers.json_params_matcher(test_patch)],
+            match=[matchers.json_params_matcher(mock_patch)],
         )
-
-        res = self.api.patch_risk_instance(test_risk_id, test_patch)
+        # Actual call
+        res = self.api.patch_risk_instance(mock_risk_id, mock_patch)
+        # Assertions
         assert res == TEST_PATCH_RISK_INSTANCE_JSON
 
     @parameterized.expand(
@@ -244,14 +262,16 @@ class Risksv2Tests(CensysTestCase):
         ]
     )
     def test_get_risk_types(self, kwargs, params):
+        # Setup response
         self.responses.add(
             responses.GET,
             V2_URL + f"/risk-types{params}",
             status=200,
             json=TEST_RISK_TYPES_JSON,
         )
-
+        # Actual call
         res = self.api.get_risk_types(**kwargs)
+        # Assertions
         assert res == TEST_RISK_TYPES_JSON
 
     @parameterized.expand(
@@ -268,28 +288,34 @@ class Risksv2Tests(CensysTestCase):
         ]
     )
     def test_get_risk_type(self, kwargs, params):
+        # Setup respnonse
         self.responses.add(
             responses.GET,
             V2_URL + f"/risk-types/{params}",
             status=200,
             json=TEST_RISK_TYPE_JSON,
         )
-
+        # Actual call
         res = self.api.get_risk_type(**kwargs)
+        # Assertions
         assert res == TEST_RISK_TYPE_JSON
 
     def test_patch_risk_type(self):
-        test_patch = {
-            "type": TEST_RISK_TYPE,
-            "categories": ["test-patch"],
-        }
+        # Mock
+        mock_patch = self.mocker.patch.dict(
+            {
+                "type": TEST_RISK_TYPE,
+                "categories": ["mock-patch"],
+            }
+        )
         self.responses.add(
             responses.PATCH,
             V2_URL + f"/risk-types/{TEST_RISK_TYPE}",
             status=200,
             json=TEST_PATCH_RISK_TYPE_JSON,
-            match=[matchers.json_params_matcher(test_patch)],
+            match=[matchers.json_params_matcher(mock_patch)],
         )
-
-        res = self.api.patch_risk_type(TEST_RISK_TYPE, test_patch)
+        # Actual call
+        res = self.api.patch_risk_type(TEST_RISK_TYPE, mock_patch)
+        # Assertions
         assert res == TEST_PATCH_RISK_TYPE_JSON
