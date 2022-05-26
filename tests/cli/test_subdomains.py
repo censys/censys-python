@@ -28,7 +28,7 @@ def search_callback(request):
     return (200, {}, json.dumps(resp_body))
 
 
-class CensysCliSubdomainsTest(CensysTestCase, TestCase):
+class CensysCliSubdomainsTest(CensysTestCase):
     @parameterized.expand(
         [
             (True,),
