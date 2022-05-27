@@ -2,7 +2,6 @@ import contextlib
 import json
 from io import StringIO
 from typing import Set
-from unittest.mock import patch
 
 import responses
 from parameterized import parameterized
@@ -55,24 +54,25 @@ class CensysCliSubdomainsTest(CensysTestCase):
             for subdomain in test_subdomains:
                 mock_print.assert_any_call(f"  - {subdomain}")
 
-    @patch(
-        "argparse._sys.argv",
-        ["censys", "subdomains", "censys.io"] + CensysTestCase.cli_args,
-    )
     def test_search_subdomains(self):
-        # Test data
+        # Mock
         self.responses.add_callback(
             responses.POST,
             V1_URL + "/search/certificates",
             callback=search_callback,
             content_type="application/json",
         )
+        self.mocker.patch(
+            "argparse._sys.argv",
+            ["censys", "subdomains", "censys.io"] + CensysTestCase.cli_args,
+        )
 
+        # Actual call
         temp_stdout = StringIO()
         with contextlib.redirect_stdout(temp_stdout):
             cli_main()
 
-        cli_response = temp_stdout.getvalue().strip()
-
-        for line in cli_response.split("\n"):
+        # Assertions
+        mock_cli_response = temp_stdout.getvalue().strip()
+        for line in mock_cli_response.split("\n"):
             assert "censys.io" in line

@@ -1,6 +1,5 @@
 import contextlib
 from io import StringIO
-from unittest.mock import patch
 
 import pytest
 import responses
@@ -21,14 +20,14 @@ class CensysCliHNRITest(CensysTestCase):
         super().setUp()
         self.api = CensysHNRI(self.api_id, self.api_secret)
 
-    @patch(
-        "argparse._sys.argv",
-        ["censys", "hnri"] + CensysTestCase.cli_args,
-    )
-    @patch(
-        "censys.cli.commands.hnri.CensysHNRI.get_current_ip", return_value=IP_ADDRESS
-    )
-    def test_hnri_medium(self, mock_ip):
+    def test_hnri_medium(self):
+        # Mock
+        self.patch_args(["censys", "hnri"], search_auth=True)
+        mock_ip = self.mocker.patch(
+            "censys.cli.commands.hnri.CensysHNRI.get_current_ip",
+            return_value=self.IP_ADDRESS,
+        )
+        # Setup response
         response = VIEW_HOST_JSON.copy()
         response["result"]["services"] = [
             {"port": 443, "service_name": "HTTPS"},
@@ -42,25 +41,27 @@ class CensysCliHNRITest(CensysTestCase):
         )
 
         temp_stdout = StringIO()
+        # Actual call
         with contextlib.redirect_stdout(temp_stdout):
             cli_main()
 
         stdout = temp_stdout.getvalue().strip()
-        assert self.IP_ADDRESS in stdout
+        # Assertions
+        assert mock_ip.return_value in stdout
         assert "Medium Risks Found" in stdout
         assert "HTTPS" in stdout
         assert "443" in stdout
         assert "DNS" in stdout
         assert "53" in stdout
 
-    @patch(
-        "argparse._sys.argv",
-        ["censys", "hnri"] + CensysTestCase.cli_args,
-    )
-    @patch(
-        "censys.cli.commands.hnri.CensysHNRI.get_current_ip", return_value=IP_ADDRESS
-    )
-    def test_hnri_no_medium(self, mock_ip):
+    def test_hnri_no_medium(self):
+        self.patch_args(["censys", "hnri"], search_auth=True)
+        # Mock
+        mock_ip = self.mocker.patch(
+            "censys.cli.commands.hnri.CensysHNRI.get_current_ip",
+            return_value=self.IP_ADDRESS,
+        )
+        # Setup response
         response = VIEW_HOST_JSON.copy()
         response["result"]["services"] = [{"port": 23, "service_name": "VNC"}]
         self.responses.add(
@@ -71,24 +72,26 @@ class CensysCliHNRITest(CensysTestCase):
         )
 
         temp_stdout = StringIO()
+        # Actual call
         with contextlib.redirect_stdout(temp_stdout):
             cli_main()
 
         stdout = temp_stdout.getvalue().strip()
-        assert self.IP_ADDRESS in stdout
+        # Assertions
+        assert mock_ip.return_value in stdout
         assert "High Risks Found" in stdout
         assert "VNC" in stdout
         assert "23" in stdout
         assert "You don't have any Medium Risks in your network" in stdout
 
-    @patch(
-        "argparse._sys.argv",
-        ["censys", "hnri"] + CensysTestCase.cli_args,
-    )
-    @patch(
-        "censys.cli.commands.hnri.CensysHNRI.get_current_ip", return_value=IP_ADDRESS
-    )
-    def test_hnri_not_found(self, mock_ip):
+    def test_hnri_not_found(self):
+        self.patch_args(["censys", "hnri"], search_auth=True)
+        # Mock
+        mock_ip = self.mocker.patch(
+            "censys.cli.commands.hnri.CensysHNRI.get_current_ip",
+            return_value=self.IP_ADDRESS,
+        )
+        # Setup response
         response = VIEW_HOST_JSON.copy()
         response["result"]["services"] = []
         self.responses.add(
@@ -99,33 +102,39 @@ class CensysCliHNRITest(CensysTestCase):
         )
 
         temp_stdout = StringIO()
+        # Actual Call
         with contextlib.redirect_stdout(temp_stdout):
             cli_main()
 
         stdout = temp_stdout.getvalue().strip()
-        assert self.IP_ADDRESS in stdout
+        # Assertions
+        assert mock_ip.return_value in stdout
         assert "No Risks were found on your network" in stdout
 
     def test_get_current_ip(self):
+        # Setup response
         self.responses.add(
             responses.GET,
             self.IPIFY_URL,
             status=200,
             json={"ip": self.IP_ADDRESS},
         )
+        # Actual call
         ip_address = self.api.get_current_ip()
+        # Assertions
         assert ip_address == self.IP_ADDRESS
 
     def test_no_risks(self):
+        # Actual call/error raising
         with pytest.raises(CensysCLIException):
             self.api.risks_to_string([], [])
 
-    @patch(
-        "argparse._sys.argv",
-        ["censys", "hnri", "--open"],
-    )
-    @patch("censys.cli.commands.view.webbrowser.open")
-    def test_open(self, mock_open):
+    def test_open(self):
+        self.patch_args(["censys", "hnri", "--open"])
+        # Mock
+        mock_open = self.mocker.patch("censys.cli.commands.view.webbrowser.open")
+        # Actual call/error raising
         with pytest.raises(SystemExit, match="0"):
             cli_main()
+        # Assertions
         mock_open.assert_called_with("https://search.censys.io/me")
