@@ -32,59 +32,70 @@ class CloudsUnitTest(CensysTestCase):
         ]
     )
     def test_format_since_date(self, since, actual):
+        # Actual call/assertions
         assert format_since_date(since) == actual
 
     def test_get_host_counts(self):
+        # Setup response
         self.responses.add(
             responses.GET,
             V1_URL + "/clouds/hostCounts/2021-01-01",
             status=200,
             json=TEST_COUNT_JSON,
         )
-
+        # Actual call
         res = self.client.clouds.get_host_counts("2021-01-01")
+        # Assertions
         assert res == TEST_COUNT_JSON
 
     def test_get_domain_counts(self):
+        # Setup response
         self.responses.add(
             responses.GET,
             V1_URL + "/clouds/domainCounts/2021-01-01",
             status=200,
             json=TEST_COUNT_JSON,
         )
-
+        # Actual call
         res = self.client.clouds.get_domain_counts("2021-01-01")
+        # Assertions
         assert res == TEST_COUNT_JSON
 
     def test_get_object_store_counts(self):
+        # Setup response
         self.responses.add(
             responses.GET,
             V1_URL + "/clouds/objectStoreCounts/2021-01-01",
             status=200,
             json=TEST_COUNT_JSON,
         )
-
+        # Actual call
         res = self.client.clouds.get_object_store_counts("2021-01-01")
+        # Assertions
         assert res == TEST_COUNT_JSON
 
     def test_get_subdomain_counts(self):
+        # Setup response
         self.responses.add(
             responses.GET,
             V1_URL + "/clouds/subdomainCounts/2021-01-01",
             status=200,
             json=TEST_COUNT_JSON,
         )
-
+        # Actual call
         res = self.client.clouds.get_subdomain_counts("2021-01-01")
+        # Assertions
         assert res == TEST_COUNT_JSON
 
     def test_get_unknown_counts(self):
+        # Setup response
         self.responses.add(
             responses.GET,
             V1_URL + "/clouds/unknownCounts",
             status=200,
             json=TEST_COUNT_JSON,
         )
-
+        # Actual call
         res = self.client.clouds.get_unknown_counts()
+        # Assertions
         assert res == TEST_COUNT_JSON

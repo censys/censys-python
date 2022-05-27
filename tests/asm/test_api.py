@@ -1,10 +1,10 @@
 import json
 import unittest
-from unittest.mock import mock_open, patch
 
 import pytest
 import responses
 from parameterized import parameterized
+from pytest_mock import MockerFixture
 from requests.models import Response
 
 from ..utils import CensysTestCase
@@ -16,10 +16,32 @@ from censys.common.exceptions import (
 )
 
 
-@patch.dict("os.environ", {"CENSYS_ASM_API_KEY": ""})
 class CensysAPIBaseTestsNoAsmEnv(unittest.TestCase):
-    @patch("builtins.open", new_callable=mock_open, read_data="[DEFAULT]")
-    def test_no_env(self, mock_file):
+    @pytest.fixture(autouse=True)
+    def __inject_fixtures(self, mocker: MockerFixture):
+        """Injects fixtures into the test case.
+
+        Args:
+            mocker (MockerFixture): pytest-mock fixture.
+        """
+        # Inject mocker fixture
+        self.mocker = mocker
+
+    def setUp(self):
+        self.responses = responses.RequestsMock()
+        self.responses.start()
+        self.mocker.patch.dict("os.environ", {"CENSYS_ASM_API_KEY": ""})
+        self.mock_open = self.mocker.patch(
+            "builtins.open", new_callable=self.mocker.mock_open, read_data="[DEFAULT]"
+        )
+
+        self.addCleanup(self.responses.stop)
+        self.addCleanup(self.responses.reset)
+
+    def test_no_env(self):
+        self.mocker.patch(
+            "builtins.open", new_callable=self.mock_open, read_data="[DEFAULT]"
+        )
         with pytest.raises(CensysException, match="No ASM API key configured."):
             CensysAsmAPI()
 
@@ -36,21 +58,24 @@ class CensysAsmAPITests(CensysTestCase):
         self.setUpApi(CensysAsmAPI(self.api_id))
 
     @parameterized.expand(AsmExceptionParams)
-    @patch("requests.models.Response.json")
-    def test_get_exception_class(self, status_code, exception, mock):
-        response = Response()
-        mock.return_value = {"errorCode": status_code}
+    def test_get_exception_class(self, status_code, exception):
+        # Mock
+        mock_response = self.mocker.patch("requests.models.Response.json")
 
+        response = Response()
+        mock_response.return_value = {"errorCode": status_code}
+        # Actual call/assertion
         assert CensysAsmAPI()._get_exception_class(response) == exception
 
     def test_exception_repr(self):
+        # Actual call
         exception = CensysAsmException(
             404,
             "Unable to Find Seed",
             error_code=10014,
             details="[{id: 999}]",  # noqa: FS003
         )
-
+        # Assertion
         assert (
             repr(exception)
             == "404 (Error Code: 10014), Unable to Find Seed. [{id: 999}]"  # noqa: FS003
@@ -58,6 +83,7 @@ class CensysAsmAPITests(CensysTestCase):
 
     @parameterized.expand([("assets")])
     def test_page_keywords(self, keyword):
+        # Mock
         page_json = {
             "pageNumber": 1,
             "totalPages": 2,
@@ -73,6 +99,7 @@ class CensysAsmAPITests(CensysTestCase):
                 temp_json[keyword] = second_page
             return (200, {}, json.dumps(temp_json))
 
+        # Actual call
         self.responses.add_callback(
             responses.GET,
             f"{self.base_url}/{keyword}?pageNumber=",
@@ -80,5 +107,5 @@ class CensysAsmAPITests(CensysTestCase):
         )
 
         res = list(self.api._get_page(f"/{keyword}"))
-
+        # Assertions
         assert res == page_json[keyword] + second_page
