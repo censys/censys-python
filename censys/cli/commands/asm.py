@@ -2,6 +2,8 @@
 import argparse
 import json
 import sys
+from typing import Dict, List
+from xml.etree import ElementTree
 
 from rich.prompt import Confirm, Prompt
 
@@ -50,25 +52,63 @@ def cli_asm_config(_: argparse.Namespace):  # pragma: no cover
         sys.exit(1)
 
 
+def get_seeds_from_xml(file: str) -> List[Dict[str, str]]:
+    """Get seeds from nmap xml.
+
+    Args:
+        file (str): Nmap xml file.
+
+    Returns:
+        List[Dict[str, str]]: List of seeds.
+    """
+    tree = ElementTree.parse(file)
+    root = tree.getroot()
+    ips = set()
+    domains = set()
+    for element in root.findall("host"):
+        address_element = element.find("address")
+        hostnames_element = element.find("hostnames")
+        if address_element is not None and address_element.get("addrtype") == "ipv4":
+            ip_address = address_element.get("addr")
+            if ip_address:
+                ips.add(ip_address)
+        if hostnames_element is not None:
+            hostname_elements = hostnames_element.findall("hostname")
+            for hostname_element in hostname_elements:
+                hostname = hostname_element.get("name")
+                if hostname:
+                    domains.add(hostname)
+    return [{"value": ip, "type": "IP_ADDRESS"} for ip in ips] + [
+        {"value": domain, "type": "DOMAIN_NAME"} for domain in domains
+    ]
+
+
 def cli_add_seeds(args: argparse.Namespace):
     """Add seed subcommand.
 
     Args:
         args (Namespace): Argparse Namespace.
     """
-    if args.input_file:
-        if args.input_file == "-":
-            data = sys.stdin.read()
+    if args.input_file or args.json:
+        if args.input_file:
+            if args.input_file == "-":
+                data = sys.stdin.read()
+            else:
+                with open(args.input_file) as f:
+                    data = f.read()
         else:
-            with open(args.input_file) as f:
-                data = f.read()
-    else:
-        data = args.json
-    try:
-        seeds = json.loads(data)
-    except json.decoder.JSONDecodeError as e:
-        console.print(f"Invalid json {e}")
-        sys.exit(1)
+            data = args.json
+        try:
+            seeds = json.loads(data)
+        except json.decoder.JSONDecodeError as e:
+            console.print(f"Invalid json {e}")
+            sys.exit(1)
+    elif args.nmap_xml:
+        try:
+            seeds = get_seeds_from_xml(args.nmap_xml)
+        except ElementTree.ParseError as e:
+            console.print(f"Invalid xml {e}")
+            sys.exit(1)
 
     seeds_to_add = []
     for seed in seeds:
@@ -160,5 +200,8 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     )
     seeds_group.add_argument(
         "--json", "-j", help="input string containing valid json seeds", type=str
+    )
+    seeds_group.add_argument(
+        "--nmap-xml", help="input file name containing valid xml nmap output", type=str
     )
     add_parser.set_defaults(func=cli_add_seeds)
