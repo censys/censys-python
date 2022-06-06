@@ -89,3 +89,11 @@ In the example below we are adding IPs from a Censys Search.
 .. prompt:: bash
 
     censys search 'services.tls.certificates.leaf_data.issuer.common_name: "Roomba CA"' | jq '[.[] | .ip]' | censys asm add-seeds -i -
+
+You can also add seeds from a nmap XML file using the ``--nmap-xml`` argument.
+In the example below we are adding IPs from a nmap scan on ``censys.io``.
+
+.. prompt:: bash
+
+    nmap censys.io -oX censys.xml
+    censys asm add-seeds --nmap-xml censys.xml

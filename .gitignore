@@ -56,6 +56,9 @@ ipython_config.py
 #   install all needed dependencies.
 #Pipfile.lock
 
+# pyenv
+.python-version
+
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
 
@@ -85,3 +88,4 @@ censys-query-output.*
 censys-view-*
 *.json
 *.csv
+*.xml
