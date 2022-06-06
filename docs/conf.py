@@ -14,13 +14,11 @@ from datetime import datetime
 
 import sphinx_rtd_theme  # noqa
 
-from censys.common import __version__
-
 # -- Path setup --------------------------------------------------------------
 
 
 sys.path.insert(0, os.path.abspath("../censys"))
-
+from censys.common import __version__
 
 # -- Project information -----------------------------------------------------
 

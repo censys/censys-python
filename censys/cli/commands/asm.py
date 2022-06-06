@@ -75,6 +75,9 @@ def get_seeds_from_xml(file: str) -> List[Dict[str, str]]:
         if hostnames_element is not None:
             hostname_elements = hostnames_element.findall("hostname")
             for hostname_element in hostname_elements:
+                hostname_type = hostname_element.get("type")
+                if hostname_type != "user":
+                    continue
                 hostname = hostname_element.get("name")
                 if hostname:
                     domains.add(hostname)

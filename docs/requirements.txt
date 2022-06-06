@@ -1,5 +1,5 @@
 sphinx>=3.2.1
-sphinxcontrib-napoleon==0.7
+git+https://github.com/sphinx-contrib/napoleon.git
 sphinxcontrib-autoprogram==0.1.7
 sphinx-rtd-theme==1.0.0
 sphinx-prompt==1.5.0
