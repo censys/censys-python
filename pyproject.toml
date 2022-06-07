@@ -70,7 +70,7 @@ flake8-black = "^0.3.3"
 black = "^22.3.0"
 blacken-docs = "^1.12.1"
 darglint = "^1.8.1"
-pyupgrade = "^2.31.0"
+pyupgrade = "^2.34.0"
 # Tests
 pytest = "^7.1.2"
 pytest-cov = "^3.0.0"
