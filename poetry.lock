@@ -30,7 +30,7 @@ tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>
 
 [[package]]
 name = "backoff"
-version = "2.0.1"
+version = "2.1.1"
 description = "Function decoration for backoff and retry"
 category = "main"
 optional = false
@@ -675,8 +675,8 @@ attrs = [
     {file = "attrs-21.4.0.tar.gz", hash = "sha256:626ba8234211db98e869df76230a137c4c40a12d72445c45d5f5b716f076e2fd"},
 ]
 backoff = [
-    {file = "backoff-2.0.1-py3-none-any.whl", hash = "sha256:8700797e5f45e41ee3bf357137f074a174797016dc9ad3c2b974a955bab92b50"},
-    {file = "backoff-2.0.1.tar.gz", hash = "sha256:bd6f32d4aff2607a578e847bf5bdb978a0eb1911fe5c0b0a73325328881bb31c"},
+    {file = "backoff-2.1.1-py3-none-any.whl", hash = "sha256:cf3410724f1c23e0a7fdd20fcfdd26a58d49062158d86830c8bc0b4c1ba1b27c"},
+    {file = "backoff-2.1.1.tar.gz", hash = "sha256:940106766389b50aa85d008a7b24051965c4aa97e46b0c3a7268b61db5896995"},
 ]
 black = [
     {file = "black-22.3.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:2497f9c2386572e28921fa8bec7be3e51de6801f7459dffd6e62492531c47e09"},
