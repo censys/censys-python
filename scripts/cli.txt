@@ -1,0 +1,71 @@
+# Install censys with pip
+
+pip install censys
+
+# Configure your credentials
+
+censys config
+
+
+
+
+# Search from the CLI
+
+censys search 'services.http.response.html_title: "Dashboard"' --index-type hosts 
+
+# Manipulate Search output to get desired fields 
+
+censys search 'ETH speed and location.country=`Chile`' | jq -c '.[] | {ip: .ip}'
+
+# Set --pages flag to -1 to get all pages of results 
+
+censys search "Basic realm= \\"Mein Automower (Robonect Hx+)\\""
+
+# Subdomain Enumeration 
+
+censys subdomains censys.io 
+
+# View an IP from a certain date 
+
+censys view 8.8.8.8 --at-time 2022-06-02
+
+# You can save results to a file using the -o arg
+
+censys view 8.8.8.8 -o google.json 
+
+# We can then parse this json with something like jq
+
+cat google.json | jq '[.services[] | {port: .port, protocol: .service_name}]'
+
+# Home Network Risk Identifier 
+
+censys hnri 
+
+# View your account information from the CLI
+
+censys account
+
+# Request the JSON version of your account information
+ 
+censys account --json 
+
+# Using the Censys ASM (Attack Surface Management) tool from the CLI 
+
+
+# Configure your ASM credentials 
+
+censys asm config 
+
+# Add seeds from the CLI 
+
+censys asm add-seeds -j '["1.1.1.1"]'
+
+# Add seeds from STDIN using the -i argument. Below we are adding IPs from a Censys Search
+
+censys search 'services.tls.certificates.leaf_data.issuer.common_name: "Roomba CA"' | jq '[.[] | .ip]' | censys asm add-seeds -i -
+
+# You can also add seeds from a nmap XML file using the --nmap-xml argument. Below we are adding IPs from a nmap scan on censys.io 
+
+nmap censys.io -oX censys.xml
+
+censys asm add-seeds --nmap-xml censys.xml
