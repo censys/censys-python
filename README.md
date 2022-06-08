@@ -19,7 +19,7 @@ An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://
 - [Manage assets, events, and seeds in Censys ASM](https://censys-python.readthedocs.io/en/stable/usage-asm.html)
 - [Command-line interface](https://censys-python.readthedocs.io/en/stable/cli.html)
 
-<a href="https://asciinema.org/a/418153" target="_blank"><img src="https://asciinema.org/a/418153.svg" width="600"/></a>
+<a href="https://asciinema.org/a/500416" target="_blank"><img src="https://asciinema.org/a/500416.svg" width="600"/></a>
 
 ## Getting Started
 
@@ -42,6 +42,7 @@ $ censys config
 
 Censys API ID: XXX
 Censys API Secret: XXX
+Do you want color output? [y/n]: y
 
 Successfully authenticated for your@email.com
 ```
@@ -52,6 +53,7 @@ To configure your ASM credentials run `censys asm config` or set the `CENSYS_ASM
 $ censys asm config
 
 Censys ASM API Key: XXX
+Do you want color output? [y/n]: y
 
 Successfully authenticated
 ```
