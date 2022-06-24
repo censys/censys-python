@@ -5,7 +5,7 @@ description = "An easy-to-use and lightweight API wrapper for Censys APIs (censy
 authors = ["Censys, Inc. <support@censys.io>"]
 license = "Apache-2.0"
 readme = "README.md"
-include = ["README.md", "LICENSE", "censys/py.typed"]
+include = ["censys/py.typed"]
 keywords = ["censys", "api", "search", "attack surface management"]
 classifiers = [
     "Typing :: Typed",
