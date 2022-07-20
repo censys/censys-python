@@ -78,7 +78,7 @@ pytest-mock = "^3.8.2"
 responses = "^0.21.0"
 parameterized = "^0.8.1"
 # Types
-mypy = "^0.961"
+mypy = "^0.971"
 types-requests = ">=2.26.0"
 
 [tool.black]
