@@ -158,6 +158,11 @@ RATE_LIMIT_ERROR_JSON = {
     "status": "error",
     "error_type": "rate_limit_exceeded",
 }
+TOO_MANY_REQUESTS_ERROR_JSON = {
+    "code": 429,
+    "status": "Too Many Requests",
+    "error": "You have used your full quota for this billing period. Please see https://search.censys.io/account or contact support@censys.io.",
+}
 
 TEST_HOST = "8.8.8.8"
 

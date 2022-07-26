@@ -3,13 +3,15 @@ import csv
 import json
 import os
 from io import StringIO
+from typing import Dict, Tuple
 from unittest.mock import mock_open
 from urllib.parse import urlencode
 
 import pytest
 import responses
+from requests import PreparedRequest
 
-from tests.search.v2.test_hosts import SEARCH_HOSTS_JSON
+from tests.search.v2.test_hosts import SEARCH_HOSTS_JSON, TOO_MANY_REQUESTS_ERROR_JSON
 from tests.utils import V1_URL, V2_URL, CensysTestCase
 
 from censys.cli import main as cli_main
@@ -18,13 +20,24 @@ from censys.common.exceptions import CensysCLIException, CensysException
 WROTE_PREFIX = "Wrote results to file"
 
 
-def search_callback(request):
+def search_callback(request: PreparedRequest) -> Tuple[int, Dict[str, str], str]:
     payload = json.loads(request.body)
     resp_body = {
         "results": [{field: None for field in payload["fields"]}],
         "metadata": {"page": payload["page"], "pages": 100},
     }
     return (200, {}, json.dumps(resp_body))
+
+
+def search_callback_fail(request: PreparedRequest) -> Tuple[int, Dict[str, str], str]:
+    payload = json.loads(request.body)
+    if payload.get("page", 1) >= 2:
+        return (
+            429,
+            {},
+            json.dumps({"error_code": 429, "error": "rate limit exceeded"}),
+        )
+    return search_callback(request)
 
 
 class CensysCliSearchTest(CensysTestCase):
@@ -346,6 +359,29 @@ class CensysCliSearchTest(CensysTestCase):
         # Assertions
         assert len(json_response) == 2
 
+    def test_midway_fail(self):
+        # Setup response
+        self.responses.add_callback(
+            responses.POST,
+            V1_URL + "/search/certificates",
+            callback=search_callback_fail,
+            content_type="application/json",
+        )
+        # Mock
+        self.patch_args(
+            ["censys", "search", "parsed.names: censys.io", "--index-type", "certs"],
+            search_auth=True,
+        )
+
+        temp_stdout = StringIO()
+        # Actual call
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        json_response = json.loads(temp_stdout.getvalue().strip())
+        # Assertions
+        assert len(json_response) == 1
+
     def test_write_screen_v2(self):
         # Setup response
         self.responses.add(
@@ -399,6 +435,40 @@ class CensysCliSearchTest(CensysTestCase):
                 "1",
                 "--virtual-hosts",
                 "ONLY",
+            ],
+            search_auth=True,
+        )
+
+        temp_stdout = StringIO()
+        # Actual call
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        json_response = json.loads(temp_stdout.getvalue().strip())
+        # Assertions
+        assert json_response == SEARCH_HOSTS_JSON["result"]["hits"]
+
+    def test_search_sort_order(self):
+        # Setup response
+        self.responses.add(
+            responses.GET,
+            V2_URL
+            + "/hosts/search?q=service.service_name%3A+HTTP&per_page=100&sort=RANDOM&virtual_hosts=EXCLUDE",
+            status=200,
+            json=SEARCH_HOSTS_JSON,
+        )
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "search",
+                "service.service_name: HTTP",
+                "--index-type",
+                "hosts",
+                "--pages",
+                "1",
+                "--sort-order",
+                "RANDOM",
             ],
             search_auth=True,
         )
@@ -481,6 +551,61 @@ class CensysCliSearchTest(CensysTestCase):
             match="JSON is the only valid file format for Search 2.0 responses.",
         ):
             cli_main()
+
+    def test_midway_fail_v2(self):
+        # Setup response
+        next_cursor = SEARCH_HOSTS_JSON["result"]["links"]["next"]
+        self.responses.add(
+            responses.GET,
+            V2_URL
+            + "/hosts/search?q=service.service_name: HTTP&per_page=100&sort=RELEVANCE&virtual_hosts=EXCLUDE",
+            status=200,
+            json=SEARCH_HOSTS_JSON,
+        )
+        self.responses.add(
+            responses.GET,
+            V2_URL
+            + f"/hosts/search?q=service.service_name: HTTP&per_page=100&sort=RELEVANCE&virtual_hosts=EXCLUDE&cursor={next_cursor}",
+            status=429,
+            json=TOO_MANY_REQUESTS_ERROR_JSON,
+        )
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "search",
+                "service.service_name: HTTP",
+                "--index-type",
+                "hosts",
+                "--pages",
+                "2",
+                "--output",
+                "censys-hosts.json",
+            ],
+            search_auth=True,
+        )
+
+        temp_stdout = StringIO()
+        # Actual call
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        cli_response = temp_stdout.getvalue().strip()
+        # Assertions
+        assert cli_response.startswith(WROTE_PREFIX)
+
+        json_path = cli_response.replace(WROTE_PREFIX, "").strip()
+        assert json_path.endswith(".json")
+        assert "censys-hosts." in json_path
+
+        with open(json_path) as json_file:
+            json_response = json.load(json_file)
+
+        assert len(json_response) >= 1
+        assert json_response == SEARCH_HOSTS_JSON["result"]["hits"]
+
+        # Cleanup
+        os.remove(json_path)
 
     def test_open_certificates(self):
         # Mock
