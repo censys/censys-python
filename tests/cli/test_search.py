@@ -351,7 +351,7 @@ class CensysCliSearchTest(CensysTestCase):
         self.responses.add(
             responses.GET,
             V2_URL
-            + "/hosts/search?q=service.service_name: HTTP&per_page=100&virtual_hosts=EXCLUDE",
+            + "/hosts/search?q=service.service_name: HTTP&per_page=100&sort=RELEVANCE&virtual_hosts=EXCLUDE",
             status=200,
             json=SEARCH_HOSTS_JSON,
         )
@@ -383,7 +383,7 @@ class CensysCliSearchTest(CensysTestCase):
         self.responses.add(
             responses.GET,
             V2_URL
-            + "/hosts/search?q=service.service_name%3A+HTTP&per_page=100&virtual_hosts=ONLY",
+            + "/hosts/search?q=service.service_name%3A+HTTP&per_page=100&sort=RELEVANCE&virtual_hosts=ONLY",
             status=200,
             json=SEARCH_HOSTS_JSON,
         )
@@ -417,7 +417,7 @@ class CensysCliSearchTest(CensysTestCase):
         self.responses.add(
             responses.GET,
             V2_URL
-            + "/hosts/search?q=service.service_name: HTTP&per_page=100&virtual_hosts=EXCLUDE",
+            + "/hosts/search?q=service.service_name: HTTP&per_page=100&sort=RELEVANCE&virtual_hosts=EXCLUDE",
             status=200,
             json=SEARCH_HOSTS_JSON,
         )

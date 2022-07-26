@@ -2,12 +2,14 @@
 import argparse
 import sys
 import webbrowser
-from typing import List
+from typing import Any, Dict, List
 from urllib.parse import urlencode
 
 from censys.cli.utils import INDEXES, V1_INDEXES, V2_INDEXES, err_console, write_file
-from censys.common.exceptions import CensysCLIException
+from censys.common.exceptions import CensysCLIException, CensysException
 from censys.search import SearchClient
+from censys.search.v1.api import CensysSearchAPIv1
+from censys.search.v2.api import CensysSearchAPIv2
 
 Results = List[dict]
 
@@ -64,9 +66,10 @@ def cli_search(args: argparse.Namespace):
 
     search_args = {}
     write_args = {"file_format": args.format, "file_path": args.output}
+    results: List[Dict[str, Any]] = []
 
     if index_type in V1_INDEXES:
-        index = getattr(c.v1, index_type)
+        v1_index: CensysSearchAPIv1 = getattr(c.v1, index_type)
 
         if args.max_records:
             search_args["max_records"] = args.max_records
@@ -97,31 +100,46 @@ def cli_search(args: argparse.Namespace):
         search_args["fields"] = fields
 
         with err_console.status("Searching"):
-            results = list(index.search(args.query, **search_args))
+            try:
+                for v1_page in v1_index.search(args.query, **search_args):
+                    results.append(v1_page)
+            except CensysException as e:
+                try:
+                    write_file(results, **write_args)
+                except ValueError as error:  # pragma: no cover
+                    err_console.print(f"Error writing log file. Error: {error}")
+                raise CensysCLIException(f"Error searching: {e}")
     elif index_type in V2_INDEXES:
         if args.format == "csv" or (args.output and not args.output.endswith(".json")):
             raise CensysCLIException(
                 "JSON is the only valid file format for Search 2.0 responses."
             )
-        index = getattr(c.v2, index_type)
+        v2_index: CensysSearchAPIv2 = getattr(c.v2, index_type)
 
-        if args.output:
-            write_args["file_format"] = "json"
-        else:
-            write_args["file_format"] = "screen"
-
-        if args.pages:
-            search_args["pages"] = args.pages
-
-        if args.virtual_hosts:
-            search_args["virtual_hosts"] = args.virtual_hosts
+        search_args.update(
+            {
+                "pages": args.pages,
+                "per_page": args.per_page,
+                "sort": args.sort,
+                "virtual_hosts": args.virtual_hosts,
+            }
+        )
+        write_args.update(
+            {
+                "file_format": "json" if args.output else "screen",
+            }
+        )
 
         with err_console.status("Searching"):
-            query = index.search(args.query, **search_args)
-
-            results = []
-            for hits in query:
-                results += hits
+            try:
+                for v2_page in v2_index.search(args.query, **search_args):
+                    results.extend(v2_page)
+            except CensysException as e:
+                try:
+                    write_file(results, **write_args)
+                except ValueError as error:  # pragma: no cover
+                    err_console.print(f"Error writing log file. Error: {error}")
+                raise CensysCLIException(f"Error searching: {e}")
 
     try:
         write_file(results, **write_args)
@@ -198,6 +216,20 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         default=1,
         type=int,
         help="number of pages of results to return (when set to -1 returns all pages available)",
+    )
+    v2_group.add_argument(
+        "--per-page",
+        default=100,
+        type=int,
+        help="number of results to return per page",
+    )
+    v2_group.add_argument(
+        "--sort-order",
+        dest="sort",
+        type=str,
+        default="RELEVANCE",
+        choices=["RELEVANCE", "ASCENDING", "DESCENDING", "RANDOM"],
+        help="sort order of results",
     )
     v2_group.add_argument(
         "--virtual-hosts",
