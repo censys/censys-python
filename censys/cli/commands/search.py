@@ -103,12 +103,8 @@ def cli_search(args: argparse.Namespace):
             try:
                 for v1_page in v1_index.search(args.query, **search_args):
                     results.append(v1_page)
-            except CensysException as e:
-                try:
-                    write_file(results, **write_args)
-                except ValueError as error:  # pragma: no cover
-                    err_console.print(f"Error writing log file. Error: {error}")
-                raise CensysCLIException(f"Error searching: {e}")
+            except CensysException:
+                err_console.print_exception()
     elif index_type in V2_INDEXES:
         if args.format == "csv" or (args.output and not args.output.endswith(".json")):
             raise CensysCLIException(
@@ -134,12 +130,8 @@ def cli_search(args: argparse.Namespace):
             try:
                 for v2_page in v2_index.search(args.query, **search_args):
                     results.extend(v2_page)
-            except CensysException as e:
-                try:
-                    write_file(results, **write_args)
-                except ValueError as error:  # pragma: no cover
-                    err_console.print(f"Error writing log file. Error: {error}")
-                raise CensysCLIException(f"Error searching: {e}")
+            except CensysException:
+                err_console.print_exception()
 
     try:
         write_file(results, **write_args)
