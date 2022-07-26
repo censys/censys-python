@@ -118,7 +118,7 @@ optional = false
 python-versions = "*"
 
 [package.extras]
-test = ["flake8 (==3.7.8)", "hypothesis (==3.55.3)"]
+test = ["hypothesis (==3.55.3)", "flake8 (==3.7.8)"]
 
 [[package]]
 name = "coverage"
@@ -387,8 +387,8 @@ python-versions = ">=3.6"
 importlib-metadata = {version = ">=0.12", markers = "python_version < \"3.8\""}
 
 [package.extras]
-dev = ["pre-commit", "tox"]
-testing = ["pytest", "pytest-benchmark"]
+testing = ["pytest-benchmark", "pytest"]
+dev = ["tox", "pre-commit"]
 
 [[package]]
 name = "py"
@@ -482,7 +482,7 @@ coverage = {version = ">=5.2.1", extras = ["toml"]}
 pytest = ">=4.6"
 
 [package.extras]
-testing = ["fields", "hunter", "process-tests", "six", "pytest-xdist", "virtualenv"]
+testing = ["virtualenv", "pytest-xdist", "six", "process-tests", "hunter", "fields"]
 
 [[package]]
 name = "pytest-mock"
@@ -606,7 +606,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "types-requests"
-version = "2.28.1"
+version = "2.28.4"
 description = "Typing stubs for requests"
 category = "dev"
 optional = false
@@ -974,8 +974,8 @@ typed-ast = [
     {file = "typed_ast-1.5.3.tar.gz", hash = "sha256:27f25232e2dd0edfe1f019d6bfaaf11e86e657d9bdb7b0956db95f560cceb2b3"},
 ]
 types-requests = [
-    {file = "types-requests-2.28.1.tar.gz", hash = "sha256:acd8ed78509d27bdf04cddcc05f7066dfde4d30dd7dba67b808cdb1141d62ffe"},
-    {file = "types_requests-2.28.1-py3-none-any.whl", hash = "sha256:b097692e124001f0ed5e4490245bb090f5e8e929819972f9ace84f9c3e146e8c"},
+    {file = "types-requests-2.28.4.tar.gz", hash = "sha256:1b9bedd60e789db62b73a4a5e5f5a78c3106e535ad69faba97b0bbdb1ea36b8f"},
+    {file = "types_requests-2.28.4-py3-none-any.whl", hash = "sha256:3ded964449fbd695ab0f8570828e2fa7cb120c3ebe8cac520e7db5834d2c8e75"},
 ]
 types-urllib3 = [
     {file = "types-urllib3-1.26.14.tar.gz", hash = "sha256:2a2578e4b36341ccd240b00fccda9826988ff0589a44ba4a664bbd69ef348d27"},
