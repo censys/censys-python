@@ -83,11 +83,11 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     """
     subdomains_parser = parent_parser.add_parser(
         "subdomains",
-        description="enumerate subdomains",
+        description="Enumerates subdomains using the Censys Search Certificates index",
         help="enumerate subdomains",
         parents=[parents["auth"]],
     )
-    subdomains_parser.add_argument("domain", help="The domain to scan")
+    subdomains_parser.add_argument("domain", help="The base domain to search for")
     subdomains_parser.add_argument(
         "--max-records", type=int, default=100, help="Max records to query"
     )
