@@ -1,6 +1,9 @@
 CLI Usage
 =========
 
+.. raw:: html
+    :file: cli.html
+
 Before continuing please ensure you have successfully configured your credentials.
 
 .. prompt:: bash
@@ -55,6 +58,27 @@ We can then parse this json with something like ``jq``.
 .. prompt:: bash
 
     cat google.json | jq '[.services[] | {port: .port, protocol: .service_name}]'
+
+``subdomains``
+--------------
+
+Below we show an example of subdomain enumeration from the CLI.
+
+.. prompt:: bash
+
+    censys subdomains censys.io
+
+You can limit the number of results by setting the ``--max-records`` flag.
+
+.. prompt:: bash
+
+    censys subdomains censys.io --max-records 10
+
+We can then output the results in JSON format using the ``--json`` flag.
+
+.. prompt:: bash
+
+    censys subdomains censys.io --json
 
 ``account``
 -----------

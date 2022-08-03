@@ -17,13 +17,13 @@ import sphinx_rtd_theme  # noqa
 # -- Path setup --------------------------------------------------------------
 
 
-sys.path.insert(0, os.path.abspath("../censys"))
+sys.path.insert(0, os.path.abspath(".."))
 from censys.common import __version__
 
 # -- Project information -----------------------------------------------------
 
 project = "Censys Python"
-author = "Censys Team"
+author = "Censys, Inc."
 copyright = f"{datetime.now().year or 2021}, {author}"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -77,7 +77,11 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 # Theme Options
-html_theme_options = {"style_external_links": False, "collapse_navigation": False}
+html_theme_options = {
+    "analytics_id": "UA-73424227-8",
+    "style_external_links": False,
+    "collapse_navigation": True,
+}
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 html_show_sphinx = False
