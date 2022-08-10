@@ -44,7 +44,7 @@ class CensysAPIBase:
 
     DEFAULT_TIMEOUT: int = 30
     """Default API timeout."""
-    DEFAULT_USER_AGENT: str = f"censys/{__version__}"
+    DEFAULT_USER_AGENT: str = f"censys-python/{__version__}"
     """Default API user agent."""
     DEFAULT_MAX_RETRIES: int = 5
     """Default max number of API retries."""
