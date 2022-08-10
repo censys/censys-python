@@ -84,7 +84,7 @@ class CensysAPIBaseTests(CensysTestCase):
         # Assertions
         assert (
             base._session.headers["User-Agent"]
-            == f"{requests.utils.default_user_agent()} censys/{__version__}"
+            == f"{requests.utils.default_user_agent()} censys-python/{__version__}"
         )
 
     def test_user_agent(self):
