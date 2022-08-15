@@ -1,4 +1,4 @@
-sphinx==4.5.0
+sphinx==5.1.1
 git+https://github.com/sphinx-contrib/napoleon.git
 sphinxcontrib-autoprogram==0.1.7
 sphinx-rtd-theme==1.0.0
