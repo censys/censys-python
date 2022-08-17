@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 from urllib.parse import urlencode
 
 from censys.cli.utils import INDEXES, V1_INDEXES, V2_INDEXES, err_console, write_file
-from censys.common.exceptions import CensysCLIException, CensysException
+from censys.common.exceptions import CensysCLIException
 from censys.search import SearchClient
 from censys.search.v1.api import CensysSearchAPIv1
 from censys.search.v2.api import CensysSearchAPIv2
@@ -103,7 +103,7 @@ def cli_search(args: argparse.Namespace):
             try:
                 for v1_page in v1_index.search(args.query, **search_args):
                     results.append(v1_page)
-            except CensysException:
+            except Exception:
                 err_console.print_exception()
     elif index_type in V2_INDEXES:
         if args.format == "csv" or (args.output and not args.output.endswith(".json")):
@@ -130,7 +130,7 @@ def cli_search(args: argparse.Namespace):
             try:
                 for v2_page in v2_index.search(args.query, **search_args):
                     results.extend(v2_page)
-            except CensysException:
+            except Exception:
                 err_console.print_exception()
 
     try:
