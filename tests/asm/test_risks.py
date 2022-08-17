@@ -4,7 +4,7 @@ from responses import matchers
 
 from ..utils import CensysTestCase
 from .utils import V1_URL, V2_URL
-from censys.asm.client import AsmClient
+from censys.asm.risks.v1 import Risksv1
 from censys.asm.risks.v2 import Risksv2
 
 TEST_RISKS_JSON = {
@@ -55,9 +55,11 @@ TEST_RISKS_JSON = {
 
 
 class Risksv1Tests(CensysTestCase):
+    api: Risksv1
+
     def setUp(self):
         super().setUp()
-        self.client = AsmClient(self.api_key)
+        self.setUpApi(Risksv1(self.api_key))
 
     @parameterized.expand(
         [
@@ -76,7 +78,7 @@ class Risksv1Tests(CensysTestCase):
             json=TEST_RISKS_JSON,
         )
         # Actual call
-        res = list(self.client.risks.get_risks(**kwargs))
+        res = list(self.api.get_risks(**kwargs))
         # Assertions
         assert res == TEST_RISKS_JSON["data"]
 

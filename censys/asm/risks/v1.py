@@ -1,6 +1,7 @@
 """Interact with the Censys Risks v1 API."""
 from typing import Iterator, Optional
 
+from ...common.deprecation import DeprecationDecorator
 from ..api import CensysAsmAPI
 
 
@@ -8,6 +9,18 @@ class Risksv1(CensysAsmAPI):
     """Risks v1 API class."""
 
     base_path = "/v1/risks"
+
+    @DeprecationDecorator(
+        "The v1 Risks API is approaching deprecation and will be removed in the future."
+    )
+    def __init__(self, api_key: Optional[str] = None, **kwargs):
+        """Inits Risksv1.
+
+        Args:
+            api_key (str): Optional; The API Key provided by Censys.
+            **kwargs: Arbitrary keyword arguments.
+        """
+        super().__init__(api_key, **kwargs)
 
     def get_risks(
         self,
