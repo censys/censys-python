@@ -26,8 +26,8 @@ class AsmClient:
         self.clouds = Clouds(api_key, **kwargs)
         # Risks v1 is approaching deprecation.
         self.risks_v1 = Risksv1(api_key, **kwargs)
-        self.risks = self.risks_v1
         self.risks_v2 = Risksv2(api_key, **kwargs)
+        self.risks = self.risks_v2
 
         # Save the arguments for parameterized client usage
         self.__api_kwargs = kwargs
