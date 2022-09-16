@@ -493,7 +493,7 @@ dev = ["pre-commit", "pytest-asyncio", "tox"]
 
 [[package]]
 name = "pyupgrade"
-version = "2.37.3"
+version = "2.38.0"
 description = "A tool to automatically upgrade syntax for newer versions."
 category = "dev"
 optional = false
@@ -639,7 +639,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "d2907e5aba2c9e43b8391dbe9b0f236d4dab177c984a131805f8dd02befb8ddc"
+content-hash = "32b6a7e4a481ba25153b44004eed23bb9379546edc97630416ec4b5863226d7f"
 
 [metadata.files]
 astor = [
@@ -901,8 +901,8 @@ pytest-mock = [
     {file = "pytest_mock-3.8.2-py3-none-any.whl", hash = "sha256:8a9e226d6c0ef09fcf20c94eb3405c388af438a90f3e39687f84166da82d5948"},
 ]
 pyupgrade = [
-    {file = "pyupgrade-2.37.3-py2.py3-none-any.whl", hash = "sha256:9746efd064dbf53d7f86d6f88a1d48120f58dbfc378f517768634740ea2225e2"},
-    {file = "pyupgrade-2.37.3.tar.gz", hash = "sha256:1414c7a7c558004cf610e6180716b876814b639b5a5789c3da023c5cdaebcd49"},
+    {file = "pyupgrade-2.38.0-py2.py3-none-any.whl", hash = "sha256:e68e033603de3b4b675c7bd733723fb2bb7930a1898b6da61fb503643322e2f9"},
+    {file = "pyupgrade-2.38.0.tar.gz", hash = "sha256:7d03766fb5d68e9b0ec86b7d48c3cc29462b0031ff48ceece34bd224708553c0"},
 ]
 requests = [
     {file = "requests-2.28.1-py3-none-any.whl", hash = "sha256:8fefa2a1a1365bf5520aac41836fbee479da67864514bdb821f31ce07ce65349"},
