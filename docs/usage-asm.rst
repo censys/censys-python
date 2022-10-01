@@ -1,17 +1,19 @@
 ASM Usage
 =========
 
-The Censys ASM API provides functionality for interacting with Censys ASM endpoints such as Seeds, Assets, and Logbook Events.
+The Censys ASM API provides functionality for interacting with Censys ASM endpoints such as Seeds, Assets, Logbook Events, Risks, and Inventory Search.
 
-There are three API options that this library provides access to:
+The following API clients provided are:
 
 -  :attr:`seeds <censys.asm.Seeds>` - Provides programmatic management of seeds in the ASM platform.
 -  :attr:`assets <censys.asm.Assets>` - Returns asset data for hosts, certificates, and domains. This option also allows the user to manage tags and comments on assets.
 -  :attr:`events <censys.asm.events.Events>` - Returns logbook events. Can be used to execute targeted searches for events based on start id or date, and event type filters.
+-  :attr:`risks <censys.asm.risks.Risks>` - Returns risk data for hosts, certificates, and domains. This option also allows the user to get more information about a specific risk.
+-  :attr:`inventory <censys.asm.inventory.InventorySearch>` - Returns inventory data for hosts, certificates, and domains. This option also allows the user to Search for assets based on a variety of criteria.
 
 More details about each option can be found in the `Censys ASM API documentation <https://app.censys.io/api-docs>`__. Users can also test example requests from the API documentation page.
 
-Python class objects can be used individually, but must be initialized for each resource type (Seeds, Assets, and Events).
+Python class objects can be used individually, but must be initialized for each resource type (Seeds, Assets, Events, Risks, Inventory, Clouds).
 
 -  :attr:`Seeds <censys.asm.Seeds>`
 -  :attr:`Assets <censys.asm.Assets>`
@@ -22,6 +24,8 @@ Python class objects can be used individually, but must be initialized for each 
    -  :attr:`SubdomainsAssets <censys.asm.SubdomainsAssets>`
 
 -  :attr:`Events <censys.asm.events.Events>`
+-  :attr:`Risks <censys.asm.risks.Risks>`
+-  :attr:`InventorySearch <censys.asm.inventory.InventorySearch>`
 
 Alternatively, all three class objects can be used together by initializing an AsmClient object. This client wraps the three APIs under one object for ease of use.
 
@@ -232,6 +236,57 @@ Below we show examples for **getting logbook events.**
     events = e.get_events(cursor)
     print(next(events))
 
+``Risks``
+---------
+
+Below we show an example of **getting risk instances**.
+
+.. code:: python
+
+    from censys.asm import Risks
+
+    r = Risks()
+
+    # Get a dict that returns all risk instances
+    risk_instances = r.get_risk_instances()
+    print(risk_instances)
+
+    # Get a single risk instance by ID
+    risk_instance = r.get_risk_instance(1)
+    print(risk_instance)
+
+    # Get risk types
+    risk_types = r.get_risk_types()
+    print(risk_types)
+
+    # Get a single risk type by ID
+    risk_type = r.get_risk_type("missing-common-security-headers")
+    print(risk_type)
+
+``InventorySearch``
+-------------------
+
+Below we show an example of **searching for assets**.
+
+.. code:: python
+
+    from censys.asm import InventorySearch
+
+    i = InventorySearch()
+
+    # Get a dict that contains a list of hits for a search query with pagination
+    assets = i.search(workspaces=["my_workspace"], query="host.services.http.response.body: /.*test.*/")
+    print(assets)
+
+    # Aggregate search results by a field
+    aggregation = i.aggregate(workspaces=["my_workspace"], query="host.services.http.response.body: /.*test.*/")
+    print(aggregation)
+
+    # Get list of all available fields
+    fields = i.fields()
+    print(fields)
+
+
 ``AsmClient``
 -------------
 
@@ -256,3 +311,9 @@ Below we show how to initialize the AsmClient class object as well as a couple e
     # Get all events
     events = client.events.get_events()
     print(next(events))
+
+
+``Exceptions``
+--------------
+
+.. TODO: Add exceptions
