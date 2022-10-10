@@ -14,6 +14,8 @@ class CensysCertificates(CensysSearchAPIv1):
         **kwargs: Arbitrary keyword arguments.
     """
 
+    DEFAULT_TIMEOUT: int = 90
+    """Timeout for the certificates index"""
     DEFAULT_URL: str = "https://search.censys.io/api/v1"
     """Default Search API base URL."""
     INDEX_NAME = "certificates"
@@ -21,6 +23,18 @@ class CensysCertificates(CensysSearchAPIv1):
     MAX_PER_BULK_REQUEST = 50
     """Max number of bulk requests."""
     bulk_path = f"/bulk/{INDEX_NAME}"
+
+    def __init__(self, **kwargs):
+        """Inits CensysCertificates.
+
+        See CensysSearchAPIv1 for additional arguments.
+
+        Args:
+            **kwargs: Arbitrary keyword arguments.
+        """
+        CensysSearchAPIv1.__init__(
+            self, timeout=kwargs.pop("timeout", self.DEFAULT_TIMEOUT), **kwargs
+        )
 
     def bulk(self, fingerprints: List[str]) -> dict:
         """Requests bulk certificates.
