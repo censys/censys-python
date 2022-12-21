@@ -194,11 +194,12 @@ class CensysSearchAPIv2(CensysAPIBase):
 
             with ThreadPoolExecutor(max_workers) as executor:
                 threads = {}
-                for hit in self.__call__():
-                    hit_key = hit[document_key]
-                    if "name" in hit:
-                        hit_key += "+" + hit["name"]
-                    threads[executor.submit(self.api.view, hit_key)] = hit_key
+                while self.page <= self.pages:
+                    for hit in self.__call__():
+                        hit_key = hit[document_key]
+                        if "name" in hit:
+                            hit_key += "+" + hit["name"]
+                        threads[executor.submit(self.api.view, hit_key)] = hit_key
 
                 for task in as_completed(threads):
                     document_id = threads[task]
