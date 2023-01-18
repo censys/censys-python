@@ -81,18 +81,18 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "blacken-docs"
-version = "1.12.1"
-description = "Run `black` on python code blocks in documentation files"
+version = "1.13.0"
+description = "Run Black on Python code blocks in documentation files."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "blacken_docs-1.12.1-py2.py3-none-any.whl", hash = "sha256:385eb3db60faddceb218e54e2677821e1dbd441d0473f95cc4b7206a52d5bb62"},
-    {file = "blacken_docs-1.12.1.tar.gz", hash = "sha256:5fd22ba1f3ab10d7013427019b4e7b83f6f4aca00c898645e0481ce7966b0aa4"},
+    {file = "blacken_docs-1.13.0-py3-none-any.whl", hash = "sha256:455388df506fca04742f36a4a3475630eb7f141cb98acc6070d3c24bcf69cdda"},
+    {file = "blacken_docs-1.13.0.tar.gz", hash = "sha256:2babba84a42fb31a1d393dcf5a9a66d9b0657bdc320aec69d9f96301501dba35"},
 ]
 
 [package.dependencies]
-black = ">=19.3b0"
+black = ">=22.1.0"
 
 [[package]]
 name = "certifi"
@@ -1002,4 +1002,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7"
-content-hash = "2876f821006a07f670dd612fd8337c9b2f1e45870ae16673c819707b9c21116b"
+content-hash = "4eba9bc0b7ded7331ba7c8324476939e211cad5a7b5b11868b6de550f48feca3"
