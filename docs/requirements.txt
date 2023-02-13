@@ -1,6 +1,6 @@
 sphinx==5.3.0
 git+https://github.com/sphinx-contrib/napoleon.git
-sphinxcontrib-autoprogram==0.1.7
+sphinxcontrib-autoprogram==0.1.8
 sphinx-rtd-theme==1.2.0
 sphinx-prompt==1.5.0
 sphinx-tabs==3.4.0 # Due to conflicting docutils versions in sphinx-rtd-theme
