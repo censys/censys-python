@@ -88,7 +88,7 @@ class CensysAsmAPI(CensysAPIBase):
             page_number = int(res["pageNumber"]) + 1
             total_pages = int(res["totalPages"])
 
-            yield from res[keyword]
+            yield from res.get(keyword, [])
 
     def _get_logbook_page(
         self, path: str, args: Optional[dict] = None
