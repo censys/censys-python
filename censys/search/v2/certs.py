@@ -41,6 +41,9 @@ class CensysCerts(CensysSearchAPIv2):
 
         To view a certificate, please use `CensysCertificates`.
 
+        Args:
+            document_id (str): The document ID of the certificate.
+
         Raises:
             NotImplementedError: CensysCerts.view is not implemented yet. Please use CensysCertificates.view instead.
 
@@ -57,6 +60,12 @@ class CensysCerts(CensysSearchAPIv2):
 
         To search for certificates, please use `CensysCertificates`.
 
+        Args:
+            query (str): The query to search for.
+            per_page (Optional[int]): The number of results to return per page.
+            cursor (Optional[str]): The cursor to start the search from.
+            pages (int): The number of pages to return.
+
         Raises:
             NotImplementedError: CensysCerts.search is not implemented yet. Please use CensysCertificates.search instead.
 
@@ -70,6 +79,11 @@ class CensysCerts(CensysSearchAPIv2):
         """This function acts as a placeholder for the upcoming Censys Search Cert v2 API.
 
         To aggregate/report certificates, please use `CensysCertificates`.
+
+        Args:
+            query (str): The query to search for.
+            field (str): The field to aggregate on.
+            num_buckets (Optional[int]): The number of buckets to return.
 
         Raises:
             NotImplementedError: CensysCerts.aggregate is not implemented yet. Please use CensysCertificates.report instead.

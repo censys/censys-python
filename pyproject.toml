@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "censys"
-version = "2.1.9"
+version = "2.2.0"
 description = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
 authors = ["Censys, Inc. <support@censys.io>"]
 license = "Apache-2.0"
@@ -30,7 +30,7 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.7",                        # Minimum supported version
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -50,11 +50,11 @@ classifiers = [
 censys = "censys.cli:main"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = ">=3.7,<3.11"
 requests = ">=2.26.0"
 backoff = "^2.0.1"
 rich = ">=10.16.2"
-importlib-metadata = { version = "*", python = "<3.8" }
+importlib-metadata = { version = "*", python = "3.7" }
 
 [tool.poetry.group.dev.dependencies]
 # Lint

@@ -145,7 +145,7 @@ def cli_add_seeds(args: argparse.Namespace):
                 "The following seed(s) were not able to be added as they already exist or are reserved."
             )
             for seed in seeds_to_add:
-                if not any([s for s in added_seeds if seed["value"] == s["value"]]):
+                if seed["value"] not in [s["value"] for s in added_seeds]:
                     console.print_json(seed)
 
 
