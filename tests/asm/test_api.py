@@ -47,7 +47,6 @@ class CensysAPIBaseTestsNoAsmEnv(unittest.TestCase):
 
 
 class CensysAsmAPITests(CensysTestCase):
-
     AsmExceptionParams = [
         (code, exception)
         for code, exception in CensysExceptionMapper.ASM_EXCEPTIONS.items()
