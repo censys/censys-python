@@ -1,5 +1,5 @@
 """Interact with the Censys Search Cert API."""
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from .api import CensysSearchAPIv2
 
@@ -36,84 +36,283 @@ class CensysCerts(CensysSearchAPIv2):
     INDEX_NAME = "certificates"
     """Name of Censys Index."""
 
-    def view(self, document_id: str):  # type: ignore # noqa: D102
-        """This function acts as a placeholder for the upcoming Censys Search Cert v2 API.
-
-        To view a certificate, please use `CensysCertificates`.
-
-        Raises:
-            NotImplementedError: CensysCerts.view is not implemented yet. Please use CensysCertificates.view instead.
-
-        :meta private:
-        """
-        raise NotImplementedError(
-            "CensysCerts.view is not implemented yet. Please use CensysCertificates.view instead."
-        )
-
-    def search(  # type: ignore # noqa: D102
-        self, query: str, per_page: Optional[int], cursor: Optional[str], pages: int
+    def __init__(
+        self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
     ):
-        """This function acts as a placeholder for the upcoming Censys Search Cert v2 API.
+        """Inits CensysCerts.
 
-        To search for certificates, please use `CensysCertificates`.
-
-        Raises:
-            NotImplementedError: CensysCerts.search is not implemented yet. Please use CensysCertificates.search instead.
-
-        :meta private:
-        """
-        raise NotImplementedError(
-            "CensysCerts.search is not implemented yet. Please use CensysCertificates.search instead."
-        )
-
-    def aggregate(self, query: str, field: str, num_buckets: Optional[int]):  # type: ignore # noqa: D102
-        """This function acts as a placeholder for the upcoming Censys Search Cert v2 API.
-
-        To aggregate/report certificates, please use `CensysCertificates`.
-
-        Raises:
-            NotImplementedError: CensysCerts.aggregate is not implemented yet. Please use CensysCertificates.report instead.
-
-        :meta private:
-        """
-        raise NotImplementedError(
-            "CensysCerts.aggregate is not implemented yet. Please use CensysCertificates.report instead."
-        )
-
-    def metadata(self):  # noqa: D102
-        """This function acts as a placeholder for the upcoming Censys Search Cert v2 API.
-
-        Raises:
-            NotImplementedError: CensysCerts.metadata is not implemented yet.
-
-        :meta private:
-        """
-        raise NotImplementedError("CensysCerts.metadata is not implemented yet.")
-
-    def get_hosts_by_cert(
-        self, sha256fp: str, cursor: Optional[str] = None
-    ) -> Tuple[List[str], dict]:
-        """Returns a list of hosts which contain services presenting this certificate.
+        See CensysSearchAPIv2 for additional arguments.
 
         Args:
-            sha256fp (str): The SHA-256 fingerprint of the requested certificate.
+            api_id (Optional[str], optional): API ID. Defaults to None.
+            api_secret (Optional[str], optional): API Secret. Defaults to None.
+            **kwargs: Arbitrary keyword arguments.
+        """
+        super().__init__(api_id=api_id, api_secret=api_secret, **kwargs)
+        self.bulk_path = f"/v2/{self.INDEX_NAME}/bulk"
+
+    def view(self, document_id: str, **kwargs) -> dict:
+        """Fetches the certificate record for the specified SHA-256 fingerprint.
+
+        Args:
+            document_id (str): The SHA-256 fingerprint of the requested certificate.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            dict: Certificate details.
+        """
+        return self._get(self.view_path + document_id, args=kwargs)["result"]
+
+    def bulk_post(self, fingerprints: List[str]) -> dict:
+        """Fetches the certificate records for the specified SHA-256 fingerprints.
+
+        Using the POST method allows for a larger number of fingerprints to be queried at once.
+
+        Args:
+            fingerprints (List[str]): List of certificate SHA256 fingerprints.
+
+        Returns:
+            dict: Certificate details.
+        """
+        data = {"fingerprints": fingerprints}
+        return self._post(self.bulk_path, data=data)["result"]
+
+    def bulk_get(self, fingerprints: List[str]) -> dict:
+        """Fetches the certificate records for the specified SHA-256 fingerprints.
+
+        Using the GET method allows for a smaller number of fingerprints to be queried at once.
+
+        Args:
+            fingerprints (List[str]): List of certificate SHA256 fingerprints.
+
+        Returns:
+            dict: Certificate details.
+        """
+        args = {"fingerprints": fingerprints}
+        return self._get(self.bulk_path, args=args)["result"]
+
+    def bulk(self, fingerprints: List[str]) -> dict:
+        """Fetches the certificate records for the specified SHA-256 fingerprints.
+
+        By default, this function uses the POST method, which allows for a larger number of fingerprints to be queried at once.
+        If you wish to use the GET method, please use `CensysCerts.bulk_get` instead.
+
+        Args:
+            fingerprints (List[str]): List of certificate SHA256 fingerprints.
+
+        Returns:
+            dict: Certificate details.
+        """
+        return self.bulk_post(fingerprints)
+
+    def bulk_view(self, fingerprints: List[str]) -> dict:  # type: ignore[override]
+        """Fetches the certificate records for the specified SHA-256 fingerprints.
+
+        By default, this function uses the POST method, which allows for a larger number of fingerprints to be queried at once.
+        If you wish to use the GET method, please use `CensysCerts.bulk_get` instead.
+
+        Args:
+            fingerprints (List[str]): List of certificate SHA256 fingerprints.
+
+        Returns:
+            dict: Certificate details.
+        """
+        return self.bulk_post(fingerprints)
+
+    def search_post_raw(
+        self,
+        query: str,
+        per_page: int = 50,
+        cursor: Optional[str] = None,
+        fields: Optional[List[str]] = None,
+        sort: Optional[List[str]] = None,
+        **kwargs,
+    ) -> dict:
+        """Searches the Certs index using the POST method. Returns the raw response.
+
+        Args:
+            query (str): The query string to search for.
+            per_page (int): The number of results to return per page. Defaults to 50.
+            cursor (str, optional): Cursor token from the API response, which fetches the next page of results when added to the endpoint URL.
+            fields (List[str], optional): Additional fields to return in the matched certificates outside of the default returned fields.
+            sort (List[str], optional): A list of fields to sort on. By default, fields will be sorted in ascending order.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            dict: Search results.
+        """
+        data = {
+            "q": query,
+            "per_page": per_page,
+            "cursor": cursor,
+            "fields": fields,
+            "sort": sort,
+        }
+        data.update(kwargs)
+        return self._post(self.search_path, data=data)
+
+    def search_post(
+        self,
+        query: str,
+        per_page: int = 50,
+        cursor: Optional[str] = None,
+        fields: Optional[List[str]] = None,
+        sort: Optional[List[str]] = None,
+        **kwargs,
+    ) -> dict:
+        """Searches the Certs index using the POST method.
+
+        This method returns the `result` field of the raw response.
+        If you wish to access the raw response, please use `CensysCerts.search_post_raw` instead.
+
+        Args:
+            query (str): The query string to search for.
+            per_page (int): The number of results to return per page. Defaults to 50.
+            cursor (str, optional): Cursor token from the API response, which fetches the next page of results when added to the endpoint URL.
+            fields (List[str], optional): Additional fields to return in the matched certificates outside of the default returned fields.
+            sort (List[str], optional): A list of fields to sort on. By default, fields will be sorted in ascending order.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            dict: Search results.
+        """
+        return self.search_post_raw(
+            query=query,
+            per_page=per_page,
+            cursor=cursor,
+            fields=fields,
+            sort=sort,
+            **kwargs,
+        )["result"]
+
+    def search_get(
+        self,
+        query: str,
+        per_page: int = 50,
+        cursor: Optional[str] = None,
+        fields: Optional[List[str]] = None,
+        sort: Optional[List[str]] = None,
+    ) -> dict:
+        """Searches the Certs index using the GET method.
+
+        Args:
+            query (str): The query string to search for.
+            per_page (int): The number of results to return per page. Defaults to 50.
+            cursor (str, optional): Cursor token from the API response, which fetches the next page of results when added to the endpoint URL.
+            fields (List[str], optional): Additional fields to return in the matched certificates outside of the default returned fields.
+            sort (List[str], optional): A list of fields to sort on. By default, fields will be sorted in ascending order.
+
+        Returns:
+            dict: Search results.
+        """
+        args = {
+            "q": query,
+            "per_page": per_page,
+            "cursor": cursor,
+            "fields": fields,
+            "sort": sort,
+        }
+        return self._get(self.search_path, args=args)["result"]
+
+    def raw_search(
+        self,
+        query: str,
+        per_page: int = 50,
+        cursor: Optional[str] = None,
+        fields: Optional[List[str]] = None,
+        sort: Optional[List[str]] = None,
+        **kwargs,
+    ) -> dict:
+        """Searches the Certs index.
+
+        Searches the Certs index for all records that match the given query.
+        This method does no automatic pagination or post processing.
+
+        Args:
+            query (str): The query string to search for.
+            per_page (int): The number of results to return per page. Defaults to 50.
+            cursor (str, optional): Cursor token from the API response, which fetches the next page of results when added to the endpoint URL.
+            fields (List[str], optional): Additional fields to return in the matched certificates outside of the default returned fields.
+            sort (List[str], optional): A list of fields to sort on. By default, fields will be sorted in ascending order.
+            **kwargs: Additional keyword arguments to pass to the underlying HTTP request.
+
+        Returns:
+            dict: Search results.
+        """
+        return self.search_post_raw(
+            query=query,
+            per_page=per_page,
+            cursor=cursor,
+            fields=fields,
+            sort=sort,
+            **kwargs,
+        )
+
+    def search(  # type: ignore[override]
+        self,
+        query: str,
+        per_page: int = 50,
+        cursor: Optional[str] = None,
+        fields: Optional[List[str]] = None,
+        sort: Optional[List[str]] = None,
+        **kwargs,
+    ) -> dict:
+        """Searches the Certs index.
+
+        By default, this function uses the POST method, which allows for a larger number of fingerprints to be queried at once.
+        If you wish to use the GET method, please use `CensysCerts.search_get` instead.
+
+        Args:
+            query (str): The query string to search for.
+            per_page (int): The number of results to return per page. Defaults to 50.
+            cursor (str, optional): Cursor token from the API response, which fetches the next page of results when added to the endpoint URL.
+            fields (List[str], optional): Additional fields to return in the matched certificates outside of the default returned fields.
+            sort (List[str], optional): A list of fields to sort on. By default, fields will be sorted in ascending order.
+            **kwargs: Additional keyword arguments to pass to the underlying HTTP request.
+
+        Returns:
+            dict: Search results.
+        """
+        return self.search_post(query, per_page, cursor, fields, sort, **kwargs)
+
+    def aggregate(
+        self, query: str, field: str, num_buckets: int = 50, **kwargs
+    ) -> dict:
+        """Aggregates certificate records matching a specified query into buckets based on the given field.
+
+        Args:
+            query (str): The query string to search for.
+            field (str): The field to aggregate on.
+            num_buckets (int): The number of buckets to return. Defaults to 50.
+            **kwargs: Additional keyword arguments to pass to the underlying HTTP request.
+
+        Returns:
+            dict: Aggregation results.
+        """
+        args = {"q": query, "field": field, "num_buckets": num_buckets}
+        args.update(kwargs)
+        return self._get(self.aggregate_path, args=args)["result"]
+
+    def get_hosts_by_cert(self, fingerprint: str, cursor: Optional[str] = None) -> dict:
+        """Returns a list of hosts which contain services presenting this certificate, including when the certificate was first observed.
+
+        Args:
+            fingerprint (str): The SHA-256 fingerprint of the requested certificate.
             cursor (str): Cursor token from the API response, which fetches the next page of hosts when added to the endpoint URL.
 
         Returns:
-            Tuple[List[str], dict]: A list of hosts and a dictionary of the pagination cursors.
+            dict: A list of hosts which contain services presenting this certificate.
         """
         args = {"cursor": cursor}
-        result = self._get(self.view_path + sha256fp + "/hosts", args)["result"]
-        return result["hosts"], result["links"]
+        return self._get(self.view_path + fingerprint + "/hosts", args)["result"]
 
-    def list_certs_with_tag(self, tag_id: str) -> List[str]:
+    def list_certs_with_tag(self, tag_id: str) -> List[dict]:
         """Returns a list of certs which are tagged with the specified tag.
 
         Args:
             tag_id (str): The ID of the tag.
 
         Returns:
-            List[str]: A list of certificate SHA 256 fingerprints.
+            List[dict]: A list of certs which are tagged with the specified tag.
         """
-        certs = self._list_documents_with_tag(tag_id, "certificates", "certs")
-        return [cert["fingerprint"] for cert in certs]
+        return self._list_documents_with_tag(tag_id, "certificates", "certs")

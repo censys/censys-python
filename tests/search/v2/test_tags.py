@@ -188,6 +188,4 @@ class CensysTagsTests(CensysTestCase):
             json=LIST_CERTS_RESPONSE,
         )
         results = self.api.list_certs_with_tag(TEST_TAG_ID)
-        assert results == [
-            cert["fingerprint"] for cert in LIST_CERTS_RESPONSE["result"]["certs"]
-        ]
+        assert results == LIST_CERTS_RESPONSE["result"]["certs"]

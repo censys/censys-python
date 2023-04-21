@@ -34,6 +34,17 @@ ADD_COMMENTS_RESPONSE = {
         "created_at": "2016-01-01T00:00:00Z",
     },
 }
+GET_COMMENT_RESPONSE = {
+    "code": 200,
+    "status": "OK",
+    "result": {
+        "id": "comment-id",
+        "ip": "1.1.1.1",
+        "author_id": "string",
+        "contents": "**This is a comment.**",
+        "created_at": "2016-01-01T00:00:00Z",
+    },
+}
 
 
 @parameterized_class(
@@ -76,6 +87,16 @@ class CensysCommentsTests(CensysTestCase):
         )
         results = self.api.add_comment(self.document_id, TEST_COMMENT)
         assert results == ADD_COMMENTS_RESPONSE["result"]
+
+    def test_get_comment(self):
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/{self.index}/{self.document_id}/comments/comment-id",
+            status=200,
+            json=GET_COMMENT_RESPONSE,
+        )
+        results = self.api.get_comment(self.document_id, "comment-id")
+        assert results == GET_COMMENT_RESPONSE["result"]
 
     def test_delete_comment(self):
         self.responses.add(
