@@ -28,24 +28,18 @@ repos:
         pass_filenames: false
         language: system
         types: [python]
-  - repo: local
-    hooks:
       - id: system
         name: isort
         entry: poetry run isort .
         pass_filenames: false
         language: system
         types: [python]
-  - repo: local
-    hooks:
       - id: system
         name: flake8
         entry: poetry run flake8 .
         pass_filenames: false
         language: system
         types: [python]
-  - repo: local
-    hooks:
       - id: system
         name: mypy
         entry: poetry run mypy censys

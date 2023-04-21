@@ -12,10 +12,8 @@ from censys.common.exceptions import (
     CensysExceptionMapper,
     CensysSearchException,
 )
-from censys.common.types import Datetime
-from censys.common.utils import format_rfc3339
 
-INDEX_TO_KEY = {"hosts": "ip"}
+INDEX_TO_KEY = {"hosts": "ip", "certificates": "fingerprint_sha256"}
 
 
 class CensysSearchAPIv2(CensysAPIBase):
@@ -68,7 +66,6 @@ class CensysSearchAPIv2(CensysAPIBase):
         self.view_path = f"/v2/{self.INDEX_NAME}/"
         self.search_path = f"/v2/{self.INDEX_NAME}/search"
         self.aggregate_path = f"/v2/{self.INDEX_NAME}/aggregate"
-        self.metadata_path = f"/v2/metadata/{self.INDEX_NAME}"
         self.tags_path = "/v2/tags"
         self.account_path = "/v1/account"
 
@@ -213,7 +210,7 @@ class CensysSearchAPIv2(CensysAPIBase):
     def search(
         self,
         query: str,
-        per_page: Optional[int] = None,
+        per_page: int = 100,
         cursor: Optional[str] = None,
         pages: int = 1,
         **kwargs: Any,
@@ -238,7 +235,7 @@ class CensysSearchAPIv2(CensysAPIBase):
     def raw_search(
         self,
         query: str,
-        per_page: Optional[int] = None,
+        per_page: int = 100,
         cursor: Optional[str] = None,
         **kwargs: Any,
     ) -> dict:
@@ -258,17 +255,13 @@ class CensysSearchAPIv2(CensysAPIBase):
         """
         args = {
             "q": query,
-            "per_page": per_page or 100,
+            "per_page": per_page,
             "cursor": cursor,
             **kwargs,
         }
         return self._get(self.search_path, args)
 
-    def view(
-        self,
-        document_id: str,
-        at_time: Optional[Datetime] = None,
-    ) -> dict:
+    def view(self, document_id: str, **kwargs: Any) -> dict:
         """View document from current index.
 
         View the current structured data we have on a specific document.
@@ -276,23 +269,18 @@ class CensysSearchAPIv2(CensysAPIBase):
 
         Args:
             document_id (str): The ID of the document you are requesting.
-            at_time ([str, datetime.date, datetime.datetime]):
-                Optional; Fetches a document at a given point in time.
+            **kwargs (Any): Optional; Additional arguments to be passed to the query.
 
         Returns:
             dict: The result set returned.
         """
-        args = {}
-        if at_time:
-            args["at_time"] = format_rfc3339(at_time)
-
-        return self._get(self.view_path + document_id, args)["result"]
+        return self._get(self.view_path + document_id, args=kwargs)["result"]
 
     def bulk_view(
         self,
         document_ids: List[str],
-        at_time: Optional[Datetime] = None,
         max_workers: int = 20,
+        **kwargs: Any,
     ) -> Dict[str, dict]:
         """Bulk view documents from current index.
 
@@ -301,20 +289,16 @@ class CensysSearchAPIv2(CensysAPIBase):
 
         Args:
             document_ids (List[str]): The IDs of the documents you are requesting.
-            at_time ([str, datetime.date, datetime.datetime]):
-                Optional; Fetches a document at a given point in time.
             max_workers (int): The number of workers to use. Defaults to 20.
+            **kwargs (Any): Optional; Additional arguments to be passed to the query.
 
         Returns:
             Dict[str, dict]: Dictionary mapping document IDs to that document's result set.
         """
-        if at_time:
-            at_time = format_rfc3339(at_time)
-
         documents = {}
         with ThreadPoolExecutor(max_workers) as executor:
             threads = {
-                executor.submit(self.view, document_id, at_time): document_id
+                executor.submit(self.view, document_id, **kwargs): document_id
                 for document_id in document_ids
             }
 
@@ -328,7 +312,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         return documents
 
     def aggregate(
-        self, query: str, field: str, num_buckets: Optional[int] = None, **kwargs: Any
+        self, query: str, field: str, num_buckets: int = 50, **kwargs: Any
     ) -> dict:
         """Aggregate current index.
 
@@ -347,14 +331,6 @@ class CensysSearchAPIv2(CensysAPIBase):
         args = {"q": query, "field": field, "num_buckets": num_buckets, **kwargs}
         return self._get(self.aggregate_path, args)["result"]
 
-    def metadata(self) -> dict:
-        """Get current index metadata.
-
-        Returns:
-            dict: The result set returned.
-        """
-        return self._get(self.metadata_path)["result"]
-
     # Comments
 
     def get_comments(self, document_id: str) -> List[dict]:
@@ -368,6 +344,20 @@ class CensysSearchAPIv2(CensysAPIBase):
         """
         return self._get(self.view_path + document_id + "/comments")["result"][
             "comments"
+        ]
+
+    def get_comment(self, document_id: str, comment_id: str) -> dict:
+        """Get comment for a document.
+
+        Args:
+            document_id (str): The ID of the document you are requesting.
+            comment_id (str): The ID of the comment you are requesting.
+
+        Returns:
+            dict: The result set returned.
+        """
+        return self._get(self.view_path + document_id + "/comments/" + comment_id)[
+            "result"
         ]
 
     def add_comment(self, document_id: str, contents: str) -> dict:

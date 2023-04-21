@@ -72,10 +72,76 @@ class CensysHosts(CensysSearchAPIv2):
     INDEX_NAME = "hosts"
     """Name of Censys Index."""
 
+    def __init__(
+        self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
+    ):
+        """Inits CensysHosts.
+
+        See CensysSearchAPIv2 for additional arguments.
+
+        Args:
+            api_id (Optional[str], optional): API ID. Defaults to None.
+            api_secret (Optional[str], optional): API Secret. Defaults to None.
+            **kwargs: Arbitrary keyword arguments.
+        """
+        super().__init__(api_id=api_id, api_secret=api_secret, **kwargs)
+        self.metadata_path = f"/v2/metadata/{self.INDEX_NAME}"
+
+    def view(
+        self,
+        document_id: str,
+        at_time: Optional[Datetime] = None,
+        **kwargs: Any,
+    ) -> dict:
+        """View document from current index.
+
+        View the current structured data we have on a specific document.
+        For more details, see our documentation: https://search.censys.io/api
+
+        Args:
+            document_id (str): The ID of the document you are requesting.
+            at_time ([str, datetime.date, datetime.datetime]):
+                Optional; Fetches a document at a given point in time.
+            **kwargs (Any): Optional; Additional arguments to be passed to the query.
+
+        Returns:
+            dict: The result set returned.
+        """
+        args = {}
+        if at_time:
+            args["at_time"] = format_rfc3339(at_time)
+
+        return super().view(document_id, **args)
+
+    def bulk_view(
+        self,
+        document_ids: List[str],
+        max_workers: int = 20,
+        at_time: Optional[Datetime] = None,
+        **kwargs: Any,
+    ) -> Dict[str, dict]:
+        """Bulk view documents from current index.
+
+        View the current structured data we have on a list of documents.
+
+        Args:
+            document_ids (List[str]): The IDs of the documents you are requesting.
+            max_workers (int): Optional; The number of workers to use. Defaults to 20.
+            at_time ([str, datetime.date, datetime.datetime]):
+                Optional; Fetches a document at a given point in time.
+            **kwargs (Any): Optional; Additional arguments to be passed to the query.
+
+        Returns:
+            Dict[str, dict]: The result set returned.
+        """
+        if at_time:
+            kwargs["at_time"] = format_rfc3339(at_time)
+        return super().bulk_view(document_ids, max_workers, **kwargs)
+
     def search(
         self,
         query: str,
-        per_page: Optional[int] = None,
+        per_page: int = 100,
         cursor: Optional[str] = None,
         pages: int = 1,
         virtual_hosts: Optional[str] = None,
@@ -105,7 +171,7 @@ class CensysHosts(CensysSearchAPIv2):
         self,
         query: str,
         field: str,
-        num_buckets: Optional[int] = None,
+        num_buckets: int = 50,
         virtual_hosts: Optional[str] = None,
         **kwargs: Any,
     ) -> dict:
@@ -127,6 +193,14 @@ class CensysHosts(CensysSearchAPIv2):
         if virtual_hosts:
             kwargs["virtual_hosts"] = virtual_hosts
         return super().aggregate(query, field, num_buckets, **kwargs)
+
+    def metadata(self) -> dict:
+        """Get metadata for the host index.
+
+        Returns:
+            dict: The result set returned.
+        """
+        return self._get(self.metadata_path)["result"]
 
     def view_host_names(
         self, ip: str, per_page: Optional[int] = None, cursor: Optional[str] = None
