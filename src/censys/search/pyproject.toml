@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "censys.search"
+version = "3.0.0"
+description = "Censys Search API Client"
+authors = ["Censys, Inc. <support@censys.io>"]
+license = "Apache-2.0"
+packages = [{ include = "censys", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.7,<3.11"
+
+[tool.poetry.group.dev.dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

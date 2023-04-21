@@ -1,12 +1,13 @@
 [tool.poetry]
 name = "censys"
-version = "2.2.0"
+version = "3.0.0"
 description = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
 authors = ["Censys, Inc. <support@censys.io>"]
 license = "Apache-2.0"
 readme = "README.md"
 include = ["censys/py.typed"]
 keywords = ["censys", "api", "search", "attack surface management"]
+packages = [{ include = "censys", from = "src" }]
 classifiers = [
     "Typing :: Typed",
     "Topic :: Internet",
@@ -51,10 +52,12 @@ censys = "censys.cli:main"
 
 [tool.poetry.dependencies]
 python = ">=3.7,<3.11"
-requests = ">=2.26.0"
 backoff = "^2.0.1"
-rich = ">=10.16.2"
 importlib-metadata = { version = "*", python = "3.7" }
+pydantic = "^1.10.7"
+requests = ">=2.26.0"
+rich = ">=10.16.2"
+typed-argument-parser = "^1.8.0"
 
 [tool.poetry.group.dev.dependencies]
 # Lint
