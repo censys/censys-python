@@ -1,5 +1,4 @@
 import contextlib
-import csv
 import json
 import os
 from io import StringIO
@@ -11,8 +10,9 @@ import pytest
 import responses
 from requests import PreparedRequest
 
+from tests.search.v2.test_certs import SEARCH_CERTS_JSON
 from tests.search.v2.test_hosts import SEARCH_HOSTS_JSON, TOO_MANY_REQUESTS_ERROR_JSON
-from tests.utils import V1_URL, V2_URL, CensysTestCase
+from tests.utils import V2_URL, CensysTestCase
 
 from censys.cli import main as cli_main
 from censys.common.exceptions import CensysCLIException, CensysException
@@ -23,15 +23,21 @@ WROTE_PREFIX = "Wrote results to file"
 def search_callback(request: PreparedRequest) -> Tuple[int, Dict[str, str], str]:
     payload = json.loads(request.body)
     resp_body = {
-        "results": [{field: None for field in payload["fields"]}],
-        "metadata": {"page": payload["page"], "pages": 100},
+        "result": {
+            "query": payload["q"],
+            "hits": [{"parsed.names": ["censys.io"], "parsed.issuer.country": "US"}],
+        },
+        "links": {
+            "prev": None,
+            "next": "test-next-cursor",
+        },
     }
     return (200, {}, json.dumps(resp_body))
 
 
 def search_callback_fail(request: PreparedRequest) -> Tuple[int, Dict[str, str], str]:
     payload = json.loads(request.body)
-    if payload.get("page", 1) >= 2:
+    if payload.get("cursor"):
         return (
             429,
             {},
@@ -68,105 +74,12 @@ class CensysCliSearchTest(CensysTestCase):
         ):
             cli_main()
 
-    def test_write_json(self):
-        # Set up Response
-        self.responses.add_callback(
-            responses.POST,
-            V1_URL + "/search/certificates",
-            callback=search_callback,
-            content_type="application/json",
-        )
-        # Mock
-        self.patch_args(
-            [
-                "censys",
-                "search",
-                "parsed.names: censys.io",
-                "--index-type",
-                "certs",
-                "--fields",
-                "parsed.issuer.country",
-                "--output",
-                "censys-certs.json",
-            ],
-            search_auth=True,
-        )
-
-        temp_stdout = StringIO()
-        # Actual call
-        with contextlib.redirect_stdout(temp_stdout):
-            cli_main()
-
-        cli_response = temp_stdout.getvalue().strip()
-        # Assertions
-        assert cli_response.startswith(WROTE_PREFIX)
-
-        json_path = cli_response.replace(WROTE_PREFIX, "").strip()
-        assert json_path.endswith(".json")
-        assert "censys-certs." in json_path
-
-        with open(json_path) as json_file:
-            json_response = json.load(json_file)
-
-        assert len(json_response) >= 1
-        assert "parsed.issuer.country" in json_response[0]
-
-        # Cleanup
-        os.remove(json_path)
-
-    def test_write_csv(self):
-        # Set up response
-        self.responses.add_callback(
-            responses.POST,
-            V1_URL + "/search/certificates",
-            callback=search_callback,
-            content_type="application/json",
-        )
-        # Mock
-        self.patch_args(
-            [
-                "censys",
-                "search",
-                "parsed.names: censys.io",
-                "--index-type",
-                "certs",
-                "--fields",
-                "protocols",
-                "--output",
-                "censys-certs.csv",
-            ],
-            search_auth=True,
-        )
-
-        temp_stdout = StringIO()
-        # Actual call
-        with contextlib.redirect_stdout(temp_stdout):
-            cli_main()
-
-        cli_response = temp_stdout.getvalue().strip()
-        # Assertions
-        assert cli_response.startswith(WROTE_PREFIX)
-
-        csv_path = cli_response.replace(WROTE_PREFIX, "").strip()
-        assert csv_path.endswith(".csv")
-        assert "censys-certs." in csv_path
-
-        with open(csv_path) as csv_file:
-            csv_reader = csv.reader(csv_file)
-            header = next(csv_reader)
-
-        assert "protocols" in header
-
-        # Cleanup
-        os.remove(csv_path)
-
     def test_write_invalid_output_path(self):
         # Setup response
-        self.responses.add_callback(
+        self.responses.add(
             responses.POST,
-            V1_URL + "/search/certificates",
-            callback=search_callback,
-            content_type="application/json",
+            V2_URL + "/certificates/search",
+            json=SEARCH_CERTS_JSON,
         )
         # mock
         self.patch_args(
@@ -175,7 +88,7 @@ class CensysCliSearchTest(CensysTestCase):
                 "search",
                 "parsed.names: censys.io",
                 "--index-type",
-                "certs",
+                "certificates",
                 "--fields",
                 "parsed.issuer.country",
                 "--output",
@@ -184,205 +97,14 @@ class CensysCliSearchTest(CensysTestCase):
             search_auth=True,
         )
 
-        temp_stdout = StringIO()
         # Actual call
-        with contextlib.redirect_stdout(temp_stdout):
-            cli_main()
-
-        cli_response = temp_stdout.getvalue().strip()
-        # Assertions
-        assert cli_response.startswith(WROTE_PREFIX)
-
-        json_path = cli_response.replace(WROTE_PREFIX, "").strip()
-        assert json_path.endswith(".html")
-        assert "censys-certs." in json_path
-
-        with open(json_path) as json_file:
-            json_response = json.load(json_file)
-
-        assert len(json_response) >= 1
-        assert "parsed.issuer.country" in json_response[0]
-
-        # Cleanup
-        os.remove(json_path)
-
-    def test_write_screen(self):
-        # Set up response
-        self.responses.add_callback(
-            responses.POST,
-            V1_URL + "/search/certificates",
-            callback=search_callback,
-            content_type="application/json",
-        )
-        # Mock
-        self.patch_args(
-            [
-                "censys",
-                "search",
-                "domain: censys.io AND ports: 443",
-                "--index-type",
-                "certs",
-                "--fields",
-                "443.https.get.headers.server",
-            ],
-            search_auth=True,
-        )
-
-        temp_stdout = StringIO()
-        # Actual call
-        with contextlib.redirect_stdout(temp_stdout):
-            cli_main()
-
-        json_response = json.loads(temp_stdout.getvalue().strip())
-        # Assertions
-        assert len(json_response) >= 1
-        assert "443.https.get.headers.server" in json_response[0]
-
-    def test_overwrite(self):
-        # Setup response
-        self.responses.add_callback(
-            responses.POST,
-            V1_URL + "/search/certificates",
-            callback=search_callback,
-            content_type="application/json",
-        )
-
-        expected_fields = {
-            "domain",
-            "ports",
-            "protocols",
-            "443.https.tls.version",
-            "443.https.tls.cipher_suite.name",
-            "443.https.get.title",
-            "443.https.get.headers.server",
-        }
-        # Mock
-        self.patch_args(
-            [
-                "censys",
-                "search",
-                "parsed.names: censys.io",
-                "--index-type",
-                "certs",
-                "--overwrite",
-                "--fields",
-                "domain",
-                "ports",
-                "protocols",
-                "443.https.tls.version",
-                "443.https.tls.cipher_suite.name",
-                "443.https.get.title",
-                "443.https.get.headers.server",
-            ],
-            search_auth=True,
-        )
-
-        temp_stdout = StringIO()
-        # Actual call
-        with contextlib.redirect_stdout(temp_stdout):
-            cli_main()
-
-        json_response = json.loads(temp_stdout.getvalue().strip())
-        # Assertions
-        assert len(json_response) >= 1
-        assert expected_fields == set(json_response[0].keys())
-
-    def test_field_max(self):
-        # Mock
-        self.patch_args(
-            [
-                "censys",
-                "search",
-                "parsed.names: censys.io",
-                "--index-type",
-                "certs",
-                "--fields",
-                "fingerprint_sha256",
-                "parent_spki_subject_fingerprint",
-                "parents",
-                "metadata.added_at",
-                "metadata.parse_error",
-                "metadata.parse_status",
-                "metadata.parse_version",
-                "metadata.post_processed",
-                "parsed.fingerprint_md5",
-                "parsed.fingerprint_sha1",
-                "parsed.fingerprint_sha256",
-                "parsed.issuer_dn",
-                "parsed.names",
-                "parsed.redacted",
-                "parsed.serial_number",
-                "parsed.spki_subject_fingerprint",
-                "parsed.subject_dn",
-                "parsed.tbs_fingerprint",
-                "parsed.tbs_noct_fingerprint",
-                "parsed.validation_level",
-                "parsed.version",
-            ],
-            search_auth=True,
-        )
-        # Actual call/error raising
         with pytest.raises(
             CensysCLIException,
-            match="Too many fields specified. The maximum number of fields is 20.",
+            match="JSON is the only valid file format for Search 2.0 responses.",
         ):
             cli_main()
 
-    def test_max_records(self):
-        # Setup response
-        self.responses.add_callback(
-            responses.POST,
-            V1_URL + "/search/certificates",
-            callback=search_callback,
-            content_type="application/json",
-        )
-        # Mock
-        self.patch_args(
-            [
-                "censys",
-                "search",
-                "parsed.names: censys.io",
-                "--index-type",
-                "certs",
-                "--max-records",
-                "2",
-            ],
-            search_auth=True,
-        )
-
-        temp_stdout = StringIO()
-        # Actual call
-        with contextlib.redirect_stdout(temp_stdout):
-            cli_main()
-
-        json_response = json.loads(temp_stdout.getvalue().strip())
-        # Assertions
-        assert len(json_response) == 2
-
-    def test_midway_fail(self):
-        # Setup response
-        self.responses.add_callback(
-            responses.POST,
-            V1_URL + "/search/certificates",
-            callback=search_callback_fail,
-            content_type="application/json",
-        )
-        # Mock
-        self.patch_args(
-            ["censys", "search", "parsed.names: censys.io", "--index-type", "certs"],
-            search_auth=True,
-        )
-
-        temp_stdout = StringIO()
-        # Actual call
-        with contextlib.redirect_stdout(temp_stdout):
-            cli_main()
-
-        json_response = json.loads(temp_stdout.getvalue().strip())
-        # Assertions
-        assert len(json_response) == 1
-
-    def test_write_screen_v2(self):
+    def test_write_screen(self):
         # Setup response
         self.responses.add(
             responses.GET,
@@ -482,7 +204,7 @@ class CensysCliSearchTest(CensysTestCase):
         # Assertions
         assert json_response == SEARCH_HOSTS_JSON["result"]["hits"]
 
-    def test_write_json_v2(self):
+    def test_write_json(self):
         # Setup response
         self.responses.add(
             responses.GET,
@@ -529,7 +251,7 @@ class CensysCliSearchTest(CensysTestCase):
         # Cleanup
         os.remove(json_path)
 
-    def test_write_csv_v2(self):
+    def test_write_csv_fail(self):
         # Mock
         self.patch_args(
             [
@@ -552,7 +274,7 @@ class CensysCliSearchTest(CensysTestCase):
         ):
             cli_main()
 
-    def test_midway_fail_v2(self):
+    def test_midway_fail(self):
         # Setup response
         next_cursor = SEARCH_HOSTS_JSON["result"]["links"]["next"]
         self.responses.add(
@@ -615,7 +337,7 @@ class CensysCliSearchTest(CensysTestCase):
                 "search",
                 "domain: censys.io AND ports: 443",
                 "--index-type",
-                "certs",
+                "certificates",
                 "--open",
             ],
         )
@@ -624,13 +346,13 @@ class CensysCliSearchTest(CensysTestCase):
         # Actual call/error raising
         with pytest.raises(SystemExit, match="0"):
             cli_main()
-        query_str = urlencode({"q": "domain: censys.io AND ports: 443"})
-        # Assertions
-        mock_open.assert_called_with(
-            f"https://search.censys.io/certificates?{query_str}"
+        query_str = urlencode(
+            {"q": "domain: censys.io AND ports: 443", "resource": "certificates"}
         )
+        # Assertions
+        mock_open.assert_called_with(f"https://search.censys.io/search?{query_str}")
 
-    def test_open_v2(self):
+    def test_open_hosts(self):
         # Mock
         self.patch_args(
             [

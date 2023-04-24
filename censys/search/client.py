@@ -53,6 +53,7 @@ class SearchClient:
             """
             self.hosts = CensysHosts(*args, **kwargs)
             self.certs = CensysCerts(*args, **kwargs)
+            self.certificates = self.certs
 
     def __init__(self, *args, **kwargs):
         """Inits SearchClient.

@@ -142,8 +142,8 @@ SEARCH_CERTS_JSON = {
         "total": 50000,
         "duration_ms": 356,
         "hits": [EXAMPLE_CERT_JSON],
+        "links": {"prev": "prevCursorToken", "next": "nextCursorToken"},
     },
-    "links": {"prev": "prevCursorToken", "next": "nextCursorToken"},
 }
 AGGREGATE_CERTS_JSON = {
     "code": 200,
@@ -243,7 +243,6 @@ class TestCerts(CensysTestCase):
             ("search_post_raw", True),
             ("raw_search", True),
             ("search_post"),
-            ("search"),
         ]
     )
     def test_search_post(self, method_name: str, raw: bool = False):
@@ -251,14 +250,24 @@ class TestCerts(CensysTestCase):
             responses.POST,
             f"{V2_URL}/certificates/search",
             status=200,
-            json=BULK_VIEW_CERTS_JSON,
+            json=SEARCH_CERTS_JSON,
         )
         method = getattr(self.api, method_name)
         result = method(TEST_SEARCH_QUERY)
         if raw:
-            assert result == BULK_VIEW_CERTS_JSON
+            assert result == SEARCH_CERTS_JSON
         else:
-            assert result == BULK_VIEW_CERTS_JSON["result"]
+            assert result == SEARCH_CERTS_JSON["result"]
+
+    def test_search(self):
+        self.responses.add(
+            responses.POST,
+            f"{V2_URL}/certificates/search",
+            status=200,
+            json=SEARCH_CERTS_JSON,
+        )
+        query = self.api.search(TEST_SEARCH_QUERY)
+        assert next(query) == SEARCH_CERTS_JSON["result"]["hits"]
 
     @parameterized.expand(
         [
