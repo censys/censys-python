@@ -1,6 +1,5 @@
 """Censys CLI utilities."""
 import argparse
-import csv
 import datetime
 import json
 import os.path
@@ -10,12 +9,11 @@ from typing import Any, Dict, List, Optional, Union
 from rich.console import Console
 
 from censys.common.config import DEFAULT, get_config
-from censys.common.deprecation import DeprecationDecorator
 
 Results = Union[List[dict], Dict[str, Any]]
 
 V1_INDEXES = ["certs"]
-V2_INDEXES = ["hosts"]
+V2_INDEXES = ["hosts", "certificates"]
 INDEXES = V1_INDEXES + V2_INDEXES
 
 config = get_config()
@@ -33,28 +31,6 @@ def print_wrote_file(file_path: str):
     """
     abs_file_path = os.path.abspath(file_path)
     console.print(f"Wrote results to file {abs_file_path}", soft_wrap=True)
-
-
-@DeprecationDecorator("CSV output is deprecated and will be removed in the future.")
-def _write_csv(file_path: str, search_results: Results, fields: List[str]):
-    """Write search results to a new file in CSV format.
-
-    Args:
-        file_path (str): Name of the file to write to on the disk.
-        search_results (Results): A list of results from the query.
-        fields (List[str]): A list of fields to write as headers.
-    """
-    with open(file_path, "w") as output_file:
-        if search_results and isinstance(search_results, list):
-            # Get the header row from the first result
-            writer = csv.DictWriter(output_file, fieldnames=fields)
-            writer.writeheader()
-
-            for result in search_results:
-                # Use the Dict writer to process and write results to CSV
-                writer.writerow(result)
-
-    print_wrote_file(file_path)
 
 
 def _write_json(file_path: str, search_results: Results):
@@ -106,10 +82,6 @@ def write_file(
 
     if file_format == "json":
         _write_json(file_path, results_list)
-    elif file_format == "csv":
-        if csv_fields is None:  # pragma: no cover
-            csv_fields = []
-        _write_csv(file_path, results_list, fields=csv_fields)
     else:
         _write_screen(results_list)
 

@@ -63,7 +63,7 @@ class CensysCerts(CensysSearchAPIv2):
         """
         return self._get(self.view_path + document_id, args=kwargs)["result"]
 
-    def bulk_post(self, fingerprints: List[str]) -> dict:
+    def bulk_post(self, fingerprints: List[str]) -> List[dict]:
         """Fetches the certificate records for the specified SHA-256 fingerprints.
 
         Using the POST method allows for a larger number of fingerprints to be queried at once.
@@ -77,7 +77,7 @@ class CensysCerts(CensysSearchAPIv2):
         data = {"fingerprints": fingerprints}
         return self._post(self.bulk_path, data=data)["result"]
 
-    def bulk_get(self, fingerprints: List[str]) -> dict:
+    def bulk_get(self, fingerprints: List[str]) -> List[dict]:
         """Fetches the certificate records for the specified SHA-256 fingerprints.
 
         Using the GET method allows for a smaller number of fingerprints to be queried at once.
@@ -91,7 +91,7 @@ class CensysCerts(CensysSearchAPIv2):
         args = {"fingerprints": fingerprints}
         return self._get(self.bulk_path, args=args)["result"]
 
-    def bulk(self, fingerprints: List[str]) -> dict:
+    def bulk(self, fingerprints: List[str]) -> List[dict]:
         """Fetches the certificate records for the specified SHA-256 fingerprints.
 
         By default, this function uses the POST method, which allows for a larger number of fingerprints to be queried at once.
@@ -105,7 +105,7 @@ class CensysCerts(CensysSearchAPIv2):
         """
         return self.bulk_post(fingerprints)
 
-    def bulk_view(self, fingerprints: List[str]) -> dict:  # type: ignore[override]
+    def bulk_view(self, fingerprints: List[str]) -> List[dict]:  # type: ignore[override]
         """Fetches the certificate records for the specified SHA-256 fingerprints.
 
         By default, this function uses the POST method, which allows for a larger number of fingerprints to be queried at once.
@@ -253,10 +253,11 @@ class CensysCerts(CensysSearchAPIv2):
         query: str,
         per_page: int = 50,
         cursor: Optional[str] = None,
+        pages: int = 1,
         fields: Optional[List[str]] = None,
         sort: Optional[List[str]] = None,
         **kwargs,
-    ) -> dict:
+    ) -> CensysSearchAPIv2.Query:
         """Searches the Certs index.
 
         By default, this function uses the POST method, which allows for a larger number of fingerprints to be queried at once.
@@ -266,14 +267,15 @@ class CensysCerts(CensysSearchAPIv2):
             query (str): The query string to search for.
             per_page (int): The number of results to return per page. Defaults to 50.
             cursor (str, optional): Cursor token from the API response, which fetches the next page of results when added to the endpoint URL.
+            pages (int): The number of pages to return. Defaults to 1.
             fields (List[str], optional): Additional fields to return in the matched certificates outside of the default returned fields.
             sort (List[str], optional): A list of fields to sort on. By default, fields will be sorted in ascending order.
             **kwargs: Additional keyword arguments to pass to the underlying HTTP request.
 
         Returns:
-            dict: Search results.
+            Query: A query object that can be used to iterate over the search results.
         """
-        return self.search_post(query, per_page, cursor, fields, sort, **kwargs)
+        return super().search(query, per_page, cursor, pages, **kwargs)
 
     def aggregate(
         self, query: str, field: str, num_buckets: int = 50, **kwargs
