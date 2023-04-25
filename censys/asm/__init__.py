@@ -11,7 +11,7 @@ from .client import AsmClient
 from .clouds import Clouds
 from .events import Events
 from .inventory import InventorySearch
-from .risks import Risks, Risksv1, Risksv2
+from .risks import Risks
 from .seeds import Seeds
 
 __all__ = [
@@ -24,8 +24,6 @@ __all__ = [
     "HostsAssets",
     "InventorySearch",
     "Risks",
-    "Risksv1",
-    "Risksv2",
     "Seeds",
     "SubdomainsAssets",
     "WebEntitiesAssets",
