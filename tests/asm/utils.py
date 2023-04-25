@@ -33,8 +33,15 @@ class MockResponse:
         return 200 <= self.status_code <= 400
 
     def json(self):
-        self.json_data["endOfEvents"] = next(self.end_of_events_generator)
-        self.json_data["pageNumber"] = next(self.number_generator)
+        if self.resource_type != "instances":
+            self.json_data["endOfEvents"] = next(self.end_of_events_generator)
+            self.json_data["pageNumber"] = next(self.number_generator)
+        else:
+            self.json_data["cursor"] = (
+                "test" if not next(self.end_of_events_generator) else None
+            )
+            if "pageNumber" in self.json_data:
+                del self.json_data["pageNumber"]
         self.json_data[self.resource_type] = self.get_resource()
 
         return self.json_data
