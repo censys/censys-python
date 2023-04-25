@@ -62,7 +62,7 @@ flake8 = "^5.0.4"
 flake8-docstrings = "^1.7.0"
 flake8-pytest-style = "^1.7.2"
 flake8-simplify = "^0.20.0"
-flake8-comprehensions = "^3.11.1"
+flake8-comprehensions = "^3.12.0"
 flake8-isort = "^6.0.0"
 isort = "^5.11.5"
 pep8-naming = "^0.13.3"
@@ -78,8 +78,8 @@ pytest-mock = "^3.10.0"
 responses = "^0.23.1"
 parameterized = "^0.9.0"
 # Types
-mypy = "^1.1"
-types-requests = ">=2.26.0"
+mypy = "^1.2.0"
+types-requests = "*"
 
 [tool.black]
 target-version = ["py37"]
