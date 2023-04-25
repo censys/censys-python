@@ -1,7 +1,13 @@
 """Interact with the Censys Seeds, Assets, and Logbook APIs."""
 from typing import Optional
 
-from .assets import CertificatesAssets, DomainsAssets, HostsAssets, SubdomainsAssets
+from .assets import (
+    CertificatesAssets,
+    DomainsAssets,
+    HostsAssets,
+    SubdomainsAssets,
+    WebEntitiesAssets,
+)
 from .clouds import Clouds
 from .events import Events
 from .inventory import InventorySearch
@@ -27,6 +33,7 @@ class AsmClient:
         self.clouds = Clouds(api_key, **kwargs)
         self.risks = Risksv2(api_key, **kwargs)
         self.inventory = InventorySearch(api_key, **kwargs)
+        self.web_entities = WebEntitiesAssets(api_key, **kwargs)
 
         # Save the arguments for parameterized client usage
         self.__api_kwargs = kwargs

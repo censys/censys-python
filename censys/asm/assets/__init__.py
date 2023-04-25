@@ -4,6 +4,7 @@ from .certificates import CertificatesAssets
 from .domains import DomainsAssets
 from .hosts import HostsAssets
 from .subdomains import SubdomainsAssets
+from .web_entities import WebEntitiesAssets
 
 __all__ = [
     "Assets",
@@ -11,4 +12,5 @@ __all__ = [
     "DomainsAssets",
     "HostsAssets",
     "SubdomainsAssets",
+    "WebEntitiesAssets",
 ]

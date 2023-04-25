@@ -39,6 +39,7 @@ TEST_INVALID_TAG_COLOR = "4287f5"
         ),
         ("domains", "amazonaws.com"),
         ("subdomains", "s3.amazonaws.com", "amazonaws.com"),
+        ("web_entities", "www.amazon.com:443"),
     ],
 )
 class AssetsUnitTest(unittest.TestCase):
@@ -68,27 +69,39 @@ class AssetsUnitTest(unittest.TestCase):
     def asset_type_url(self):
         if self.asset_type == "subdomains":
             return f"{ASSETS_URL}/domains/{self.asset_type_config}/{self.asset_type}"
+        if self.asset_type == "web_entities":
+            return f"{ASSETS_URL}/web-entities"
         return f"{ASSETS_URL}/{self.asset_type}"
 
     def asset_id_url(self):
         return f"{self.asset_type_url()}/{self.test_asset_id}"
 
     def test_get_assets(self):
-        # Mock
-        mock_request = self.mocker.patch("censys.common.base.requests.Session.get")
-        mock_request.return_value = MockResponse(TEST_SUCCESS_CODE, self.resource_type)
-        # Actual call
-        assets = self.get_asset_accessor().get_assets()
-        res = list(assets)
-        # Assertions
-        assert RESOURCE_PAGING_RESULTS == res
-        mock_request.assert_called_with(
-            self.asset_type_url(),
-            params={"pageNumber": 3, "pageSize": 500},
-            timeout=TEST_TIMEOUT,
-        )
+        if self.asset_type == "web_entities":
+            with pytest.raises(NotImplementedError):
+                self.get_asset_accessor().get_assets()
+        else:
+            # Mock
+            mock_request = self.mocker.patch("censys.common.base.requests.Session.get")
+            mock_request.return_value = MockResponse(
+                TEST_SUCCESS_CODE, self.resource_type
+            )
+            # Actual call
+            assets = self.get_asset_accessor().get_assets()
+            res = list(assets)
+            # Assertions
+            assert RESOURCE_PAGING_RESULTS == res
+            mock_request.assert_called_with(
+                self.asset_type_url(),
+                params={"pageNumber": 3, "pageSize": 500},
+                timeout=TEST_TIMEOUT,
+            )
 
     def test_get_assets_by_tag(self):
+        if self.asset_type == "web_entities":
+            pytest.skip("Web entities do not support listing")
+            return
+
         # Mock
         mock_request = self.mocker.patch("censys.common.base.requests.Session.get")
         mock_request.return_value = MockResponse(TEST_SUCCESS_CODE, self.resource_type)
@@ -116,6 +129,10 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     def test_get_assets_by_page(self):
+        if self.asset_type == "web_entities":
+            pytest.skip("Web entities do not support listing")
+            return
+
         # Mock
         mock_request = self.mocker.patch("censys.common.base.requests.Session.get")
         mock_request.return_value = MockResponse(
@@ -287,5 +304,22 @@ class AssetsUnitTest(unittest.TestCase):
         mock_request.assert_called_with(
             f"{self.asset_id_url()}/subdomains",
             params={"pageNumber": 3, "pageSize": 500},
+            timeout=TEST_TIMEOUT,
+        )
+
+    def test_get_web_entity_instances(self):
+        # Mock
+        mock_request = self.mocker.patch("censys.common.base.requests.Session.get")
+        if self.asset_type != "web_entities":
+            pytest.skip("Only applicable to web entities assets")
+        mock_request.return_value = MockResponse(TEST_SUCCESS_CODE, "instances")
+        # Actual call
+        instances = self.client.web_entities.get_instances(self.test_asset_id)
+        res = list(instances)
+        # Assertions
+        assert RESOURCE_PAGING_RESULTS == res
+        mock_request.assert_called_with(
+            f"{self.asset_id_url()}/instances",
+            params={"cursor": "test", "pageSize": None},
             timeout=TEST_TIMEOUT,
         )
