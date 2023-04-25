@@ -6,7 +6,9 @@ c = SearchClient()
 # v2 indexes
 hosts = c.v2.hosts  # Same as hosts = CensysHosts()
 
-# v1 indexes
-certs = c.v1.certificates  # Same as certs = CensysCertificates()
+certs = c.v2.certificates  # Same as certs = CensysCerts()
 
+# v1 indexes
 data = c.v1.data  # Same as data = CensysData()
+
+certs = c.v1.certificates  # Same as certs = CensysCertificates()

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 import responses
 from parameterized import parameterized
@@ -259,14 +259,27 @@ class TestCerts(CensysTestCase):
         else:
             assert result == SEARCH_CERTS_JSON["result"]
 
-    def test_search(self):
+    @parameterized.expand(
+        [
+            (None, None),
+            (["names", "fingerprint_sha256"], None),
+            (None, ["parsed.issuer.organization", "parsed.subject.country"]),
+            (
+                ["names", "fingerprint_sha256"],
+                ["parsed.issuer.organization", "parsed.subject.country"],
+            ),
+        ]
+    )
+    def test_search(
+        self, fields: Optional[List[str]] = None, sort: Optional[List[str]] = None
+    ):
         self.responses.add(
             responses.POST,
             f"{V2_URL}/certificates/search",
             status=200,
             json=SEARCH_CERTS_JSON,
         )
-        query = self.api.search(TEST_SEARCH_QUERY)
+        query = self.api.search(TEST_SEARCH_QUERY, fields=fields, sort=sort)
         assert next(query) == SEARCH_CERTS_JSON["result"]["hits"]
 
     @parameterized.expand(
