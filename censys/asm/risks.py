@@ -1,11 +1,11 @@
-"""Interact with the Censys Risks v2 API."""
+"""Interact with the Censys Risks API."""
 from typing import List, Optional
 
-from ..api import CensysAsmAPI
+from .api import CensysAsmAPI
 
 
-class Risksv2(CensysAsmAPI):
-    """Risks v2 API class."""
+class Risks(CensysAsmAPI):
+    """Risks API class."""
 
     base_path = "/v2/risk"
     risk_instances_path = f"{base_path}-instances"

@@ -3,85 +3,8 @@ from parameterized import parameterized
 from responses import matchers
 
 from ..utils import CensysTestCase
-from .utils import V1_URL, V2_URL
-from censys.asm.risks.v1 import Risksv1
-from censys.asm.risks.v2 import Risksv2
-
-TEST_RISKS_JSON = {
-    "pageNumber": 0,
-    "pageSize": 0,
-    "totalPages": 0,
-    "totalItems": 0,
-    "environment": "string",
-    "data": [
-        {
-            "riskInfoId": 0,
-            "name": "string",
-            "severity": "accepted",
-            "isSeverityModified": True,
-            "categories": ["string"],
-            "affectedAssetsCount": 0,
-            "assetType": "HOST",
-        },
-        {
-            "riskInfoId": 0,
-            "name": "string",
-            "severity": "accepted",
-            "isSeverityModified": True,
-            "categories": ["string"],
-            "affectedAssetsCount": 0,
-            "assetType": "DOMAIN",
-        },
-        {
-            "riskInfoId": 0,
-            "name": "string",
-            "severity": "accepted",
-            "isSeverityModified": True,
-            "categories": ["string"],
-            "affectedAssetsCount": 0,
-            "assetType": "CERT",
-        },
-        {
-            "riskInfoId": 0,
-            "name": "string",
-            "severity": "accepted",
-            "isSeverityModified": True,
-            "categories": ["string"],
-            "affectedAssetsCount": 0,
-            "assetType": "STORAGE_BUCKET",
-        },
-    ],
-}
-
-
-class Risksv1Tests(CensysTestCase):
-    api: Risksv1
-
-    def setUp(self):
-        super().setUp()
-        self.setUpApi(Risksv1(self.api_key))
-
-    @parameterized.expand(
-        [
-            ({}, ""),
-            ({"cloud": "Amazon AWS"}, "&cloud=Amazon AWS"),
-            ({"environment": "CLOUD"}, "&environment=CLOUD"),
-            ({"include_accepted_risks": True}, "&includeAcceptedRisks=True"),
-        ]
-    )
-    def test_get_risks(self, kwargs, params):
-        # Setup response
-        self.responses.add(
-            responses.GET,
-            V1_URL + f"/risks?pageNumber=1&pageSize=100{params}",
-            status=200,
-            json=TEST_RISKS_JSON,
-        )
-        # Actual call
-        res = list(self.api.get_risks(**kwargs))
-        # Assertions
-        assert res == TEST_RISKS_JSON["data"]
-
+from .utils import V2_URL
+from censys.asm.risks import Risks
 
 TEST_EVENT_JSON = {
     "delta": "string",
@@ -140,12 +63,12 @@ TEST_PATCH_RISK_TYPE_JSON = {
 }
 
 
-class Risksv2Tests(CensysTestCase):
-    api: Risksv2
+class RisksTests(CensysTestCase):
+    api: Risks
 
     def setUp(self):
         super().setUp()
-        self.setUpApi(Risksv2(self.api_key))
+        self.setUpApi(Risks(self.api_key))
 
     @parameterized.expand(
         [
