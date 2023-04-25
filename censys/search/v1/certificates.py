@@ -2,6 +2,7 @@
 from typing import List
 
 from .api import CensysSearchAPIv1
+from censys.common.deprecation import DeprecationDecorator
 
 
 class CensysCertificates(CensysSearchAPIv1):
@@ -24,6 +25,9 @@ class CensysCertificates(CensysSearchAPIv1):
     """Max number of bulk requests."""
     bulk_path = f"/bulk/{INDEX_NAME}"
 
+    @DeprecationDecorator(
+        "The v1 Certificates API is deprecated and will be removed in the future."
+    )
     def __init__(self, **kwargs):
         """Inits CensysCertificates.
 
