@@ -1,12 +1,11 @@
 import contextlib
-import json
 from io import StringIO
 from typing import Set
 
 import responses
 from parameterized import parameterized
 
-from tests.utils import V1_URL, CensysTestCase
+from tests.utils import V2_URL, CensysTestCase
 
 from censys.cli import main as cli_main
 from censys.cli.commands import subdomains
@@ -18,14 +17,13 @@ TEST_DOMAINS = {
     "fast.github.com",
 }
 
-
-def search_callback(request):
-    payload = json.loads(request.body)
-    resp_body = {
-        "results": [{"parsed.names": list(TEST_DOMAINS)}],
-        "metadata": {"page": payload["page"], "pages": 100},
-    }
-    return (200, {}, json.dumps(resp_body))
+CERT_SEARCH_RESPONSE = {
+    "result": {
+        "total": len(TEST_DOMAINS),
+        "hits": [{"names": [name]} for name in TEST_DOMAINS],
+        "links": {},
+    },
+}
 
 
 class CensysCliSubdomainsTest(CensysTestCase):
@@ -56,11 +54,10 @@ class CensysCliSubdomainsTest(CensysTestCase):
 
     def test_search_subdomains(self):
         # Mock
-        self.responses.add_callback(
+        self.responses.add(
             responses.POST,
-            V1_URL + "/search/certificates",
-            callback=search_callback,
-            content_type="application/json",
+            V2_URL + "/certificates/search",
+            json=CERT_SEARCH_RESPONSE,
         )
         self.mocker.patch(
             "argparse._sys.argv",
