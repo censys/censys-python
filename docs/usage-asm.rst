@@ -10,6 +10,7 @@ The following API clients provided are:
 -  :attr:`events <censys.asm.events.Events>` - Returns logbook events. Can be used to execute targeted searches for events based on start id or date, and event type filters.
 -  :attr:`risks <censys.asm.risks.Risks>` - Returns risk data for hosts, certificates, and domains. This option also allows the user to get more information about a specific risk.
 -  :attr:`inventory <censys.asm.inventory.InventorySearch>` - Returns inventory data for hosts, certificates, and domains. This option also allows the user to Search for assets based on a variety of criteria.
+-  :attr:`web entities <censys.asm.assets.web_entities.WebEntitiesAssets>` - Returns web entities instances. This option also allows the user to manage tags and comments on web entities.
 
 More details about each option can be found in the `Censys ASM API documentation <https://app.censys.io/api-docs>`__. Users can also test example requests from the API documentation page.
 
@@ -22,6 +23,7 @@ Python class objects can be used individually, but must be initialized for each 
    -  :attr:`DomainsAssets <censys.asm.DomainsAssets>`
    -  :attr:`HostsAssets <censys.asm.HostsAssets>`
    -  :attr:`SubdomainsAssets <censys.asm.SubdomainsAssets>`
+   -  :attr:`WebEntitiesAssets <censys.asm.WebEntitiesAssets>`
 
 -  :attr:`Events <censys.asm.events.Events>`
 -  :attr:`Risks <censys.asm.risks.Risks>`

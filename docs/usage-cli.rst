@@ -20,7 +20,7 @@ The configuration file by default is writen to ``~/.config/censys/censys.cfg``, 
 ``search``
 ----------
 
-Below we show an example of Searching from the CLI.
+Below we show an example of searching hosts from the CLI.
 
 .. prompt:: bash
 
@@ -38,14 +38,32 @@ By setting the ``--pages`` flag to ``-1`` we can get all pages of results.
 
     censys search 'ip: 8.8.8.0/16' --pages -1 | jq -c '[.[] | .ip]'
 
+By settings the ``--index-type`` flag we can search other indexes such as ``certificates``.
+
+.. prompt:: bash
+
+    censys search 'parsed.subject_dn: "censys.io"' --index-type certificates
+
+For the ``certificates`` index we can also add the ``--fields`` flag to specify which fields we want returned.
+
+.. prompt:: bash
+
+    censys search 'parsed.subject.country: AU' --index-type certificates --fields parsed.issuer.organization
+
 ``view``
 --------
 
-Below we show an example of Viewing a host from the CLI.
+Below we show an example of viewing a host from the CLI.
 
 .. prompt:: bash
 
     censys view 8.8.8.8
+
+Below we show an example of viewing a certificate from the CLI.
+
+.. prompt:: bash
+
+    censys view 9b267decc8d23586dc4c56dd0789574cab0f28581ef354ff2fcec8ca6d992fc2 --index-type certificates
 
 You can save results to a file using the ``-o`` argument.
 
@@ -58,6 +76,16 @@ We can then parse this json with something like ``jq``.
 .. prompt:: bash
 
     cat google.json | jq '[.services[] | {port: .port, protocol: .service_name}]'
+
+If you have access to historical ``hosts`` data you can view the data at a specific point in time using the ``--at-time`` argument.
+
+.. prompt:: bash
+
+    censys view 1.1.1.1 --at-time 2023-01-01
+
+.. note::
+
+    The ``--at-time`` argument is only available for the ``hosts`` index.
 
 ``subdomains``
 --------------

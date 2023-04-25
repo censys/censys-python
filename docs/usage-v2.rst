@@ -14,16 +14,11 @@ More details about each option can be found in the `Censys API documentation <ht
 Python class objects must be initialized for each resource index (Hosts).
 
 -  :attr:`CensysHosts <censys.search.v2.CensysHosts>`
-
-.. note::
-
-   Please note that the Censys Search v2 API does not support searching, viewing, or aggregating the Certificates index. Please use the :ref:`CensysCertificates (v1) index <usage-v1:Usage v1>` for this functionality.
+-  :attr:`CensysCerts <censys.search.v2.CensysCerts>`
 
 
 ``search``
 ----------
-
-**Please note this method is only available only for the CensysHosts index.**
 
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
@@ -33,8 +28,6 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
 ``view``
 --------
 
-**Please note this method is only available only for the CensysHosts index.**
-
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
 .. include:: ../examples/search/view_host.py
@@ -43,8 +36,6 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
 ``bulk_view``
 -------------
 
-**Please note this method is only available only for the CensysHosts index.**
-
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
 .. include:: ../examples/search/bulk_view_hosts.py
@@ -52,8 +43,6 @@ Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHo
 
 ``aggregate``
 -------------
-
-**Please note this method is only available only for the CensysHosts index.**
 
 Below we show an example using the :attr:`CensysHosts <censys.search.v2.CensysHosts>` index.
 
