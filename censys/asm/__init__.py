@@ -1,5 +1,12 @@
 """An easy-to-use and lightweight API wrapper for Censys ASM (app.censys.io)."""
-from .assets import Assets, CertificatesAssets, DomainsAssets, HostsAssets
+from .assets import (
+    Assets,
+    CertificatesAssets,
+    DomainsAssets,
+    HostsAssets,
+    SubdomainsAssets,
+    WebEntitiesAssets,
+)
 from .client import AsmClient
 from .clouds import Clouds
 from .events import Events
@@ -9,15 +16,17 @@ from .seeds import Seeds
 
 __all__ = [
     "AsmClient",
+    "Assets",
+    "CertificatesAssets",
     "Clouds",
+    "DomainsAssets",
     "Events",
+    "HostsAssets",
+    "InventorySearch",
     "Risks",
     "Risksv1",
     "Risksv2",
     "Seeds",
-    "InventorySearch",
-    "Assets",
-    "CertificatesAssets",
-    "DomainsAssets",
-    "HostsAssets",
+    "SubdomainsAssets",
+    "WebEntitiesAssets",
 ]
