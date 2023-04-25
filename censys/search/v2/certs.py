@@ -275,6 +275,10 @@ class CensysCerts(CensysSearchAPIv2):
         Returns:
             Query: A query object that can be used to iterate over the search results.
         """
+        if fields:
+            kwargs["fields"] = fields
+        if sort:
+            kwargs["sort"] = sort
         return super().search(query, per_page, cursor, pages, **kwargs)
 
     def aggregate(
