@@ -10,7 +10,8 @@ print(query())
 # Multiple pages of search results
 query = h.search("service.service_name: HTTP", per_page=5, pages=2)
 for page in query:
-    print(page)
+    for host in page:
+        print(host)
 
 # View all results
 query = h.search("service.service_name: HTTP", per_page=5, pages=2)
