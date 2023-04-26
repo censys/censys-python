@@ -156,7 +156,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     )
 
     hosts_group = search_parser.add_argument_group("hosts specific arguments")
-    search_parser.add_argument(
+    hosts_group.add_argument(
         "--sort-order",
         dest="sort_order",
         type=str,
