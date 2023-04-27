@@ -43,7 +43,7 @@ def cli_search(args: argparse.Namespace):
     write_args = {"file_format": args.format, "file_path": args.output}
     results: List[Dict[str, Any]] = []
 
-    v2_index: CensysSearchAPIv2 = getattr(c.v2, index_type)
+    index: CensysSearchAPIv2 = getattr(c.v2, index_type)
 
     search_args.update(
         {
@@ -78,10 +78,12 @@ def cli_search(args: argparse.Namespace):
 
     with err_console.status("Searching"):
         try:
-            for v2_page in v2_index.search(args.query, **search_args):
-                results.extend(v2_page)
+            for page in index.search(args.query, **search_args):
+                results.extend(page)
         except Exception:
-            err_console.print_exception()
+            err_console.print_exception(max_frames=4)
+        except KeyboardInterrupt:  # pragma: no cover
+            pass
 
     try:
         write_file(results, **write_args)
