@@ -3,7 +3,7 @@ from censys.search import SearchClient
 
 ALL_INDEXES = {
     "v1": ["certificates", "data"],
-    "v2": ["hosts"],
+    "v2": ["hosts", "certificates"],
 }
 
 

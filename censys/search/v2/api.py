@@ -124,7 +124,7 @@ class CensysSearchAPIv2(CensysAPIBase):
             self.cursor = cursor
             self.nextCursor: Optional[str] = None
             self.page = 1
-            if pages == -1:
+            if pages <= 0:
                 self.pages = float("inf")
             else:
                 self.pages = pages

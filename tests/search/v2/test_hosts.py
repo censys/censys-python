@@ -1,4 +1,6 @@
 import datetime
+import json
+from copy import deepcopy
 
 import pytest
 import responses
@@ -6,6 +8,7 @@ from parameterized import parameterized
 
 from tests.utils import V2_URL, CensysTestCase
 
+from censys.common.exceptions import CensysInternalServerException
 from censys.search import CensysHosts, SearchClient
 
 VIEW_HOST_JSON = {
@@ -163,6 +166,11 @@ TOO_MANY_REQUESTS_ERROR_JSON = {
     "status": "Too Many Requests",
     "error": "You have used your full quota for this billing period. Please see https://search.censys.io/account or contact support@censys.io.",
 }
+SERVER_ERROR_JSON = {
+    "code": 500,
+    "status": "Internal Server Error",
+    "error": "An unexpected error occurred. Please try again later.",
+}
 
 TEST_HOST = "8.8.8.8"
 
@@ -204,7 +212,7 @@ class TestHosts(CensysTestCase):
         ips = ["1.1.1.1", "1.1.1.2", "1.1.1.3"]
         expected = {}
         for ip in ips:
-            host_json = VIEW_HOST_JSON.copy()
+            host_json = deepcopy(VIEW_HOST_JSON)
             host_json["result"]["ip"] = ip
             self.responses.add(
                 responses.GET,
@@ -212,7 +220,7 @@ class TestHosts(CensysTestCase):
                 status=200,
                 json=host_json,
             )
-            expected[ip] = host_json["result"].copy()
+            expected[ip] = deepcopy(host_json["result"])
 
         results = self.api.bulk_view(ips)
         assert results == expected
@@ -221,7 +229,7 @@ class TestHosts(CensysTestCase):
         ips = ["1.1.1.1", "1.1.1.2", "1.1.1.3"]
         expected = {}
         for ip in ips:
-            host_json = VIEW_HOST_JSON.copy()
+            host_json = deepcopy(VIEW_HOST_JSON)
             host_json["result"]["ip"] = ip
             self.responses.add(
                 responses.GET,
@@ -229,7 +237,7 @@ class TestHosts(CensysTestCase):
                 status=200,
                 json=host_json,
             )
-            expected[ip] = host_json["result"].copy()
+            expected[ip] = deepcopy(host_json["result"])
 
         date = datetime.date(2021, 3, 1)
 
@@ -240,7 +248,7 @@ class TestHosts(CensysTestCase):
         ips = ["1.1.1.1", "1.1.1.2", "1.1.1.3"]
         expected = {}
         for ip in ips[:-1]:
-            host_json = VIEW_HOST_JSON.copy()
+            host_json = deepcopy(VIEW_HOST_JSON)
             host_json["result"]["ip"] = ip
             self.responses.add(
                 responses.GET,
@@ -248,7 +256,7 @@ class TestHosts(CensysTestCase):
                 status=200,
                 json=host_json,
             )
-            expected[ip] = host_json["result"].copy()
+            expected[ip] = deepcopy(host_json["result"])
 
         self.responses.add(
             responses.GET,
@@ -287,9 +295,29 @@ class TestHosts(CensysTestCase):
         query = self.api.search("service.service_name: HTTP", per_page=test_per_page)
         assert next(query) == SEARCH_HOSTS_JSON["result"]["hits"]
 
+    def test_search_with_error_retry(self):
+        is_first_request = True
+
+        def request_callback(_):
+            nonlocal is_first_request
+            if is_first_request:
+                is_first_request = False
+                return (429, {}, json.dumps(RATE_LIMIT_ERROR_JSON))
+            return (200, {}, json.dumps(SEARCH_HOSTS_JSON))
+
+        self.responses.add_callback(
+            responses.GET,
+            V2_URL + "/hosts/search?q=service.service_name: HTTP&per_page=100",
+            callback=request_callback,
+            content_type="application/json",
+        )
+
+        query = self.api.search("service.service_name: HTTP")
+        assert query() == SEARCH_HOSTS_JSON["result"]["hits"]
+
     def test_search_invalid_query(self):
         invalid_query = "some_bad_query"
-        no_hosts_json = SEARCH_HOSTS_JSON.copy()
+        no_hosts_json = deepcopy(SEARCH_HOSTS_JSON)
         no_hosts_json["result"]["hits"] = []
         no_hosts_json["result"]["total"] = 0
         no_hosts_json["result"]["links"]["next"] = ""
@@ -313,7 +341,7 @@ class TestHosts(CensysTestCase):
             status=200,
             json=SEARCH_HOSTS_JSON,
         )
-        page_2_json = SEARCH_HOSTS_JSON.copy()
+        page_2_json = deepcopy(SEARCH_HOSTS_JSON)
         hits = page_2_json["result"]["hits"]
         new_hits = [
             {
@@ -341,6 +369,54 @@ class TestHosts(CensysTestCase):
         query = self.api.search("service.service_name: HTTP", pages=-1)
         for i, page in enumerate(query):
             assert expected[i] == page
+
+    def test_search_pages_retry_with_server_error(self):
+        first_request_to_second_page = True
+
+        def request_callback(_):
+            nonlocal first_request_to_second_page
+            if first_request_to_second_page:
+                first_request_to_second_page = False
+                return (500, {}, json.dumps(SERVER_ERROR_JSON))
+            return (200, {}, json.dumps(SEARCH_HOSTS_JSON))
+
+        self.responses.add(
+            responses.GET,
+            V2_URL + "/hosts/search?q=service.service_name%3A+HTTP&per_page=100",
+            status=200,
+            json=SEARCH_HOSTS_JSON,
+        )
+        self.responses.add_callback(
+            responses.GET,
+            V2_URL
+            + "/hosts/search?q=service.service_name%3A+HTTP&per_page=100&cursor=eyJBZnRlciI6WyIxIiwiMS4wLjAuNDkiXSwiUmV2ZXJzZSI6ZmFsc2V9",
+            callback=request_callback,
+            content_type="application/json",
+        )
+
+        query = self.api.search("service.service_name: HTTP", pages=2)
+        assert next(query) == SEARCH_HOSTS_JSON["result"]["hits"]
+        assert next(query) == SEARCH_HOSTS_JSON["result"]["hits"], "Retry did not fail"
+
+    def test_search_pages_retry_fail(self):
+        self.responses.add(
+            responses.GET,
+            V2_URL + "/hosts/search?q=service.service_name%3A+HTTP&per_page=100",
+            status=200,
+            json=SEARCH_HOSTS_JSON,
+        )
+        self.responses.add(
+            responses.GET,
+            V2_URL
+            + "/hosts/search?q=service.service_name%3A+HTTP&per_page=100&cursor=eyJBZnRlciI6WyIxIiwiMS4wLjAuNDkiXSwiUmV2ZXJzZSI6ZmFsc2V9",
+            status=500,
+            json=SERVER_ERROR_JSON,
+        )
+
+        query = self.api.search("service.service_name: HTTP", pages=2)
+        assert next(query) == SEARCH_HOSTS_JSON["result"]["hits"]
+        with pytest.raises(CensysInternalServerException):
+            next(query)
 
     def test_search_virtual_hosts(self):
         self.responses.add(
@@ -391,7 +467,7 @@ class TestHosts(CensysTestCase):
     def test_search_view_all(self):
         test_per_page = 50
         ips = ["1.1.1.1", "1.1.1.2"]
-        search_json = SEARCH_HOSTS_JSON.copy()
+        search_json = deepcopy(SEARCH_HOSTS_JSON)
         search_json["result"]["hits"] = [{"ip": ip} for ip in ips]
         search_json["result"]["total"] = len(ips)
         search_json["result"]["links"]["next"] = ""
@@ -404,7 +480,7 @@ class TestHosts(CensysTestCase):
 
         expected = {}
         for ip in ips:
-            view_json = VIEW_HOST_JSON.copy()
+            view_json = deepcopy(VIEW_HOST_JSON)
             view_json["result"]["ip"] = ip
             self.responses.add(
                 responses.GET,
@@ -412,7 +488,7 @@ class TestHosts(CensysTestCase):
                 status=200,
                 json=view_json,
             )
-            expected[ip] = view_json["result"].copy()
+            expected[ip] = deepcopy(view_json["result"])
 
         query = self.api.search("service.service_name: HTTP", per_page=test_per_page)
         results = query.view_all()
@@ -420,7 +496,7 @@ class TestHosts(CensysTestCase):
 
     def test_search_view_all_virtual_hosts(self):
         test_per_page = 50
-        search_json = SEARCH_HOSTS_JSON.copy()
+        search_json = deepcopy(SEARCH_HOSTS_JSON)
         hits = [{"ip": "1.1.1.1", "name": "one.one.one.one"}, {"ip": "1.0.0.1"}]
         search_json["result"]["hits"] = hits
         search_json["result"]["total"] = len(hits)
@@ -434,7 +510,7 @@ class TestHosts(CensysTestCase):
 
         expected = {}
         for hit in hits:
-            view_json = VIEW_HOST_JSON.copy()
+            view_json = deepcopy(VIEW_HOST_JSON)
             view_json["result"]["ip"] = hit["ip"]
             document_key = hit["ip"]
             if "name" in hit:
@@ -445,7 +521,7 @@ class TestHosts(CensysTestCase):
                 status=200,
                 json=view_json,
             )
-            expected[document_key] = view_json["result"].copy()
+            expected[document_key] = deepcopy(view_json["result"])
 
         query = self.api.search("service.service_name: HTTP", per_page=test_per_page)
         results = query.view_all()
@@ -454,7 +530,7 @@ class TestHosts(CensysTestCase):
     def test_search_view_all_error(self):
         test_per_page = 50
         ips = ["1.1.1.1", "1.1.1.2", "1.1.1.3"]
-        search_json = SEARCH_HOSTS_JSON.copy()
+        search_json = deepcopy(SEARCH_HOSTS_JSON)
         search_json["result"]["hits"] = [{"ip": ip} for ip in ips]
         search_json["result"]["total"] = len(ips)
         search_json["result"]["links"]["next"] = ""
@@ -467,7 +543,7 @@ class TestHosts(CensysTestCase):
 
         expected = {}
         for ip in ips[:-1]:
-            view_json = VIEW_HOST_JSON.copy()
+            view_json = deepcopy(VIEW_HOST_JSON)
             view_json["result"]["ip"] = ip
             self.responses.add(
                 responses.GET,
@@ -475,7 +551,7 @@ class TestHosts(CensysTestCase):
                 status=200,
                 json=view_json,
             )
-            expected[ip] = view_json["result"].copy()
+            expected[ip] = deepcopy(view_json["result"])
 
         self.responses.add(
             responses.GET,
