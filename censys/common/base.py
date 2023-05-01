@@ -12,7 +12,10 @@ from requests.models import Response
 from .exceptions import (
     CensysAPIException,
     CensysException,
+    CensysInternalServerErrorException,
+    CensysInternalServerException,
     CensysJSONDecodeException,
+    CensysRateLimitExceededException,
     CensysTooManyRequestsException,
 )
 from .version import __version__
@@ -25,8 +28,12 @@ def _backoff_wrapper(method: Callable):
         @backoff.on_exception(
             backoff.expo,
             (
+                CensysInternalServerException,
+                CensysInternalServerErrorException,
                 CensysTooManyRequestsException,
+                CensysRateLimitExceededException,
                 requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
             ),
             max_tries=self.max_retries,
             max_time=self.timeout,

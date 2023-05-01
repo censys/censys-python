@@ -92,6 +92,10 @@ class CensysJSONDecodeException(CensysSearchException):
     """Exception raised when the resource requested is not valid JSON."""
 
 
+class CensysInternalServerException(CensysSearchException):
+    """Exception raised when the server encountered an internal error."""
+
+
 class CensysInvalidRequestException(CensysAsmException):
     """Exception raised when the HTTP request is invalid."""
 
@@ -176,7 +180,7 @@ class CensysInvalidIPv4AddressException(CensysAsmException):
     """Exception raised when the IPv4 address is invalid."""
 
 
-class CensysAssetExludedException(CensysAsmException):
+class CensysAssetExcludedException(CensysAsmException):
     """Exception raised when the asset is excluded."""
 
 
@@ -313,7 +317,7 @@ class CensysExceptionMapper:
         10019: CensysDomainNotFoundException,
         10020: CensysCertificateNotFoundException,
         10021: CensysInvalidIPv4AddressException,
-        10022: CensysAssetExludedException,
+        10022: CensysAssetExcludedException,
         10025: CensysTagHasTrailingOrLeadingWhitespaceException,
         10026: CensysTagIsEmptyStringException,
         10027: CensysTagLabelsDifferOnlyInCasingException,
@@ -355,5 +359,6 @@ class CensysExceptionMapper:
         403: CensysUnauthorizedException,
         404: CensysNotFoundException,
         429: CensysRateLimitExceededException,
+        500: CensysInternalServerException,
     }
     """Map of status code to Search Exception."""
