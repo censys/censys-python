@@ -127,8 +127,8 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         "--format",
         type=str,
         default="screen",
-        choices=["screen", "json", "csv"],
-        metavar="screen|json|csv",
+        choices=["screen", "json"],
+        metavar="screen|json",
         help=argparse.SUPPRESS,
     )
     search_parser.add_argument(
