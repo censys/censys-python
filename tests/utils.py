@@ -46,6 +46,8 @@ class CensysTestCase(unittest.TestCase):
         self.addCleanup(self.responses.stop)
         self.addCleanup(self.responses.reset)
 
+        self.mocker.patch("time.sleep", return_value=None)
+
     def setUpApi(self, api: CensysAPIBase):  # noqa: N802
         self.api = api
         self.base_url = self.api._api_url
