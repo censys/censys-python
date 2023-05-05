@@ -261,17 +261,22 @@ class TestCerts(CensysTestCase):
 
     @parameterized.expand(
         [
-            (None, None),
-            (["names", "fingerprint_sha256"], None),
-            (None, ["parsed.issuer.organization", "parsed.subject.country"]),
+            (None, None, None),
+            (["names", "fingerprint_sha256"], None, None),
+            (None, ["parsed.issuer.organization", "parsed.subject.country"], None),
             (
                 ["names", "fingerprint_sha256"],
                 ["parsed.issuer.organization", "parsed.subject.country"],
+                None,
             ),
+            (None, None, "nextCursorToken"),
         ]
     )
     def test_search(
-        self, fields: Optional[List[str]] = None, sort: Optional[List[str]] = None
+        self,
+        fields: Optional[List[str]] = None,
+        sort: Optional[List[str]] = None,
+        cursor: Optional[str] = None,
     ):
         self.responses.add(
             responses.POST,
@@ -279,7 +284,9 @@ class TestCerts(CensysTestCase):
             status=200,
             json=SEARCH_CERTS_JSON,
         )
-        query = self.api.search(TEST_SEARCH_QUERY, fields=fields, sort=sort)
+        query = self.api.search(
+            TEST_SEARCH_QUERY, fields=fields, sort=sort, cursor=cursor
+        )
         assert next(query) == SEARCH_CERTS_JSON["result"]["hits"]
 
     @parameterized.expand(
