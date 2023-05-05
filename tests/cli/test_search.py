@@ -8,10 +8,15 @@ from urllib.parse import urlencode
 
 import pytest
 import responses
+from parameterized import parameterized
 from requests import PreparedRequest
 
 from tests.search.v2.test_certs import SEARCH_CERTS_JSON
-from tests.search.v2.test_hosts import SEARCH_HOSTS_JSON, TOO_MANY_REQUESTS_ERROR_JSON
+from tests.search.v2.test_hosts import (
+    SEARCH_HOSTS_JSON,
+    SERVER_ERROR_JSON,
+    TOO_MANY_REQUESTS_ERROR_JSON,
+)
 from tests.utils import V2_URL, CensysTestCase
 
 from censys.cli import main as cli_main
@@ -33,17 +38,6 @@ def search_callback(request: PreparedRequest) -> Tuple[int, Dict[str, str], str]
         },
     }
     return (200, {}, json.dumps(resp_body))
-
-
-def search_callback_fail(request: PreparedRequest) -> Tuple[int, Dict[str, str], str]:
-    payload = json.loads(request.body)
-    if payload.get("cursor"):
-        return (
-            429,
-            {},
-            json.dumps({"error_code": 429, "error": "rate limit exceeded"}),
-        )
-    return search_callback(request)
 
 
 class CensysCliSearchTest(CensysTestCase):
@@ -274,7 +268,13 @@ class CensysCliSearchTest(CensysTestCase):
         ):
             cli_main()
 
-    def test_midway_fail(self):
+    @parameterized.expand(
+        [
+            (429, TOO_MANY_REQUESTS_ERROR_JSON),
+            (500, SERVER_ERROR_JSON),
+        ]
+    )
+    def test_midway_fail(self, status_code: int, json_response: dict):
         # Setup response
         next_cursor = SEARCH_HOSTS_JSON["result"]["links"]["next"]
         self.responses.add(
@@ -288,8 +288,8 @@ class CensysCliSearchTest(CensysTestCase):
             responses.GET,
             V2_URL
             + f"/hosts/search?q=service.service_name: HTTP&per_page=100&sort=RELEVANCE&virtual_hosts=EXCLUDE&cursor={next_cursor}",
-            status=429,
-            json=TOO_MANY_REQUESTS_ERROR_JSON,
+            status=status_code,
+            json=json_response,
         )
         # Mock
         self.patch_args(

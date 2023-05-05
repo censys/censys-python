@@ -126,6 +126,29 @@ class CensysAPIBase:
         """
         return CensysAPIException
 
+    @backoff.on_predicate(
+        backoff.runtime,
+        predicate=lambda r: r.status_code == 429 and r.headers.get("Retry-After"),
+        value=lambda r: int(r.headers.get("Retry-After", 0)),
+    )
+    def _call_method(
+        self, method: Callable[..., Response], url: str, request_kwargs: dict
+    ) -> Response:
+        """Make API call.
+
+        Wrapper functions for all our REST API calls checking for errors
+        and decoding the responses.
+
+        Args:
+            method (Callable): Method to send HTTP request.
+            url (str): The URL to make API requests.
+            request_kwargs (dict): Keyword arguments to pass to method.
+
+        Returns:
+            Response: Results from an API request.
+        """
+        return method(url, **request_kwargs)
+
     @_backoff_wrapper
     def _make_call(
         self,
@@ -168,7 +191,7 @@ class CensysAPIBase:
         if data:
             request_kwargs["json"] = data
 
-        res = method(url, **request_kwargs)
+        res = self._call_method(method, url, request_kwargs)
 
         if res.ok:
             # Check for a returned json body
