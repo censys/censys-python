@@ -10,7 +10,9 @@ exclude =
     # This contains our built documentation
     build,
     # This contains builds of flake8 that we don't want to check
-    dist
+    dist,
+    # This contains various user scripts
+    scripts
 per-file-ignores =
     tests/*.py:E501,D100,D101,D102,D103,D104,D107,
     __init__.py:F401,F403,
