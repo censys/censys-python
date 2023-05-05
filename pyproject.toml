@@ -55,6 +55,7 @@ requests = ">=2.29.0"
 backoff = "^2.0.1"
 rich = ">=10.16.2"
 importlib-metadata = { version = "*", python = "<3.8" }
+argcomplete = "^3.0.8"
 
 [tool.poetry.group.dev.dependencies]
 # Lint
