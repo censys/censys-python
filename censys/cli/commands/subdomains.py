@@ -39,7 +39,12 @@ def cli_subdomains(args: argparse.Namespace):  # pragma: no cover
         certificate_query = f"names: {args.domain}"
 
         with err_console.status(f"Querying {args.domain} subdomains"):
-            query = client.search(certificate_query, fields=["names"], pages=args.pages)
+            query = client.search(
+                certificate_query,
+                per_page=100,  # 100 is the max per page
+                pages=args.pages,
+                fields=["names"],  # TODO: Remove this when names is returned by default
+            )
 
             # Flatten the result, and remove duplicates
             for hits in query:

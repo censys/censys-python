@@ -144,10 +144,13 @@ class CensysCerts(CensysSearchAPIv2):
         data = {
             "q": query,
             "per_page": per_page,
-            "cursor": cursor,
-            "fields": fields,
-            "sort": sort,
         }
+        if cursor:
+            data["cursor"] = cursor
+        if fields:
+            data["fields"] = fields
+        if sort:
+            data["sort"] = sort
         data.update(kwargs)
         return self._post(self.search_path, data=data)
 
