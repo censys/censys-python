@@ -35,11 +35,19 @@ repos:
         language: system
         types: [python]
       - id: system
+        name: pytest
+        entry: poetry run pytest --cov --cov-fail-under=100
+        pass_filenames: false
+        language: system
+        types: [python]
+      - id: system
         name: flake8
         entry: poetry run flake8 .
         pass_filenames: false
         language: system
         types: [python]
+        require_serial: true
+        args: [--darglint-ignore-regex, .*] # Skip docstring checks
       - id: system
         name: mypy
         entry: poetry run mypy censys
