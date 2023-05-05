@@ -58,6 +58,11 @@ class CensysCliSubdomainsTest(CensysTestCase):
             responses.POST,
             V2_URL + "/certificates/search",
             json=CERT_SEARCH_RESPONSE,
+            match=[
+                responses.matchers.json_params_matcher(
+                    {"per_page": 100, "q": "names: censys.io", "fields": ["names"]}
+                )
+            ],
         )
         self.mocker.patch(
             "argparse._sys.argv",
