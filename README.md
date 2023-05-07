@@ -45,7 +45,7 @@ cd censys-python/
 poetry install
 ```
 
-Optionally, you can enable tab completion for the CLI by running the following command.
+Optionally, you can enable tab completion for the CLI by adding this line to your `~/.bashrc`, `~/.zshrc`, or equivalent.
 
 > Please note that quotes are required for autocompletion of field names in the `search` command.
 

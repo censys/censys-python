@@ -10,13 +10,13 @@ Before continuing please ensure you have successfully configured your credential
 
     censys config
 
-The configuration file by default is writen to ``~/.config/censys/censys.cfg``, but you can change this by setting the ``CENSYS_CONFIG_PATH`` environment variable.
+The configuration file by default is written to ``~/.config/censys/censys.cfg``, but you can change this by setting the ``CENSYS_CONFIG_PATH`` environment variable.
 
 .. prompt:: bash
 
     export CENSYS_CONFIG_PATH=/path/to/config/file
 
-Optionally, you can enable tab completion for the CLI by running the following command.
+Optionally, you can enable tab completion for the CLI by adding this line to your `~/.bashrc`, `~/.zshrc`, or equivalent.
 
 .. prompt:: bash
 
