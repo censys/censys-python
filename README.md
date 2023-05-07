@@ -7,7 +7,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-organge.svg?logo=git&logoColor=organge)](http://makeapullrequest.com)
 [![License](https://img.shields.io/github/license/censys/censys-python?logo=apache)](https://github.com/censys/censys-python/blob/main/LICENSE)
 
-An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://censys.io/)). Python 3.7.2+ is currently supported.
+An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://censys.io/)). Python 3.7.2+ is currently supported. This library has been tested on Python 3.7 and 3.x (Currently version 3.11).
 
 > **Notice:** The Censys Search v1 endpoints are deprecated as of Nov. 30, 2021. Please begin using v2 endpoints to query hosts and certificates and check out our [support center](https://support.censys.io/hc/en-us/sections/360013076551-Censys-Search-2-0) for resources.
 
@@ -19,7 +19,9 @@ An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://
 - [Manage assets, events, and seeds in Censys ASM](https://censys-python.readthedocs.io/en/stable/usage-asm.html)
 - [Command-line interface](https://censys-python.readthedocs.io/en/stable/cli.html)
 
+<!-- markdownlint-disable MD033 -->
 <a href="https://asciinema.org/a/500416" target="_blank"><img src="https://asciinema.org/a/500416.svg" width="600"/></a>
+<!-- markdownlint-enable MD033 -->
 
 ## Getting Started
 
@@ -33,6 +35,22 @@ To upgraded using `pip`.
 
 ```sh
 pip install --upgrade censys
+```
+
+Or, you can install the library from source using `poetry`.
+
+```sh
+git clone https://github.com/censys/censys-python.git
+cd censys-python/
+poetry install
+```
+
+Optionally, you can enable tab completion for the CLI by running the following command.
+
+> Please note that quotes are required for autocompletion of field names in the `search` command.
+
+```sh
+eval "$(register-python-argcomplete censys)"
 ```
 
 To configure your search credentials run `censys config` or set both `CENSYS_API_ID` and `CENSYS_API_SECRET` environment variables.

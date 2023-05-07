@@ -42,3 +42,13 @@ Configure your credentials:
          export CENSYS_ASM_API_KEY=<your-api-key>
 
       Find your credentials on the `Integrations page <https://app.censys.io/integrations>`_.
+
+Optionally, you can enable tab completion for the CLI by running the following command.
+
+.. prompt:: bash
+
+   eval "$(register-python-argcomplete censys)"
+
+.. note::
+
+   Please note that quotes are required for autocompletion of field names in the `search` command.
