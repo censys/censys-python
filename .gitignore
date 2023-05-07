@@ -92,3 +92,6 @@ censys-view-*
 *.json
 *.txt
 *.xml
+
+# Autocomplete
+!censys/cli/data/*_autocomplete.json

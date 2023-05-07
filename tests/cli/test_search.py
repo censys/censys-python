@@ -1,8 +1,10 @@
+import argparse
 import contextlib
 import json
 import os
 from io import StringIO
-from typing import Dict, Tuple
+from pathlib import Path
+from typing import Dict, Optional, Tuple
 from unittest.mock import mock_open
 from urllib.parse import urlencode
 
@@ -20,6 +22,11 @@ from tests.search.v2.test_hosts import (
 from tests.utils import V2_URL, CensysTestCase
 
 from censys.cli import main as cli_main
+from censys.cli.commands.search import (
+    CERTIFICATES_AUTOCOMPLETE,
+    HOSTS_AUTOCOMPLETE,
+    fields_completer,
+)
 from censys.common.exceptions import CensysCLIException, CensysException
 
 WROTE_PREFIX = "Wrote results to file"
@@ -371,6 +378,24 @@ class CensysCliSearchTest(CensysTestCase):
         query_str = urlencode({"q": "service.service_name: HTTP", "resource": "hosts"})
         # Assertions
         mock_open.assert_called_with(f"https://search.censys.io/search?{query_str}")
+
+    @parameterized.expand(
+        [
+            ("hosts", HOSTS_AUTOCOMPLETE),
+            ("certificates", CERTIFICATES_AUTOCOMPLETE),
+            ("invalid", None),
+        ]
+    )
+    def test_fields_completer(
+        self, index_type: str, autocomplete_file: Optional[Path] = None
+    ):
+        parsed_args = argparse.Namespace(index_type=index_type)
+        if autocomplete_file is None:
+            expected_fields = []
+        else:
+            expected_fields = json.load(autocomplete_file.open())["data"]
+            expected_fields = [field["value"] for field in expected_fields]
+        assert fields_completer(parsed_args=parsed_args) == expected_fields
 
 
 if __name__ == "__main__":

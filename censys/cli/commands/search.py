@@ -1,7 +1,9 @@
 """Censys search CLI."""
 import argparse
+import json
 import sys
 import webbrowser
+from pathlib import Path
 from typing import Any, Dict, List
 from urllib.parse import urlencode
 
@@ -11,6 +13,36 @@ from censys.search import SearchClient
 from censys.search.v2.api import CensysSearchAPIv2
 
 Results = List[dict]
+
+DATA_DIR = Path(__file__).parent.parent / "data"
+HOSTS_AUTOCOMPLETE = DATA_DIR / "hosts_autocomplete.json"
+CERTIFICATES_AUTOCOMPLETE = DATA_DIR / "certificates_autocomplete.json"
+
+
+def fields_completer(**kwargs) -> List[str]:
+    """Fields completer.
+
+    Args:
+        **kwargs: Keyword arguments.
+
+    Returns:
+        List[str]: List of fields.
+    """
+    parsed_args = kwargs["parsed_args"]
+    index_type = parsed_args.index_type
+    autocomplete_json = {}
+    if index_type == "hosts":
+        with HOSTS_AUTOCOMPLETE.open() as autocomplete_file:
+            autocomplete_json = json.load(autocomplete_file)
+    elif index_type == "certificates":
+        with CERTIFICATES_AUTOCOMPLETE.open() as autocomplete_file:
+            autocomplete_json = json.load(autocomplete_file)
+    else:
+        return []
+
+    autocomplete_data = autocomplete_json.get("data", [])
+    fields = [field["value"] for field in autocomplete_data]
+    return fields
 
 
 def cli_search(args: argparse.Namespace):
@@ -109,7 +141,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         "query",
         type=str,
         help="a string written in Censys Search syntax",
-    )
+    ).completer = fields_completer
 
     index_metavar = "|".join(V2_INDEXES)
     index_default = "hosts"
@@ -189,6 +221,6 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         type=str,
         nargs="+",
         help="additional fields to return in the matched certificates",
-    )
+    ).completer = fields_completer
 
     search_parser.set_defaults(func=cli_search)
