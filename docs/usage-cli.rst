@@ -16,6 +16,16 @@ The configuration file by default is writen to ``~/.config/censys/censys.cfg``, 
 
     export CENSYS_CONFIG_PATH=/path/to/config/file
 
+Optionally, you can enable tab completion for the CLI by running the following command.
+
+.. prompt:: bash
+
+    eval "$(register-python-argcomplete censys)"
+
+.. note::
+
+    Please note that quotes are required for autocompletion of field names in the `search` command.
+
 
 ``search``
 ----------
