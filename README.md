@@ -47,7 +47,7 @@ poetry install
 
 Optionally, you can enable tab completion for the CLI by adding this line to your `~/.bashrc`, `~/.zshrc`, or equivalent.
 
-> Please note that quotes are required for autocompletion of field names in the `search` command.
+> Please note that autocomplete is supported for field names in the `search` command.
 
 ```sh
 eval "$(register-python-argcomplete censys)"
