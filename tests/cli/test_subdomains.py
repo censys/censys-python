@@ -60,7 +60,7 @@ class CensysCliSubdomainsTest(CensysTestCase):
             json=CERT_SEARCH_RESPONSE,
             match=[
                 responses.matchers.json_params_matcher(
-                    {"per_page": 100, "q": "names: censys.io", "fields": ["names"]}
+                    {"per_page": 100, "q": "names: censys.io"}
                 )
             ],
         )
