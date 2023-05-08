@@ -382,12 +382,16 @@ class CensysCliSearchTest(CensysTestCase):
     @parameterized.expand(
         [
             ("hosts", HOSTS_AUTOCOMPLETE),
+            ("hosts", HOSTS_AUTOCOMPLETE, "service"),
             ("certificates", CERTIFICATES_AUTOCOMPLETE),
-            ("invalid", None),
+            ("invalid"),
         ]
     )
     def test_fields_completer(
-        self, index_type: str, autocomplete_file: Optional[Path] = None
+        self,
+        index_type: str,
+        autocomplete_file: Optional[Path] = None,
+        prefix: str = "",
     ):
         parsed_args = argparse.Namespace(index_type=index_type)
         if autocomplete_file is None:
@@ -395,7 +399,11 @@ class CensysCliSearchTest(CensysTestCase):
         else:
             expected_fields = json.load(autocomplete_file.open())["data"]
             expected_fields = [field["value"] for field in expected_fields]
-        assert fields_completer(parsed_args=parsed_args) == expected_fields
+            if prefix == "":
+                expected_fields = expected_fields[:20]
+        assert (
+            fields_completer(prefix=prefix, parsed_args=parsed_args) == expected_fields
+        )
 
 
 if __name__ == "__main__":
