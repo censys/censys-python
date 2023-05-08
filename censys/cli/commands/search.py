@@ -19,10 +19,13 @@ HOSTS_AUTOCOMPLETE = DATA_DIR / "hosts_autocomplete.json"
 CERTIFICATES_AUTOCOMPLETE = DATA_DIR / "certificates_autocomplete.json"
 
 
-def fields_completer(parsed_args: argparse.Namespace, **kwargs) -> List[str]:
+def fields_completer(
+    prefix: str, parsed_args: argparse.Namespace, **kwargs
+) -> List[str]:
     """Fields completer.
 
     Args:
+        prefix (str): Prefix to complete.
         parsed_args (Namespace): Argparse Namespace.
         **kwargs: Keyword arguments.
 
@@ -42,6 +45,10 @@ def fields_completer(parsed_args: argparse.Namespace, **kwargs) -> List[str]:
 
     autocomplete_data = autocomplete_json.get("data", [])
     fields = [field["value"] for field in autocomplete_data]
+
+    if not prefix:
+        # Returns first 20 fields if no prefix is provided
+        return fields[:20]
     return fields
 
 
