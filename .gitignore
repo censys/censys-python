@@ -84,7 +84,7 @@ dmypy.json
 *.cfg
 
 # Scripts
-scripts/*
+scripts/*.py
 
 # Output
 censys-query-output.*

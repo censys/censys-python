@@ -55,3 +55,9 @@ repos:
         language: system
         types: [python]
         require_serial: true
+      - id: system
+        name: update autocomplete
+        entry: bash scripts/update_autocomplete.sh
+        pass_filenames: false
+        language: system
+        types: []
