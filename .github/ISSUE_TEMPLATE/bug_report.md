@@ -21,7 +21,7 @@ A clear and concise description of what you expected to happen.
 **Device (please complete the following information):**
 
 - OS [e.g. debian, macOS]:
-- Censys Python Version [e.g. 2.1.0]: <!-- $ censys --version -->
+- Censys Python Version [e.g. 2.2.1]: <!-- $ censys --version -->
 - Shell [e.g. bash, zsh]: <!-- $ echo $SHELL -->
 
 **Additional context**
