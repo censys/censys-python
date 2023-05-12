@@ -14,4 +14,4 @@ updates:
     labels:
       - "type: dependencies"
     reviewers:
-      - "censys/public-repo-admins"
+      - "censys/dev-oss"
