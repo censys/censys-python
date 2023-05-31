@@ -90,6 +90,7 @@ scripts/*.py
 censys-query-output.*
 censys-view-*
 *.json
+*.csv
 *.txt
 *.xml
 
