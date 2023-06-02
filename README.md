@@ -37,7 +37,7 @@ To upgraded using `pip`.
 pip install --upgrade censys
 ```
 
-Or, you can install the library from source using `poetry`.
+Alternatively, you can install the library using `poetry`.
 
 ```sh
 git clone https://github.com/censys/censys-python.git
@@ -65,7 +65,7 @@ Do you want color output? [y/n]: y
 Successfully authenticated for your@email.com
 ```
 
-To configure your ASM credentials run `censys asm config` or set the `CENSYS_ASM_API_KEY` environment variables.
+If you have a Censys ASM account, you can configure your ASM credentials by running `censys asm config` or set both `CENSYS_ASM_API_KEY` environment variables.
 
 ```sh
 $ censys asm config
@@ -76,7 +76,11 @@ Do you want color output? [y/n]: y
 Successfully authenticated
 ```
 
-## API Reference and User Guide available on [Read the Docs](https://censys-python.readthedocs.io/)
+## Examples
+
+The examples located in the [`examples/`](examples/) directory are a great place to start. You can also find more examples in the [usage documentation](https://censys-python.readthedocs.io/en/stable/usage-v2.html).
+
+## [Documentation](https://censys-python.readthedocs.io/)
 
 [![Read the Docs](https://raw.githubusercontent.com/censys/censys-python/main/docs/_static/readthedocs.png)](https://censys-python.readthedocs.io/)
 
