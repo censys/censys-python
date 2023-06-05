@@ -3,6 +3,7 @@ from .assets import Assets
 from .certificates import CertificatesAssets
 from .domains import DomainsAssets
 from .hosts import HostsAssets
+from .object_storage import ObjectStorageAssets
 from .subdomains import SubdomainsAssets
 from .web_entities import WebEntitiesAssets
 
@@ -11,6 +12,7 @@ __all__ = [
     "CertificatesAssets",
     "DomainsAssets",
     "HostsAssets",
+    "ObjectStorageAssets",
     "SubdomainsAssets",
     "WebEntitiesAssets",
 ]

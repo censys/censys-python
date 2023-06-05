@@ -1,10 +1,12 @@
 import unittest
+from urllib.parse import quote
 
 import pytest
 from parameterized import parameterized_class
 from pytest_mock import MockerFixture
 
 from .utils import (
+    BETA_URL,
     RESOURCE_PAGING_RESULTS,
     TEST_SUCCESS_CODE,
     TEST_TIMEOUT,
@@ -15,6 +17,7 @@ from censys.asm.client import AsmClient
 from censys.common.exceptions import CensysInvalidColorException
 
 ASSETS_URL = f"{V1_URL}/assets"
+BETA_ASSETS_URL = f"{BETA_URL}/assets"
 ASSET_TYPE = "assets"
 SUBDOMAIN_ASSET_TYPE = "subdomains"
 COMMENT_TYPE = "comments"
@@ -40,6 +43,7 @@ TEST_INVALID_TAG_COLOR = "4287f5"
         ("domains", "amazonaws.com"),
         ("subdomains", "s3.amazonaws.com", "amazonaws.com"),
         ("web_entities", "www.amazon.com:443"),
+        ("object_storage", "https://censys-python.s3.us-east-2.amazonaws.com/"),
     ],
 )
 class AssetsUnitTest(unittest.TestCase):
@@ -71,9 +75,13 @@ class AssetsUnitTest(unittest.TestCase):
             return f"{ASSETS_URL}/domains/{self.asset_type_config}/{self.asset_type}"
         if self.asset_type == "web_entities":
             return f"{ASSETS_URL}/web-entities"
+        if self.asset_type == "object_storage":
+            return f"{BETA_ASSETS_URL}/object-storage"
         return f"{ASSETS_URL}/{self.asset_type}"
 
     def asset_id_url(self):
+        if self.asset_type == "object_storage":
+            return f"{self.asset_type_url()}/{quote(self.test_asset_id, safe='')}"
         return f"{self.asset_type_url()}/{self.test_asset_id}"
 
     def test_get_assets(self):

@@ -5,6 +5,7 @@ from .assets import (
     CertificatesAssets,
     DomainsAssets,
     HostsAssets,
+    ObjectStorageAssets,
     SubdomainsAssets,
     WebEntitiesAssets,
 )
@@ -34,6 +35,7 @@ class AsmClient:
         self.clouds = Clouds(api_key, **kwargs)
         self.risks = Risks(api_key, **kwargs)
         self.inventory = InventorySearch(api_key, **kwargs)
+        self.object_storage = ObjectStorageAssets(api_key, **kwargs)
         self.web_entities = WebEntitiesAssets(api_key, **kwargs)
 
         # Save the arguments for parameterized client usage
