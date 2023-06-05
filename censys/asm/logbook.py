@@ -5,8 +5,8 @@ from typing import Iterator, List, Optional, Union
 from .api import CensysAsmAPI
 
 
-class Events(CensysAsmAPI):
-    """Events API class."""
+class Logbook(CensysAsmAPI):
+    """Logbook API class."""
 
     base_path = "/v1/logbook"
 
@@ -41,6 +41,10 @@ class Events(CensysAsmAPI):
         args = {"cursor": cursor}
 
         yield from self._get_logbook_page(self.base_path, args)
+
+
+# Alias for backwards compatibility
+Events = Logbook
 
 
 class Filters:
