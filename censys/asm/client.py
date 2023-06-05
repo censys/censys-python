@@ -9,6 +9,7 @@ from .assets import (
     SubdomainsAssets,
     WebEntitiesAssets,
 )
+from .beta import Beta
 from .clouds import Clouds
 from .inventory import InventorySearch
 from .logbook import Logbook
@@ -37,6 +38,7 @@ class AsmClient:
         self.inventory = InventorySearch(api_key, **kwargs)
         self.object_storage = ObjectStorageAssets(api_key, **kwargs)
         self.web_entities = WebEntitiesAssets(api_key, **kwargs)
+        self.beta = Beta(api_key, **kwargs)
 
         # Save the arguments for parameterized client usage
         self.__api_kwargs = kwargs
