@@ -4,17 +4,17 @@ from censys.search import CensysHosts
 h = CensysHosts()
 
 # Single page of search results
-query = h.search("service.service_name: HTTP", per_page=5)
+query = h.search("services.service_name: HTTP", per_page=5)
 print(query())
 
 # Multiple pages of search results
-query = h.search("service.service_name: HTTP", per_page=5, pages=2)
+query = h.search("services.service_name: HTTP", per_page=5, pages=2)
 for page in query:
     for host in page:
         print(host)
 
 # View all results
-query = h.search("service.service_name: HTTP", per_page=5, pages=2)
+query = h.search("services.service_name: HTTP", per_page=5, pages=2)
 print(query.view_all())
 
 # Search for virtual hosts

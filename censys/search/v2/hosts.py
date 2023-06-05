@@ -17,7 +17,7 @@ class CensysHosts(CensysSearchAPIv2):
 
         Simple host search.
 
-        >>> for page in h.search("service.service_name: HTTP"):
+        >>> for page in h.search("services.service_name: HTTP"):
         >>>     print(page)
         [
             {
@@ -42,7 +42,7 @@ class CensysHosts(CensysSearchAPIv2):
 
         Simple host aggregate.
 
-        >>> h.aggregate("service.service_name: HTTP", "services.port", num_buckets=5)
+        >>> h.aggregate("services.service_name: HTTP", "services.port", num_buckets=5)
         {
             'total_omitted': 591527370,
             'buckets': [
@@ -54,7 +54,7 @@ class CensysHosts(CensysSearchAPIv2):
             ],
             'potential_deviation': 3985101,
             'field': 'services.port',
-            'query': 'service.service_name: HTTP',
+            'query': 'services.service_name: HTTP',
             'total': 172588754
         }
 
