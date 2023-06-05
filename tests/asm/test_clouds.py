@@ -1,12 +1,8 @@
-import datetime
-
 import responses
-from parameterized import parameterized
 
 from ..utils import CensysTestCase
 from .utils import V1_URL
 from censys.asm.client import AsmClient
-from censys.asm.clouds import format_since_date
 
 TEST_COUNT_JSON = {
     "totalAssetCount": 0,
@@ -23,17 +19,6 @@ class CloudsUnitTest(CensysTestCase):
     def setUp(self):
         super().setUp()
         self.client = AsmClient(self.api_key)
-
-    @parameterized.expand(
-        [
-            ["2021-01-01", "2021-01-01"],
-            [datetime.date(2021, 1, 1), "2021-01-01"],
-            [datetime.datetime(2021, 1, 1, 12, 15, 20, 40), "2021-01-01"],
-        ]
-    )
-    def test_format_since_date(self, since, actual):
-        # Actual call/assertions
-        assert format_since_date(since) == actual
 
     def test_get_host_counts(self):
         # Setup response
