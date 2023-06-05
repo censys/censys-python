@@ -11,6 +11,8 @@ HEX_REGEX = re.compile(r"^#(?:[0-9a-fA-F]{3}){1,2}$")
 class Assets(CensysAsmAPI):
     """Assets API class."""
 
+    asset_type: str
+
     def __init__(self, asset_type: str, *args, **kwargs):
         """Inits Assets.
 
@@ -20,7 +22,20 @@ class Assets(CensysAsmAPI):
             **kwargs: Arbitrary keyword arguments.
         """
         CensysAsmAPI.__init__(self, *args, **kwargs)
-        self.base_path = f"/v1/assets/{asset_type}"
+        api_version = kwargs.get("api_version", "v1")
+        self.base_path = f"/{api_version}/assets/{asset_type}"
+        self.asset_type = asset_type
+
+    def _format_asset_id(self, asset_id: str) -> str:
+        """Formats asset ID.
+
+        Args:
+            asset_id (str): Asset ID to format.
+
+        Returns:
+            str: Formatted asset ID.
+        """
+        return asset_id
 
     def get_assets(
         self,
@@ -66,7 +81,7 @@ class Assets(CensysAsmAPI):
         Returns:
             dict: Asset search result.
         """
-        path = f"{self.base_path}/{asset_id}"
+        path = f"{self.base_path}/{self._format_asset_id(asset_id)}"
 
         return self._get(path)
 
@@ -86,7 +101,7 @@ class Assets(CensysAsmAPI):
         Returns:
             generator: Comment search results.
         """
-        path = f"{self.base_path}/{asset_id}/comments"
+        path = f"{self.base_path}/{self._format_asset_id(asset_id)}/comments"
 
         return self._get_page(
             path, page_number=page_number, page_size=page_size, keyword="comments"
@@ -102,7 +117,9 @@ class Assets(CensysAsmAPI):
         Returns:
             dict: Comment search result.
         """
-        path = f"{self.base_path}/{asset_id}/comments/{comment_id}"
+        path = (
+            f"{self.base_path}/{self._format_asset_id(asset_id)}/comments/{comment_id}"
+        )
 
         return self._get(path)
 
@@ -116,7 +133,7 @@ class Assets(CensysAsmAPI):
         Returns:
             dict: Added comment results.
         """
-        path = f"{self.base_path}/{asset_id}/comments"
+        path = f"{self.base_path}/{self._format_asset_id(asset_id)}/comments"
         data = {"markdown": str(comment)}
 
         return self._post(path, data=data)
@@ -131,7 +148,9 @@ class Assets(CensysAsmAPI):
         Returns:
             dict: Deleted comment results.
         """
-        path = f"{self.base_path}/{asset_id}/comments/{comment_id}"
+        path = (
+            f"{self.base_path}/{self._format_asset_id(asset_id)}/comments/{comment_id}"
+        )
 
         return self._delete(path)
 
@@ -146,7 +165,7 @@ class Assets(CensysAsmAPI):
         Returns:
             dict: Added tag results.
         """
-        path = f"{self.base_path}/{asset_id}/tags"
+        path = f"{self.base_path}/{self._format_asset_id(asset_id)}/tags"
         data = format_tag(name, color)
 
         return self._post(path, data=data)
@@ -161,7 +180,7 @@ class Assets(CensysAsmAPI):
         Returns:
             dict: Deleted tag results.
         """
-        path = f"{self.base_path}/{asset_id}/tags/{name}"
+        path = f"{self.base_path}/{self._format_asset_id(asset_id)}/tags/{name}"
 
         return self._delete(path)
 
