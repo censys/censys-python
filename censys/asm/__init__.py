@@ -9,8 +9,8 @@ from .assets import (
 )
 from .client import AsmClient
 from .clouds import Clouds
-from .events import Events
 from .inventory import InventorySearch
+from .logbook import Events, Logbook
 from .risks import Risks
 from .seeds import Seeds
 
@@ -23,6 +23,7 @@ __all__ = [
     "Events",
     "HostsAssets",
     "InventorySearch",
+    "Logbook",
     "Risks",
     "Seeds",
     "SubdomainsAssets",

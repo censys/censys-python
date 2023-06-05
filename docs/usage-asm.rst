@@ -7,7 +7,7 @@ The following API clients provided are:
 
 -  :attr:`seeds <censys.asm.Seeds>` - Provides programmatic management of seeds in the ASM platform.
 -  :attr:`assets <censys.asm.Assets>` - Returns asset data for hosts, certificates, and domains. This option also allows the user to manage tags and comments on assets.
--  :attr:`events <censys.asm.events.Events>` - Returns logbook events. Can be used to execute targeted searches for events based on start id or date, and event type filters.
+-  :attr:`logbook <censys.asm.logbook.Logbook>` - Returns logbook events. Can be used to execute targeted searches for events based on start id or date, and event type filters.
 -  :attr:`risks <censys.asm.risks.Risks>` - Returns risk data for hosts, certificates, and domains. This option also allows the user to get more information about a specific risk.
 -  :attr:`inventory <censys.asm.inventory.InventorySearch>` - Returns inventory data for hosts, certificates, and domains. This option also allows the user to Search for assets based on a variety of criteria.
 -  :attr:`web entities <censys.asm.assets.web_entities.WebEntitiesAssets>` - Returns web entities instances. This option also allows the user to manage tags and comments on web entities.
@@ -25,7 +25,7 @@ Python class objects can be used individually, but must be initialized for each 
    -  :attr:`SubdomainsAssets <censys.asm.SubdomainsAssets>`
    -  :attr:`WebEntitiesAssets <censys.asm.WebEntitiesAssets>`
 
--  :attr:`Events <censys.asm.events.Events>`
+-  :attr:`Logbook <censys.asm.logbook.Logbook>`
 -  :attr:`Risks <censys.asm.risks.Risks>`
 -  :attr:`InventorySearch <censys.asm.inventory.InventorySearch>`
 
@@ -174,8 +174,8 @@ Below we show examples for **subdomain asset tags** via the ASM API.
     # Add a tag to a subdomain under my_domain.com
     sub.add_tag("sub.my_domain.com", "New")
 
-``Events``
-----------
+``Logbook``
+-----------
 
 .. note::
 
@@ -202,40 +202,40 @@ Below we show examples for **creating a logbook cursor** for retrieving filtered
 
 .. code:: python
 
-    from censys.asm import Events
+    from censys.asm import Logbook
 
-    e = Events()
+    l = Logbook()
 
     # Get a logbook cursor beginning at timestamp "2020-04-22T06:55:01.000Z"
-    cursor = e.get_cursor("2020-04-22T06:55:01.000Z")
+    cursor = l.get_cursor("2020-04-22T06:55:01.000Z")
     print(cursor)
 
     # Get a logbook cursor beginning at event ID=10
-    cursor = e.get_cursor(10)
+    cursor = l.get_cursor(10)
     print(cursor)
 
     # Get a logbook cursor that filters on events of type "CERT" and "CERT_RISK"
-    cursor = e.get_cursor(filters=["CERT", "CERT_RISK"])
+    cursor = l.get_cursor(filters=["CERT", "CERT_RISK"])
     print(cursor)
 
     # Get a logbook cursor combining previous start ID and filters
-    cursor = e.get_cursor(10, filters=["CERT", "CERT_RISK"])
+    cursor = l.get_cursor(10, filters=["CERT", "CERT_RISK"])
     print(cursor)
 
 Below we show examples for **getting logbook events.**
 
 .. code:: python
 
-    from censys.asm import Events
+    from censys.asm import Logbook
 
-    e = Events()
+    l = Logbook()
 
     # Get a generator that returns all events
-    events = e.get_events()
+    events = l.get_events()
     print(next(events))
 
     # Get events based off cursor specifications
-    events = e.get_events(cursor)
+    events = l.get_events(cursor)
     print(next(events))
 
 ``Risks``
@@ -310,9 +310,9 @@ Below we show how to initialize the AsmClient class object as well as a couple e
     domains = client.domains.get_assets()
     print(next(domains))
 
-    # Get all events
-    events = client.events.get_events()
-    print(next(events))
+    # Get all logbook events
+    logbook_events = client.logbook.get_events()
+    print(next(logbook_events))
 
 
 ``Exceptions``

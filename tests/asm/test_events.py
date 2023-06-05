@@ -11,7 +11,7 @@ from .utils import (
     MockResponse,
 )
 from censys.asm.client import AsmClient
-from censys.asm.events import Filters
+from censys.asm.logbook import Filters
 
 EVENTS_URL = f"{V1_URL}/logbook"
 EVENTS_CURSOR_URL = f"{V1_URL}/logbook-cursor"

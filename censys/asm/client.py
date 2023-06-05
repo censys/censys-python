@@ -9,8 +9,8 @@ from .assets import (
     WebEntitiesAssets,
 )
 from .clouds import Clouds
-from .events import Events
 from .inventory import InventorySearch
+from .logbook import Logbook
 from .risks import Risks
 from .seeds import Seeds
 
@@ -29,7 +29,8 @@ class AsmClient:
         self.hosts = HostsAssets(api_key, **kwargs)
         self.certificates = CertificatesAssets(api_key, **kwargs)
         self.domains = DomainsAssets(api_key, **kwargs)
-        self.events = Events(api_key, **kwargs)
+        self.logbook = Logbook(api_key, **kwargs)
+        self.events = self.logbook
         self.clouds = Clouds(api_key, **kwargs)
         self.risks = Risks(api_key, **kwargs)
         self.inventory = InventorySearch(api_key, **kwargs)
