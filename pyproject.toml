@@ -53,7 +53,7 @@ censys = "censys.cli:main"
 [tool.poetry.dependencies]
 python = ">=3.7.2,<4.0.0"
 requests = ">=2.29.0"
-urllib3 = "<2.0.0" # Waiting until requests supports urllib3>=2.0.0
+urllib3 = "<3.0.0" # Waiting until requests supports urllib3>=2.0.0
 backoff = ">=2.0.0,<3.0.0"
 rich = ">=10.16.2"
 importlib-metadata = { version = "*", python = "<3.8" }
