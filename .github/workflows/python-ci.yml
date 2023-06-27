@@ -17,6 +17,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python: ["3.8", "3.x"]
+        poetry: ["1.5.1"]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
 
@@ -28,7 +29,7 @@ jobs:
 
       - name: Install poetry
         run: |
-          python -m pip install --upgrade pip poetry
+          python -m pip install --upgrade pip poetry==${{ matrix.poetry }}
           poetry config virtualenvs.in-project true
 
       - name: Install dependencies
