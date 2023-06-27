@@ -1,7 +1,4 @@
 """Censys Version."""
-try:  # pragma: no cover
-    import importlib_metadata
-except ImportError:  # pragma: no cover
-    import importlib.metadata as importlib_metadata  # type: ignore
+import importlib.metadata
 
-__version__: str = importlib_metadata.version("censys")
+__version__ = importlib.metadata.version("censys")
