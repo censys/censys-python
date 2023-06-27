@@ -30,7 +30,6 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -51,12 +50,11 @@ classifiers = [
 censys = "censys.cli:main"
 
 [tool.poetry.dependencies]
-python = ">=3.7.2,<4.0.0"
+python = ">=3.8,<4.0"
 requests = ">=2.29.0"
 urllib3 = "<3.0.0"
 backoff = ">=2.0.0,<3.0.0"
 rich = ">=10.16.2"
-importlib-metadata = { version = "*", python = "<3.8" }
 argcomplete = ">=2.0.0,<4.0.0"
 
 [tool.poetry.group.dev.dependencies]
@@ -85,7 +83,7 @@ mypy = "^1.2.0"
 types-requests = "^2.29.0.0"
 
 [tool.black]
-target-version = ["py37"]
+target-version = ["py38"]
 
 [tool.isort]
 profile = "black"
@@ -97,13 +95,13 @@ sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 extend_skip = ["setup.py", "conf.py"]
 
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.8"
 files = ["censys"]
 namespace_packages = true
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
-module = ["parameterized", "importlib_metadata", "rich"]
+module = ["parameterized", "rich"]
 ignore_missing_imports = true
 
 [build-system]
