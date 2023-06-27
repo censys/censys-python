@@ -22,7 +22,7 @@ Python class objects can be used individually, but must be initialized for each 
    -  :attr:`CertificatesAssets <censys.asm.CertificatesAssets>`
    -  :attr:`DomainsAssets <censys.asm.DomainsAssets>`
    -  :attr:`HostsAssets <censys.asm.HostsAssets>`
-   -  :attr:`ObjectStorageAssets <censys.asm.ObjectStorageAssets>`
+   -  :attr:`ObjectStoragesAssets <censys.asm.ObjectStoragesAssets>`
    -  :attr:`SubdomainsAssets <censys.asm.SubdomainsAssets>`
    -  :attr:`WebEntitiesAssets <censys.asm.WebEntitiesAssets>`
 

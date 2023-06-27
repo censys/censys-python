@@ -4,6 +4,7 @@ from .assets import (
     CertificatesAssets,
     DomainsAssets,
     HostsAssets,
+    ObjectStoragesAssets,
     SubdomainsAssets,
     WebEntitiesAssets,
 )
@@ -30,4 +31,5 @@ __all__ = [
     "Seeds",
     "SubdomainsAssets",
     "WebEntitiesAssets",
+    "ObjectStoragesAssets",
 ]

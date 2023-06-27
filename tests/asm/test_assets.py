@@ -43,7 +43,7 @@ TEST_INVALID_TAG_COLOR = "4287f5"
         ("domains", "amazonaws.com"),
         ("subdomains", "s3.amazonaws.com", "amazonaws.com"),
         ("web_entities", "www.amazon.com:443"),
-        ("object_storage", "https://censys-python.s3.us-east-2.amazonaws.com/"),
+        ("object_storages", "https://censys-python.s3.us-east-2.amazonaws.com/"),
     ],
 )
 class AssetsUnitTest(unittest.TestCase):
@@ -75,12 +75,12 @@ class AssetsUnitTest(unittest.TestCase):
             return f"{ASSETS_URL}/domains/{self.asset_type_config}/{self.asset_type}"
         if self.asset_type == "web_entities":
             return f"{ASSETS_URL}/web-entities"
-        if self.asset_type == "object_storage":
-            return f"{BETA_ASSETS_URL}/object-storage"
+        if self.asset_type == "object_storages":
+            return f"{BETA_ASSETS_URL}/object-storages"
         return f"{ASSETS_URL}/{self.asset_type}"
 
     def asset_id_url(self):
-        if self.asset_type == "object_storage":
+        if self.asset_type == "object_storages":
             return f"{self.asset_type_url()}/{quote(self.test_asset_id, safe='')}"
         return f"{self.asset_type_url()}/{self.test_asset_id}"
 
