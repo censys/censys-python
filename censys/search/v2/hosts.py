@@ -144,6 +144,7 @@ class CensysHosts(CensysSearchAPIv2):
         per_page: int = 100,
         cursor: Optional[str] = None,
         pages: int = 1,
+        fields: Optional[List[str]] = None,
         virtual_hosts: Optional[str] = None,
         **kwargs: Any,
     ) -> CensysSearchAPIv2.Query:
@@ -156,8 +157,9 @@ class CensysHosts(CensysSearchAPIv2):
             query (str): The query to be executed.
             per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
             cursor (int): Optional; The cursor of the desired result set.
-            virtual_hosts (str): Optional; Whether to include virtual hosts in the results. Valid values are "EXCLUDE", "INCLUDE", and "ONLY".
             pages (int): Optional; The number of pages returned. Defaults to 1.
+            fields (List[str]): Optional; The fields to return. Defaults to all fields.
+            virtual_hosts (str): Optional; Whether to include virtual hosts in the results. Valid values are "EXCLUDE", "INCLUDE", and "ONLY".
             **kwargs (Any): Optional; Additional arguments to be passed to the query.
 
         Returns:
@@ -165,6 +167,8 @@ class CensysHosts(CensysSearchAPIv2):
         """
         if virtual_hosts:
             kwargs["virtual_hosts"] = virtual_hosts
+        if fields:
+            kwargs["fields"] = fields
         return super().search(query, per_page, cursor, pages, **kwargs)
 
     def aggregate(
