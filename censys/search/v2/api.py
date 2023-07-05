@@ -106,6 +106,7 @@ class CensysSearchAPIv2(CensysAPIBase):
             per_page: Optional[int] = None,
             cursor: Optional[str] = None,
             pages: int = 1,
+            fields: Optional[List[str]] = None,
             **kwargs: Any,
         ):
             """Inits Query.
@@ -116,6 +117,7 @@ class CensysSearchAPIv2(CensysAPIBase):
                 per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
                 cursor (int): Optional; The cursor of the desired result set.
                 pages (int): Optional; The number of pages returned. Defaults to 1. If you set this to -1, it will return all pages.
+                fields (List[str]): Optional; The fields to be returned. Defaults to base fields.
                 **kwargs (Any): Optional; Additional arguments to be passed to the query.
             """
             self.api = api
@@ -128,6 +130,7 @@ class CensysSearchAPIv2(CensysAPIBase):
                 self.pages = float("inf")
             else:
                 self.pages = pages
+            self.fields = fields
             self.extra_args = kwargs
 
         def __call__(self, per_page: Optional[int] = None) -> List[dict]:
@@ -149,6 +152,7 @@ class CensysSearchAPIv2(CensysAPIBase):
                 query=self.query,
                 per_page=per_page or self.per_page or 100,
                 cursor=self.nextCursor or self.cursor,
+                fields=self.fields,
                 **self.extra_args,
             )
             self.page += 1
@@ -213,6 +217,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         per_page: int = 100,
         cursor: Optional[str] = None,
         pages: int = 1,
+        fields: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> Query:
         """Search current index.
@@ -225,18 +230,20 @@ class CensysSearchAPIv2(CensysAPIBase):
             per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
             cursor (int): Optional; The cursor of the desired result set.
             pages (int): Optional; The number of pages returned. Defaults to 1.
+            fields (List[str]): Optional; The fields to be returned. Defaults to base fields.
             **kwargs (Any): Optional; Additional arguments to be passed to the query.
 
         Returns:
             Query: Query object that can be a callable or an iterable.
         """
-        return self.Query(self, query, per_page, cursor, pages, **kwargs)
+        return self.Query(self, query, per_page, cursor, pages, fields, **kwargs)
 
     def raw_search(
         self,
         query: str,
         per_page: int = 100,
         cursor: Optional[str] = None,
+        fields: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> dict:
         """Search current index.
@@ -248,6 +255,7 @@ class CensysSearchAPIv2(CensysAPIBase):
             query (str): The query to be executed.
             per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
             cursor (int): Optional; The cursor of the desired result set.
+            fields (List[str]): Optional; The fields to be returned. Defaults to base fields.
             **kwargs (Any): Optional; Additional arguments to be passed to the query.
 
         Returns:
@@ -259,6 +267,8 @@ class CensysSearchAPIv2(CensysAPIBase):
             "cursor": cursor,
             **kwargs,
         }
+        if fields:
+            args["fields"] = ",".join(fields)
         return self._get(self.search_path, args)
 
     def view(self, document_id: str, **kwargs: Any) -> dict:

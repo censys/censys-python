@@ -430,6 +430,20 @@ class TestHosts(CensysTestCase):
         query = self.api.search("services.service_name: HTTP", virtual_hosts="EXCLUDE")
         assert query() == SEARCH_HOSTS_JSON["result"]["hits"]
 
+    def test_search_fields(self):
+        self.responses.add(
+            responses.GET,
+            V2_URL
+            + "/hosts/search?q=services.service_name%3A+HTTP&per_page=100&fields=ip%2Cservices.port",
+            status=200,
+            json=SEARCH_HOSTS_JSON,
+        )
+
+        query = self.api.search(
+            "services.service_name: HTTP", fields=["ip", "services.port"]
+        )
+        assert query() == SEARCH_HOSTS_JSON["result"]["hits"]
+
     def test_aggregate(self):
         self.responses.add(
             responses.GET,
