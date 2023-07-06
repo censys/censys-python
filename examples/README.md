@@ -16,7 +16,7 @@ from censys.search import SearchClient
 from censys.search import CensysHosts
 
 # Access only the certificates index
-from censys.search import CensysCertificates
+from censys.search import CensysCerts
 ```
 
 ### ASM

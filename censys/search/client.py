@@ -1,6 +1,5 @@
 """Interact with all Search APIs."""
-from ..common.deprecation import DeprecationDecorator
-from .v1 import CensysCertificates, CensysData
+from .v1 import CensysData
 from .v2 import CensysCerts, CensysHosts
 
 
@@ -17,7 +16,6 @@ class SearchClient:
 
         Access both v1 and v2 indexes.
 
-        >>> certs = c.v1.certificates # CensysCertificates()
         >>> data = c.v1.data # CensysData()
         >>> hosts = c.v2.hosts # CensysHosts()
         >>> certs = c.v2.certs # CensysCerts()
@@ -26,9 +24,8 @@ class SearchClient:
     class _V1:
         """Class for v1 Search APIs."""
 
-        @DeprecationDecorator(
-            "The v1 Search API is deprecated and will be removed in the future."
-        )
+        data: CensysData
+
         def __init__(self, *args, **kwargs):
             """Inits V1.
 
@@ -36,13 +33,14 @@ class SearchClient:
                 *args: Variable length argument list.
                 **kwargs: Arbitrary keyword arguments.
             """
-            self.certificates = CensysCertificates(*args, **kwargs)
-            # Alias certs to certificates
-            self.certs = self.certificates
             self.data = CensysData(*args, **kwargs)
 
     class _V2:
         """Class for v2 Search APIs."""
+
+        hosts: CensysHosts
+        certs: CensysCerts
+        certificates: CensysCerts
 
         def __init__(self, *args, **kwargs):
             """Inits V2.
@@ -62,7 +60,7 @@ class SearchClient:
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
         """
-        # Backwards compatability
+        # Backwards compatibility
         if len(args) == 2:
             kwargs["api_id"] = args[0]
             kwargs["api_secret"] = args[1]

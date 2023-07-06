@@ -7,7 +7,7 @@ from .api import CensysSearchAPIv2
 class CensysCerts(CensysSearchAPIv2):
     """Interacts with the Certs index.
 
-    Please note that this class represents only the v2 API endpoints. The v1 API endpoints (search, view, and report) are avilable only from CensysCertificates.
+    Please note that this class represents only the v2 API endpoints.
 
     Examples:
         Inits Censys Certs.
