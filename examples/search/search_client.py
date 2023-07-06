@@ -10,5 +10,3 @@ certs = c.v2.certificates  # Same as certs = CensysCerts()
 
 # v1 indexes
 data = c.v1.data  # Same as data = CensysData()
-
-certs = c.v1.certificates  # Same as certs = CensysCertificates()

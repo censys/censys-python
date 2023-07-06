@@ -9,11 +9,6 @@ There is one API options that this library provides access to:
 
 More details about each option can be found in the `Censys API documentation <https://search.censys.io/api>`__. A list of index fields can be found in the `Censys API definitions page <https://search.censys.io/certificates/help>`__.
 
-Python class objects must be initialized for each resource index (Certificates).
-
--  :attr:`CensysCertificates <censys.search.v1.CensysCertificates>`
--  :attr:`CensysData <censys.search.v1.CensysData>`
-
 .. note::
 
    Please note that the Censys Search Certificates v1 API is being deprecated. Please use the :ref:`CensysCerts (v2) index <usage-v2:Usage v2>` for this functionality.
