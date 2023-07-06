@@ -12,9 +12,7 @@ from censys.common.config import DEFAULT, get_config
 
 Results = Union[List[dict], Dict[str, Any]]
 
-V1_INDEXES = ["certs"]
 V2_INDEXES = ["hosts", "certificates"]
-INDEXES = V1_INDEXES + V2_INDEXES
 
 config = get_config()
 color = config.get(DEFAULT, "color")
