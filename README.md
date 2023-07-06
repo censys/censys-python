@@ -14,7 +14,7 @@ An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://
 ## Features
 
 - [Search Censys data](https://censys-python.readthedocs.io/en/stable/usage-v2.html)
-- [Bulk Certificate lookups](https://censys-python.readthedocs.io/en/stable/usage-v1.html#bulk)
+- [Bulk Certificate lookups](https://censys-python.readthedocs.io/en/stable/usage-v2.html#bulk-view)
 - [Download Bulk Data](https://censys-python.readthedocs.io/en/stable/usage-v1.html#data)
 - [Manage assets, events, and seeds in Censys ASM](https://censys-python.readthedocs.io/en/stable/usage-asm.html)
 - [Command-line interface](https://censys-python.readthedocs.io/en/stable/cli.html)
