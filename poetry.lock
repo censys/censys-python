@@ -87,13 +87,13 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "blacken-docs"
-version = "1.14.0"
+version = "1.15.0"
 description = "Run Black on Python code blocks in documentation files."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "blacken_docs-1.14.0-py3-none-any.whl", hash = "sha256:fd579c07522d46dc323e4826dfaf8885637d2654936f56e71144682933598812"},
-    {file = "blacken_docs-1.14.0.tar.gz", hash = "sha256:1ddda708c9a346ebd70c758d2847b5fd35b3801780261aa23787f19eb5d4d50d"},
+    {file = "blacken_docs-1.15.0-py3-none-any.whl", hash = "sha256:020657fd480f9f0a4dc82b9278390891ebd5216992b026e652c5b31d0e9c405d"},
+    {file = "blacken_docs-1.15.0.tar.gz", hash = "sha256:2915242add4e584738027b5bebafd4120c174a6c7645e1d8ce1c2f3265edc48a"},
 ]
 
 [package.dependencies]
