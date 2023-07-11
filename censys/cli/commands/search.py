@@ -44,7 +44,11 @@ def fields_completer(
         return []
 
     autocomplete_data = autocomplete_json.get("data", [])
-    fields = [field["value"] for field in autocomplete_data]
+    fields = [
+        field_value
+        for field in autocomplete_data
+        if not (field_value := field["value"]).endswith(".type")
+    ]
 
     if not prefix:
         # Returns first 20 fields if no prefix is provided
