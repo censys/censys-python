@@ -1,5 +1,5 @@
 """Interact with the Censys Seeds API."""
-from typing import Optional
+from typing import List, Optional
 
 from .api import CensysAsmAPI
 
@@ -13,7 +13,7 @@ class Seeds(CensysAsmAPI):
 
     def get_seeds(
         self, seed_type: Optional[str] = None, label: Optional[str] = None
-    ) -> dict:
+    ) -> List[dict]:
         """Requests seed data.
 
         Args:
@@ -22,7 +22,7 @@ class Seeds(CensysAsmAPI):
             label (str): Optional; Seed label.
 
         Returns:
-            dict: Seed search results.
+            List[dict]: Seed search results.
         """
         args = {}
         if seed_type:
