@@ -33,7 +33,7 @@ WROTE_PREFIX = "Wrote results to file"
 
 
 def search_callback(request: PreparedRequest) -> Tuple[int, Dict[str, str], str]:
-    payload = json.loads(request.body)
+    payload = json.loads(request.body)  # type: ignore
     resp_body = {
         "result": {
             "query": payload["q"],
@@ -398,7 +398,11 @@ class CensysCliSearchTest(CensysTestCase):
             expected_fields = []
         else:
             expected_fields = json.load(autocomplete_file.open())["data"]
-            expected_fields = [field["value"] for field in expected_fields]
+            expected_fields = [
+                field_value
+                for field in expected_fields
+                if not (field_value := field["value"]).endswith(".type")
+            ]
             if prefix == "":
                 expected_fields = expected_fields[:20]
         assert (
