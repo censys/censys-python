@@ -88,6 +88,7 @@ def cli_search(args: argparse.Namespace):
         {
             "pages": args.pages,
             "per_page": args.per_page,
+            "fields": args.fields,
         }
     )
     if index_type == "hosts":
@@ -98,12 +99,7 @@ def cli_search(args: argparse.Namespace):
             }
         )
     elif index_type == "certificates":
-        search_args.update(
-            {
-                "sort": args.sort,
-                "fields": args.fields,
-            }
-        )
+        search_args.update({"sort": args.sort})
 
     if args.output and not args.output.endswith(".json"):
         raise CensysCLIException(
@@ -195,6 +191,13 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         type=int,
         help="number of results to return per page",
     )
+    search_parser.add_argument(
+        "--fields",
+        dest="fields",
+        type=str,
+        nargs="+",
+        help="additional fields to return in the matching results",
+    ).completer = fields_completer
 
     hosts_group = search_parser.add_argument_group("hosts specific arguments")
     hosts_group.add_argument(
@@ -222,12 +225,5 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         nargs="+",
         help="fields to sort by",
     )
-    certs_group.add_argument(
-        "--fields",
-        dest="fields",
-        type=str,
-        nargs="+",
-        help="additional fields to return in the matched certificates",
-    ).completer = fields_completer
 
     search_parser.set_defaults(func=cli_search)
