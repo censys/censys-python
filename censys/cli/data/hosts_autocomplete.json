@@ -346,12 +346,6 @@
             "data": {
                 "category": "<i class=\"fa fa-fw fa-cloud\" aria-hidden=\"true\"></i> HOST AUTONOMOUS SYSTEM"
             },
-            "value": "autonomous_system.bgp_prefix.type"
-        },
-        {
-            "data": {
-                "category": "<i class=\"fa fa-fw fa-cloud\" aria-hidden=\"true\"></i> HOST AUTONOMOUS SYSTEM"
-            },
             "value": "autonomous_system.country_code"
         },
         {
@@ -10733,6 +10727,402 @@
                 "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
             },
             "value": "services.banner_hashes"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.cookie_beacon"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.cookie_beacon.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.crypto_scheme"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.crypto_scheme.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.dns"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.dns.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.http_get.client"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.http_get.uri"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.http_get.verb"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.http_post.client"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.http_post.uri"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.http_post.verb"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.jitter"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.jitter.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.killdate"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.killdate.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.post_ex.x64"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.post_ex.x86"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.public_key"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.sleep_time"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.sleep_time.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.ssl"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.ssl.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.unknown_bytes.key"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.unknown_bytes.key.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.unknown_bytes.value"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.unknown_int.key"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.unknown_int.key.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.unknown_int.value"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.unknown_int.value.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.user_agent"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.watermark"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x64.watermark.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.cookie_beacon"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.cookie_beacon.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.crypto_scheme"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.crypto_scheme.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.dns"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.dns.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.http_get.client"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.http_get.uri"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.http_get.verb"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.http_post.client"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.http_post.uri"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.http_post.verb"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.jitter"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.jitter.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.killdate"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.killdate.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.post_ex.x64"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.post_ex.x86"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.public_key"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.sleep_time"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.sleep_time.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.ssl"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.ssl.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.unknown_bytes.key"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.unknown_bytes.key.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.unknown_bytes.value"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.unknown_int.key"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.unknown_int.key.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.unknown_int.value"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.unknown_int.value.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.user_agent"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.watermark"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.cobalt_strike.x86.watermark.type"
         },
         {
             "data": {
