@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python: ["3.8", "3.x"]
+        python: ["3.8", "3.10"]
         poetry: ["1.5.1"]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -45,7 +45,7 @@ jobs:
             docs
 
       - name: Build docs
-        if: steps.changed_docs.outputs.any_changed == 'true' && startsWith(matrix.os, 'ubuntu')
+        if: steps.changed_docs.outputs.any_changed == 'true' && startsWith(matrix.os, 'ubuntu') && startsWith(matrix.python, '3.10')
         working-directory: docs
         run: |
           poetry run pip install -r requirements.txt
