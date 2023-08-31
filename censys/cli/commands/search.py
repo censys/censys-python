@@ -72,7 +72,12 @@ def cli_search(args: argparse.Namespace):
         webbrowser.open(f"https://search.censys.io/search?{urlencode(url_query)}")
         sys.exit(0)
 
-    censys_args = {}
+    if args.timeout < 1:
+        raise CensysCLIException("Timeout must be greater than 0.")
+
+    censys_args = {
+        "timeout": args.timeout,
+    }
 
     if args.api_id:
         censys_args["api_id"] = args.api_id
@@ -194,6 +199,12 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         default=100,
         type=int,
         help="number of results to return per page",
+    )
+    search_parser.add_argument(
+        "--timeout",
+        default=30,
+        type=int,
+        help="number of seconds to wait for a response",
     )
     search_parser.add_argument(
         "--fields",
