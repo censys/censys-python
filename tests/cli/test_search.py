@@ -75,6 +75,28 @@ class CensysCliSearchTest(CensysTestCase):
         ):
             cli_main()
 
+    def test_invalid_timeout(self):
+        # mock
+        self.patch_args(
+            [
+                "censys",
+                "search",
+                "parsed.names: censys.io",
+                "--index-type",
+                "certificates",
+                "--timeout",
+                "-1",
+            ],
+            search_auth=True,
+        )
+
+        # Actual call
+        with pytest.raises(
+            CensysCLIException,
+            match="Timeout must be greater than 0.",
+        ):
+            cli_main()
+
     def test_write_invalid_output_path(self):
         # Setup response
         self.responses.add(
