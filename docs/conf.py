@@ -47,7 +47,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "sphinx.ext.autosectionlabel",
-    "sphinxcontrib.napoleon",
+    "sphinx.ext.napoleon",
     "sphinx_rtd_theme",
     "sphinx-prompt",
     "sphinx_tabs.tabs",

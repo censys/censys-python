@@ -15,7 +15,13 @@ help:
 apidoc:
 	cd .. && sphinx-apidoc -o docs censys --implicit-namespaces
 
-.PHONY: help apidoc Makefile
+install:
+	pip install -r requirements.txt
+
+clean:
+	rm -rf _build
+
+.PHONY: help apidoc Makefile install clean
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
