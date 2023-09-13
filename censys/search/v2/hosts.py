@@ -1,5 +1,5 @@
 """Interact with the Censys Search Host API."""
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from .api import CensysSearchAPIv2
 from censys.common.types import Datetime
@@ -145,6 +145,7 @@ class CensysHosts(CensysSearchAPIv2):
         cursor: Optional[str] = None,
         pages: int = 1,
         fields: Optional[List[str]] = None,
+        sort: Optional[Union[str, List[str]]] = None,
         virtual_hosts: Optional[str] = None,
         **kwargs: Any,
     ) -> CensysSearchAPIv2.Query:
@@ -159,6 +160,7 @@ class CensysHosts(CensysSearchAPIv2):
             cursor (int): Optional; The cursor of the desired result set.
             pages (int): Optional; The number of pages returned. Defaults to 1.
             fields (List[str]): Optional; The fields to return. Defaults to all fields.
+            sort (str): Optional; The method used to sort results. Valid values are "RELEVANCE", "DESCENDING", and "ASCENDING".
             virtual_hosts (str): Optional; Whether to include virtual hosts in the results. Valid values are "EXCLUDE", "INCLUDE", and "ONLY".
             **kwargs (Any): Optional; Additional arguments to be passed to the query.
 
@@ -167,9 +169,7 @@ class CensysHosts(CensysSearchAPIv2):
         """
         if virtual_hosts:
             kwargs["virtual_hosts"] = virtual_hosts
-        if fields:
-            kwargs["fields"] = fields
-        return super().search(query, per_page, cursor, pages, **kwargs)
+        return super().search(query, per_page, cursor, pages, fields, sort, **kwargs)
 
     def aggregate(
         self,

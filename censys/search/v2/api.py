@@ -1,7 +1,7 @@
 """Base for interacting with the Censys Search API."""
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any, Dict, Iterable, Iterator, List, Optional, Type
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Type, Union
 
 from requests.models import Response
 
@@ -107,6 +107,7 @@ class CensysSearchAPIv2(CensysAPIBase):
             cursor: Optional[str] = None,
             pages: int = 1,
             fields: Optional[List[str]] = None,
+            sort: Optional[Union[str, List[str]]] = None,
             **kwargs: Any,
         ):
             """Inits Query.
@@ -118,6 +119,7 @@ class CensysSearchAPIv2(CensysAPIBase):
                 cursor (int): Optional; The cursor of the desired result set.
                 pages (int): Optional; The number of pages returned. Defaults to 1. If you set this to -1, it will return all pages.
                 fields (List[str]): Optional; The fields to be returned. Defaults to base fields.
+                sort (Union[str, List[str]]): Optional; The fields to sort by. Defaults to None.
                 **kwargs (Any): Optional; Additional arguments to be passed to the query.
             """
             self.api = api
@@ -131,6 +133,7 @@ class CensysSearchAPIv2(CensysAPIBase):
             else:
                 self.pages = pages
             self.fields = fields
+            self.sort = sort
             self.extra_args = kwargs
 
         def __call__(self, per_page: Optional[int] = None) -> List[dict]:
@@ -153,6 +156,7 @@ class CensysSearchAPIv2(CensysAPIBase):
                 per_page=per_page or self.per_page or 100,
                 cursor=self.nextCursor or self.cursor,
                 fields=self.fields,
+                sort=self.sort,
                 **self.extra_args,
             )
             self.page += 1
@@ -218,6 +222,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         cursor: Optional[str] = None,
         pages: int = 1,
         fields: Optional[List[str]] = None,
+        sort: Optional[Union[str, List[str]]] = None,
         **kwargs: Any,
     ) -> Query:
         """Search current index.
@@ -231,12 +236,145 @@ class CensysSearchAPIv2(CensysAPIBase):
             cursor (int): Optional; The cursor of the desired result set.
             pages (int): Optional; The number of pages returned. Defaults to 1.
             fields (List[str]): Optional; The fields to be returned. Defaults to base fields.
+            sort (Union[str, List[str]]): Optional; The fields to sort by. Defaults to None.
             **kwargs (Any): Optional; Additional arguments to be passed to the query.
 
         Returns:
             Query: Query object that can be a callable or an iterable.
         """
-        return self.Query(self, query, per_page, cursor, pages, fields, **kwargs)
+        return self.Query(self, query, per_page, cursor, pages, fields, sort, **kwargs)
+
+    def search_post_raw(
+        self,
+        query: str,
+        per_page: int = 100,
+        cursor: Optional[str] = None,
+        fields: Optional[List[str]] = None,
+        sort: Optional[Union[str, List[str]]] = None,
+        **kwargs,
+    ) -> dict:
+        """Searches the given index for all records that match the given query.
+
+        Args:
+            query (str): The query string to search for.
+            per_page (int): The number of results to return per page. Defaults to 50.
+            cursor (str, optional): Cursor token from the API response, which fetches the next page of results when added to the endpoint URL.
+            fields (List[str], optional): The fields to be returned. Defaults to base fields.
+            sort (Union[str, List[str]], optional): The fields to sort by. Defaults to None.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            dict: Search results.
+        """
+        data = {
+            "q": query,
+            "per_page": per_page,
+        }
+        if cursor:
+            data["cursor"] = cursor
+        if fields:
+            data["fields"] = fields
+        if sort:
+            data["sort"] = sort
+        data.update(kwargs)
+        return self._post(self.search_path, data=data)
+
+    def search_post(
+        self,
+        query: str,
+        per_page: int = 100,
+        cursor: Optional[str] = None,
+        fields: Optional[List[str]] = None,
+        sort: Optional[Union[str, List[str]]] = None,
+        **kwargs,
+    ) -> dict:
+        """Searches the Certs index using the POST method.
+
+        This method returns the `result` field of the raw response.
+        If you wish to access the raw response, please use `search_post_raw` instead.
+
+        Args:
+            query (str): The query string to search for.
+            per_page (int): The number of results to return per page. Defaults to 50.
+            cursor (str, optional): Cursor token from the API response, which fetches the next page of results when added to the endpoint URL.
+            fields (List[str], optional): Additional fields to return in the matched documents. Defaults to base fields.
+            sort (Union[str, List[str]], optional): The fields to sort by. Defaults to None.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            dict: Search results.
+        """
+        return self.search_post_raw(
+            query=query,
+            per_page=per_page,
+            cursor=cursor,
+            fields=fields,
+            sort=sort,
+            **kwargs,
+        )["result"]
+
+    def search_get_raw(
+        self,
+        query: str,
+        per_page: int = 100,
+        cursor: Optional[str] = None,
+        fields: Optional[List[str]] = None,
+        sort: Optional[Union[str, List[str]]] = None,
+        **kwargs: Any,
+    ) -> dict:
+        """Search current index using GET method.
+
+        Args:
+            query (str): The query to be executed.
+            per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
+            cursor (int): Optional; The cursor of the desired result set.
+            fields (List[str]): Optional; The fields to be returned. Defaults to base fields.
+            sort (Union[str, List[str]]): Optional; The fields to sort by. Defaults to None.
+            **kwargs (Any): Optional; Additional arguments to be passed to the query.
+
+        Returns:
+            dict: The raw result set.
+        """
+        args = {
+            "q": query,
+            "per_page": per_page,
+            "cursor": cursor,
+            "fields": fields,
+            "sort": sort,
+        }
+        args.update(kwargs)
+        return self._get(self.search_path, args)
+
+    def search_get(
+        self,
+        query: str,
+        per_page: int = 100,
+        cursor: Optional[str] = None,
+        fields: Optional[List[str]] = None,
+        sort: Optional[Union[str, List[str]]] = None,
+        **kwargs: Any,
+    ) -> dict:
+        """Search current index using GET method.
+
+        Args:
+            query (str): The query to be executed.
+            per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
+            cursor (int): Optional; The cursor of the desired result set.
+            fields (List[str]): Optional; The fields to be returned. Defaults to base fields.
+            sort (Union[str, List[str]]): Optional; The fields to sort by. Defaults to None.
+            **kwargs (Any): Optional; Additional arguments to be passed to the query.
+
+        Returns:
+            dict: The raw result set.
+        """
+        return self.search_get_raw(
+            query=query,
+            per_page=per_page,
+            cursor=cursor,
+            fields=fields,
+            sort=sort,
+            **kwargs,
+        )["result"]
 
     def raw_search(
         self,
@@ -244,6 +382,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         per_page: int = 100,
         cursor: Optional[str] = None,
         fields: Optional[List[str]] = None,
+        sort: Optional[Union[str, List[str]]] = None,
         **kwargs: Any,
     ) -> dict:
         """Search current index.
@@ -256,20 +395,20 @@ class CensysSearchAPIv2(CensysAPIBase):
             per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
             cursor (int): Optional; The cursor of the desired result set.
             fields (List[str]): Optional; The fields to be returned. Defaults to base fields.
+            sort (Union[str, List[str]]): Optional; The fields to sort by. Defaults to None.
             **kwargs (Any): Optional; Additional arguments to be passed to the query.
 
         Returns:
             dict: The raw result set.
         """
-        args = {
-            "q": query,
-            "per_page": per_page,
-            "cursor": cursor,
+        return self.search_post_raw(
+            query=query,
+            per_page=per_page,
+            cursor=cursor,
+            fields=fields,
+            sort=sort,
             **kwargs,
-        }
-        if fields:
-            args["fields"] = ",".join(fields)
-        return self._get(self.search_path, args)
+        )
 
     def view(self, document_id: str, **kwargs: Any) -> dict:
         """View document from current index.

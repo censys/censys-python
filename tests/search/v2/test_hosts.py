@@ -1,15 +1,20 @@
 import datetime
 import json
 from copy import deepcopy
+from typing import Any, Dict, List, Optional
 
 import pytest
 import responses
 from parameterized import parameterized
+from responses import matchers
 
 from tests.utils import V2_URL, CensysTestCase
 
 from censys.common.exceptions import CensysInternalServerException
 from censys.search import CensysHosts, SearchClient
+
+TEST_HOST = "8.8.8.8"
+TEST_SEARCH_QUERY = "services.service_name: HTTP"
 
 VIEW_HOST_JSON = {
     "code": 200,
@@ -172,8 +177,6 @@ SERVER_ERROR_JSON = {
     "error": "An unexpected error occurred. Please try again later.",
 }
 
-TEST_HOST = "8.8.8.8"
-
 
 class TestHosts(CensysTestCase):
     api: CensysHosts
@@ -271,29 +274,143 @@ class TestHosts(CensysTestCase):
         results = self.api.bulk_view(ips)
         assert results == expected
 
-    def test_search(self):
+    @parameterized.expand(
+        [
+            ("search_post_raw", True),
+            ("raw_search", True),
+            ("search_post"),
+        ]
+    )
+    def test_search_post(self, method_name: str, raw: bool = False):
         self.responses.add(
-            responses.GET,
-            V2_URL + "/hosts/search?q=services.service_name: HTTP&per_page=100",
+            responses.POST,
+            f"{V2_URL}/hosts/search",
+            status=200,
+            json=SEARCH_HOSTS_JSON,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": TEST_SEARCH_QUERY,
+                        "per_page": 100,
+                    }
+                )
+            ],
+        )
+        method = getattr(self.api, method_name)
+        result = method(TEST_SEARCH_QUERY)
+        if raw:
+            assert result == SEARCH_HOSTS_JSON
+        else:
+            assert result == SEARCH_HOSTS_JSON["result"]
+
+    @parameterized.expand(
+        [
+            (None, None, None),
+            (["ip", "services.port"], None, None),
+            (None, "RELEVANCE", None),
+            (
+                ["ip", "services.port"],
+                "RELEVANCE",
+                None,
+            ),
+            (
+                None,
+                None,
+                None,
+                "ONLY",
+            ),
+            (None, None, "nextCursorToken"),
+        ]
+    )
+    def test_search(
+        self,
+        fields: Optional[List[str]] = None,
+        sort: Optional[str] = None,
+        cursor: Optional[str] = None,
+        virtual_hosts: Optional[str] = None,
+    ):
+        self.responses.add(
+            responses.POST,
+            f"{V2_URL}/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
         )
-
-        query = self.api.search("services.service_name: HTTP")
-        assert query() == SEARCH_HOSTS_JSON["result"]["hits"]
+        query = self.api.search(
+            TEST_SEARCH_QUERY,
+            fields=fields,
+            sort=sort,
+            cursor=cursor,
+            virtual_hosts=virtual_hosts,
+        )
+        assert next(query) == SEARCH_HOSTS_JSON["result"]["hits"]
 
     def test_search_per_page(self):
         test_per_page = 50
         self.responses.add(
-            responses.GET,
-            V2_URL
-            + f"/hosts/search?q=services.service_name: HTTP&per_page={test_per_page}",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
+            match=[
+                matchers.json_params_matcher(
+                    {"q": "services.service_name: HTTP", "per_page": test_per_page}
+                )
+            ],
         )
 
         query = self.api.search("services.service_name: HTTP", per_page=test_per_page)
         assert next(query) == SEARCH_HOSTS_JSON["result"]["hits"]
+
+    @parameterized.expand(
+        [
+            ({}, {"q": TEST_SEARCH_QUERY, "per_page": 100}),
+            ({"per_page": 1}, {"q": TEST_SEARCH_QUERY, "per_page": 1}),
+            (
+                {"cursor": "nextCursorToken"},
+                {"q": TEST_SEARCH_QUERY, "cursor": "nextCursorToken", "per_page": 100},
+            ),
+            (
+                {"fields": ["ip"]},
+                {"q": TEST_SEARCH_QUERY, "fields": "ip", "per_page": 100},
+            ),
+            (
+                {
+                    "fields": [
+                        "ip",
+                        "services.port",
+                        "services.extended_service_name",
+                    ]
+                },
+                {
+                    "q": TEST_SEARCH_QUERY,
+                    "fields": [
+                        "ip",
+                        "services.port",
+                        "services.extended_service_name",
+                    ],
+                    "per_page": 100,
+                },
+            ),
+            (
+                {"sort": "RELEVANCE"},
+                {
+                    "q": TEST_SEARCH_QUERY,
+                    "sort": "RELEVANCE",
+                    "per_page": 100,
+                },
+            ),
+        ]
+    )
+    def test_search_get(self, params: Dict[str, Any], expected_params: Dict[str, Any]):
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/hosts/search",
+            status=200,
+            json=SEARCH_HOSTS_JSON,
+            match=[matchers.query_param_matcher(expected_params)],
+        )
+        result = self.api.search_get(TEST_SEARCH_QUERY, **params)
+        assert result == SEARCH_HOSTS_JSON["result"]
 
     def test_search_with_error_retry(self):
         is_first_request = True
@@ -306,8 +423,8 @@ class TestHosts(CensysTestCase):
             return (200, {}, json.dumps(SEARCH_HOSTS_JSON))
 
         self.responses.add_callback(
-            responses.GET,
-            V2_URL + "/hosts/search?q=services.service_name: HTTP&per_page=100",
+            responses.POST,
+            V2_URL + "/hosts/search",
             callback=request_callback,
             content_type="application/json",
         )
@@ -322,10 +439,11 @@ class TestHosts(CensysTestCase):
         no_hosts_json["result"]["total"] = 0
         no_hosts_json["result"]["links"]["next"] = ""
         self.responses.add(
-            responses.GET,
-            V2_URL + f"/hosts/search?q={invalid_query}&per_page=100",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=200,
             json=no_hosts_json,
+            match=[matchers.json_params_matcher({"q": invalid_query, "per_page": 100})],
         )
 
         query = self.api.search(invalid_query)
@@ -336,10 +454,15 @@ class TestHosts(CensysTestCase):
 
     def test_search_pages(self):
         self.responses.add(
-            responses.GET,
-            V2_URL + "/hosts/search?q=services.service_name%3A+HTTP&per_page=100",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
+            match=[
+                matchers.json_params_matcher(
+                    {"q": "services.service_name: HTTP", "per_page": 100}
+                )
+            ],
         )
         page_2_json = deepcopy(SEARCH_HOSTS_JSON)
         hits = page_2_json["result"]["hits"]
@@ -356,12 +479,19 @@ class TestHosts(CensysTestCase):
         page_2_json["result"]["hits"] = new_hits
         page_2_json["result"]["links"]["next"] = None
         self.responses.add(
-            responses.GET,
-            V2_URL
-            + "/hosts/search?q=services.service_name%3A+HTTP&per_page=100"
-            + f"&cursor={next_cursor}",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=200,
             json=page_2_json,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": "services.service_name: HTTP",
+                        "per_page": 100,
+                        "cursor": next_cursor,
+                    }
+                )
+            ],
         )
 
         expected = [hits, new_hits]
@@ -381,15 +511,19 @@ class TestHosts(CensysTestCase):
             return (200, {}, json.dumps(SEARCH_HOSTS_JSON))
 
         self.responses.add(
-            responses.GET,
-            V2_URL + "/hosts/search?q=services.service_name%3A+HTTP&per_page=100",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
+            match=[
+                matchers.json_params_matcher(
+                    {"q": "services.service_name: HTTP", "per_page": 100}
+                )
+            ],
         )
         self.responses.add_callback(
-            responses.GET,
-            V2_URL
-            + "/hosts/search?q=services.service_name%3A+HTTP&per_page=100&cursor=eyJBZnRlciI6WyIxIiwiMS4wLjAuNDkiXSwiUmV2ZXJzZSI6ZmFsc2V9",
+            responses.POST,
+            V2_URL + "/hosts/search",
             callback=request_callback,
             content_type="application/json",
         )
@@ -400,17 +534,30 @@ class TestHosts(CensysTestCase):
 
     def test_search_pages_retry_fail(self):
         self.responses.add(
-            responses.GET,
-            V2_URL + "/hosts/search?q=services.service_name%3A+HTTP&per_page=100",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
+            match=[
+                matchers.json_params_matcher(
+                    {"q": "services.service_name: HTTP", "per_page": 100}
+                )
+            ],
         )
         self.responses.add(
-            responses.GET,
-            V2_URL
-            + "/hosts/search?q=services.service_name%3A+HTTP&per_page=100&cursor=eyJBZnRlciI6WyIxIiwiMS4wLjAuNDkiXSwiUmV2ZXJzZSI6ZmFsc2V9",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=500,
             json=SERVER_ERROR_JSON,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": "services.service_name: HTTP",
+                        "per_page": 100,
+                        "cursor": "eyJBZnRlciI6WyIxIiwiMS4wLjAuNDkiXSwiUmV2ZXJzZSI6ZmFsc2V9",
+                    }
+                )
+            ],
         )
 
         query = self.api.search("services.service_name: HTTP", pages=2)
@@ -420,11 +567,19 @@ class TestHosts(CensysTestCase):
 
     def test_search_virtual_hosts(self):
         self.responses.add(
-            responses.GET,
-            V2_URL
-            + "/hosts/search?q=services.service_name%3A+HTTP&per_page=100&virtual_hosts=EXCLUDE",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": "services.service_name: HTTP",
+                        "per_page": 100,
+                        "virtual_hosts": "EXCLUDE",
+                    }
+                )
+            ],
         )
 
         query = self.api.search("services.service_name: HTTP", virtual_hosts="EXCLUDE")
@@ -432,11 +587,19 @@ class TestHosts(CensysTestCase):
 
     def test_search_fields(self):
         self.responses.add(
-            responses.GET,
-            V2_URL
-            + "/hosts/search?q=services.service_name%3A+HTTP&per_page=100&fields=ip%2Cservices.port",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": "services.service_name: HTTP",
+                        "per_page": 100,
+                        "fields": ["ip", "services.port"],
+                    }
+                )
+            ],
         )
 
         query = self.api.search(
@@ -486,10 +649,18 @@ class TestHosts(CensysTestCase):
         search_json["result"]["total"] = len(ips)
         search_json["result"]["links"]["next"] = ""
         self.responses.add(
-            responses.GET,
-            f"{V2_URL}/hosts/search?q=services.service_name: HTTP&per_page={test_per_page}",
+            responses.POST,
+            f"{V2_URL}/hosts/search",
             status=200,
             json=search_json,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": "services.service_name: HTTP",
+                        "per_page": test_per_page,
+                    }
+                )
+            ],
         )
 
         expected = {}
@@ -516,10 +687,18 @@ class TestHosts(CensysTestCase):
         search_json["result"]["total"] = len(hits)
         search_json["result"]["links"]["next"] = ""
         self.responses.add(
-            responses.GET,
-            f"{V2_URL}/hosts/search?q=services.service_name: HTTP&per_page={test_per_page}",
+            responses.POST,
+            f"{V2_URL}/hosts/search",
             status=200,
             json=search_json,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": "services.service_name: HTTP",
+                        "per_page": test_per_page,
+                    }
+                )
+            ],
         )
 
         expected = {}
@@ -549,10 +728,18 @@ class TestHosts(CensysTestCase):
         search_json["result"]["total"] = len(ips)
         search_json["result"]["links"]["next"] = ""
         self.responses.add(
-            responses.GET,
-            f"{V2_URL}/hosts/search?q=services.service_name: HTTP&per_page={test_per_page}",
+            responses.POST,
+            f"{V2_URL}/hosts/search",
             status=200,
             json=search_json,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": "services.service_name: HTTP",
+                        "per_page": test_per_page,
+                    }
+                )
+            ],
         )
 
         expected = {}

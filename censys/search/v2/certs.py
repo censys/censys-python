@@ -1,5 +1,5 @@
 """Interact with the Censys Search Cert API."""
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from .api import CensysSearchAPIv2
 
@@ -125,7 +125,7 @@ class CensysCerts(CensysSearchAPIv2):
         per_page: int = 50,
         cursor: Optional[str] = None,
         fields: Optional[List[str]] = None,
-        sort: Optional[List[str]] = None,
+        sort: Optional[Union[str, List[str]]] = None,
         **kwargs,
     ) -> dict:
         """Searches the Certs index using the POST method. Returns the raw response.
@@ -141,18 +141,14 @@ class CensysCerts(CensysSearchAPIv2):
         Returns:
             dict: Search results.
         """
-        data = {
-            "q": query,
-            "per_page": per_page,
-        }
-        if cursor:
-            data["cursor"] = cursor
-        if fields:
-            data["fields"] = fields
-        if sort:
-            data["sort"] = sort
-        data.update(kwargs)
-        return self._post(self.search_path, data=data)
+        return super().search_post_raw(
+            query=query,
+            per_page=per_page,
+            cursor=cursor,
+            fields=fields,
+            sort=sort,
+            **kwargs,
+        )
 
     def search_post(
         self,
@@ -160,7 +156,7 @@ class CensysCerts(CensysSearchAPIv2):
         per_page: int = 50,
         cursor: Optional[str] = None,
         fields: Optional[List[str]] = None,
-        sort: Optional[List[str]] = None,
+        sort: Optional[Union[str, List[str]]] = None,
         **kwargs,
     ) -> dict:
         """Searches the Certs index using the POST method.
@@ -179,14 +175,14 @@ class CensysCerts(CensysSearchAPIv2):
         Returns:
             dict: Search results.
         """
-        return self.search_post_raw(
+        return super().search_post(
             query=query,
             per_page=per_page,
             cursor=cursor,
             fields=fields,
             sort=sort,
             **kwargs,
-        )["result"]
+        )
 
     def search_get(
         self,
@@ -194,7 +190,8 @@ class CensysCerts(CensysSearchAPIv2):
         per_page: int = 50,
         cursor: Optional[str] = None,
         fields: Optional[List[str]] = None,
-        sort: Optional[List[str]] = None,
+        sort: Optional[Union[str, List[str]]] = None,
+        **kwargs,
     ) -> dict:
         """Searches the Certs index using the GET method.
 
@@ -204,18 +201,19 @@ class CensysCerts(CensysSearchAPIv2):
             cursor (str, optional): Cursor token from the API response, which fetches the next page of results when added to the endpoint URL.
             fields (List[str], optional): Additional fields to return in the matched certificates outside of the default returned fields.
             sort (List[str], optional): A list of fields to sort on. By default, fields will be sorted in ascending order.
+            **kwargs: Arbitrary keyword arguments.
 
         Returns:
             dict: Search results.
         """
-        args = {
-            "q": query,
-            "per_page": per_page,
-            "cursor": cursor,
-            "fields": fields,
-            "sort": sort,
-        }
-        return self._get(self.search_path, args=args)["result"]
+        return super().search_get(
+            query=query,
+            per_page=per_page,
+            cursor=cursor,
+            fields=fields,
+            sort=sort,
+            **kwargs,
+        )
 
     def raw_search(
         self,
@@ -223,7 +221,7 @@ class CensysCerts(CensysSearchAPIv2):
         per_page: int = 50,
         cursor: Optional[str] = None,
         fields: Optional[List[str]] = None,
-        sort: Optional[List[str]] = None,
+        sort: Optional[Union[str, List[str]]] = None,
         **kwargs,
     ) -> dict:
         """Searches the Certs index.
@@ -242,7 +240,7 @@ class CensysCerts(CensysSearchAPIv2):
         Returns:
             dict: Search results.
         """
-        return self.search_post_raw(
+        return super().raw_search(
             query=query,
             per_page=per_page,
             cursor=cursor,
@@ -258,7 +256,7 @@ class CensysCerts(CensysSearchAPIv2):
         cursor: Optional[str] = None,
         pages: int = 1,
         fields: Optional[List[str]] = None,
-        sort: Optional[List[str]] = None,
+        sort: Optional[Union[str, List[str]]] = None,
         **kwargs,
     ) -> CensysSearchAPIv2.Query:
         """Searches the Certs index.
@@ -278,11 +276,7 @@ class CensysCerts(CensysSearchAPIv2):
         Returns:
             Query: A query object that can be used to iterate over the search results.
         """
-        if fields:
-            kwargs["fields"] = fields
-        if sort:
-            kwargs["sort"] = sort
-        return super().search(query, per_page, cursor, pages, **kwargs)
+        return super().search(query, per_page, cursor, pages, fields, sort, **kwargs)
 
     def aggregate(
         self, query: str, field: str, num_buckets: int = 50, **kwargs
