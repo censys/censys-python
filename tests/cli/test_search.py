@@ -12,6 +12,7 @@ import pytest
 import responses
 from parameterized import parameterized
 from requests import PreparedRequest
+from responses import matchers
 
 from tests.search.v2.test_certs import SEARCH_CERTS_JSON
 from tests.search.v2.test_hosts import (
@@ -130,11 +131,20 @@ class CensysCliSearchTest(CensysTestCase):
     def test_write_screen(self):
         # Setup response
         self.responses.add(
-            responses.GET,
-            V2_URL
-            + "/hosts/search?q=services.service_name: HTTP&per_page=100&sort=RELEVANCE&virtual_hosts=EXCLUDE",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": "services.service_name: HTTP",
+                        "per_page": 100,
+                        "sort": "RELEVANCE",
+                        "virtual_hosts": "EXCLUDE",
+                    }
+                )
+            ],
         )
         # Mock
         self.patch_args(
@@ -162,11 +172,20 @@ class CensysCliSearchTest(CensysTestCase):
     def test_search_virtual_hosts(self):
         # Setup response
         self.responses.add(
-            responses.GET,
-            V2_URL
-            + "/hosts/search?q=services.service_name%3A+HTTP&per_page=100&sort=RELEVANCE&virtual_hosts=ONLY",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": "services.service_name: HTTP",
+                        "per_page": 100,
+                        "sort": "RELEVANCE",
+                        "virtual_hosts": "ONLY",
+                    }
+                )
+            ],
         )
         # Mock
         self.patch_args(
@@ -196,11 +215,20 @@ class CensysCliSearchTest(CensysTestCase):
     def test_search_sort_order(self):
         # Setup response
         self.responses.add(
-            responses.GET,
-            V2_URL
-            + "/hosts/search?q=services.service_name%3A+HTTP&per_page=100&sort=RANDOM&virtual_hosts=EXCLUDE",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": "services.service_name: HTTP",
+                        "per_page": 100,
+                        "sort": "DESCENDING",
+                        "virtual_hosts": "EXCLUDE",
+                    }
+                )
+            ],
         )
         # Mock
         self.patch_args(
@@ -213,7 +241,7 @@ class CensysCliSearchTest(CensysTestCase):
                 "--pages",
                 "1",
                 "--sort-order",
-                "RANDOM",
+                "DESCENDING",
             ],
             search_auth=True,
         )
@@ -230,11 +258,20 @@ class CensysCliSearchTest(CensysTestCase):
     def test_write_json(self):
         # Setup response
         self.responses.add(
-            responses.GET,
-            V2_URL
-            + "/hosts/search?q=services.service_name: HTTP&per_page=100&sort=RELEVANCE&virtual_hosts=EXCLUDE",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": "services.service_name: HTTP",
+                        "per_page": 100,
+                        "sort": "RELEVANCE",
+                        "virtual_hosts": "EXCLUDE",
+                    }
+                )
+            ],
         )
         # Mock
         self.patch_args(
@@ -307,18 +344,37 @@ class CensysCliSearchTest(CensysTestCase):
         # Setup response
         next_cursor = SEARCH_HOSTS_JSON["result"]["links"]["next"]
         self.responses.add(
-            responses.GET,
-            V2_URL
-            + "/hosts/search?q=services.service_name: HTTP&per_page=100&sort=RELEVANCE&virtual_hosts=EXCLUDE",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": "services.service_name: HTTP",
+                        "per_page": 100,
+                        "sort": "RELEVANCE",
+                        "virtual_hosts": "EXCLUDE",
+                    }
+                )
+            ],
         )
         self.responses.add(
-            responses.GET,
-            V2_URL
-            + f"/hosts/search?q=services.service_name: HTTP&per_page=100&sort=RELEVANCE&virtual_hosts=EXCLUDE&cursor={next_cursor}",
+            responses.POST,
+            V2_URL + "/hosts/search",
             status=status_code,
             json=json_response,
+            match=[
+                matchers.json_params_matcher(
+                    {
+                        "q": "services.service_name: HTTP",
+                        "per_page": 100,
+                        "sort": "RELEVANCE",
+                        "virtual_hosts": "EXCLUDE",
+                        "cursor": next_cursor,
+                    }
+                )
+            ],
         )
         # Mock
         self.patch_args(
