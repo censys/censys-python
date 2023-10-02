@@ -287,6 +287,30 @@ class CensysHosts(CensysSearchAPIv2):
             "result"
         ]
 
+    def view_host_certificates(
+        self,
+        ip: str,
+        per_page: int = 100,
+        start_time: Optional[Datetime] = None,
+        cursor: Optional[str] = None,
+    ) -> dict:
+        """Returns a list of certificates for the specified host.
+
+        Args:
+            ip (str): The IP address of the requested host.
+            per_page (int): Optional; The number of results to be returned for each page. Defaults to 100.
+            start_time (Datetime): Optional; An RFC3339 timestamp which represents
+                the beginning chronological point-in-time (inclusive) from which events are returned.
+            cursor (str): Optional; Cursor token from the API response.
+
+        Returns:
+            dict: A list of certificates.
+        """
+        args = {"per_page": per_page, "cursor": cursor}
+        if start_time:
+            args["start_time"] = format_rfc3339(start_time)
+        return self._get(f"/v2/{self.INDEX_NAME}/{ip}/certificates", args)["result"]
+
     def list_hosts_with_tag(self, tag_id: str) -> List[str]:
         """Returns a list of hosts which are tagged with the specified tag.
 

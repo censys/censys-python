@@ -859,3 +859,30 @@ class TestHosts(CensysTestCase):
         )
         results = self.api.view_host_events(TEST_HOST, **kwargs)
         assert results == VIEW_HOST_EVENTS_JSON["result"]
+
+    @parameterized.expand(
+        [
+            ({}, {"per_page": 100}),
+            ({"per_page": 50}, {"per_page": 50}),
+            (
+                {
+                    "start_time": datetime.date(2021, 7, 1),
+                },
+                {"per_page": 100, "start_time": "2021-07-01T00:00:00.000000Z"},
+            ),
+            (
+                {"cursor": "nextCursor"},
+                {"per_page": 100, "cursor": "nextCursor"},
+            ),
+        ]
+    )
+    def test_view_host_certificates(self, kwargs: dict, query_params: dict):
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/hosts/{TEST_HOST}/certificates",
+            status=200,
+            json=VIEW_HOST_EVENTS_JSON,
+            match=[matchers.query_param_matcher(query_params)],
+        )
+        results = self.api.view_host_certificates(TEST_HOST, **kwargs)
+        assert results == VIEW_HOST_EVENTS_JSON["result"]
