@@ -11140,6 +11140,24 @@
             "data": {
                 "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
             },
+            "value": "services.parsed"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.parsed.type"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
+            "value": "services.parsed.dynamic"
+        },
+        {
+            "data": {
+                "category": "<i class=\"fa fa-fw fa-plus-square\" aria-hidden=\"true\"></i> MISC"
+            },
             "value": "services.transport_fingerprint.id"
         },
         {
