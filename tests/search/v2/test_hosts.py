@@ -820,7 +820,7 @@ class TestHosts(CensysTestCase):
             ),
         ]
     )
-    def test_view_host_diff_params(self, kwargs, query_params):
+    def test_view_host_diff_params(self, kwargs: dict, query_params: str):
         self.responses.add(
             responses.GET,
             f"{V2_URL}/hosts/{TEST_HOST}/diff?{query_params}",
@@ -830,18 +830,9 @@ class TestHosts(CensysTestCase):
         results = self.api.view_host_diff(TEST_HOST, **kwargs)
         assert results == VIEW_HOST_DIFF_JSON["result"]
 
-    def test_view_host_events(self):
-        self.responses.add(
-            responses.GET,
-            f"{V2_URL}/experimental/hosts/{TEST_HOST}/events",
-            status=200,
-            json=VIEW_HOST_EVENTS_JSON,
-        )
-        results = self.api.view_host_events(TEST_HOST)
-        assert results == VIEW_HOST_EVENTS_JSON["result"]["events"]
-
     @parameterized.expand(
         [
+            ({}, ""),
             ({"per_page": 50}, "per_page=50"),
             (
                 {
@@ -856,12 +847,15 @@ class TestHosts(CensysTestCase):
             ),
         ]
     )
-    def test_view_host_events_params(self, kwargs, query_params):
+    def test_view_host_events_params(self, kwargs: dict, query_params: str):
+        url = f"{V2_URL}/experimental/hosts/{TEST_HOST}/events"
+        if query_params:
+            url += "?" + query_params
         self.responses.add(
             responses.GET,
-            f"{V2_URL}/experimental/hosts/{TEST_HOST}/events?{query_params}",
+            url,
             status=200,
             json=VIEW_HOST_EVENTS_JSON,
         )
         results = self.api.view_host_events(TEST_HOST, **kwargs)
-        assert results == VIEW_HOST_EVENTS_JSON["result"]["events"]
+        assert results == VIEW_HOST_EVENTS_JSON["result"]

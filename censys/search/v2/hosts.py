@@ -259,7 +259,7 @@ class CensysHosts(CensysSearchAPIv2):
         per_page: Optional[int] = None,
         cursor: Optional[str] = None,
         reversed: Optional[bool] = None,
-    ) -> List[dict]:
+    ) -> dict:
         """Fetches a list of events for the specified IP address.
 
         Args:
@@ -275,7 +275,7 @@ class CensysHosts(CensysSearchAPIv2):
                 that is, return events in reversed chronological order.
 
         Returns:
-            List[dict]: A list of events.
+            dict: A list of events.
         """
         args = {"per_page": per_page, "cursor": cursor, "reversed": reversed}
         if start_time:
@@ -285,7 +285,7 @@ class CensysHosts(CensysSearchAPIv2):
 
         return self._get(f"/v2/experimental/{self.INDEX_NAME}/{ip}/events", args)[
             "result"
-        ]["events"]
+        ]
 
     def list_hosts_with_tag(self, tag_id: str) -> List[str]:
         """Returns a list of hosts which are tagged with the specified tag.
