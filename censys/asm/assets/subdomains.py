@@ -7,16 +7,14 @@ from .assets import Assets
 class SubdomainsAssets(Assets):
     """Subdomains Assets API class."""
 
-    def __init__(self, domain: str, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """Inits SubdomainsAssets.
 
         Args:
-            domain: Name of the parent domain
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
         """
-        # Rewrite the path because it chains off of the parent domain
-        super().__init__(f"domains/{domain}/subdomains", *args, **kwargs)
+        super().__init__("subdomains", *args, **kwargs)
 
     def get_assets(
         self,

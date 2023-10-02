@@ -33,7 +33,7 @@ TEST_INVALID_TAG_COLOR = "4287f5"
 
 
 @parameterized_class(
-    ("asset_type", "test_asset_id", "asset_type_config"),
+    ("asset_type", "test_asset_id"),
     [
         ("hosts", "3.12.122.3"),
         (
@@ -41,7 +41,7 @@ TEST_INVALID_TAG_COLOR = "4287f5"
             "0006afc1ddc8431aa57c812adf028ab4f168b25bf5f06e94af86edbafa88dfe0",
         ),
         ("domains", "amazonaws.com"),
-        ("subdomains", "s3.amazonaws.com", "amazonaws.com"),
+        ("subdomains", "s3.amazonaws.com"),
         ("web_entities", "www.amazon.com:443"),
         ("object_storages", "https://censys-python.s3.us-east-2.amazonaws.com/"),
     ],
@@ -66,13 +66,11 @@ class AssetsUnitTest(unittest.TestCase):
         )
 
     def get_asset_accessor(self):
-        if self.asset_type == "subdomains":
-            return self.client.get_subdomains(self.asset_type_config)
         return getattr(self.client, self.asset_type)
 
     def asset_type_url(self):
         if self.asset_type == "subdomains":
-            return f"{ASSETS_URL}/domains/{self.asset_type_config}/{self.asset_type}"
+            return f"{ASSETS_URL}/subdomains"
         if self.asset_type == "web_entities":
             return f"{ASSETS_URL}/web-entities"
         if self.asset_type == "object_storages":

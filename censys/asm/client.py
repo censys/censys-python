@@ -31,6 +31,7 @@ class AsmClient:
         self.hosts = HostsAssets(api_key, **kwargs)
         self.certificates = CertificatesAssets(api_key, **kwargs)
         self.domains = DomainsAssets(api_key, **kwargs)
+        self.subdomains = SubdomainsAssets(api_key, **kwargs)
         self.logbook = Logbook(api_key, **kwargs)
         self.events = self.logbook
         self.clouds = Clouds(api_key, **kwargs)
@@ -39,17 +40,3 @@ class AsmClient:
         self.object_storages = ObjectStoragesAssets(api_key, **kwargs)
         self.web_entities = WebEntitiesAssets(api_key, **kwargs)
         self.beta = Beta(api_key, **kwargs)
-
-        # Save the arguments for parameterized client usage
-        self.__api_kwargs = kwargs
-
-    def get_subdomains(self, domain: str):
-        """Get an API instance for subdomains of the parent domain.
-
-        Args:
-            domain: (str): Parent domain to access.
-
-        Returns:
-            SubdomainsAssets: A Subdomains Assets API instance .
-        """
-        return SubdomainsAssets(domain, self.domains._api_key, **self.__api_kwargs)
