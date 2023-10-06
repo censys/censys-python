@@ -938,28 +938,17 @@ files = [
 
 [[package]]
 name = "types-requests"
-version = "2.31.0.2"
+version = "2.31.0.8"
 description = "Typing stubs for requests"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = [
-    {file = "types-requests-2.31.0.2.tar.gz", hash = "sha256:6aa3f7faf0ea52d728bb18c0a0d1522d9bfd8c72d26ff6f61bfc3d06a411cf40"},
-    {file = "types_requests-2.31.0.2-py3-none-any.whl", hash = "sha256:56d181c85b5925cbc59f4489a57e72a8b2166f18273fd8ba7b6fe0c0b986f12a"},
+    {file = "types-requests-2.31.0.8.tar.gz", hash = "sha256:e1b325c687b3494a2f528ab06e411d7092cc546cc9245c000bacc2fca5ae96d4"},
+    {file = "types_requests-2.31.0.8-py3-none-any.whl", hash = "sha256:39894cbca3fb3d032ed8bdd02275b4273471aa5668564617cc1734b0a65ffdf8"},
 ]
 
 [package.dependencies]
-types-urllib3 = "*"
-
-[[package]]
-name = "types-urllib3"
-version = "1.26.25.13"
-description = "Typing stubs for urllib3"
-optional = false
-python-versions = "*"
-files = [
-    {file = "types-urllib3-1.26.25.13.tar.gz", hash = "sha256:3300538c9dc11dad32eae4827ac313f5d986b8b21494801f1bf97a1ac6c03ae5"},
-    {file = "types_urllib3-1.26.25.13-py3-none-any.whl", hash = "sha256:5dbd1d2bef14efee43f5318b5d36d805a489f6600252bb53626d4bfafd95e27c"},
-]
+urllib3 = ">=2"
 
 [[package]]
 name = "typing-extensions"
