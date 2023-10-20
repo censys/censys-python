@@ -25,6 +25,23 @@ CERT_SEARCH_RESPONSE = {
     },
 }
 
+HOST_SEARCH_RESPONSE = {
+    "result": {
+        "total": len(TEST_DOMAINS),
+        "hits": [
+            {
+                "dns": {
+                    "names": [name],
+                    "reverse_dns": {"names": [name]},
+                },
+                "name": name,
+            }
+            for name in TEST_DOMAINS
+        ],
+        "links": {},
+    },
+}
+
 
 class CensysCliSubdomainsTest(CensysTestCase):
     @parameterized.expand(
@@ -36,6 +53,7 @@ class CensysCliSubdomainsTest(CensysTestCase):
     def test_print_subdomains(
         self,
         test_json_bool: bool,
+        test_base_domain: str = "censys.io",
         test_subdomains: Set[str] = TEST_DOMAINS,
     ):
         # Mock
@@ -43,7 +61,7 @@ class CensysCliSubdomainsTest(CensysTestCase):
         mock_print = self.mocker.patch("censys.cli.utils.console.print")
 
         # Actual call
-        subdomains.print_subdomains(test_subdomains, test_json_bool)
+        subdomains.print_subdomains(test_base_domain, test_subdomains, test_json_bool)
 
         # Assertions
         if test_json_bool:
@@ -61,6 +79,19 @@ class CensysCliSubdomainsTest(CensysTestCase):
             match=[
                 responses.matchers.json_params_matcher(
                     {"per_page": 100, "q": "names: censys.io"}
+                )
+            ],
+        )
+        self.responses.add(
+            responses.POST,
+            V2_URL + "/hosts/search",
+            json=HOST_SEARCH_RESPONSE,
+            match=[
+                responses.matchers.json_params_matcher(
+                    {
+                        "per_page": 100,
+                        "q": "dns.names: censys.io or dns.reverse_dns.names: censys.io or name: censys.io",
+                    }
                 )
             ],
         )
