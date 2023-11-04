@@ -1,23 +1,24 @@
 """Censys ASM CLI."""
 import argparse
-import json
 import csv
+import json
 import sys
-from typing import Dict, List
+from typing import Dict, List, Union
 from xml.etree import ElementTree
 
+from rich.progress import track
 from rich.prompt import Confirm, Prompt
-
-import tqdm
-import requests
 
 from censys.asm.seeds import SEED_TYPES, Seeds
 from censys.cli.utils import console
 from censys.common.config import DEFAULT, get_config, write_config
-from censys.common.exceptions import CensysUnauthorizedException
-from censys.common.exceptions import CensysSeedNotFoundException
+from censys.common.exceptions import (
+    CensysSeedNotFoundException,
+    CensysUnauthorizedException,
+)
 
-status_bar_min=2 # Min number of delete ops that brings up status bar (Note: changing this will break unit tests)
+status_bar_min = 2  # Min number of delete ops that brings up status bar (Note: changing this will break unit tests)
+
 
 def cli_asm_config(_: argparse.Namespace):  # pragma: no cover
     """Config asm subcommand.
@@ -91,62 +92,40 @@ def get_seeds_from_xml(file: str) -> List[Dict[str, str]]:
         {"value": domain, "type": "DOMAIN_NAME"} for domain in domains
     ]
 
-def add_default_command_arguments_to_parser(parser: argparse._SubParsersAction):
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        help="verbose output",
-        action="store_true",
-    )
 
-def add_add_seed_arguments_to_parser(parser: argparse._SubParsersAction):
-    parser.add_argument(
-        "--default-type",
-        help="type of the seed(s) if type is not already provided (default: %(default)s)",
-        choices=SEED_TYPES,
-        default="IP_ADDRESS",
-    )
-    parser.add_argument(
-        "--csv",
-        help='output in CSV format',
-        action='store_true'
-    )
-    seeds_group = parser.add_mutually_exclusive_group(required=True)
-    seeds_group.add_argument(
-        "--input-file",
-        "-i",
-        help="input file name containing valid json seeds (use - for stdin)",
-        type=str,
-    )
-    seeds_group.add_argument(
-        "--json", "-j", help="input string containing valid json seeds", type=str
-    )
-    seeds_group.add_argument(
-        "--nmap-xml", help="input file name containing valid xml nmap output", type=str
-    )
+def get_seeds_from_params(
+    args: argparse.Namespace, is_delete=False
+) -> List[Dict[str, Union[str, int]]]:
+    """Get seeds from params.
 
-def get_seeds_from_params(args: argparse.Namespace, is_delete=False):
+    Args:
+        args (Namespace): Argparse Namespace.
+        is_delete (bool, optional): Whether or not this is a delete operation. Defaults to False.
+
+    Returns:
+        List[Dict[str, str]]: List of seeds.
+    """
     if args.input_file or args.json:
-        jsonData = None
+        json_data = None
         if args.input_file:
             if args.input_file == "-":
                 file = sys.stdin
             else:
-                file = open(args.input_file)
+                file = open(args.input_file)  # noqa: SIM115
 
             if args.csv:
                 seeds = []
-                csv_reader = csv.DictReader(file, delimiter=',')
+                csv_reader = csv.DictReader(file, delimiter=",")
                 for row in csv_reader:
                     seeds.append(row)
             else:
-                jsonData = file.read()
+                json_data = file.read()
         else:
-            jsonData = args.json
+            json_data = args.json
 
-        if jsonData:
+        if json_data:
             try:
-                seeds = json.loads(jsonData)
+                seeds = json.loads(json_data)
             except json.decoder.JSONDecodeError as e:
                 console.print(f"Invalid json {e}")
                 sys.exit(1)
@@ -167,20 +146,21 @@ def get_seeds_from_params(args: argparse.Namespace, is_delete=False):
         else:
             console.print(f"Invalid seed {seed}")
             sys.exit(1)
-        if "label" not in seed and 'label' in args:
+        if "label" not in seed and "label" in args:
             seed["label"] = args.label
 
         # The back end is really picky about sending extra fields, so we'll prune out anything it won't like.
         # This makes it possible to output to CSV, edit, and then pipe the same CSV back into add-seeds, where
         # we will strip the id, source, createdOn, and any other junk that might be there
         #
-        valid_params = ['type', 'value', 'label']
-        if (is_delete):
-            valid_params.append('id')
-        filtered_seed = {key: seed[key] for key in seed if key in valid_params} 
+        valid_params = ["type", "value", "label"]
+        if is_delete:
+            valid_params.append("id")
+        filtered_seed = {key: seed[key] for key in seed if key in valid_params}
         seeds_to_add.append(filtered_seed)
 
     return seeds_to_add
+
 
 def cli_add_seeds(args: argparse.Namespace):
     """Add seed subcommand.
@@ -204,10 +184,13 @@ def cli_add_seeds(args: argparse.Namespace):
     if added_count < to_add_count:
         console.print(f"Seeds not added: {to_add_count - added_count}")
         if args.verbose:  # pragma: no cover
-            console.print("The following seed(s) were not able to be added as they already exist or are reserved.")
+            console.print(
+                "The following seed(s) were not able to be added as they already exist or are reserved."
+            )
             for seed in seeds_to_add:
                 if not any(s for s in added_seeds if seed["value"] == s["value"]):
                     console.print(f"{seed}")
+
 
 # Delete-seeds (bulk, from list) - what if value only (no ID) - look up all seeds, get IDs from value map, delete one at a time?
 #
@@ -224,46 +207,44 @@ def cli_delete_seeds(args: argparse.Namespace):
     seeds = s.get_seeds()
     seeds_dict_indexed_by_value = {}
     for seed in seeds:
-        seeds_dict_indexed_by_value[seed['value']] = seed
+        seeds_dict_indexed_by_value[seed["value"]] = seed
 
     seed_ids_to_delete = []
     seed_ids_not_found = []
     for seed_to_delete in seeds_to_delete:
-        if 'id' in seed_to_delete:
-            seed_ids_to_delete.append(seed_to_delete['id'])
-        elif 'value' in seed_to_delete:
+        if "id" in seed_to_delete:
+            seed_ids_to_delete.append(seed_to_delete["id"])
+        elif "value" in seed_to_delete:
             # value may not be in current seeds - can't delete
-            seed_value = seed_to_delete['value']
+            seed_value = seed_to_delete["value"]
             if seed_value in seeds_dict_indexed_by_value:
-                seed_ids_to_delete.append(seeds_dict_indexed_by_value[seed_value]['id'])
+                seed_ids_to_delete.append(seeds_dict_indexed_by_value[seed_value]["id"])
             else:
-                seed_ids_not_found.append(seed_value); 
+                seed_ids_not_found.append(seed_value)
         else:
-            console.print(f"Error, no seed id or value for seed.")
+            console.print("Error, no seed id or value for seed.")
 
     seed_ids_deleted = []
-    if len(seed_ids_to_delete) > 0:
-        if len(seed_ids_to_delete) >= status_bar_min:
-            pbar = tqdm.tqdm(total=len(seed_ids_to_delete))
-            for seed_id in seed_ids_to_delete:
-                try:
-                    s.delete_seed_by_id(seed_id)
-                    seed_ids_deleted.append(seed_id)
-                except CensysSeedNotFoundException as e:
-                    seed_ids_not_found.append(seed_id)
-                pbar.update(1)
-            pbar.close()
-        else:
-            for seed_id in seed_ids_to_delete:
-                try:
-                    s.delete_seed_by_id(seed_id)
-                    seed_ids_deleted.append(seed_id)
-                except CensysSeedNotFoundException as e:
-                    seed_ids_not_found.append(seed_id)
+    if len(seed_ids_to_delete) == 0:
+        console.print("No seeds to delete.")
+        sys.exit(0)
+
+    for seed_id in track(seed_ids_to_delete, description="Deleting seeds..."):
+        if isinstance(seed_id, str):  # pragma: no cover
+            console.print(f"Invalid seed id {seed_id}")
+            continue
+        try:
+            s.delete_seed_by_id(seed_id)
+            seed_ids_deleted.append(seed_id)
+        except CensysSeedNotFoundException:  # pragma: no cover
+            seed_ids_not_found.append(seed_id)
 
     console.print(f"Deleted {len(seed_ids_deleted)} seeds.")
     if len(seed_ids_not_found) > 0:
-        console.print(f"Unable to delete {len(seed_ids_not_found)} seeds because they were not present.")
+        console.print(
+            f"Unable to delete {len(seed_ids_not_found)} seeds because they were not present."
+        )
+
 
 def cli_delete_all_seeds(args: argparse.Namespace):
     """Delete all seeds subcommand.
@@ -271,8 +252,13 @@ def cli_delete_all_seeds(args: argparse.Namespace):
     Args:
         args (Namespace): Argparse Namespace.
     """
-    if 'force' not in args or args.force == False:
-        delete_all = Confirm.ask("Are you sure you want to delete all seeds?", default=False, show_default=True, console=console)
+    if not args.force:
+        delete_all = Confirm.ask(
+            "Are you sure you want to delete all seeds?",
+            default=False,
+            show_default=True,
+            console=console,
+        )
         sys.stdout.write("\033[F")  # Move the cursor to the previous line
         sys.stdout.write("\033[K")  # Clear the line
         if not delete_all:
@@ -280,18 +266,12 @@ def cli_delete_all_seeds(args: argparse.Namespace):
 
     s = Seeds(args.api_key)
     seeds = s.get_seeds()
- 
-    if len(seeds) >= status_bar_min:
-        pbar = tqdm.tqdm(total=len(seeds))
-        for seed in seeds:
-            s.delete_seed_by_id(seed['id'])
-            pbar.update(1)
-        pbar.close()
-    else:
-        for seed in seeds:
-            s.delete_seed_by_id(seed['id'])
+
+    for seed in track(seeds, description="Deleting seeds..."):
+        s.delete_seed_by_id(seed["id"])
 
     console.print(f"Deleted {len(seeds)} seeds.")
+
 
 def cli_delete_seeds_with_label(args: argparse.Namespace):
     """Delete seeds with label subcommand.
@@ -301,7 +281,8 @@ def cli_delete_seeds_with_label(args: argparse.Namespace):
     """
     s = Seeds(args.api_key)
     s.delete_seeds_by_label(args.label)
-    console.print(f"Deleted seeds with label \"{args.label}\".")
+    console.print(f'Deleted seeds with label "{args.label}".')
+
 
 def cli_replace_seeds_with_label(args: argparse.Namespace):
     """Replace seeds with label subcommand.
@@ -312,21 +293,29 @@ def cli_replace_seeds_with_label(args: argparse.Namespace):
     seeds_to_add = get_seeds_from_params(args)
     s = Seeds(args.api_key)
     res = s.replace_seeds_by_label(args.label, seeds_to_add, True)
-    console.print(f"Removed {len(res['removedSeeds'])} seeds.  Added {len(res['addedSeeds'])} seeds.  Skipped {len(res['skippedReservedSeeds'])} reserved seeds.")
+    console.print(
+        f"Removed {len(res['removedSeeds'])} seeds.  Added {len(res['addedSeeds'])} seeds.  Skipped {len(res['skippedReservedSeeds'])} reserved seeds."
+    )
 
     if args.verbose:  # pragma: no cover
-        if len(res['addedSeeds']) > 0:
+        added_seeds = res.get("addedSeeds", [])
+        if len(added_seeds) > 0:
             console.print("The following seed(s) were added.")
-            for added_seed in res['addedSeeds']:
+            for added_seed in added_seeds:
                 console.print(f"    {added_seed}")
-        if len(res['removedSeeds']) > 0:
+        removed_seeds = res.get("removedSeeds", [])
+        if len(removed_seeds) > 0:
             console.print("The following seed(s) were removed.")
-            for removed_seed in res['removedSeeds']:
+            for removed_seed in removed_seeds:
                 console.print(f"    {removed_seed}")
-        if len(res['skippedReservedSeeds']) > 0:
-            console.print("The following seed(s) were not added because they are reserved.")
-            for skipped_seed in res['skippedReservedSeeds']:
+        skipped_seeds = res.get("skippedReservedSeeds", [])
+        if len(skipped_seeds) > 0:
+            console.print(
+                "The following seed(s) were not added because they are reserved."
+            )
+            for skipped_seed in skipped_seeds:
                 console.print(f"    {skipped_seed}")
+
 
 def cli_list_seeds(args: argparse.Namespace):
     """List seeds subcommand.
@@ -337,11 +326,42 @@ def cli_list_seeds(args: argparse.Namespace):
     s = Seeds(args.api_key)
     res = s.get_seeds(args.type, args.label)
     if args.csv:
-        console.print(f"id,type,value,label,source,createdOn")
+        console.print("id,type,value,label,source,createdOn")
         for seed in res:
-            console.print(f"{seed['id']},{seed['type']},{seed['value']},{seed['label']},{seed['source']},{seed['createdOn']}")
-    else: # json
-        console.print_json(json.dumps(res)) 
+            console.print(
+                f"{seed['id']},{seed['type']},{seed['value']},{seed['label']},{seed['source']},{seed['createdOn']}"
+            )
+    else:
+        console.print_json(json.dumps(res))
+
+
+def add_seed_arguments(parser: argparse._SubParsersAction) -> None:
+    """Add seed arguments to parser.
+
+    Args:
+        parser (argparse._SubParsersAction): Parser.
+    """
+    parser.add_argument(  # type: ignore[attr-defined]
+        "--default-type",
+        help="type of the seed(s) if type is not already provided (default: %(default)s)",
+        choices=SEED_TYPES,
+        default="IP_ADDRESS",
+    )
+    parser.add_argument("--csv", help="output in CSV format", action="store_true")  # type: ignore[attr-defined]
+    seeds_group = parser.add_mutually_exclusive_group(required=True)  # type: ignore[attr-defined]
+    seeds_group.add_argument(
+        "--input-file",
+        "-i",
+        help="input file name containing valid json seeds (use - for stdin)",
+        type=str,
+    )
+    seeds_group.add_argument(
+        "--json", "-j", help="input string containing valid json seeds", type=str
+    )
+    seeds_group.add_argument(
+        "--nmap-xml", help="input file name containing valid xml nmap output", type=str
+    )
+
 
 def include(parent_parser: argparse._SubParsersAction, parents: dict):
     """Include this subcommand into the parent parser.
@@ -352,6 +372,12 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     """
     asm_parser = parent_parser.add_parser(
         "asm", description="Interact with the Censys ASM API", help="interact with ASM"
+    )
+    asm_parser.add_argument(
+        "-v",
+        "--verbose",
+        help="verbose output",
+        action="store_true",
     )
     asm_subparser = asm_parser.add_subparsers()
 
@@ -370,8 +396,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         help="add seeds",
         parents=[parents["asm_auth"]],
     )
-    add_default_command_arguments_to_parser(add_parser)
-    add_add_seed_arguments_to_parser(add_parser)
+    add_seed_arguments(add_parser)
     add_parser.add_argument(
         "-l",
         "--label",
@@ -387,8 +412,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         help="delete seeds",
         parents=[parents["asm_auth"]],
     )
-    add_add_seed_arguments_to_parser(delete_parser)
-    add_default_command_arguments_to_parser(delete_parser)
+    add_seed_arguments(delete_parser)
     delete_parser.set_defaults(func=cli_delete_seeds)
 
     delete_all_parser = asm_subparser.add_parser(
@@ -397,12 +421,11 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         help="delete all seeds",
         parents=[parents["asm_auth"]],
     )
-    add_default_command_arguments_to_parser(delete_all_parser)
     delete_all_parser.add_argument(
         "-f",
         "--force",
-        help='force delete all (no confirmation prompt)',
-        action='store_true'
+        help="force delete all (no confirmation prompt)",
+        action="store_true",
     )
     delete_all_parser.set_defaults(func=cli_delete_all_seeds)
 
@@ -415,12 +438,11 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     delete_with_label_parser.add_argument(
         "-l",
         "--label",
-        help='label for which to delete all seeds',
+        help="label for which to delete all seeds",
         type=str,
         default="",
-        required=True
+        required=True,
     )
-    add_default_command_arguments_to_parser(delete_with_label_parser)
     delete_with_label_parser.set_defaults(func=cli_delete_seeds_with_label)
 
     replace_with_label_parser = asm_subparser.add_parser(
@@ -432,13 +454,12 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     replace_with_label_parser.add_argument(
         "-l",
         "--label",
-        help='label for which to replace all seeds',
+        help="label for which to replace all seeds",
         type=str,
         default="",
-        required=True
+        required=True,
     )
-    add_add_seed_arguments_to_parser(replace_with_label_parser)
-    add_default_command_arguments_to_parser(replace_with_label_parser)
+    add_seed_arguments(replace_with_label_parser)
     replace_with_label_parser.set_defaults(func=cli_replace_seeds_with_label)
 
     list_parser = asm_subparser.add_parser(
@@ -457,14 +478,11 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     list_parser.add_argument(
         "-l",
         "--label",
-        help='label of seeds to list, if not specified, all labels returned',
+        help="label of seeds to list, if not specified, all labels returned",
         type=str,
         default="",
     )
     list_parser.add_argument(
-        "--csv",
-        help='output in CSV format (otherwise JSON)',
-        action='store_true'
+        "--csv", help="output in CSV format (otherwise JSON)", action="store_true"
     )
-    add_default_command_arguments_to_parser(list_parser)
     list_parser.set_defaults(func=cli_list_seeds)
