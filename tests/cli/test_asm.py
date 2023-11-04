@@ -4,7 +4,10 @@ import os.path
 from io import StringIO
 
 import pytest
+
 import responses
+from unittest.mock import patch
+from responses import matchers
 from responses.matchers import json_params_matcher
 
 from tests.asm.utils import V1_URL
@@ -12,6 +15,7 @@ from tests.utils import CensysTestCase
 
 from censys.cli import main as cli_main
 from censys.cli.commands.asm import get_seeds_from_xml
+from censys.common.exceptions import CensysSeedNotFoundException
 
 SEEDS_JSON = [
     {"value": 0, "type": "ASN"},
@@ -60,8 +64,69 @@ ADD_SEEDS_JSON = {
     ],
     "skippedReservedSeeds": ["string", 0],
 }
+
+GET_SEEDS_JSON = {
+    "seeds": [
+        {
+            "id": 1,
+            "type": "ASN",
+            "value": 0,
+            "label": "Test",
+            "source": "API",
+            "createdOn": "2022-11-01T12:34:23.111142Z"
+        },
+        {
+            "id": 2,
+            "type": "IP_ADDRESS",
+            "value": "1.2.3.4",
+            "label": "Test",
+            "source": "API",
+            "createdOn": "2022-11-01T12:34:23.111142Z"
+        },
+        {
+            "id": 3,
+            "type": "DOMAIN_NAME",
+            "value": "foo.com",
+            "label": "Test",
+            "source": "API",
+            "createdOn": "2022-11-01T12:34:23.111142Z"
+        },
+        {
+            "id": 4,
+            "type": "CIDR",
+            "value": "200.200.200.0/24",
+            "label": "Test",
+            "source": "API",
+            "createdOn": "2022-11-01T12:34:23.111142Z"
+        },
+        {
+            "id": 5,
+            "type": "IP_ADDRESS",
+            "value": "5.6.7.8",
+            "label": "Test 2",
+            "source": "API",
+            "createdOn": "2022-11-01T12:34:23.111142Z"
+        },
+    ]
+}
+
 TEST_XML_PATH = os.path.join(os.path.dirname(__file__), "test.xml")
 
+def mock_open(filename, encoding=None):
+    base_filename = os.path.basename(filename)
+    if base_filename=="censys.cfg":
+        return StringIO("[FOO]") # Valid config file contents
+    elif base_filename=="test.json":
+        return StringIO(json.dumps([{"value": "1.1.1.1"}, {"value": "192.168.0.15/24", "type": "CIDR"}]))
+    elif base_filename=="seeds.csv":
+        return StringIO('\n'.join([
+        "type,value",
+        "IP_ADDRESS,1.1.1.1",
+        "CIDR,192.168.0.15/24"
+        ]))
+    else:
+        print(f"Unknown mock filename: {base_filename}")
+        assert False
 
 class CensysASMCliTest(CensysTestCase):
     def setUp(self):
@@ -183,7 +248,7 @@ class CensysASMCliTest(CensysTestCase):
         # Actual call
         cli_main()
 
-    def test_add_seeds_from_file(self):
+    def test_add_seeds_from_file_json(self):
         # Mock
         self.patch_args(
             [
@@ -197,10 +262,43 @@ class CensysASMCliTest(CensysTestCase):
         )
         self.mocker.patch(
             "builtins.open",
-            new_callable=self.mocker.mock_open,
-            read_data=json.dumps(
-                [{"value": "1.1.1.1"}, {"value": "192.168.0.15/24", "type": "CIDR"}]
-            ),
+            side_effect=mock_open
+        )
+        self.responses.add(
+            responses.POST,
+            V1_URL + "/seeds",
+            status=200,
+            json=ADD_SEEDS_JSON,
+            match=[
+                json_params_matcher(
+                    {
+                        "seeds": [
+                            {"value": "1.1.1.1", "type": "IP_ADDRESS", "label": ""},
+                            {"value": "192.168.0.15/24", "type": "CIDR", "label": ""},
+                        ]
+                    }
+                )
+            ],
+        )
+        # Actual call
+        cli_main()
+
+    def test_add_seeds_from_file_csv(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "add-seeds",
+                "--csv",
+                "-i",
+                "seeds.csv",
+            ],
+            asm_auth=True,
+        )
+        self.mocker.patch(
+            "builtins.open",
+            side_effect=mock_open
         )
         self.responses.add(
             responses.POST,
@@ -362,3 +460,697 @@ class CensysASMCliTest(CensysTestCase):
         # Actual call
         with pytest.raises(SystemExit, match="1"):
             cli_main()
+
+    def test_delete_all_seeds_force_one_seed(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "delete-all-seeds",
+                "--force",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json={'seeds': [item for item in GET_SEEDS_JSON['seeds'] if item['value'] == "1.2.3.4"]},
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/2",
+            status=200,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+
+        temp_stdout = StringIO()
+        # Actual call
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert len(self.responses.calls) == 2 # make sure both requests were seen
+        assert "Deleted 1 seeds." in temp_stdout.getvalue()
+
+    def test_delete_all_seeds_force(self):
+        # Mock
+        #
+        # The idea is that delete-all-seeds will call GET to get seeds, we'll give it back the
+        # two IP_ADDRESS seeds (just to cut down the list to test), and then we should see it call
+        # DELETE on each of the seed IDs we gave it back, and then it will report on the number of
+        # seeds deleted
+        #
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "delete-all-seeds",
+                "--force",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json={'seeds': [item for item in GET_SEEDS_JSON['seeds'] if item['type'] == "IP_ADDRESS"]},
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/2",
+            status=200,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/5",
+            status=200,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+
+        temp_stdout = StringIO()
+        # Actual call
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert len(self.responses.calls) == 3 # make sure all three requests were seen
+        assert "Deleted 2 seeds." in temp_stdout.getvalue()
+
+    def test_delete_all_seeds_yes(self):
+        # Mock
+        #
+        # The idea is that delete-all-seeds will call GET to get seeds, we'll give it back the
+        # two IP_ADDRESS seeds (just to cut down the list to test), and then we should see it call
+        # DELETE on each of the seed IDs we gave it back, and then it will report on the number of
+        # seeds deleted
+        #
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "delete-all-seeds",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json={'seeds': [item for item in GET_SEEDS_JSON['seeds'] if item['type'] == "IP_ADDRESS"]},
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/2",
+            status=200,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/5",
+            status=200,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+
+        # Actual call
+        with patch('builtins.input', side_effect=["y"]): # answer 'y' to are you sure
+            temp_stdout = StringIO()
+            with contextlib.redirect_stdout(temp_stdout):
+                cli_main()
+
+        # Assertions
+        assert len(self.responses.calls) == 3 # make sure all three requests were seen
+        assert "Deleted 2 seeds." in temp_stdout.getvalue()
+
+    def test_delete_all_seeds_no(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "delete-all-seeds",
+            ],
+            asm_auth=True,
+        )
+
+        with patch('builtins.input', side_effect=["n"]): # answer 'n' to are you sure
+            with pytest.raises(SystemExit, match="1"):
+                cli_main()
+
+    def test_delete_seeds_by_ip(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys", 
+                "asm", 
+                "delete-seeds", 
+                "-j", 
+                json.dumps(["1.2.3.4","5.6.7.8","9.9.9.9"]
+            )], 
+            asm_auth=True
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json=GET_SEEDS_JSON,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/2",
+            status=200,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/5",
+            status=200,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert len(self.responses.calls) == 3 # make sure all three requests were seen
+        assert "Deleted 2 seeds.\nUnable to delete 1 seeds because they were not present.\n" in temp_stdout.getvalue()
+
+    def test_delete_seed_by_id(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys", 
+                "asm", 
+                "delete-seeds", 
+                "-j", 
+                json.dumps([{"id":"2"}]
+            )], 
+            asm_auth=True
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json=GET_SEEDS_JSON,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/2",
+            status=200,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert len(self.responses.calls) == 2 # make sure all three requests were seen
+        assert "Deleted 1 seeds." in temp_stdout.getvalue()
+
+    def test_delete_seeds_by_id(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys", 
+                "asm", 
+                "delete-seeds", 
+                "-j", 
+                json.dumps([{"id":"2"},{"id":"5"}]
+            )], 
+            asm_auth=True
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json=GET_SEEDS_JSON,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/2",
+            status=200,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/5",
+            status=200,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert len(self.responses.calls) == 3 # make sure all three requests were seen
+        assert "Deleted 2 seeds." in temp_stdout.getvalue()
+
+    def test_delete_seeds_nonexistent_id(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys", 
+                "asm", 
+                "delete-seeds", 
+                "-j", 
+                json.dumps([{"id":"100"}]
+            )], 
+            asm_auth=True
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json=GET_SEEDS_JSON,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/100",
+            status=404,
+            match=[
+                matchers.query_param_matcher({})
+            ],
+            body=json.dumps(
+                {
+                    "message": "Unable to Find Seed",
+                    "errorCode": 10014,
+                    "details": [
+                        {
+                        "id": 100
+                        }
+                    ]
+                } 
+            ),
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert len(self.responses.calls) == 2 # make sure all three requests were seen
+        assert "Deleted 0 seeds.\nUnable to delete 1 seeds because they were not present.\n" in temp_stdout.getvalue()
+
+    def test_delete_seeds_multiple_nonexistent_id(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys", 
+                "asm", 
+                "delete-seeds", 
+                "-j", 
+                json.dumps([{"id":"100"},{"id":"101"}]
+            )], 
+            asm_auth=True
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json=GET_SEEDS_JSON,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/100",
+            status=404,
+            match=[
+                matchers.query_param_matcher({})
+            ],
+            body=json.dumps(
+                {
+                    "message": "Unable to Find Seed",
+                    "errorCode": 10014,
+                    "details": [
+                        {
+                        "id": 100
+                        }
+                    ]
+                } 
+            ),
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/101",
+            status=404,
+            match=[
+                matchers.query_param_matcher({})
+            ],
+            body=json.dumps(
+                {
+                    "message": "Unable to Find Seed",
+                    "errorCode": 10014,
+                    "details": [
+                        {
+                        "id": 101
+                        }
+                    ]
+                } 
+            ),
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert len(self.responses.calls) == 3 # make sure all three requests were seen
+        assert "Deleted 0 seeds.\nUnable to delete 2 seeds because they were not present.\n" in temp_stdout.getvalue()
+
+    def test_delete_seeds_no_id_or_ip(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys", 
+                "asm", 
+                "delete-seeds", 
+                "-j", 
+                json.dumps([{"foo":"100"}]
+            )], 
+            asm_auth=True
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json=GET_SEEDS_JSON,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert "Error, no seed id or value for seed.\nDeleted 0 seeds.\n" in temp_stdout.getvalue()
+
+
+    def test_delete_labeled_seeds(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys", 
+                "asm", 
+                "delete-labeled-seeds", 
+                "--label",
+                "Test"
+            ], 
+            asm_auth=True
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds",
+            status=200,
+            json=GET_SEEDS_JSON,
+            match=[
+                matchers.query_param_matcher({"label":"Test"})
+            ]
+        )
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert "Deleted seeds with label \"Test\".\n" in temp_stdout.getvalue()
+
+    def test_delete_labeled_seeds_without_label(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys", 
+                "asm", 
+                "delete-labeled-seeds", 
+            ], 
+            asm_auth=True
+        )
+
+        # Actual call
+        with pytest.raises(SystemExit, match="2"):
+            cli_main()
+
+    def test_replace_labeled_seeds(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys", 
+                "asm", 
+                "replace-labeled-seeds", 
+                "--label",
+                "Test",
+                "-j",
+                json.dumps(
+                    [
+                        {"value": "1.1.1.1"},
+                        {"value": "192.168. 0.15/24", "type": "CIDR"},
+                    ]
+                )
+            ], 
+            asm_auth=True
+        )
+        self.responses.add(
+            responses.PUT,
+            V1_URL + "/seeds",
+            status=200,
+            json={ "removedSeeds": [], "skippedReservedSeeds": [], "addedSeeds": [
+                {"id": 100, "value": "1.1.1.1", "type": "IP_ADDRESS", "label": "Test"},
+                {"id": 101, "value": "192.168. 0.15/24", "type": "CIDR", "label": "Test"},
+            ] },
+            match=[
+                matchers.query_param_matcher({"label":"Test", "force": True})
+            ]
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert "Removed 0 seeds.  Added 2 seeds.  Skipped 0 reserved seeds." in temp_stdout.getvalue()
+
+    def test_replace_labeled_seeds_without_label(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys", 
+                "asm", 
+                "replace-labeled-seeds", 
+            ], 
+            asm_auth=True
+        )
+
+        # Actual call
+        with pytest.raises(SystemExit, match="2"):
+            cli_main()
+
+    def test_list_seeds_json(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "list-seeds",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json=GET_SEEDS_JSON,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+
+        temp_stdout = StringIO()
+
+        # Actual call
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        actual_json = json.loads(temp_stdout.getvalue())
+        assert actual_json == GET_SEEDS_JSON['seeds']
+
+    def test_list_seeds_csv(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "list-seeds",
+                "--csv",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json=GET_SEEDS_JSON,
+            match=[
+                matchers.query_param_matcher({})
+            ]
+        )
+
+        temp_stdout = StringIO()
+
+        # Actual call
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        expected_output ='\n'.join([
+            "id,type,value,label,source,createdOn",
+            "1,ASN,0,Test,API,2022-11-01T12:34:23.111142Z",
+            "2,IP_ADDRESS,1.2.3.4,Test,API,2022-11-01T12:34:23.111142Z",
+            "3,DOMAIN_NAME,foo.com,Test,API,2022-11-01T12:34:23.111142Z",
+            "4,CIDR,200.200.200.0/24,Test,API,2022-11-01T12:34:23.111142Z",
+            "5,IP_ADDRESS,5.6.7.8,Test 2,API,2022-11-01T12:34:23.111142Z"
+            ]
+            ) + "\n"
+
+        assert (
+            expected_output
+            in temp_stdout.getvalue()
+        )
+
+    def test_list_seeds_type_ip(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "list-seeds",
+                "--type",
+                "IP_ADDRESS",
+                "--csv",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json={ 'seeds': [item for item in GET_SEEDS_JSON['seeds'] if item['type'] == "IP_ADDRESS"]},
+            match=[
+                matchers.query_param_matcher({"type":"IP_ADDRESS"})
+            ]
+        )
+
+        temp_stdout = StringIO()
+
+        # Actual call
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        expected_output ='\n'.join([
+            "id,type,value,label,source,createdOn",
+            "2,IP_ADDRESS,1.2.3.4,Test,API,2022-11-01T12:34:23.111142Z",
+            "5,IP_ADDRESS,5.6.7.8,Test 2,API,2022-11-01T12:34:23.111142Z"
+            ]
+            ) + "\n"
+
+        assert (
+            expected_output
+            in temp_stdout.getvalue()
+        )
+
+    def test_list_seeds_label_test(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "list-seeds",
+                "--label",
+                "Test",
+                "--csv",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json={ 'seeds': [item for item in GET_SEEDS_JSON['seeds'] if item['label'] == "Test"]},
+            match=[
+                matchers.query_param_matcher({"label":"Test"})
+            ]
+        )
+
+        temp_stdout = StringIO()
+
+        # Actual call
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        expected_output ='\n'.join([
+            "id,type,value,label,source,createdOn",
+            "1,ASN,0,Test,API,2022-11-01T12:34:23.111142Z",
+            "2,IP_ADDRESS,1.2.3.4,Test,API,2022-11-01T12:34:23.111142Z",
+            "3,DOMAIN_NAME,foo.com,Test,API,2022-11-01T12:34:23.111142Z",
+            "4,CIDR,200.200.200.0/24,Test,API,2022-11-01T12:34:23.111142Z",
+            ]
+            ) + "\n"
+
+        assert (
+            expected_output
+            in temp_stdout.getvalue()
+        )

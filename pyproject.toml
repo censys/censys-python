@@ -56,6 +56,7 @@ urllib3 = "<3.0.0"
 backoff = ">=2.0.0,<3.0.0"
 rich = ">=10.16.2"
 argcomplete = ">=2.0.0,<4.0.0"
+tqdm = ">=4.66.1"
 
 [tool.poetry.group.dev.dependencies]
 # Lint
