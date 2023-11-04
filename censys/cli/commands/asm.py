@@ -17,8 +17,6 @@ from censys.common.exceptions import (
     CensysUnauthorizedException,
 )
 
-status_bar_min = 2  # Min number of delete ops that brings up status bar (Note: changing this will break unit tests)
-
 
 def cli_asm_config(_: argparse.Namespace):  # pragma: no cover
     """Config asm subcommand.
