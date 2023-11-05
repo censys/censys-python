@@ -503,7 +503,7 @@ class CensysASMCliTest(CensysTestCase):
 
         # Assertions
         assert len(self.responses.calls) == 2  # make sure both requests were seen
-        assert "Deleted 1 seeds." in temp_stdout.getvalue()
+        assert "Deleted 1 of 1 total seeds." in temp_stdout.getvalue()
 
     def test_delete_all_seeds_force(self):
         # Mock
@@ -555,7 +555,7 @@ class CensysASMCliTest(CensysTestCase):
 
         # Assertions
         assert len(self.responses.calls) == 3  # make sure all three requests were seen
-        assert "Deleted 2 seeds." in temp_stdout.getvalue()
+        assert "Deleted 2 of 2 total seeds." in temp_stdout.getvalue()
 
     def test_delete_all_seeds_yes(self):
         # Mock
@@ -609,7 +609,7 @@ class CensysASMCliTest(CensysTestCase):
 
         # Assertions
         assert len(self.responses.calls) == 3  # make sure all three requests were seen
-        assert "Deleted 2 seeds." in temp_stdout.getvalue()
+        assert "Deleted 2 of 2 total seeds." in temp_stdout.getvalue()
 
     def test_delete_all_seeds_no(self):
         # Mock
@@ -728,6 +728,118 @@ class CensysASMCliTest(CensysTestCase):
         self.responses.add(
             responses.DELETE,
             V1_URL + "/seeds/5",
+            status=200,
+            match=[matchers.query_param_matcher({})],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert len(self.responses.calls) == 3  # make sure all three requests were seen
+        assert "Deleted 2 seeds." in temp_stdout.getvalue()
+
+    def test_delete_seeds_by_csv(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "delete-seeds",
+                "--csv",
+                "-i",
+                "seeds.csv",
+            ],
+            asm_auth=True,
+        )
+        # Just to make sure we're reading from the fake file
+        self.mocker.patch("censys.common.config.CONFIG_PATH", TEST_CONFIG_PATH)
+        self.mocker.patch(
+            "builtins.open",
+            new_callable=self.mocker.mock_open,
+            read_data="\n".join(
+                [
+                    "type,value",
+                    "IP_ADDRESS,1.2.3.4",
+                    "CIDR,200.200.200.0/24"
+                ]
+            ),
+        )
+
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json=GET_SEEDS_JSON,
+            match=[matchers.query_param_matcher({})],
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/2",
+            status=200,
+            match=[matchers.query_param_matcher({})],
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/4",
+            status=200,
+            match=[matchers.query_param_matcher({})],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert len(self.responses.calls) == 3  # make sure all three requests were seen
+        assert "Deleted 2 seeds." in temp_stdout.getvalue()
+
+    def test_delete_seeds_by_asm_csv(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "delete-seeds",
+                "--csv",
+                "-i",
+                "seeds.csv",
+            ],
+            asm_auth=True,
+        )
+        # Just to make sure we're reading from the fake file
+        self.mocker.patch("censys.common.config.CONFIG_PATH", TEST_CONFIG_PATH)
+        self.mocker.patch(
+            "builtins.open",
+            new_callable=self.mocker.mock_open,
+            read_data="\n".join(
+                [
+                    "Type,Value",
+                    "IP_ADDRESS,1.2.3.4",
+                    "CIDR,200.200.200.0/24"
+                ]
+            ),
+        )
+
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json=GET_SEEDS_JSON,
+            match=[matchers.query_param_matcher({})],
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/2",
+            status=200,
+            match=[matchers.query_param_matcher({})],
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/4",
             status=200,
             match=[matchers.query_param_matcher({})],
         )

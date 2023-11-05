@@ -1,12 +1,14 @@
 """Censys ASM CLI."""
 import argparse
+import concurrent.futures
 import csv
 import json
 import sys
+import threading
 from typing import Dict, List, Union
 from xml.etree import ElementTree
 
-from rich.progress import track
+from rich.progress import Progress, TaskID
 from rich.prompt import Confirm, Prompt
 
 from censys.asm.seeds import SEED_TYPES, Seeds
@@ -114,6 +116,8 @@ def get_seeds_from_params(
             if args.csv:
                 seeds = []
                 csv_reader = csv.DictReader(file, delimiter=",")
+                # downshift Censys ASM csv export headings (which are capitalized)
+                csv_reader.fieldnames = [string.lower() for string in csv_reader.fieldnames]
                 for row in csv_reader:
                     seeds.append(row)
             else:
@@ -140,7 +144,9 @@ def get_seeds_from_params(
             if not is_delete and "type" not in seed:
                 seed["type"] = args.default_type
         elif isinstance(seed, str):
-            seed = {"value": seed, "type": args.default_type}
+            seed = {"value": seed}
+            if not is_delete:
+                seed["type"] = args.default_type
         else:
             console.print(f"Invalid seed {seed}")
             sys.exit(1)
@@ -158,6 +164,12 @@ def get_seeds_from_params(
         seeds_to_add.append(filtered_seed)
 
     return seeds_to_add
+
+
+def console_clear_line():
+    """Clear previous line in console."""
+    sys.stdout.write("\033[F")  # Move the cursor to the previous line
+    sys.stdout.write("\033[K")  # Clear the line
 
 
 def cli_add_seeds(args: argparse.Namespace):
@@ -190,8 +202,6 @@ def cli_add_seeds(args: argparse.Namespace):
                     console.print(f"{seed}")
 
 
-# Delete-seeds (bulk, from list) - what if value only (no ID) - look up all seeds, get IDs from value map, delete one at a time?
-#
 def cli_delete_seeds(args: argparse.Namespace):
     """Delete seeds subcommand.
 
@@ -202,7 +212,10 @@ def cli_delete_seeds(args: argparse.Namespace):
     s = Seeds(args.api_key)
 
     # Get all seeds into a dict indexed by value (for later lookups)
+    console.print("Getting seeds...")
     seeds = s.get_seeds()
+    console_clear_line()
+
     seeds_dict_indexed_by_value = {}
     for seed in seeds:
         seeds_dict_indexed_by_value[seed["value"]] = seed
@@ -222,20 +235,45 @@ def cli_delete_seeds(args: argparse.Namespace):
         else:
             console.print("Error, no seed id or value for seed.")
 
-    seed_ids_deleted = []
     if len(seed_ids_to_delete) == 0:
         console.print("No seeds to delete.")
         sys.exit(0)
 
-    for seed_id in track(seed_ids_to_delete, description="Deleting seeds..."):
-        if isinstance(seed_id, str):  # pragma: no cover
-            console.print(f"Invalid seed id {seed_id}")
-            continue
+    seed_ids_deleted = []
+
+    # Create a lock to protect shared variables
+    lock = threading.Lock()
+
+    def delete_seed(seed_id: int, progress: Progress, task_id: TaskID):
         try:
             s.delete_seed_by_id(seed_id)
-            seed_ids_deleted.append(seed_id)
+            with lock:
+                nonlocal seed_ids_deleted
+                seed_ids_deleted.append(seed_id)
         except CensysSeedNotFoundException:  # pragma: no cover
-            seed_ids_not_found.append(seed_id)
+            with lock:
+                nonlocal seed_ids_not_found
+                seed_ids_not_found.append(seed_id)
+        progress.update(task_id, advance=1)
+
+    # Create a rich Progress instance
+    with Progress() as progress:
+        progress_task_id = progress.add_task(
+            "[cyan]Deleting[/cyan]",
+            total=len(seeds_to_delete)
+        )
+        tasks = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
+            # Submit requests using the executor
+            for seed_id in seed_ids_to_delete:
+                if isinstance(seed_id, str):  # pragma: no cover
+                    console.print(f"Invalid seed id {seed_id}")
+                    continue
+                task = executor.submit(delete_seed, seed_id, progress, progress_task_id)
+                tasks.append(task)
+
+            # Wait for all requests to complete
+            concurrent.futures.wait(tasks)
 
     console.print(f"Deleted {len(seed_ids_deleted)} seeds.")
     if len(seed_ids_not_found) > 0:
@@ -257,18 +295,41 @@ def cli_delete_all_seeds(args: argparse.Namespace):
             show_default=True,
             console=console,
         )
-        sys.stdout.write("\033[F")  # Move the cursor to the previous line
-        sys.stdout.write("\033[K")  # Clear the line
+        console_clear_line()
         if not delete_all:
             sys.exit(1)
 
     s = Seeds(args.api_key)
+
+    console.print("Getting seeds...")
     seeds = s.get_seeds()
+    console_clear_line()
 
-    for seed in track(seeds, description="Deleting seeds..."):
-        s.delete_seed_by_id(seed["id"])
+    # Create a lock to protect shared variables
+    lock = threading.Lock()
+    seeds_delete_count = 0
 
-    console.print(f"Deleted {len(seeds)} seeds.")
+    def delete_seed(seed_id: int, progress: Progress, task_id: TaskID):
+        s.delete_seed_by_id(seed_id)
+        with lock:
+            nonlocal seeds_delete_count
+            seeds_delete_count += 1
+        progress.update(task_id, advance=1)
+
+    # Create a rich Progress instance
+    with Progress() as progress:
+        progress_task_id = progress.add_task("[cyan]Deleting[/cyan]", total=len(seeds))
+        tasks = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
+            # Submit requests using the executor
+            for seed in seeds:
+                task = executor.submit(delete_seed, seed["id"], progress, progress_task_id)
+                tasks.append(task)
+
+            # Wait for all requests to complete
+            concurrent.futures.wait(tasks)
+
+    console.print(f"Deleted {seeds_delete_count} of {len(seeds)} total seeds.")
 
 
 def cli_delete_seeds_with_label(args: argparse.Namespace):
@@ -327,30 +388,32 @@ def cli_list_seeds(args: argparse.Namespace):
         console.print("id,type,value,label,source,createdOn")
         for seed in res:
             console.print(
-                f"{seed['id']},{seed['type']},{seed['value']},{seed['label']},{seed['source']},{seed['createdOn']}"
+                f"{seed['id']},{seed['type']},{seed['value']},{seed['label']},{seed['source']},{seed['createdOn']}"  # noqa: E231
             )
     else:
         console.print_json(json.dumps(res))
 
 
-def add_seed_arguments(parser: argparse._SubParsersAction) -> None:
+def add_seed_arguments(parser: argparse._SubParsersAction, is_delete=False) -> None:
     """Add seed arguments to parser.
 
     Args:
         parser (argparse._SubParsersAction): Parser.
+        is_delete (Boolean): Is this a delete command.
     """
-    parser.add_argument(  # type: ignore[attr-defined]
-        "--default-type",
-        help="type of the seed(s) if type is not already provided (default: %(default)s)",
-        choices=SEED_TYPES,
-        default="IP_ADDRESS",
-    )
-    parser.add_argument("--csv", help="output in CSV format", action="store_true")  # type: ignore[attr-defined]
+    if not is_delete:
+        parser.add_argument(  # type: ignore[attr-defined]
+            "--default-type",
+            help="type of the seed(s) if type is not already provided (default: %(default)s)",
+            choices=SEED_TYPES,
+            default="IP_ADDRESS",
+        )
+    parser.add_argument("--csv", help="process input in CSV format", action="store_true")  # type: ignore[attr-defined]
     seeds_group = parser.add_mutually_exclusive_group(required=True)  # type: ignore[attr-defined]
     seeds_group.add_argument(
         "--input-file",
         "-i",
-        help="input file name containing valid json seeds (use - for stdin)",
+        help="input file name containing valid seeds in JSON format, unless --csv is specified (use - for stdin)",
         type=str,
     )
     seeds_group.add_argument(
@@ -371,12 +434,15 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     asm_parser = parent_parser.add_parser(
         "asm", description="Interact with the Censys ASM API", help="interact with ASM"
     )
-    asm_parser.add_argument(
-        "-v",
-        "--verbose",
-        help="verbose output",
-        action="store_true",
-    )
+
+    def add_verbose(parser):
+        parser.add_argument(
+            "-v",
+            "--verbose",
+            help="verbose output",
+            action="store_true",
+        )
+
     asm_subparser = asm_parser.add_subparsers()
 
     # Add config command
@@ -387,13 +453,13 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     )
     config_parser.set_defaults(func=cli_asm_config)
 
-    # Add seed command
     add_parser = asm_subparser.add_parser(
         "add-seeds",
         description="Add seeds to ASM",
         help="add seeds",
         parents=[parents["asm_auth"]],
     )
+    add_verbose(add_parser)
     add_seed_arguments(add_parser)
     add_parser.add_argument(
         "-l",
@@ -410,7 +476,8 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         help="delete seeds",
         parents=[parents["asm_auth"]],
     )
-    add_seed_arguments(delete_parser)
+    add_verbose(delete_parser)
+    add_seed_arguments(delete_parser, True)
     delete_parser.set_defaults(func=cli_delete_seeds)
 
     delete_all_parser = asm_subparser.add_parser(
@@ -425,6 +492,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         help="force delete all (no confirmation prompt)",
         action="store_true",
     )
+    add_verbose(delete_all_parser)
     delete_all_parser.set_defaults(func=cli_delete_all_seeds)
 
     delete_with_label_parser = asm_subparser.add_parser(
@@ -441,6 +509,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         default="",
         required=True,
     )
+    add_verbose(delete_with_label_parser)
     delete_with_label_parser.set_defaults(func=cli_delete_seeds_with_label)
 
     replace_with_label_parser = asm_subparser.add_parser(
@@ -457,6 +526,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         default="",
         required=True,
     )
+    add_verbose(replace_with_label_parser)
     add_seed_arguments(replace_with_label_parser)
     replace_with_label_parser.set_defaults(func=cli_replace_seeds_with_label)
 
@@ -469,7 +539,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     list_parser.add_argument(
         "-t",
         "--type",
-        help="type of the seed to list, if not specified, all types returned)",
+        help="type of the seed to list, if not specified, all types returned",
         choices=SEED_TYPES,
         default="",
     )
@@ -483,4 +553,5 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     list_parser.add_argument(
         "--csv", help="output in CSV format (otherwise JSON)", action="store_true"
     )
+    add_verbose(list_parser)
     list_parser.set_defaults(func=cli_list_seeds)
