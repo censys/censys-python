@@ -319,6 +319,47 @@ class CensysASMCliTest(CensysTestCase):
         # Actual call
         cli_main()
 
+    def test_add_seeds_from_file_csv_without_flag(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "add-seeds",
+                "-i",
+                "seeds.csv",
+            ],
+            asm_auth=True,
+        )
+        # Just to make sure we're reading from the fake file
+        self.mocker.patch("censys.common.config.CONFIG_PATH", TEST_CONFIG_PATH)
+        self.mocker.patch(
+            "builtins.open",
+            new_callable=self.mocker.mock_open,
+            read_data="\n".join(
+                ["type,value", "IP_ADDRESS,1.1.1.1", "CIDR,192.168.0.15/24"]
+            ),
+        )
+        self.responses.add(
+            responses.POST,
+            V1_URL + "/seeds",
+            status=200,
+            json=ADD_SEEDS_JSON,
+            match=[
+                json_params_matcher(
+                    {
+                        "seeds": [
+                            {"value": "1.1.1.1", "type": "IP_ADDRESS", "label": ""},
+                            {"value": "192.168.0.15/24", "type": "CIDR", "label": ""},
+                        ]
+                    }
+                )
+            ],
+        )
+
+        # Actual call
+        cli_main()
+
     def test_add_seeds_invalid_json(self):
         # Mock
         self.patch_args(

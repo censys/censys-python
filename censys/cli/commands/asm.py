@@ -105,15 +105,18 @@ def get_seeds_from_params(
     Returns:
         List[Dict[str, str]]: List of seeds.
     """
+    is_csv = args.csv
     if args.input_file or args.json:
         json_data = None
         if args.input_file:
             if args.input_file == "-":
                 file = sys.stdin
             else:
+                if not args.csv and args.input_file.split(".")[-1] == "csv":
+                    is_csv = True
                 file = open(args.input_file)  # noqa: SIM115
 
-            if args.csv:
+            if is_csv:
                 seeds = []
                 csv_reader = csv.DictReader(file, delimiter=",")
                 # downshift Censys ASM csv export headings (which are capitalized)
