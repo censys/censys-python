@@ -94,13 +94,13 @@ def get_seeds_from_xml(file: str) -> List[Dict[str, str]]:
 
 
 def get_seeds_from_params(
-    args: argparse.Namespace, is_delete=False
+    args: argparse.Namespace, command_name: str
 ) -> List[Dict[str, Union[str, int]]]:
     """Get seeds from params.
 
     Args:
         args (Namespace): Argparse Namespace.
-        is_delete (bool, optional): Whether or not this is a delete operation. Defaults to False.
+        command_name (str): The name of the command getting the seeds to be processed.
 
     Returns:
         List[Dict[str, str]]: List of seeds.
@@ -141,27 +141,29 @@ def get_seeds_from_params(
     seeds_to_add = []
     for seed in seeds:
         if isinstance(seed, dict):
-            if not is_delete and "type" not in seed:
+            if command_name != "delete-seeds" and "type" not in seed:
                 seed["type"] = args.default_type
         elif isinstance(seed, str):
             seed = {"value": seed}
-            if not is_delete:
+            if command_name != "delete-seeds":
                 seed["type"] = args.default_type
         else:
             console.print(f"Invalid seed {seed}")
             sys.exit(1)
-        if "label" not in seed and "label" in args:
+        if command_name != "replace-labeled-seeds" and "label" not in seed and "label" in args:
             seed["label"] = args.label
 
         # The back end is really picky about sending extra fields, so we'll prune out anything it won't like.
         # This makes it possible to output to CSV, edit, and then pipe the same CSV back into add-seeds, where
         # we will strip the id, source, createdOn, and any other junk that might be there
         #
-        valid_params = ["type", "value", "label"]
-        if is_delete:
+        valid_params = ["type", "value"]
+        if command_name == "add-seeds":
+            valid_params.append("label")
+        if command_name == "delete-seeds":
             valid_params.append("id")
-        filtered_seed = {key: seed[key] for key in seed if key in valid_params}
-        seeds_to_add.append(filtered_seed)
+        filtered_seeds = {key: seed[key] for key in seed if key in valid_params}
+        seeds_to_add.append(filtered_seeds)
 
     return seeds_to_add
 
@@ -178,7 +180,7 @@ def cli_add_seeds(args: argparse.Namespace):
     Args:
         args (Namespace): Argparse Namespace.
     """
-    seeds_to_add = get_seeds_from_params(args)
+    seeds_to_add = get_seeds_from_params(args, "add-seeds")
 
     s = Seeds(args.api_key)
     to_add_count = len(seeds_to_add)
@@ -208,7 +210,7 @@ def cli_delete_seeds(args: argparse.Namespace):
     Args:
         args (Namespace): Argparse Namespace.
     """
-    seeds_to_delete = get_seeds_from_params(args, True)
+    seeds_to_delete = get_seeds_from_params(args, "delete-seeds")
     s = Seeds(args.api_key)
 
     # Get all seeds into a dict indexed by value (for later lookups)
@@ -349,8 +351,9 @@ def cli_replace_seeds_with_label(args: argparse.Namespace):
     Args:
         args (Namespace): Argparse Namespace.
     """
-    seeds_to_add = get_seeds_from_params(args)
+    seeds_to_add = get_seeds_from_params(args, "replace-labeled-seeds")
     s = Seeds(args.api_key)
+
     res = s.replace_seeds_by_label(args.label, seeds_to_add, True)
     console.print(
         f"Removed {len(res['removedSeeds'])} seeds.  Added {len(res['addedSeeds'])} seeds.  Skipped {len(res['skippedReservedSeeds'])} reserved seeds."

@@ -1026,7 +1026,7 @@ class CensysASMCliTest(CensysTestCase):
                 json.dumps(
                     [
                         {"value": "1.1.1.1"},
-                        {"value": "192.168. 0.15/24", "type": "CIDR"},
+                        {"value": "192.168. 0.15/24", "type": "CIDR", "label": "Test Label"},
                     ]
                 ),
             ],
@@ -1044,13 +1044,11 @@ class CensysASMCliTest(CensysTestCase):
                         "id": 100,
                         "value": "1.1.1.1",
                         "type": "IP_ADDRESS",
-                        "label": "Test",
                     },
                     {
                         "id": 101,
                         "value": "192.168. 0.15/24",
                         "type": "CIDR",
-                        "label": "Test",
                     },
                 ],
             },
