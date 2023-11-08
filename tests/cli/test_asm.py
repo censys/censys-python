@@ -1018,6 +1018,34 @@ class CensysASMCliTest(CensysTestCase):
             in temp_stdout.getvalue()
         )
 
+    def test_delete_seeds_id_and_value(self):
+        # Mock
+        self.patch_args(
+            ["censys", "asm", "delete-seeds", "-j", json.dumps([{"id": 1, "value": "1.2.3.4"}])],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            V1_URL + "/seeds",
+            status=200,
+            json=GET_SEEDS_JSON,
+            match=[matchers.query_param_matcher({})],
+        )
+        self.responses.add(
+            responses.DELETE,
+            V1_URL + "/seeds/2",
+            status=200,
+            match=[matchers.query_param_matcher({})],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert 'Deleted 1 seeds.\n' in temp_stdout.getvalue()
+
     def test_delete_labeled_seeds(self):
         # Mock
         self.patch_args(

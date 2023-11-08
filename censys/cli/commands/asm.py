@@ -163,7 +163,7 @@ def get_seeds_from_params(
         valid_params = ["type", "value"]
         if command_name == "add-seeds":
             valid_params.append("label")
-        if command_name == "delete-seeds":
+        if command_name == "delete-seeds" and "value" not in seed:
             valid_params.append("id")
         filtered_seeds = {key: seed[key] for key in seed if key in valid_params}
         seeds_to_add.append(filtered_seeds)
