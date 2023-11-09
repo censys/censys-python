@@ -5,7 +5,6 @@ import os
 from io import StringIO
 from pathlib import Path
 from typing import Dict, Optional, Tuple
-from unittest.mock import mock_open
 from urllib.parse import urlencode
 
 import pytest
@@ -65,7 +64,7 @@ class CensysCliSearchTest(CensysTestCase):
         # Mock
         self.patch_args(["censys", "search", "test"])
         self.mocker.patch(
-            "builtins.open", new_callable=mock_open, read_data="[DEFAULT]"
+            "builtins.open", new_callable=self.mocker.mock_open, read_data="[DEFAULT]"
         )
         self.mocker.patch.dict(
             "os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""}

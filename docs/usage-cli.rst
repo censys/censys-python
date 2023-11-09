@@ -139,11 +139,20 @@ You can also request the JSON version of your account information.
 ``add-seeds``
 ^^^^^^^^^^^^^
 
+See CLI command :ref:`asm add-seeds<cli:censys asm add-seeds>` for detail documentation of parameters.
+
 Below we show an example of adding seeds from the CLI.
 
 .. prompt:: bash
 
     censys asm add-seeds -j '["1.1.1.1"]'
+
+You can add seeds from JSON or CSV files. JSON is assumed unless ``--csv`` is specified.
+The CSV file option is shown here .
+
+.. prompt:: bash
+
+    censys asm add-seeds --csv -i 'good_seeds.csv'
 
 You can also add seeds from STDIN using the ``-i -`` argument.
 In the example below we are adding IPs from a Censys Search.
@@ -152,10 +161,91 @@ In the example below we are adding IPs from a Censys Search.
 
     censys search 'services.tls.certificates.leaf_data.issuer.common_name: "Roomba CA"' | jq '[.[] | .ip]' | censys asm add-seeds -i -
 
-You can also add seeds from a nmap XML file using the ``--nmap-xml`` argument.
+You can also add seeds from an nmap XML file using the ``--nmap-xml`` argument.
 In the example below we are adding IPs from a nmap scan on ``censys.io``.
 
 .. prompt:: bash
 
     nmap censys.io -oX censys.xml
     censys asm add-seeds --nmap-xml censys.xml
+
+``delete-seeds``
+^^^^^^^^^^^^^^^^
+
+See CLI command :ref:`asm delete-seeds<cli:censys asm delete-seeds>` for detail documentation of parameters.
+
+Below we show an example of deleting seeds from the CLI.
+
+.. prompt:: bash
+
+    censys asm delete-seeds -j '["1.1.1.1"]'
+
+You can delete seeds using file input as well, including CSV files.
+
+.. prompt:: bash
+
+    censys asm delete-seeds -csv -i 'bad_seeds.csv'
+
+``delete-all-seeds``
+^^^^^^^^^^^^^^^^^^^^
+
+See CLI command :ref:`asm delete-all-seeds<cli:censys asm delete-all-seeds>` for detail documentation of parameters.
+
+Below we show an example of deleting all seeds from the CLI.  You will be prompted to confirm.
+
+.. prompt:: bash
+
+    censys asm delete-all-seeds
+
+If you want to delete all seeds without a prompt, you can use the ``--force`` parameter.
+
+.. prompt:: bash
+
+    censys asm delete-all-seeds --force
+
+
+``delete-labeled-seeds``
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+See CLI command :ref:`asm delete-labeled-seeds<cli:censys asm delete-labeled-seeds>` for detail documentation of parameters.
+
+Below we show an example of deleting all seeds with a given label from the CLI.
+
+.. prompt:: bash
+
+    censys asm delete-labeled-seeds -l "Some Label"
+
+``replace-labeled-seeds``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See CLI command :ref:`asm replace-labeled-seeds<cli:censys asm replace-labeled-seeds>` for detail documentation of parameters.
+
+Below we show an example of replacing labeled seeds from the CLI, which will replace all existing seeds that have
+the specified label with the provided seeds, which will also have that label applied.
+
+.. prompt:: bash
+
+    censys asm replace-labeled-seeds -l "Some Label" -j '["1.1.1.1"]'
+
+You can also use a variety of methods to specific the new seeds, including providing them in a CSV file.
+
+.. prompt:: bash
+
+    censys asm replace-labeled-seeds -l "Some Label" --csv -i 'new_seeds.csv'
+
+``list-seeds``
+^^^^^^^^^^^^^^
+
+See CLI command :ref:`asm list-seeds<cli:censys asm list-seeds>` for detail documentation of parameters.
+
+Below we show an example of listing all seeds in CSV file format and appending it to a file.
+
+.. prompt:: bash
+
+    censys asm list-seeds --csv >> seeds.csv
+
+You can also filter the seeds by type (``-t``) and/or label (``-l``).
+
+.. prompt:: bash
+
+    censys asm list-seeds -t 'IP_ADDRESS' -l 'Some Label' >> filtered_seeds.json

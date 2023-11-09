@@ -101,7 +101,7 @@ namespace_packages = true
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
-module = ["parameterized", "rich"]
+module = ["parameterized", "rich", "attr"]
 ignore_missing_imports = true
 
 [build-system]
