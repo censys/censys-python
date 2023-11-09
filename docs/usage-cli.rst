@@ -153,7 +153,7 @@ The CSV file option is shown here .
 .. prompt:: bash
 
     censys asm add-seeds --csv -i 'good_seeds.csv'
-    
+
 You can also add seeds from STDIN using the ``-i -`` argument.
 In the example below we are adding IPs from a Censys Search.
 

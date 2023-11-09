@@ -801,11 +801,7 @@ class CensysASMCliTest(CensysTestCase):
             "builtins.open",
             new_callable=self.mocker.mock_open,
             read_data="\n".join(
-                [
-                    "type,value",
-                    "IP_ADDRESS,1.2.3.4",
-                    "CIDR,200.200.200.0/24"
-                ]
+                ["type,value", "IP_ADDRESS,1.2.3.4", "CIDR,200.200.200.0/24"]
             ),
         )
 
@@ -857,11 +853,7 @@ class CensysASMCliTest(CensysTestCase):
             "builtins.open",
             new_callable=self.mocker.mock_open,
             read_data="\n".join(
-                [
-                    "Type,Value",
-                    "IP_ADDRESS,1.2.3.4",
-                    "CIDR,200.200.200.0/24"
-                ]
+                ["Type,Value", "IP_ADDRESS,1.2.3.4", "CIDR,200.200.200.0/24"]
             ),
         )
 
@@ -1021,7 +1013,13 @@ class CensysASMCliTest(CensysTestCase):
     def test_delete_seeds_id_and_value(self):
         # Mock
         self.patch_args(
-            ["censys", "asm", "delete-seeds", "-j", json.dumps([{"id": 1, "value": "1.2.3.4"}])],
+            [
+                "censys",
+                "asm",
+                "delete-seeds",
+                "-j",
+                json.dumps([{"id": 1, "value": "1.2.3.4"}]),
+            ],
             asm_auth=True,
         )
         self.responses.add(
@@ -1044,7 +1042,7 @@ class CensysASMCliTest(CensysTestCase):
             cli_main()
 
         # Assertions
-        assert 'Deleted 1 seeds.\n' in temp_stdout.getvalue()
+        assert "Deleted 1 seeds.\n" in temp_stdout.getvalue()
 
     def test_delete_labeled_seeds(self):
         # Mock
@@ -1095,7 +1093,11 @@ class CensysASMCliTest(CensysTestCase):
                 json.dumps(
                     [
                         {"value": "1.1.1.1"},
-                        {"value": "192.168. 0.15/24", "type": "CIDR", "label": "Test Label"},
+                        {
+                            "value": "192.168. 0.15/24",
+                            "type": "CIDR",
+                            "label": "Test Label",
+                        },
                     ]
                 ),
             ],

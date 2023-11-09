@@ -112,15 +112,18 @@ def get_seeds_from_params(
             if args.input_file == "-":
                 file = sys.stdin
             else:
-                if not args.csv and args.input_file.split(".")[-1] == "csv":
+                if not args.csv and args.input_file.endswith(".csv"):
                     is_csv = True
                 file = open(args.input_file)  # noqa: SIM115
 
             if is_csv:
                 seeds = []
                 csv_reader = csv.DictReader(file, delimiter=",")
-                # downshift Censys ASM csv export headings (which are capitalized)
-                csv_reader.fieldnames = [string.lower() for string in csv_reader.fieldnames]
+                if csv_reader.fieldnames:
+                    # Lowercase the field names
+                    csv_reader.fieldnames = [
+                        string.lower() for string in csv_reader.fieldnames
+                    ]
                 for row in csv_reader:
                     seeds.append(row)
             else:
@@ -143,17 +146,21 @@ def get_seeds_from_params(
 
     seeds_to_add = []
     for seed in seeds:
-        if isinstance(seed, dict):
-            if command_name != "delete-seeds" and "type" not in seed:
-                seed["type"] = args.default_type
-        elif isinstance(seed, str):
+        if isinstance(seed, str):
             seed = {"value": seed}
-            if command_name != "delete-seeds":
-                seed["type"] = args.default_type
-        else:
+
+        if not isinstance(seed, dict):
             console.print(f"Invalid seed {seed}")
             sys.exit(1)
-        if command_name != "replace-labeled-seeds" and "label" not in seed and "label" in args:
+
+        if command_name != "delete-seeds" and "type" not in seed:
+            seed["type"] = args.default_type
+
+        if (
+            command_name != "replace-labeled-seeds"
+            and "label" not in seed
+            and "label" in args
+        ):
             seed["label"] = args.label
 
         # The back end is really picky about sending extra fields, so we'll prune out anything it won't like.
@@ -163,7 +170,7 @@ def get_seeds_from_params(
         valid_params = ["type", "value"]
         if command_name == "add-seeds":
             valid_params.append("label")
-        if command_name == "delete-seeds" and "value" not in seed:
+        elif command_name == "delete-seeds" and "value" not in seed:
             valid_params.append("id")
         filtered_seeds = {key: seed[key] for key in seed if key in valid_params}
         seeds_to_add.append(filtered_seeds)
@@ -228,11 +235,10 @@ def cli_delete_seeds(args: argparse.Namespace):
     seed_ids_to_delete = []
     seed_ids_not_found = []
     for seed_to_delete in seeds_to_delete:
-        if "id" in seed_to_delete:
-            seed_ids_to_delete.append(seed_to_delete["id"])
-        elif "value" in seed_to_delete:
+        if seed_id := seed_to_delete.get("id"):
+            seed_ids_to_delete.append(seed_id)
+        elif seed_value := seed_to_delete.get("value"):
             # value may not be in current seeds - can't delete
-            seed_value = seed_to_delete["value"]
             if seed_value in seeds_dict_indexed_by_value:
                 seed_ids_to_delete.append(seeds_dict_indexed_by_value[seed_value]["id"])
             else:
@@ -264,8 +270,7 @@ def cli_delete_seeds(args: argparse.Namespace):
     # Create a rich Progress instance
     with Progress() as progress:
         progress_task_id = progress.add_task(
-            "[cyan]Deleting[/cyan]",
-            total=len(seeds_to_delete)
+            "[cyan]Deleting[/cyan]", total=len(seeds_to_delete)
         )
         tasks = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
@@ -328,7 +333,9 @@ def cli_delete_all_seeds(args: argparse.Namespace):
         with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
             # Submit requests using the executor
             for seed in seeds:
-                task = executor.submit(delete_seed, seed["id"], progress, progress_task_id)
+                task = executor.submit(
+                    delete_seed, seed["id"], progress, progress_task_id
+                )
                 tasks.append(task)
 
             # Wait for all requests to complete
