@@ -148,11 +148,24 @@ Below we show an example of adding seeds from the CLI.
     censys asm add-seeds -j '["1.1.1.1"]'
 
 You can add seeds from JSON or CSV files. JSON is assumed unless ``--csv`` is specified.
-The CSV file option is shown here .
+The CSV file option is shown here.
 
 .. prompt:: bash
 
     censys asm add-seeds --csv -i 'good_seeds.csv'
+
+.. list-table:: CSV File Format
+   :header-rows: 1
+
+   * - type
+     - value
+     - label
+   * - IP_ADDRESS
+     - 1.1.1.1
+     - Example Label
+   * - DOMAIN_NAME
+     - one.one.one.one
+     - Example Label
 
 You can also add seeds from STDIN using the ``-i -`` argument.
 In the example below we are adding IPs from a Censys Search.
@@ -184,7 +197,23 @@ You can delete seeds using file input as well, including CSV files.
 
 .. prompt:: bash
 
-    censys asm delete-seeds -csv -i 'bad_seeds.csv'
+    censys asm delete-seeds --csv -i 'bad_seeds.csv'
+
+.. list-table:: CSV File Format
+   :header-rows: 1
+
+   * - id
+     - type
+     - value
+     - label
+   * - 1
+     - IP_ADDRESS
+     - 1.1.1.1
+     - Example Label
+   * - 2
+     - DOMAIN_NAME
+     - one.one.one.one
+     - Example Label
 
 ``delete-all-seeds``
 ^^^^^^^^^^^^^^^^^^^^
