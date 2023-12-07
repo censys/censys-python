@@ -4,7 +4,7 @@ from censys.asm import HostsAssets, Logbook
 logbook = Logbook()
 hosts = HostsAssets()
 
-cursor = logbook.get_cursor(filogbookters=["HOST_RISK"])
+cursor = logbook.get_cursor(filters=["HOST_RISK"])
 events = logbook.get_events(cursor)
 
 for event in events:
