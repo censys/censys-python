@@ -15,6 +15,12 @@ TEST_EVENT_JSON = {
     "srcID": "string",
     "ts": "2022-02-15T20:22:30.262Z",
 }
+TEST_RISK_EVENTS_JSON = {
+    "total": 1,
+    "next": "eyJhZnRlcklEIjo3NzQwLCJsaW1pdCI6MTAwfQ==",
+    "events": [TEST_EVENT_JSON],
+    "endOfEvents": True,
+}
 TEST_RISK_INSTANCE_JSON = {
     "id": 0,
     "events": [TEST_EVENT_JSON],
@@ -69,6 +75,36 @@ class RisksTests(CensysTestCase):
     def setUp(self):
         super().setUp()
         self.setUpApi(Risks(self.api_key))
+
+    @parameterized.expand(
+        [
+            ({}, ""),
+            (
+                {"start": "2023-12-14T03:27:00Z", "end": "2022-03-18T09:18:54Z"},
+                "?start=2023-12-14T03:27:00Z&end=2022-03-18T09:18:54Z"
+            ),
+            (
+                {"after_id": 489, "limit": 100},
+                "?afterID=489&limit=100"
+            ),
+            (
+                {"cursor": "eyJhZnRlcklEIjo3NzQwLCJsaW1pdCI6MTAwfQ=="},
+                "?cursor=eyJhZnRlcklEIjo3NzQwLCJsaW1pdCI6MTAwfQ=="
+            ),
+        ]
+    )
+    def test_get_risk_events(self, kwargs, params):
+        # Setup response
+        self.responses.add(
+            responses.GET,
+            V2_URL + f"/risk-events{params}",
+            status=200,
+            json=TEST_RISK_EVENTS_JSON,
+        )
+        # Actual call
+        res = self.api.get_risk_events(**kwargs)
+        # Assertions
+        assert res == TEST_RISK_EVENTS_JSON
 
     @parameterized.expand(
         [
