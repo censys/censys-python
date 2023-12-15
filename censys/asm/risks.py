@@ -8,8 +8,48 @@ class Risks(CensysAsmAPI):
     """Risks API class."""
 
     base_path = "/v2/risk"
+    risk_events_path = f"{base_path}-events"
     risk_instances_path = f"{base_path}-instances"
     risk_types_path = f"{base_path}-types"
+
+    def get_risk_events(
+        self,
+        start: Optional[str] = None,
+        end: Optional[str] = None,
+        after_id: Optional[int] = None,
+        limit: Optional[int] = None,
+        cursor: Optional[str] = None,
+        accept: Optional[str] = None,
+    ) -> dict:
+        """Retrieve risk events.
+
+        Args:
+            start (str): Optional; Starting event time, inclusive (in RFC3339 format).
+            end (str): Optional; Ending event time, inclusive (in RFC3339 format).
+            after_id (int): Optional; Risk event ID to query for events after.
+            limit (int): Optional; Max number of events to return.
+            cursor (str): Optional; Cursor value to continue collecting events started in a previous request.
+            accept (str): Optional; Accept header.
+
+        Returns:
+            dict: Risk events result.
+        """
+        args = {}
+        if start:
+            args["start"] = start
+        if end:
+            args["end"] = end
+        if after_id:
+            args["afterID"] = after_id
+        if limit:
+            args["limit"] = limit
+        if cursor:
+            args["cursor"] = cursor
+        return self._get(
+            self.risk_events_path,
+            args=args,
+            headers={"Accept": accept} if accept else None,
+        )
 
     def get_risk_instances(
         self, include_events: Optional[bool] = None, accept: Optional[str] = None

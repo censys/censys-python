@@ -250,6 +250,10 @@ Below we show an example of **getting risk instances**.
 
     r = Risks()
 
+    # Get risk events
+    risk_events = r.get_risk_events()
+    print(risk_events)
+
     # Get a dict that returns all risk instances
     risk_instances = r.get_risk_instances()
     print(risk_instances)
