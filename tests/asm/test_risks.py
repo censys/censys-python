@@ -81,15 +81,12 @@ class RisksTests(CensysTestCase):
             ({}, ""),
             (
                 {"start": "2023-12-14T03:27:00Z", "end": "2022-03-18T09:18:54Z"},
-                "?start=2023-12-14T03:27:00Z&end=2022-03-18T09:18:54Z"
+                "?start=2023-12-14T03:27:00Z&end=2022-03-18T09:18:54Z",
             ),
-            (
-                {"after_id": 489, "limit": 100},
-                "?afterID=489&limit=100"
-            ),
+            ({"after_id": 489, "limit": 100}, "?afterID=489&limit=100"),
             (
                 {"cursor": "eyJhZnRlcklEIjo3NzQwLCJsaW1pdCI6MTAwfQ=="},
-                "?cursor=eyJhZnRlcklEIjo3NzQwLCJsaW1pdCI6MTAwfQ=="
+                "?cursor=eyJhZnRlcklEIjo3NzQwLCJsaW1pdCI6MTAwfQ==",
             ),
         ]
     )
