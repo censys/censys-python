@@ -1,5 +1,5 @@
 """Interact with the Censys Risks API."""
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from .api import CensysAsmAPI
 
@@ -34,7 +34,7 @@ class Risks(CensysAsmAPI):
         Returns:
             dict: Risk events result.
         """
-        args = {}
+        args: Dict[str, Any] = {}
         if start:
             args["start"] = start
         if end:
