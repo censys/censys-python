@@ -39,7 +39,7 @@ jobs:
 
       - name: Get all doc files that have changed
         id: changed_docs
-        uses: tj-actions/changed-files@v37
+        uses: tj-actions/changed-files@v41
         with:
           files: |
             docs
