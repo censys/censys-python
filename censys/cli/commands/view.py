@@ -27,7 +27,7 @@ def cli_view(args: argparse.Namespace):
     """
     if args.open:
         webbrowser.open(
-            f"https://search.censys.io/{args.index_type}/{args.document_id}"
+            f"https://search.censys.io/{args.index_type}/{args.document_id}"  # noqa: E231
         )
         sys.exit(0)
 

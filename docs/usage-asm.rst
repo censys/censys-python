@@ -1,7 +1,7 @@
 ASM Usage
 =========
 
-The Censys ASM API provides functionality for interacting with Censys ASM endpoints such as Seeds, Assets, Logbook Events, Risks, and Inventory Search.
+The Censys ASM API provides functionality for interacting with Censys ASM endpoints such as Seeds, Assets, Logbook Events, Risks, Inventory Search, and Saved Queries.
 
 The following API clients provided are:
 
@@ -11,10 +11,11 @@ The following API clients provided are:
 -  :attr:`risks <censys.asm.risks.Risks>` - Returns risk data for hosts, certificates, and domains. This option also allows the user to get more information about a specific risk.
 -  :attr:`inventory <censys.asm.inventory.InventorySearch>` - Returns inventory data for hosts, certificates, and domains. This option also allows the user to Search for assets based on a variety of criteria.
 -  :attr:`web entities <censys.asm.assets.web_entities.WebEntitiesAssets>` - Returns web entities instances. This option also allows the user to manage tags and comments on web entities.
+- :attr:`saved queries <censys.asm.saved_queries.SavedQueries>` - Returns saved queries. This option also allows the user to manage saved queries.
 
 More details about each option can be found in the `Censys ASM API documentation <https://app.censys.io/api-docs>`__. Users can also test example requests from the API documentation page.
 
-Python class objects can be used individually, but must be initialized for each resource type (Seeds, Assets, Events, Risks, Inventory, Clouds).
+Python class objects can be used individually, but must be initialized for each resource type (Seeds, Assets, Events, Risks, Inventory, Clouds, SavedQueries).
 
 -  :attr:`Seeds <censys.asm.Seeds>`
 -  :attr:`Assets <censys.asm.Assets>`
@@ -29,8 +30,9 @@ Python class objects can be used individually, but must be initialized for each 
 -  :attr:`Logbook <censys.asm.logbook.Logbook>`
 -  :attr:`Risks <censys.asm.risks.Risks>`
 -  :attr:`InventorySearch <censys.asm.inventory.InventorySearch>`
+-  :attr:`SavedQueries <censys.asm.saved_queries.SavedQueries>`
 
-Alternatively, all three class objects can be used together by initializing an AsmClient object. This client wraps the three APIs under one object for ease of use.
+Alternatively, all class objects can be used together by initializing an AsmClient object. This client wraps the APIs under one object for ease of use.
 
 -  :attr:`AsmClient <censys.asm.AsmClient>`
 
@@ -293,6 +295,35 @@ Below we show an example of **searching for assets**.
     fields = i.fields()
     print(fields)
 
+``SavedQueries``
+----------------
+
+Below we show an example of **managing saved queries**.
+
+.. code:: python
+
+    from censys.asm import SavedQueries
+
+    s = SavedQueries()
+
+    # Get a dict that contains a list of saved queries
+    saved_queries = s.get_saved_queries()
+    print(saved_queries)
+
+    # Get a single saved query by ID
+    saved_query = s.get_saved_query_by_id("query_id")
+    print(saved_query)
+
+    # Add a saved query
+    saved_query = s.add_saved_query("my_saved_query", "host.services.http.response.body: /.*test.*/")
+    print(saved_query)
+
+    # Update a saved query
+    saved_query = s.edit_saved_query_by_id("query_id", "my_updated_saved_query", "host.services.http.response.body: /.*test.*/")
+    print(saved_query)
+
+    # Delete a saved query
+    s.delete_saved_query_by_id("query_id")
 
 ``AsmClient``
 -------------

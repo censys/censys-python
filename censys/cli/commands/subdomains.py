@@ -24,7 +24,7 @@ def print_subdomains(subdomains: Set[str], as_json: bool = False):
         console.print_json(json.dumps(list(subdomains)))
     else:
         for subdomain in subdomains:
-            console.print(f"  - {subdomain}")
+            console.print(f"  - {subdomain}")  # noqa: E221
 
 
 def cli_subdomains(args: argparse.Namespace):  # pragma: no cover

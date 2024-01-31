@@ -32,7 +32,7 @@ def cli_account(args: argparse.Namespace):  # pragma: no cover
             quota = account["quota"]
             table.add_row(
                 "Query Quota",
-                f"{quota['used']} / {quota['allowance']} ({quota['used']/quota['allowance'] * 100 :.2f}%)",
+                f"{quota['used']} / {quota['allowance']} ({quota['used']/quota['allowance'] * 100 :.2f}%)",  # noqa
             )
             table.add_row("Quota Resets At", quota["resets_at"])
             console.print(table)

@@ -14,6 +14,7 @@ from .clouds import Clouds
 from .inventory import InventorySearch
 from .logbook import Events, Logbook
 from .risks import Risks
+from .saved_queries import SavedQueries
 from .seeds import Seeds
 
 __all__ = [
@@ -28,6 +29,7 @@ __all__ = [
     "InventorySearch",
     "Logbook",
     "Risks",
+    "SavedQueries",
     "Seeds",
     "SubdomainsAssets",
     "WebEntitiesAssets",

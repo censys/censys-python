@@ -69,7 +69,9 @@ def cli_search(args: argparse.Namespace):
 
     if args.open:
         url_query = {"q": args.query, "resource": index_type}
-        webbrowser.open(f"https://search.censys.io/search?{urlencode(url_query)}")
+        webbrowser.open(
+            f"https://search.censys.io/search?{urlencode(url_query)}"  # noqa: E231
+        )
         sys.exit(0)
 
     if args.timeout < 1:

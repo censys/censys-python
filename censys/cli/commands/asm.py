@@ -11,10 +11,12 @@ from xml.etree import ElementTree
 from rich.progress import Progress, TaskID
 from rich.prompt import Confirm, Prompt
 
+from censys.asm.saved_queries import SavedQueries
 from censys.asm.seeds import SEED_TYPES, Seeds
 from censys.cli.utils import console
 from censys.common.config import DEFAULT, get_config, write_config
 from censys.common.exceptions import (
+    CensysAsmException,
     CensysSeedNotFoundException,
     CensysUnauthorizedException,
 )
@@ -437,6 +439,97 @@ def add_seed_arguments(parser: argparse._SubParsersAction, is_delete=False) -> N
     )
 
 
+def cli_list_saved_queries(args: argparse.Namespace):
+    """List saved queries subcommand.
+
+    Args:
+        args (Namespace): Argparse Namespace.
+    """
+    s = SavedQueries(args.api_key)
+    try:
+        res = s.get_saved_queries(
+            args.query_name_prefix, args.page_size, args.page, args.filter_term
+        )
+
+        if args.csv:
+            console.print("queryId,queryName,query,createdAt")
+            for query in res["results"]:
+                console.print(
+                    f"{query['queryId']},{query['queryName']},{query['query']},{query['createdAt']}"  # noqa: E231
+                )
+        else:
+            console.print_json(json.dumps(res))
+    except KeyError:
+        console.print("Failed to get saved queries.")
+        sys.exit(1)
+
+
+def cli_add_saved_query(args: argparse.Namespace):
+    """Add saved query subcommand.
+
+    Args:
+        args (Namespace): Argparse Namespace.
+    """
+    s = SavedQueries(args.api_key)
+    res = s.add_saved_query(args.query, args.query_name)
+    try:
+        console.print(
+            f"Added saved query.\nQuery name: {res['result']['queryName']}\nQuery: {res['result']['query']}\nQuery ID: {res['result']['queryId']}\nCreated at: {res['result']['createdAt']}"
+        )
+    except (KeyError, CensysAsmException):
+        console.print("Failed to add saved query.")
+        sys.exit(1)
+
+
+def cli_get_saved_query_by_id(args: argparse.Namespace):
+    """Get saved query by id subcommand.
+
+    Args:
+        args (Namespace): Argparse Namespace.
+    """
+    s = SavedQueries(args.api_key)
+    res = s.get_saved_query_by_id(args.query_id)
+    try:
+        console.print(
+            f"Query name: {res['result']['queryName']}\nQuery: {res['result']['query']}\nQuery ID: {res['result']['queryId']}\nCreated at: {res['result']['createdAt']}"
+        )
+    except (KeyError, CensysAsmException):
+        console.print("Failed to get saved query.")
+        sys.exit(1)
+
+
+def cli_edit_saved_query_by_id(args: argparse.Namespace):
+    """Edit saved query by id subcommand.
+
+    Args:
+        args (Namespace): Argparse Namespace.
+    """
+    s = SavedQueries(args.api_key)
+    res = s.edit_saved_query_by_id(args.query_id, args.query, args.query_name)
+    try:
+        console.print(
+            f"Edited saved query.\nQuery name: {res['result']['queryName']}\nQuery: {res['result']['query']}\nQuery ID: {res['result']['queryId']}\nCreated at: {res['result']['createdAt']}"
+        )
+    except (KeyError, CensysAsmException):
+        console.print("Failed to edit saved query.")
+        sys.exit(1)
+
+
+def cli_delete_saved_query_by_id(args: argparse.Namespace):
+    """Delete saved query by id subcommand.
+
+    Args:
+        args (Namespace): Argparse Namespace.
+    """
+    s = SavedQueries(args.api_key)
+    res = s.delete_saved_query_by_id(args.query_id)
+    if res == {}:
+        console.print(f"Deleted saved query with ID {args.query_id}.")
+    else:
+        console.print("Failed to delete saved query.")
+        sys.exit(1)
+
+
 def include(parent_parser: argparse._SubParsersAction, parents: dict):
     """Include this subcommand into the parent parser.
 
@@ -568,3 +661,117 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     )
     add_verbose(list_parser)
     list_parser.set_defaults(func=cli_list_seeds)
+
+    list_saved_queries_parser = asm_subparser.add_parser(
+        "list-saved-queries",
+        description="List all ASM saved queries, optionally filtered by query name prefix and filter term",
+        help="list saved queries",
+        parents=[parents["asm_auth"]],
+    )
+    list_saved_queries_parser.add_argument(
+        "--query-name-prefix",
+        help="Prefix for the saved query name to filter by",
+        type=str,
+        default="",
+    )
+    list_saved_queries_parser.add_argument(
+        "--filter-term",
+        help="Term used to filter the list of saved query names and the saved queries",
+        type=str,
+        default="",
+    )
+    list_saved_queries_parser.add_argument(
+        "--page-size",
+        help="Number of results to return. Defaults to 50.",
+        type=int,
+        default=50,
+    )
+    list_saved_queries_parser.add_argument(
+        "--page",
+        help="Page number to begin at when searching. Defaults to 1.",
+        type=int,
+        default=1,
+    )
+    list_saved_queries_parser.add_argument(
+        "--csv", help="output in CSV format (otherwise JSON)", action="store_true"
+    )
+    add_verbose(list_saved_queries_parser)
+    list_saved_queries_parser.set_defaults(func=cli_list_saved_queries)
+
+    add_saved_query_parser = asm_subparser.add_parser(
+        "add-saved-query",
+        description="Add a saved query to ASM",
+        help="add saved query",
+        parents=[parents["asm_auth"]],
+    )
+    add_saved_query_parser.add_argument(
+        "--query-name",
+        help="Name of the saved query",
+        type=str,
+        required=True,
+    )
+    add_saved_query_parser.add_argument(
+        "--query",
+        help="Query string",
+        type=str,
+        required=True,
+    )
+    add_verbose(add_saved_query_parser)
+    add_saved_query_parser.set_defaults(func=cli_add_saved_query)
+
+    get_saved_query_by_id_parser = asm_subparser.add_parser(
+        "get-saved-query-by-id",
+        description="Get a saved query by ID",
+        help="get saved query by ID",
+        parents=[parents["asm_auth"]],
+    )
+    get_saved_query_by_id_parser.add_argument(
+        "--query-id",
+        help="ID of the saved query",
+        type=str,
+        required=True,
+    )
+    add_verbose(get_saved_query_by_id_parser)
+    get_saved_query_by_id_parser.set_defaults(func=cli_get_saved_query_by_id)
+
+    edit_saved_query_by_id_parser = asm_subparser.add_parser(
+        "edit-saved-query-by-id",
+        description="Edit a saved query by ID",
+        help="edit saved query by ID",
+        parents=[parents["asm_auth"]],
+    )
+    edit_saved_query_by_id_parser.add_argument(
+        "--query-id",
+        help="ID of the saved query",
+        type=str,
+        required=True,
+    )
+    edit_saved_query_by_id_parser.add_argument(
+        "--query-name",
+        help="Name of the saved query",
+        type=str,
+        required=True,
+    )
+    edit_saved_query_by_id_parser.add_argument(
+        "--query",
+        help="Query string",
+        type=str,
+        required=True,
+    )
+    add_verbose(edit_saved_query_by_id_parser)
+    edit_saved_query_by_id_parser.set_defaults(func=cli_edit_saved_query_by_id)
+
+    delete_saved_query_by_id_parser = asm_subparser.add_parser(
+        "delete-saved-query-by-id",
+        description="Delete a saved query by ID",
+        help="delete saved query by ID",
+        parents=[parents["asm_auth"]],
+    )
+    delete_saved_query_by_id_parser.add_argument(
+        "--query-id",
+        help="ID of the saved query",
+        type=str,
+        required=True,
+    )
+    add_verbose(delete_saved_query_by_id_parser)
+    delete_saved_query_by_id_parser.set_defaults(func=cli_delete_saved_query_by_id)

@@ -50,7 +50,7 @@ class CensysCliSubdomainsTest(CensysTestCase):
             mock_print_json.assert_called_once()
         else:
             for subdomain in test_subdomains:
-                mock_print.assert_any_call(f"  - {subdomain}")
+                mock_print.assert_any_call(f"  - {subdomain}")  # noqa: E221
 
     def test_search_subdomains(self):
         # Mock

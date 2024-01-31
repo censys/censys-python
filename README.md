@@ -20,7 +20,9 @@ An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://
 - [Command-line interface](https://censys-python.readthedocs.io/en/stable/cli.html)
 
 <!-- markdownlint-disable MD033 -->
+
 <a href="https://asciinema.org/a/500416" target="_blank"><img src="https://asciinema.org/a/500416.svg" width="600"/></a>
+
 <!-- markdownlint-enable MD033 -->
 
 ## Getting Started
@@ -121,4 +123,4 @@ poetry run pytest --cov-report html
 
 This software is licensed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-- Copyright (C) 2023 Censys, Inc.
+- Copyright (C) 2024 Censys, Inc.

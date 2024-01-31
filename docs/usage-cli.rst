@@ -278,3 +278,66 @@ You can also filter the seeds by type (``-t``) and/or label (``-l``).
 .. prompt:: bash
 
     censys asm list-seeds -t 'IP_ADDRESS' -l 'Some Label' >> filtered_seeds.json
+
+
+``list-saved-queries``
+^^^^^^^^^^^^^^^^^^^^^^
+
+See CLI command :ref:`asm list-saved-queries<cli:censys asm list-saved-queries>` for detail documentation of parameters.
+
+Below we show an example of listing all saved queries in CSV file format and appending it to a file.
+
+.. prompt:: bash
+
+    censys asm list-saved-queries --csv >> saved_queries.csv
+
+You can also filter the saved queries by query name prefix (``--query-name-prefix``) and/or filter term (``--filter-term``).
+
+.. prompt:: bash
+
+    censys asm list-saved-queries --query-name-prefix 'Some Prefix' --filter-term 'Some Term' >> filtered_saved_queries.json
+
+
+``add-saved-query``
+^^^^^^^^^^^^^^^^^^^
+
+See CLI command :ref:`asm add-saved-query<cli:censys asm add-saved-query>` for detail documentation of parameters.
+
+Below we show an example of adding a saved query from the CLI.
+
+.. prompt:: bash
+
+    censys asm add-saved-query --query-name 'Some Query' --query 'services.http.response.html_title: "Dashboard"'
+
+``get-saved-query-by-id``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See CLI command :ref:`asm get-saved-query-by-id<cli:censys asm get-saved-query-by-id>` for detail documentation of parameters.
+
+Below we show an example of getting a saved query by ID from the CLI.
+
+.. prompt:: bash
+
+    censys asm get-saved-query-by-id --query-id 'Some ID'
+
+``edit-saved-query-by-id``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See CLI command :ref:`asm edit-saved-query-by-id<cli:censys asm edit-saved-query-by-id>` for detail documentation of parameters.
+
+Below we show an example of editing a saved query by ID from the CLI.
+
+.. prompt:: bash
+
+    censys asm edit-saved-query-by-id --query-id 'Some ID' --query-name 'Some Query' --query 'services.http.response.html_title: "Dashboard"'
+
+``delete-saved-query-by-id``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See CLI command :ref:`asm delete-saved-query-by-id<cli:censys asm delete-saved-query-by-id>` for detail documentation of parameters.
+
+Below we show an example of deleting a saved query by ID from the CLI.
+
+.. prompt:: bash
+
+    censys asm delete-saved-query-by-id --query-id 'Some ID'
