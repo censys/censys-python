@@ -102,5 +102,5 @@ def valid_datetime_type(datetime_str: str) -> datetime.datetime:
         try:
             return datetime.datetime.strptime(datetime_str, "%Y-%m-%d")
         except ValueError:
-            msg = f"Given datetime ({datetime_str}) is not valid! Expected format: 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm'."
+            msg = f"Given datetime ({datetime_str}) is not valid! Expected format: 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm'."  # noqa: E231
             raise argparse.ArgumentTypeError(msg)

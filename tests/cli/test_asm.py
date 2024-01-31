@@ -8,7 +8,7 @@ import responses
 from responses import matchers
 from responses.matchers import json_params_matcher
 
-from tests.asm.utils import V1_URL
+from tests.asm.utils import INVENTORY_URL, V1_URL
 from tests.cli.test_config import TEST_CONFIG_PATH
 from tests.utils import CensysTestCase
 
@@ -106,6 +106,43 @@ GET_SEEDS_JSON = {
             "createdOn": "2022-11-01T12:34:23.111142Z",
         },
     ]
+}
+
+GET_SAVED_QUERIES_JSON = {
+    "results": [
+        {
+            "queryId": "1",
+            "queryName": "foo domain",
+            "query": "domain: foo.com",
+            "createdAt": "2024-01-01T01:00:00.000Z",
+        },
+        {
+            "queryId": "2",
+            "queryName": "bar domain",
+            "query": "domain: bar.com",
+            "createdAt": "2024-01-01T01:00:00.000Z",
+        },
+    ],
+    "totalResults": 2,
+}
+
+ADD_SAVED_QUERY_JSON = {
+    "result": {
+        "createdAt": "2024-01-01T01:00:00.000Z",
+        "query": "domain: foo.com",
+        "queryName": "Test",
+        "queryId": "100",
+    },
+}
+
+SAVED_QUERY_JSON = {
+    "result": {
+        "queryId": "100",
+        "queryName": "foo domain",
+        "query": "domain: foo.com",
+        "createdAt": "2024-01-01T01:00:00.000Z",
+    },
+    "totalResults": 1,
 }
 
 TEST_XML_PATH = os.path.join(os.path.dirname(__file__), "test.xml")
@@ -1309,3 +1346,511 @@ class CensysASMCliTest(CensysTestCase):
             + "\n"
         )
         assert expected_output in temp_stdout.getvalue()
+
+    def test_list_saved_queries_json(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "list-saved-queries",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1/saved-query",
+            status=200,
+            json=GET_SAVED_QUERIES_JSON,
+            match=[matchers.query_param_matcher({"pageSize": 50, "page": 1})],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        actual_json = json.loads(temp_stdout.getvalue())
+        assert actual_json == GET_SAVED_QUERIES_JSON
+
+    def test_list_saved_queries_csv(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "list-saved-queries",
+                "--csv",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1/saved-query",
+            status=200,
+            json=GET_SAVED_QUERIES_JSON,
+            match=[matchers.query_param_matcher({"pageSize": 50, "page": 1})],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        expected_output = (
+            "\n".join(
+                [
+                    "queryId,queryName,query,createdAt",
+                    "1,foo domain,domain: foo.com,2024-01-01T01:00:00.000Z",
+                    "2,bar domain,domain: bar.com,2024-01-01T01:00:00.000Z",
+                ]
+            )
+            + "\n"
+        )
+        assert expected_output in temp_stdout.getvalue()
+
+    def test_list_saved_queries_page_2(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "list-saved-queries",
+                "--csv",
+                "--page",
+                "2",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1/saved-query",
+            status=200,
+            json=GET_SAVED_QUERIES_JSON,
+            match=[matchers.query_param_matcher({"pageSize": 50, "page": 2})],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        expected_output = (
+            "\n".join(
+                [
+                    "queryId,queryName,query,createdAt",
+                    "1,foo domain,domain: foo.com,2024-01-01T01:00:00.000Z",
+                    "2,bar domain,domain: bar.com,2024-01-01T01:00:00.000Z",
+                ]
+            )
+            + "\n"
+        )
+        assert expected_output in temp_stdout.getvalue()
+
+    def test_list_saved_queries_page_size_1(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "list-saved-queries",
+                "--csv",
+                "--page-size",
+                "1",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1/saved-query",
+            status=200,
+            json={
+                "totalResults": "1",
+                "results": [GET_SAVED_QUERIES_JSON["results"][0]],
+            },
+            match=[matchers.query_param_matcher({"pageSize": 1, "page": 1})],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        expected_output = (
+            "\n".join(
+                [
+                    "queryId,queryName,query,createdAt",
+                    "1,foo domain,domain: foo.com,2024-01-01T01:00:00.000Z",
+                ]
+            )
+            + "\n"
+        )
+        assert expected_output in temp_stdout.getvalue()
+
+    def test_list_saved_queries_query_name_prefix(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "list-saved-queries",
+                "--csv",
+                "--query-name-prefix",
+                "foo",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1/saved-query",
+            status=200,
+            json={
+                "totalResults": 2,
+                "results": [
+                    query
+                    for query in GET_SAVED_QUERIES_JSON["results"]
+                    if "foo" in query["queryName"]
+                ],
+            },
+            match=[
+                matchers.query_param_matcher(
+                    {"pageSize": 50, "page": 1, "queryNamePrefix": "foo"}
+                )
+            ],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        expected_output = (
+            "\n".join(
+                [
+                    "queryId,queryName,query,createdAt",
+                    "1,foo domain,domain: foo.com,2024-01-01T01:00:00.000Z",
+                ]
+            )
+            + "\n"
+        )
+        assert expected_output in temp_stdout.getvalue()
+
+    def test_list_saved_queries_filter_term(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "list-saved-queries",
+                "--csv",
+                "--filter-term",
+                "domain",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1/saved-query",
+            status=200,
+            json=GET_SAVED_QUERIES_JSON,
+            match=[
+                matchers.query_param_matcher(
+                    {"pageSize": 50, "page": 1, "filterTerm": "domain"}
+                )
+            ],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        expected_output = (
+            "\n".join(
+                [
+                    "queryId,queryName,query,createdAt",
+                    "1,foo domain,domain: foo.com,2024-01-01T01:00:00.000Z",
+                    "2,bar domain,domain: bar.com,2024-01-01T01:00:00.000Z",
+                ]
+            )
+            + "\n"
+        )
+        assert expected_output in temp_stdout.getvalue()
+
+    def test_list_saved_queries_keyerror(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "list-saved-queries",
+                "--csv",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1/saved-query",
+            status=200,
+            json={},
+            match=[matchers.query_param_matcher({"pageSize": 50, "page": 1})],
+        )
+
+        # Actual call
+        with pytest.raises(SystemExit, match="1"):
+            cli_main()
+
+    def test_add_saved_query(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "add-saved-query",
+                "--query-name",
+                "Test",
+                "--query",
+                "domain: foo.com",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.POST,
+            INVENTORY_URL + "/v1/saved-query",
+            status=200,
+            json=ADD_SAVED_QUERY_JSON,
+            match=[
+                json_params_matcher(
+                    {
+                        "queryName": "Test",
+                        "query": "domain: foo.com",
+                    }
+                )
+            ],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert (
+            "Added saved query.\nQuery name: Test\nQuery: domain: foo.com\nQuery ID: 100\nCreated at: 2024-01-01T01:00:00.000Z\n"
+            in temp_stdout.getvalue()
+        )
+
+    def test_add_saved_query_failed(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "add-saved-query",
+                "--query-name",
+                "Test",
+                "--query",
+                "domain: foo.com",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.POST,
+            INVENTORY_URL + "/v1/saved-query",
+            status=0,
+            json={
+                "details": [{"details": "go here"}],
+                "error": "string",
+                "statusCode": 0,
+            },
+            match=[
+                json_params_matcher(
+                    {
+                        "queryName": "Test",
+                        "query": "domain: foo.com",
+                    }
+                )
+            ],
+        )
+
+        # Actual call
+        with pytest.raises(SystemExit, match="1"):
+            cli_main()
+
+    def test_get_saved_query_by_id(self):
+        # Mock
+        self.patch_args(
+            ["censys", "asm", "get-saved-query-by-id", "--query-id", "100"],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1/saved-query/100",
+            status=200,
+            json=SAVED_QUERY_JSON,
+            match=[matchers.query_param_matcher({})],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert (
+            "Query name: foo domain\nQuery: domain: foo.com\nQuery ID: 100\nCreated at: 2024-01-01T01:00:00.000Z\n"
+            in temp_stdout.getvalue()
+        )
+
+    def test_get_saved_query_by_id_failed(self):
+        # Mock
+        self.patch_args(
+            ["censys", "asm", "get-saved-query-by-id", "--query-id", "100"],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1/saved-query/100",
+            status=0,
+            json={
+                "details": [{"details": "go here"}],
+                "error": "string",
+                "statusCode": 0,
+            },
+            match=[matchers.query_param_matcher({})],
+        )
+
+        # Actual call
+        with pytest.raises(SystemExit, match="1"):
+            cli_main()
+
+    def test_edit_saved_query_by_id(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "edit-saved-query-by-id",
+                "--query-id",
+                "100",
+                "--query-name",
+                "foo domain",
+                "--query",
+                "domain: foo.com",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.PUT,
+            INVENTORY_URL + "/v1/saved-query/100",
+            status=200,
+            json=SAVED_QUERY_JSON,
+            match=[
+                json_params_matcher(
+                    {
+                        "queryName": "foo domain",
+                        "query": "domain: foo.com",
+                    }
+                )
+            ],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert (
+            "Edited saved query.\nQuery name: foo domain\nQuery: domain: foo.com\nQuery ID: 100\nCreated at: 2024-01-01T01:00:00.000Z\n"
+            in temp_stdout.getvalue()
+        )
+
+    def test_edit_saved_query_by_id_failed(self):
+        # Mock
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "edit-saved-query-by-id",
+                "--query-id",
+                "100",
+                "--query-name",
+                "foo domain",
+                "--query",
+                "domain: foo.com",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.PUT,
+            INVENTORY_URL + "/v1/saved-query/100",
+            status=0,
+            json={
+                "details": [{"details": "go here"}],
+                "error": "string",
+                "statusCode": 0,
+            },
+            match=[
+                json_params_matcher(
+                    {
+                        "queryName": "foo domain",
+                        "query": "domain: foo.com",
+                    }
+                )
+            ],
+        )
+
+        # Actual call
+        with pytest.raises(SystemExit, match="1"):
+            cli_main()
+
+    def test_delete_saved_query_by_id(self):
+        # Mock
+        self.patch_args(
+            ["censys", "asm", "delete-saved-query-by-id", "--query-id", "100"],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.DELETE,
+            INVENTORY_URL + "/v1/saved-query/100",
+            status=200,
+            json={},
+            match=[matchers.query_param_matcher({})],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        assert "Deleted saved query with ID 100." in temp_stdout.getvalue()
+
+    def test_delete_saved_query_by_id_failed(self):
+        # Mock
+        self.patch_args(
+            ["censys", "asm", "delete-saved-query-by-id", "--query-id", "100"],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.DELETE,
+            INVENTORY_URL + "/v1/saved-query/100",
+            status=0,
+            json={
+                "details": [{"details": "go here"}],
+                "error": "string",
+                "statusCode": 0,
+            },
+            match=[matchers.query_param_matcher({})],
+        )
+
+        # Actual call
+        with pytest.raises(SystemExit, match="1"):
+            cli_main()

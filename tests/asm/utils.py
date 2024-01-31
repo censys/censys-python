@@ -5,6 +5,7 @@ BASE_URL = "https://app.censys.io/api"
 V1_URL = f"{BASE_URL}/v1"
 V2_URL = f"{BASE_URL}/v2"
 BETA_URL = f"{BASE_URL}/beta"
+INVENTORY_URL = f"{BASE_URL}/inventory"
 
 
 class MockResponse:

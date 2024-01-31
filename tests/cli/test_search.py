@@ -434,7 +434,9 @@ class CensysCliSearchTest(CensysTestCase):
             {"q": "domain: censys.io AND ports: 443", "resource": "certificates"}
         )
         # Assertions
-        mock_open.assert_called_with(f"https://search.censys.io/search?{query_str}")
+        mock_open.assert_called_with(
+            f"https://search.censys.io/search?{query_str}"  # noqa: E231
+        )
 
     def test_open_hosts(self):
         # Mock
@@ -454,7 +456,9 @@ class CensysCliSearchTest(CensysTestCase):
             cli_main()
         query_str = urlencode({"q": "services.service_name: HTTP", "resource": "hosts"})
         # Assertions
-        mock_open.assert_called_with(f"https://search.censys.io/search?{query_str}")
+        mock_open.assert_called_with(
+            f"https://search.censys.io/search?{query_str}"  # noqa: E231
+        )
 
     @parameterized.expand(
         [

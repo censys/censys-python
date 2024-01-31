@@ -211,7 +211,9 @@ class CensysAPIBase:
             json_data = res.json()
             message = json_data.get("error") or json_data.get("message")
             const = json_data.get("error_type") or json_data.get("status") or res.reason
-            error_code = json_data.get("errorCode", "unknown")
+            error_code = json_data.get("errorCode") or json_data.get(
+                "statusCode", "unknown"
+            )
             details = json_data.get("details", "unknown")
         except (ValueError, json.decoder.JSONDecodeError) as error:
             raise CensysJSONDecodeException(

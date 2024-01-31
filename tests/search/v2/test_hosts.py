@@ -200,7 +200,7 @@ class TestHosts(CensysTestCase):
     def test_view_at_time(self):
         self.responses.add(
             responses.GET,
-            f"{V2_URL}/hosts/{TEST_HOST}?at_time=2021-03-01T00:00:00.000000Z",
+            f"{V2_URL}/hosts/{TEST_HOST}?at_time=2021-03-01T00:00:00.000000Z",  # noqa: E231
             status=200,
             json=VIEW_HOST_JSON,
         )
@@ -236,7 +236,7 @@ class TestHosts(CensysTestCase):
             host_json["result"]["ip"] = ip
             self.responses.add(
                 responses.GET,
-                f"{V2_URL}/hosts/{ip}?at_time=2021-03-01T00:00:00.000000Z",
+                f"{V2_URL}/hosts/{ip}?at_time=2021-03-01T00:00:00.000000Z",  # noqa: E231
                 status=200,
                 json=host_json,
             )

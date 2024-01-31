@@ -129,7 +129,7 @@ class CensysHNRI:
             for res in self.risks_to_string(high_risk, medium_risk):
                 console.print(res)
             console.print(
-                f"\nFor more information, please visit: https://search.censys.io/hosts/{current_ip}"
+                f"\nFor more information, please visit: https://search.censys.io/hosts/{current_ip}"  # noqa: E231
             )
         except (CensysNotFoundException, CensysCLIException):
             console.print(

@@ -14,6 +14,7 @@ from .clouds import Clouds
 from .inventory import InventorySearch
 from .logbook import Logbook
 from .risks import Risks
+from .saved_queries import SavedQueries
 from .seeds import Seeds
 
 
@@ -40,3 +41,4 @@ class AsmClient:
         self.object_storages = ObjectStoragesAssets(api_key, **kwargs)
         self.web_entities = WebEntitiesAssets(api_key, **kwargs)
         self.beta = Beta(api_key, **kwargs)
+        self.saved_queries = SavedQueries(api_key, **kwargs)
