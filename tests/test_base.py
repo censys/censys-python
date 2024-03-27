@@ -96,6 +96,19 @@ class CensysAPIBaseTests(CensysTestCase):
             == requests.utils.default_user_agent() + " test"
         )
 
+    def test_request_id(self):
+        id_value = "my-request-id"
+
+        # Test request id value is present
+        base = CensysAPIBase(TEST_URL, request_id=id_value)
+        assert base.request_id == id_value
+        assert base._session.headers.get("x-request-id") == id_value
+
+        # Test request id value is not present
+        base.request_id = None
+        assert base.request_id is None
+        assert base._session.headers.get("x-request-id") is None
+
     @pytest.mark.filterwarnings("ignore:HTTP proxies will not be used.")
     def test_proxies(self):
         # Mock/actual call
