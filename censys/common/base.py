@@ -98,6 +98,7 @@ class CensysAPIBase:
             self._session.proxies.update(proxies)
         if cookies:
             self._session.cookies.update(cookies)
+        self.request_id = kwargs.get("request_id")
         self._session.headers.update(
             {
                 "accept": "application/json, */8",
@@ -111,6 +112,29 @@ class CensysAPIBase:
                 ),
             }
         )
+
+    @property
+    def request_id(self) -> Optional[str]:
+        """The x-request-id header value for API requests.
+
+        The x-request-id header is not set when the value is None.
+        Value is None by default
+
+        Returns:
+            Type[Optional[str]]: The value of the header.
+        """
+        value = self._session.headers.get("x-request-id")
+        if not isinstance(value, str):
+            return None
+        return value
+
+    @request_id.setter
+    def request_id(self, value: Optional[str]):
+        if value is None:
+            self._session.headers.pop("x-request-id", None)
+            return
+
+        self._session.headers["x-request-id"] = value
 
     @staticmethod
     def _get_exception_class(_: Response) -> Type[CensysAPIException]:
