@@ -73,7 +73,7 @@ isort = "^5.11.5"
 pep8-naming = "^0.13.3"
 pyupgrade = "^3.3.1"
 # Tests
-pytest = "^7.3.0"
+pytest = ">=7.3,<9.0"
 pytest-cov = "^4.0.0"
 pytest-mock = "^3.10.0"
 responses = ">=0.23.1,<0.25.0"
