@@ -11,8 +11,8 @@ from xml.etree import ElementTree
 from rich.progress import Progress, TaskID
 from rich.prompt import Confirm, Prompt
 
-from censys.asm.saved_queries import SavedQueries
 from censys.asm.inventory import InventorySearch
+from censys.asm.saved_queries import SavedQueries
 from censys.asm.seeds import SEED_TYPES, Seeds
 from censys.cli.utils import console
 from censys.common.config import DEFAULT, get_config, write_config
