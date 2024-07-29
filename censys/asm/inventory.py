@@ -11,7 +11,7 @@ class InventorySearch(CensysAsmAPI):
 
     def search(
         self,
-        workspaces: List[str],
+        workspaces: Optional[List[str]] = None,
         query: Optional[str] = None,
         page_size: Optional[int] = None,
         cursor: Optional[str] = None,
@@ -21,7 +21,7 @@ class InventorySearch(CensysAsmAPI):
         """Search inventory data.
 
         Args:
-            workspaces (List[str]): List of workspace IDs to search.
+            workspaces (List[str], optional): List of workspace IDs to search. Deprecated. The workspace associated with `CENSYS-API-KEY` will be used automatically.
             query (str, optional): Query string.
             page_size (int, optional): Number of results to return. Defaults to 50.
             cursor (str, optional): Cursor to start search from.
@@ -31,16 +31,28 @@ class InventorySearch(CensysAsmAPI):
         Returns:
             dict: Inventory search results.
         """
+        if workspaces is not None:
+            print(
+                "The field 'workspaces' is being deprecated. The workspace associated with `CENSYS-API-KEY` will be used automatically."
+            )
         if page_size is None:
             page_size = 50
+        w: List[str] = []
+        w.append(self.get_workspace_id())
+
         args = {
-            "workspaces": workspaces,
-            "query": query,
+            "workspaces": w,
             "pageSize": page_size,
-            "cursor": cursor,
-            "sort": sort,
-            "fields": fields,
         }
+
+        if query:
+            args["query"] = query
+        if cursor:
+            args["cursor"] = cursor
+        if sort:
+            args["sort"] = sort
+        if fields:
+            args["fields"] = fields
 
         return self._get(self.base_path, args=args)
 

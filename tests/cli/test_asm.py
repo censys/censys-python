@@ -8,7 +8,7 @@ import responses
 from responses import matchers
 from responses.matchers import json_params_matcher
 
-from tests.asm.utils import INVENTORY_URL, V1_URL
+from tests.asm.utils import INVENTORY_URL, V1_URL, WORKSPACE_ID
 from tests.cli.test_config import TEST_CONFIG_PATH
 from tests.utils import CensysTestCase
 
@@ -144,6 +144,27 @@ SAVED_QUERY_JSON = {
     },
     "totalResults": 1,
 }
+
+SEARCH_JSON = {
+    "totalHits": 3,
+    "queryDurationMillis": 50,
+    "hits": [
+        {"_details": {}, "domain": {"name": "foo.com"}, "type": "DOMAIN"},
+        {
+            "_details": {},
+            "domain": {"name": "bar.foo.com"},
+            "type": "DOMAIN",
+        },
+        {
+            "_details": {},
+            "domain": {"name": "b.foo.com"},
+            "type": "DOMAIN",
+        },
+    ],
+}
+
+SAVED_QUERY_ID = "12345"
+SAVED_QUERY_NAME = "Test query"
 
 TEST_XML_PATH = os.path.join(os.path.dirname(__file__), "test.xml")
 
@@ -1854,3 +1875,319 @@ class CensysASMCliTest(CensysTestCase):
         # Actual call
         with pytest.raises(SystemExit, match="1"):
             cli_main()
+
+    def test_execute_saved_query_by_name(self):
+        # Mock
+        mock_request = self.mocker.patch("censys.asm.api.CensysAsmAPI.get_workspace_id")
+        mock_request.return_value = WORKSPACE_ID
+        mock_query = self.mocker.patch("censys.asm.SavedQueries.get_saved_queries")
+        mock_query.return_value = {
+            "results": [
+                {
+                    "queryId": "1",
+                    "queryName": "foo domain",
+                    "query": "domain: foo.com",
+                    "createdAt": "2024-01-01T01:00:00.000Z",
+                }
+            ]
+        }
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "execute-saved-query-by-name",
+                "--query-name",
+                "foo domain",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1",
+            status=200,
+            json=SEARCH_JSON,
+            match=[
+                matchers.query_param_matcher(
+                    {
+                        "workspaces": WORKSPACE_ID,
+                        "query": "domain: foo.com",
+                        "pageSize": 50,
+                    }
+                )
+            ],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        actual_json = json.loads(temp_stdout.getvalue())
+        assert actual_json == SEARCH_JSON
+
+    def test_execute_saved_query_by_name_not_found(self):
+        # Mock
+        mock_query = self.mocker.patch("censys.asm.SavedQueries.get_saved_queries")
+        mock_query.return_value = {"results": []}
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "execute-saved-query-by-name",
+                "--query-name",
+                "nonexistent query name",
+            ],
+            asm_auth=True,
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
+            temp_stdout
+        ):
+            cli_main()
+
+        # Assertions
+        assert "No saved query found with that name." in temp_stdout.getvalue()
+
+    def test_execute_saved_query_by_name_failed(self):
+        # Mock
+        mock_request = self.mocker.patch("censys.asm.api.CensysAsmAPI.get_workspace_id")
+        mock_request.return_value = WORKSPACE_ID
+        mock_query = self.mocker.patch("censys.asm.SavedQueries.get_saved_queries")
+        mock_query.return_value = {
+            "results": [
+                {
+                    "queryId": "1",
+                    "queryName": "foo domain",
+                    "query": "domain: foo.com",
+                    "createdAt": "2024-01-01T01:00:00.000Z",
+                }
+            ]
+        }
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "execute-saved-query-by-name",
+                "--query-name",
+                "foo domain",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1",
+            status=500,
+            json={},
+            match=[
+                matchers.query_param_matcher(
+                    {
+                        "workspaces": WORKSPACE_ID,
+                        "query": "domain: foo.com",
+                        "pageSize": 50,
+                    }
+                )
+            ],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
+            temp_stdout
+        ):
+            cli_main()
+
+        # Assertions
+        assert "Failed to execute saved query." in temp_stdout.getvalue()
+
+    def test_execute_saved_query_by_id(self):
+        # Mock
+        mock_request = self.mocker.patch("censys.asm.api.CensysAsmAPI.get_workspace_id")
+        mock_request.return_value = WORKSPACE_ID
+        mock_query = self.mocker.patch("censys.asm.SavedQueries.get_saved_query_by_id")
+        mock_query.return_value = SAVED_QUERY_JSON
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "execute-saved-query-by-id",
+                "--query-id",
+                "100",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1",
+            status=200,
+            json=SEARCH_JSON,
+            match=[
+                matchers.query_param_matcher(
+                    {
+                        "workspaces": WORKSPACE_ID,
+                        "query": "domain: foo.com",
+                        "pageSize": 50,
+                    }
+                )
+            ],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        actual_json = json.loads(temp_stdout.getvalue())
+        assert actual_json == SEARCH_JSON
+
+    def test_execute_saved_query_by_id_not_found(self):
+        # Mock
+        mock_query = self.mocker.patch("censys.asm.SavedQueries.get_saved_query_by_id")
+        mock_query.return_value = {
+            "status_code": 404,
+            "error": "No query found with ID: 500",
+        }
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "execute-saved-query-by-id",
+                "--query-id",
+                "500",
+            ],
+            asm_auth=True,
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
+            temp_stdout
+        ):
+            cli_main()
+
+        # Assertions
+        assert "No saved query found with that ID." in temp_stdout.getvalue()
+
+    def test_execute_saved_query_by_id_failed(self):
+        # Mock
+        mock_request = self.mocker.patch("censys.asm.api.CensysAsmAPI.get_workspace_id")
+        mock_request.return_value = WORKSPACE_ID
+        mock_query = self.mocker.patch("censys.asm.SavedQueries.get_saved_query_by_id")
+        mock_query.return_value = SAVED_QUERY_JSON
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "execute-saved-query-by-id",
+                "--query-id",
+                "100",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1",
+            status=500,
+            json={},
+            match=[
+                matchers.query_param_matcher(
+                    {
+                        "workspaces": WORKSPACE_ID,
+                        "query": "domain: foo.com",
+                        "pageSize": 50,
+                    }
+                )
+            ],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
+            temp_stdout
+        ):
+            cli_main()
+
+        # Assertions
+        assert "Failed to execute saved query." in temp_stdout.getvalue()
+
+    def test_search(self):
+        # Mock
+        mock_request = self.mocker.patch("censys.asm.api.CensysAsmAPI.get_workspace_id")
+        mock_request.return_value = WORKSPACE_ID
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "search",
+                "--query",
+                "domain: foo.com",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1",
+            status=200,
+            json=SEARCH_JSON,
+            match=[
+                matchers.query_param_matcher(
+                    {
+                        "workspaces": WORKSPACE_ID,
+                        "query": "domain: foo.com",
+                        "pageSize": 50,
+                    }
+                )
+            ],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        actual_json = json.loads(temp_stdout.getvalue())
+        assert actual_json == SEARCH_JSON
+
+    def test_search_failed(self):
+        # Mock
+        mock_request = self.mocker.patch("censys.asm.api.CensysAsmAPI.get_workspace_id")
+        mock_request.return_value = WORKSPACE_ID
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "search",
+                "--query",
+                "domain: foo.com",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1",
+            status=500,
+            json={},
+            match=[
+                matchers.query_param_matcher(
+                    {
+                        "workspaces": WORKSPACE_ID,
+                        "query": "domain: foo.com",
+                        "pageSize": 50,
+                    }
+                )
+            ],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
+            temp_stdout
+        ):
+            cli_main()
+
+        # Assertions
+        assert "Failed to execute query." in temp_stdout.getvalue()

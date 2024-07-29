@@ -6,6 +6,7 @@ V1_URL = f"{BASE_URL}/v1"
 V2_URL = f"{BASE_URL}/v2"
 BETA_URL = f"{BASE_URL}/beta"
 INVENTORY_URL = f"{BASE_URL}/inventory"
+WORKSPACE_ID = "test-workspace-id"
 
 
 class MockResponse:

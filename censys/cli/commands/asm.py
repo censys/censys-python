@@ -12,6 +12,7 @@ from rich.progress import Progress, TaskID
 from rich.prompt import Confirm, Prompt
 
 from censys.asm.saved_queries import SavedQueries
+from censys.asm.inventory import InventorySearch
 from censys.asm.seeds import SEED_TYPES, Seeds
 from censys.cli.utils import console
 from censys.common.config import DEFAULT, get_config, write_config
@@ -530,6 +531,74 @@ def cli_delete_saved_query_by_id(args: argparse.Namespace):
         sys.exit(1)
 
 
+def cli_execute_saved_query_by_name(args: argparse.Namespace):
+    """Execute saved query by name subcommand.
+
+    Args:
+        args (Namespace): Argparse Namespace.
+    """
+    s = InventorySearch(args.api_key)
+    q = SavedQueries(args.api_key)
+    # get query from name
+    queries = q.get_saved_queries(args.query_name, 1, 1)
+    if not queries["results"]:
+        console.print("No saved query found with that name.")
+        sys.exit(1)
+    query = queries["results"][0]["query"]
+
+    try:
+        res = s.search(None, query, args.page_size, None, args.sort, args.fields)
+        console.print_json(json.dumps(res))
+    except (KeyError, CensysAsmException):
+        console.print("Failed to execute saved query.")
+        sys.exit(1)
+
+
+def cli_execute_saved_query_by_id(args: argparse.Namespace):
+    """Execute saved query by id subcommand.
+
+    Args:
+        args (Namespace): Argparse Namespace.
+    """
+    s = InventorySearch(args.api_key)
+    q = SavedQueries(args.api_key)
+    try:
+        query_json = q.get_saved_query_by_id(args.query_id)
+        query = query_json["result"]["query"]
+    except (KeyError, CensysAsmException):
+        console.print("No saved query found with that ID.")
+        sys.exit(1)
+    try:
+        res = s.search(None, query, args.page_size, None, args.sort, args.fields)
+        console.print_json(json.dumps(res))
+    except (KeyError, CensysAsmException):
+        console.print("Failed to execute saved query.")
+        sys.exit(1)
+
+
+def cli_search(args: argparse.Namespace):
+    """Inventory search subcommand.
+
+    Args:
+        args (Namespace): Argparse Namespace.
+    """
+    s = InventorySearch(args.api_key)
+
+    try:
+        res = s.search(
+            args.workspaces,
+            args.query,
+            args.page_size,
+            args.cursor,
+            args.sort,
+            args.fields,
+        )
+        console.print_json(json.dumps(res))
+    except (KeyError, CensysAsmException):
+        console.print("Failed to execute query.")
+        sys.exit(1)
+
+
 def include(parent_parser: argparse._SubParsersAction, parents: dict):
     """Include this subcommand into the parent parser.
 
@@ -775,3 +844,116 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     )
     add_verbose(delete_saved_query_by_id_parser)
     delete_saved_query_by_id_parser.set_defaults(func=cli_delete_saved_query_by_id)
+
+    execute_saved_query_by_name_parser = asm_subparser.add_parser(
+        "execute-saved-query-by-name",
+        description="Execute a saved query by name in inventory search",
+        help="execute saved query by name",
+        parents=[parents["asm_auth"]],
+    )
+    execute_saved_query_by_name_parser.add_argument(
+        "--query-name",
+        help="Query name",
+        type=str,
+        required=True,
+    )
+    execute_saved_query_by_name_parser.add_argument(
+        "--page-size",
+        help="Number of results to return. Defaults to 50.",
+        type=int,
+        default=50,
+    )
+    execute_saved_query_by_name_parser.add_argument(
+        "--sort",
+        help="Sort order for results",
+        type=List[str],
+        default=[],
+    )
+    execute_saved_query_by_name_parser.add_argument(
+        "--fields",
+        help="Fields to include in results",
+        type=List[str],
+        default=[],
+    )
+    add_verbose(execute_saved_query_by_name_parser)
+    execute_saved_query_by_name_parser.set_defaults(
+        func=cli_execute_saved_query_by_name
+    )
+
+    execute_saved_query_by_id_parser = asm_subparser.add_parser(
+        "execute-saved-query-by-id",
+        description="Execute a saved query by id in inventory search",
+        help="execute saved query by id",
+        parents=[parents["asm_auth"]],
+    )
+    execute_saved_query_by_id_parser.add_argument(
+        "--query-id",
+        help="Query ID",
+        type=str,
+        required=True,
+    )
+    execute_saved_query_by_id_parser.add_argument(
+        "--page-size",
+        help="Number of results to return. Defaults to 50.",
+        type=int,
+        default=50,
+    )
+    execute_saved_query_by_id_parser.add_argument(
+        "--sort",
+        help="Sort order for results",
+        type=List[str],
+        default=[],
+    )
+    execute_saved_query_by_id_parser.add_argument(
+        "--fields",
+        help="Fields to include in results",
+        type=List[str],
+        default=[],
+    )
+    add_verbose(execute_saved_query_by_id_parser)
+    execute_saved_query_by_id_parser.set_defaults(func=cli_execute_saved_query_by_id)
+
+    search_parser = asm_subparser.add_parser(
+        "search",
+        description="Execute a query in inventory search",
+        help="execute query in inventory search",
+        parents=[parents["asm_auth"]],
+    )
+    search_parser.add_argument(
+        "--query",
+        help="Query string",
+        type=str,
+        required=True,
+    )
+    search_parser.add_argument(
+        "--page-size",
+        help="Number of results to return. Defaults to 50.",
+        type=int,
+        default=50,
+    )
+    search_parser.add_argument(
+        "--cursor",
+        help="Cursor to use for pagination",
+        type=str,
+        default="",
+    )
+    search_parser.add_argument(
+        "--sort",
+        help="Sort order for results",
+        type=List[str],
+        default=[],
+    )
+    search_parser.add_argument(
+        "--fields",
+        help="Fields to include in results",
+        type=List[str],
+        default=[],
+    )
+    search_parser.add_argument(
+        "--workspaces",
+        help="Workspace IDs to search. Deprecated. The workspace associated with `CENSY-API-KEY` will be used automatically.",
+        type=str,
+        required=False,
+    )
+    add_verbose(search_parser)
+    search_parser.set_defaults(func=cli_search)
