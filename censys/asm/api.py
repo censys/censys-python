@@ -110,3 +110,11 @@ class CensysAsmAPI(CensysAPIBase):
             args = {"cursor": res["nextCursor"]}
 
             yield from res["events"]
+
+    def get_workspace_id(self) -> str:
+        """Get the workspace ID.
+
+        Returns:
+            str: The workspace ID.
+        """
+        return self._get("/integrations/v1/account")["workspaceId"]

@@ -2,7 +2,7 @@ import responses
 from parameterized import parameterized
 
 from ..utils import CensysTestCase
-from .utils import BASE_URL
+from .utils import BASE_URL, WORKSPACE_ID
 from censys.asm.inventory import InventorySearch
 
 INVENTORY_BASE_PATH = f"{BASE_URL}/inventory/v1"
@@ -47,25 +47,27 @@ class InventoryTests(CensysTestCase):
         [
             (
                 {
-                    "workspaces": ["1", "2"],
                     "query": "test",
                     "page_size": 50,
                     "cursor": "test",
                     "sort": ["test"],
                     "fields": ["test"],
                 },
-                "?workspaces=1&workspaces=2&query=test&pageSize=50&cursor=test&sort=test&fields=test",
+                "?workspaces=test-workspace-id&query=test&pageSize=50&cursor=test&sort=test&fields=test",
             ),
             (
                 {
                     "workspaces": ["1", "2"],
                     "query": "test",
                 },
-                "?workspaces=1&workspaces=2&query=test&pageSize=50",
+                "?workspaces=test-workspace-id&query=test&pageSize=50",
             ),
         ]
     )
     def test_search(self, kwargs, params):
+        mock_request = self.mocker.patch("censys.asm.api.CensysAsmAPI.get_workspace_id")
+        mock_request.return_value = WORKSPACE_ID
+
         # Setup response
         self.responses.add(
             responses.GET,

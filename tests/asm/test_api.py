@@ -108,3 +108,17 @@ class CensysAsmAPITests(CensysTestCase):
         res = list(self.api._get_page(f"/{keyword}"))
         # Assertions
         assert res == page_json[keyword] + second_page
+
+    def test_get_workspace_id(self):
+        self.responses.add(
+            responses.GET,
+            f"{self.base_url}/integrations/v1/account",
+            status=200,
+            json={"workspaceId": "test-workspace-id"},
+        )
+
+        # Actual call
+        res = self.api.get_workspace_id()
+
+        # Assertions
+        assert res == "test-workspace-id"
