@@ -550,10 +550,11 @@ def cli_execute_saved_query_by_name(args: argparse.Namespace):
     q = SavedQueries(args.api_key)
     # get query from name
     queries = q.get_saved_queries(args.query_name, 1, 1)
-    if not queries["results"]:
+    results = queries.get("results")
+    if not results:
         console.print("No saved query found with that name.")
         sys.exit(1)
-    query = queries["results"][0]["query"]
+    query = results[0]["query"]
 
     try:
         res = s.search(None, query, args.page_size, None, args.sort, args.fields)
