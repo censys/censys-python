@@ -5,7 +5,7 @@ from censys.asm import InventorySearch
 inventory_search = InventorySearch()
 
 # Delete the saved query by ID
-query = "query"
+query = "host.services.service_name: HTTP"
 res = inventory_search.search(query=query)
 
 print(res)
