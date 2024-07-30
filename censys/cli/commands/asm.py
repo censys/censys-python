@@ -559,7 +559,7 @@ def cli_execute_saved_query_by_name(args: argparse.Namespace):
     try:
         res = s.search(None, query, args.page_size, None, args.sort, args.fields)
         console.print_json(json.dumps(res))
-    except (KeyError, CensysAsmException):
+    except CensysAsmException:
         console.print("Failed to execute saved query.")
         sys.exit(1)
 
@@ -604,7 +604,7 @@ def cli_search(args: argparse.Namespace):
             args.fields,
         )
         console.print_json(json.dumps(res))
-    except (KeyError, CensysAsmException):
+    except CensysAsmException:
         console.print("Failed to execute query.")
         sys.exit(1)
 
