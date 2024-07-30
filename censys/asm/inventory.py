@@ -1,5 +1,6 @@
 """Interact with the Censys Inventory Search API."""
 from typing import List, Optional
+import warnings
 
 from .api import CensysAsmAPI
 
@@ -31,13 +32,17 @@ class InventorySearch(CensysAsmAPI):
         Returns:
             dict: Inventory search results.
         """
-        if workspaces is not None:
-            print(
-                "The field 'workspaces' is being deprecated. The workspace associated with `CENSYS-API-KEY` will be used automatically."
+        if workspaces is None:
+            w: List[str] = [self.get_workspace_id()]
+        else:
+            warnings.warn(
+                "The field 'workspaces' is being deprecated. The workspace associated with `CENSYS-API-KEY` will be used automatically.",
+                category=DeprecationWarning,
+                stacklevel=2,
             )
+            w = workspaces
         if page_size is None:
             page_size = 50
-        w: List[str] = [self.get_workspace_id()]
 
         args = {
             "workspaces": w,
