@@ -37,8 +37,7 @@ class InventorySearch(CensysAsmAPI):
             )
         if page_size is None:
             page_size = 50
-        w: List[str] = []
-        w.append(self.get_workspace_id())
+        w: List[str] = [self.get_workspace_id()]
 
         args = {
             "workspaces": w,

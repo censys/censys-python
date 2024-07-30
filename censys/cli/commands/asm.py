@@ -11,6 +11,7 @@ from xml.etree import ElementTree
 from rich.progress import Progress, TaskID
 from rich.prompt import Confirm, Prompt
 
+from censys.asm.api import CensysAsmAPI
 from censys.asm.inventory import InventorySearch
 from censys.asm.saved_queries import SavedQueries
 from censys.asm.seeds import SEED_TYPES, Seeds
@@ -40,6 +41,14 @@ def cli_asm_config(_: argparse.Namespace):  # pragma: no cover
         api_key_prompt = f"{api_key_prompt} [cyan]({redacted_api_key})[/cyan]"
 
     api_key = Prompt.ask(api_key_prompt, console=console) or api_key
+
+    try:
+        c = CensysAsmAPI(api_key)
+        w = c.get_workspace_id()
+        console.print(f"Successfully authenticated to workspace {w}")
+    except CensysUnauthorizedException:
+        console.print("Failed to authenticate")
+        sys.exit(1)
 
     if not api_key:
         console.print("Please enter valid credentials")
