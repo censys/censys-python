@@ -60,7 +60,7 @@ class InventoryTests(CensysTestCase):
                     "workspaces": ["1", "2"],
                     "query": "test",
                 },
-                "?workspaces=test-workspace-id&query=test&pageSize=50",
+                "?workspaces=1&workspaces=2&query=test&pageSize=50",
             ),
         ]
     )

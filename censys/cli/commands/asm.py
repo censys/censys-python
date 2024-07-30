@@ -960,7 +960,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     )
     search_parser.add_argument(
         "--workspaces",
-        help="Workspace IDs to search. Deprecated. The workspace associated with `CENSY-API-KEY` will be used automatically.",
+        help="Workspace IDs to search. Deprecated. The workspace associated with `CENSYS-API-KEY` will be used automatically.",
         type=str,
         required=False,
     )

@@ -341,3 +341,36 @@ Below we show an example of deleting a saved query by ID from the CLI.
 .. prompt:: bash
 
     censys asm delete-saved-query-by-id --query-id 'Some ID'
+
+``execute-saved-query-by-name``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See CLI command :ref:`asm execute-saved-query-by-name<cli:censys asm execute-saved-query-by-name>` for detail documentation of parameters.
+
+Below we show an example of executing a saved query by name from the CLI.
+
+.. prompt:: bash
+
+    censys asm execute-saved-query-by-name --query-name 'Some query name'
+
+``execute-saved-query-by-id``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See CLI command :ref:`asm execute-saved-query-by-id<cli:censys asm execute-saved-query-by-id>` for detail documentation of parameters.
+
+Below we show an example of executing a saved query by ID from the CLI.
+
+.. prompt:: bash
+
+    censys asm execute-saved-query-by-id --query-id 'Some query ID'
+
+``search``
+^^^^^^^^^^
+
+See CLI command :ref:`asm search<cli:censys asm search>` for detail documentation of parameters.
+
+Below we show an example of executing an inventory search query from the CLI.
+
+.. prompt:: bash
+
+    censys asm search --query 'Some query'
