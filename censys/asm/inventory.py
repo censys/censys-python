@@ -33,19 +33,18 @@ class InventorySearch(CensysAsmAPI):
             dict: Inventory search results.
         """
         if workspaces is None:
-            w: List[str] = [self.get_workspace_id()]
+            workspaces = [self.get_workspace_id()]
         else:
             warnings.warn(
                 "The field 'workspaces' is being deprecated. The workspace associated with `CENSYS-API-KEY` will be used automatically.",
                 category=DeprecationWarning,
                 stacklevel=2,
             )
-            w = workspaces
         if page_size is None:
             page_size = 50
 
         args = {
-            "workspaces": w,
+            "workspaces": workspaces,
             "pageSize": page_size,
         }
 
