@@ -557,7 +557,9 @@ def cli_execute_saved_query_by_name(args: argparse.Namespace):
     query = results[0]["query"]
 
     try:
-        res = s.search(None, query, args.page_size, None, args.sort, args.fields)
+        res = s.search(
+            None, query, args.page_size, None, args.sort, args.fields, args.pages
+        )
         console.print_json(json.dumps(res))
     except CensysAsmException:
         console.print("Failed to execute saved query.")
@@ -579,7 +581,9 @@ def cli_execute_saved_query_by_id(args: argparse.Namespace):
         console.print("No saved query found with that ID.")
         sys.exit(1)
     try:
-        res = s.search(None, query, args.page_size, None, args.sort, args.fields)
+        res = s.search(
+            None, query, args.page_size, None, args.sort, args.fields, args.pages
+        )
         console.print_json(json.dumps(res))
     except CensysAsmException:
         console.print("Failed to execute saved query.")
@@ -602,6 +606,7 @@ def cli_search(args: argparse.Namespace):
             args.cursor,
             args.sort,
             args.fields,
+            args.pages,
         )
         console.print_json(json.dumps(res))
     except CensysAsmException:
@@ -885,6 +890,12 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         type=List[str],
         default=[],
     )
+    execute_saved_query_by_name_parser.add_argument(
+        "--pages",
+        help="Number of pages to return. Defaults to 1.",
+        type=int,
+        default=1,
+    )
     add_verbose(execute_saved_query_by_name_parser)
     execute_saved_query_by_name_parser.set_defaults(
         func=cli_execute_saved_query_by_name
@@ -919,6 +930,12 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         help="Fields to include in results",
         type=List[str],
         default=[],
+    )
+    execute_saved_query_by_id_parser.add_argument(
+        "--pages",
+        help="Number of pages to return. Defaults to 1.",
+        type=int,
+        default=1,
     )
     add_verbose(execute_saved_query_by_id_parser)
     execute_saved_query_by_id_parser.set_defaults(func=cli_execute_saved_query_by_id)
@@ -964,6 +981,12 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         help="Workspace IDs to search. Deprecated. The workspace associated with `CENSYS-API-KEY` will be used automatically.",
         type=str,
         required=False,
+    )
+    search_parser.add_argument(
+        "--pages",
+        help="Number of pages to return. Defaults to 1.",
+        type=int,
+        default=1,
     )
     add_verbose(search_parser)
     search_parser.set_defaults(func=cli_search)
