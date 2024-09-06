@@ -62,7 +62,7 @@ class InventorySearch(CensysAsmAPI):
         if fields:
             args["fields"] = fields
 
-        page = 0
+        page = 1
         next_cursor = None
         hits = []
         resp = self._get(self.base_path, args=args)
