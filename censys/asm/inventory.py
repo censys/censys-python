@@ -68,7 +68,10 @@ class InventorySearch(CensysAsmAPI):
         resp = self._get(self.base_path, args=args)
         next_cursor = resp.get("nextCursor")
         hits.extend(resp.get("hits", []))
-        while next_cursor and (page == 0 or pages == -1 or page < pages):
+        # Fetch additional pages if next_cursor is available AND additional pages are requested
+        # Loop will exit if next_cursor is None or if the number of pages requested is reached
+        # Loop will exit if non-200 status code is returned
+        while next_cursor and (pages == -1 or page < pages):
             args["cursor"] = next_cursor
             resp = self._get(self.base_path, args=args)
             if "nextCursor" in resp:
