@@ -12,7 +12,7 @@ INVENTORY_FIELDS_PATH = f"{INVENTORY_BASE_PATH}/fields"
 
 TEST_INVENTORY_SEARCH_JSON = {
     "totalHits": 0,
-    "nextCursor": "string",
+    "nextCursor": "",
     "previousCursor": "string",
     "queryDurationMillis": 0,
     "hits": [{}],

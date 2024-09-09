@@ -18,6 +18,7 @@ class InventorySearch(CensysAsmAPI):
         cursor: Optional[str] = None,
         sort: Optional[List[str]] = None,
         fields: Optional[List[str]] = None,
+        pages: Optional[int] = None,
     ) -> dict:
         """Search inventory data.
 
@@ -28,6 +29,7 @@ class InventorySearch(CensysAsmAPI):
             cursor (str, optional): Cursor to start search from.
             sort (List[str], optional): List of fields to sort by.
             fields (List[str], optional): List of fields to return.
+            pages (int, optional): Number of pages of results to return (when set to -1 returns all pages available).
 
         Returns:
             dict: Inventory search results.
@@ -43,6 +45,9 @@ class InventorySearch(CensysAsmAPI):
         if page_size is None:
             page_size = 50
 
+        if pages is None:
+            pages = 1
+
         args = {
             "workspaces": workspaces,
             "pageSize": page_size,
@@ -57,7 +62,27 @@ class InventorySearch(CensysAsmAPI):
         if fields:
             args["fields"] = fields
 
-        return self._get(self.base_path, args=args)
+        page = 1
+        next_cursor = None
+        hits = []
+        resp = self._get(self.base_path, args=args)
+        next_cursor = resp.get("nextCursor")
+        hits.extend(resp.get("hits", []))
+        # Fetch additional pages if next_cursor is available AND additional pages are requested
+        # Loop will exit if next_cursor is None or if the number of pages requested is reached
+        # Loop will exit if non-200 status code is returned
+        while next_cursor and (pages == -1 or page < pages):
+            args["cursor"] = next_cursor
+            resp = self._get(self.base_path, args=args)
+            if "nextCursor" in resp:
+                next_cursor = resp.get("nextCursor")
+            else:
+                next_cursor = None
+            hits.extend(resp.get("hits", []))
+            page += 1
+
+        resp["hits"] = hits
+        return resp
 
     def aggregate(
         self,

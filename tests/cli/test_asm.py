@@ -163,6 +163,81 @@ SEARCH_JSON = {
     ],
 }
 
+SEARCH_JSON_PAGE_1 = {
+    "totalHits": 5,
+    "nextCursor": "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MjA3MTJ9",
+    "queryDurationMillis": 50,
+    "hits": [
+        {"_details": {}, "domain": {"name": "foo.com"}, "type": "DOMAIN"},
+        {
+            "_details": {},
+            "domain": {"name": "bar.foo.com"},
+            "type": "DOMAIN",
+        },
+    ],
+}
+
+SEARCH_JSON_PAGE_2 = {
+    "totalHits": 5,
+    "nextCursor": "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MjA3MTJ8",
+    "previousCursor": "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MjA3MTJ9",
+    "queryDurationMillis": 50,
+    "hits": [
+        {
+            "_details": {},
+            "domain": {"name": "b.foo.com"},
+            "type": "DOMAIN",
+        },
+        {
+            "_details": {},
+            "domain": {"name": "a.foo.com"},
+            "type": "DOMAIN",
+        },
+    ],
+}
+
+SEARCH_JSON_PAGE_3 = {
+    "totalHits": 5,
+    "previousCursor": "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MjA3MTJ8",
+    "queryDurationMillis": 50,
+    "hits": [
+        {
+            "_details": {},
+            "domain": {"name": "r.foo.com"},
+            "type": "DOMAIN",
+        },
+    ],
+}
+
+SEARCH_JSON_PAGINATED = {
+    "totalHits": 5,
+    "previousCursor": "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MjA3MTJ8",
+    "queryDurationMillis": 50,
+    "hits": [
+        {"_details": {}, "domain": {"name": "foo.com"}, "type": "DOMAIN"},
+        {
+            "_details": {},
+            "domain": {"name": "bar.foo.com"},
+            "type": "DOMAIN",
+        },
+        {
+            "_details": {},
+            "domain": {"name": "b.foo.com"},
+            "type": "DOMAIN",
+        },
+        {
+            "_details": {},
+            "domain": {"name": "a.foo.com"},
+            "type": "DOMAIN",
+        },
+        {
+            "_details": {},
+            "domain": {"name": "r.foo.com"},
+            "type": "DOMAIN",
+        },
+    ],
+}
+
 SAVED_QUERY_ID = "12345"
 SAVED_QUERY_NAME = "Test query"
 
@@ -2191,3 +2266,119 @@ class CensysASMCliTest(CensysTestCase):
 
         # Assertions
         assert "Failed to execute query." in temp_stdout.getvalue()
+
+    def test_search_paginated_all(self):
+        # Mock
+        mock_request = self.mocker.patch("censys.asm.api.CensysAsmAPI.get_workspace_id")
+        mock_request.return_value = WORKSPACE_ID
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "search",
+                "--query",
+                "domain: foo.com",
+                "--page-size",
+                "2",
+                "--pages",
+                "-1",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1",
+            status=200,
+            json=SEARCH_JSON_PAGE_1,
+            match=[
+                matchers.query_param_matcher(
+                    {
+                        "workspaces": WORKSPACE_ID,
+                        "query": "domain: foo.com",
+                        "pageSize": 2,
+                    }
+                )
+            ],
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1",
+            status=200,
+            json=SEARCH_JSON_PAGE_2,
+            match=[
+                matchers.query_param_matcher(
+                    {
+                        "workspaces": WORKSPACE_ID,
+                        "cursor": SEARCH_JSON_PAGE_1["nextCursor"],
+                        "query": "domain: foo.com",
+                        "pageSize": 2,
+                    }
+                )
+            ],
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1",
+            status=200,
+            json=SEARCH_JSON_PAGE_3,
+            match=[
+                matchers.query_param_matcher(
+                    {
+                        "workspaces": WORKSPACE_ID,
+                        "cursor": SEARCH_JSON_PAGE_2["nextCursor"],
+                        "query": "domain: foo.com",
+                        "pageSize": 2,
+                    }
+                )
+            ],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        actual_json = json.loads(temp_stdout.getvalue())
+        assert actual_json == SEARCH_JSON_PAGINATED
+
+    def test_search_paginated_partial(self):
+        # Mock
+        mock_request = self.mocker.patch("censys.asm.api.CensysAsmAPI.get_workspace_id")
+        mock_request.return_value = WORKSPACE_ID
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "search",
+                "--query",
+                "domain: foo.com",
+                "--page-size",
+                "2",
+            ],
+            asm_auth=True,
+        )
+        self.responses.add(
+            responses.GET,
+            INVENTORY_URL + "/v1",
+            status=200,
+            json=SEARCH_JSON_PAGE_1,
+            match=[
+                matchers.query_param_matcher(
+                    {
+                        "workspaces": WORKSPACE_ID,
+                        "query": "domain: foo.com",
+                        "pageSize": 2,
+                    }
+                )
+            ],
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with contextlib.redirect_stdout(temp_stdout):
+            cli_main()
+
+        # Assertions
+        actual_json = json.loads(temp_stdout.getvalue())
+        assert actual_json == SEARCH_JSON_PAGE_1
