@@ -152,7 +152,7 @@ class CensysAPIBase:
 
     @backoff.on_predicate(
         backoff.runtime,
-        predicate=lambda r: r.status_code in (429, 503)
+        predicate=lambda r: r.status_code in (408, 429, 502, 503)
         and r.headers.get("Retry-After"),
         value=lambda r: int(r.headers.get("Retry-After", 0)),
     )
