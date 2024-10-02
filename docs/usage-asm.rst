@@ -288,7 +288,7 @@ Below we show an example of **searching for assets**.
     print(assets)
 
     # Aggregate search results by a field
-    aggregation = i.aggregate(workspaces=["my_workspace"], query="host.services.http.response.body: /.*test.*/")
+    aggregation = i.aggregate(workspaces=["my_workspace"], query="host.location.country_code: 'US'", aggregation={"term": {"field": "host.autonomous_system.bgp_prefix", "numberOfBuckets": 50}})
     print(aggregation)
 
     # Get list of all available fields
