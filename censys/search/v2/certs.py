@@ -1,6 +1,10 @@
 """Interact with the Censys Search Cert API."""
+
+import warnings
 from typing import List, Optional, Union
 
+from ...common.types import Datetime
+from ...common.utils import format_rfc3339
 from .api import CensysSearchAPIv2
 
 
@@ -306,6 +310,11 @@ class CensysCerts(CensysSearchAPIv2):
         Returns:
             dict: A list of hosts which contain services presenting this certificate.
         """
+        warnings.warn(
+            "This API endpoint is deprecated and scheduled for removal during a future release. Users should migrate to using the search endpoint on the Host index using the 'services.certificate: {fingerprint}' query to find any hosts currently presenting a certificate.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
         args = {"cursor": cursor}
         return self._get(self.view_path + fingerprint + "/hosts", args)["result"]
 
@@ -319,3 +328,30 @@ class CensysCerts(CensysSearchAPIv2):
             List[dict]: A list of certs which are tagged with the specified tag.
         """
         return self._list_documents_with_tag(tag_id, "certificates", "certs")
+
+    def get_observations(
+        self,
+        fingerprint: str,
+        per_page: int = 50,
+        start_time: Optional[Datetime] = None,
+        end_time: Optional[Datetime] = None,
+        cursor: Optional[str] = None,
+    ) -> dict:
+        """Returns a list of observations for the specified certificate.
+
+        Args:
+            fingerprint (str): The SHA-256 fingerprint of the requested certificate.
+            per_page (int): The number of results to return per page. Defaults to 50.
+            start_time (str): The start time of the observations to return.
+            end_time (str): The end time of the observations to return.
+            cursor (str): Cursor token from the API response, which fetches the next page of observations when added to the endpoint URL.
+
+        Returns:
+            dict: A list of observations for the specified certificate.
+        """
+        args = {"per_page": per_page, "cursor": cursor}
+        if start_time:
+            args["start_time"] = format_rfc3339(start_time)
+        if end_time:
+            args["end_time"] = format_rfc3339(end_time)
+        return self._get(self.view_path + fingerprint + "/observations", args)["result"]
