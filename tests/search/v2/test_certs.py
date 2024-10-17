@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import responses
@@ -173,6 +174,27 @@ VIEW_HOSTS_BY_CERT_JSON = {
                 "name": "string",
                 "observed_at": "2021-08-02T14:56:38.711Z",
                 "first_observed_at": "2021-08-02T14:56:38.711Z",
+            }
+        ],
+        "links": {"next": "nextCursorToken"},
+    },
+}
+OBSERVATIONS_CERT_JSON = {
+    "code": 200,
+    "status": "OK",
+    "result": {
+        "fingerprint": "string",
+        "observations": [
+            {
+                "ip": "string",
+                "name": "string",
+                "port": 0,
+                "service_name": "string",
+                "transport_protocol": "TCP",
+                "first_observed_at": "2024-10-17T18:13:23.554Z",
+                "last_observed_at": "2024-10-17T18:13:23.554Z",
+                "first_updated_at": "2024-10-17T18:13:23.554Z",
+                "last_updated_at": "2024-10-17T18:13:23.554Z",
             }
         ],
         "links": {"next": "nextCursorToken"},
@@ -385,3 +407,37 @@ class TestCerts(CensysTestCase):
         )
         results = self.api.get_hosts_by_cert(TEST_CERT, cursor="nextCursorToken")
         assert results == VIEW_HOSTS_BY_CERT_JSON["result"]
+
+    def test_get_observations_by_cert(self):
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/certificates/{TEST_CERT}/observations",
+            status=200,
+            json=OBSERVATIONS_CERT_JSON,
+        )
+        result = self.api.get_observations(TEST_CERT)
+        assert result == OBSERVATIONS_CERT_JSON["result"]
+
+    def test_get_observations_by_cert_with_cursor(self):
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/certificates/{TEST_CERT}/observations?per_page=50&cursor=nextCursorToken",
+            status=200,
+            json=OBSERVATIONS_CERT_JSON,
+        )
+        results = self.api.get_observations(TEST_CERT, cursor="nextCursorToken")
+        assert results == OBSERVATIONS_CERT_JSON["result"]
+
+    def test_get_observations_with_rfc3339_timestampts(self):
+        self.responses.add(
+            responses.GET,
+            f"{V2_URL}/certificates/{TEST_CERT}/observations?per_page=50&start_time=2024-10-14T18%3A13%3A23.554000Z&end_time=2024-10-17T18%3A13%3A23.554000Z",
+            status=200,
+            json=OBSERVATIONS_CERT_JSON,
+        )
+        result = self.api.get_observations(
+            TEST_CERT,
+            start_time=datetime(2024, 10, 14, 18, 13, 23, 554000),
+            end_time=datetime(2024, 10, 17, 18, 13, 23, 554000),
+        )
+        assert result == OBSERVATIONS_CERT_JSON["result"]
