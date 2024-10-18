@@ -217,6 +217,8 @@ class RisksTests(CensysTestCase):
             ({"include_events": True}, "?includeEvents=True"),
             ({"include_events": False}, "?includeEvents=False"),
             ({"sort": ["severity", "type:asc"]}, "?sort=severity&sort=type:asc"),
+            ({"page": 1, "limit": 10000}, "?page=1&limit=10000"),
+            ({"page": 10}, "?page=10"),
         ]
     )
     def test_get_risk_types(self, kwargs, params):

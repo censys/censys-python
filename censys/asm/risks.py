@@ -126,6 +126,8 @@ class Risks(CensysAsmAPI):
 
     def get_risk_types(
         self,
+        limit: Optional[int] = None,
+        page: Optional[int] = None,
         sort: Optional[List[str]] = None,
         include_events: Optional[bool] = None,
         accept: Optional[str] = None,
@@ -133,6 +135,8 @@ class Risks(CensysAsmAPI):
         """Retrieve risk types.
 
         Args:
+            limit (int, optional): Maximum number of results to return. Defaults to 1000.
+            page (int, optional): Page number to begin at when searching. Defaults to 1.
             sort (list): Optional; Sort by field(s).
             include_events (bool): Optional; Whether to include events.
             accept (str): Optional; Accept header.
@@ -140,7 +144,11 @@ class Risks(CensysAsmAPI):
         Returns:
             dict: Risk types result.
         """
-        args = {"sort": sort, "includeEvents": include_events}
+        args: Dict[str, Any] = {"sort": sort, "includeEvents": include_events}
+        if page:
+            args["page"] = page
+        if limit:
+            args["limit"] = limit
         return self._get(
             self.risk_types_path,
             args=args,
