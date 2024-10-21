@@ -1,4 +1,5 @@
 """Base for interacting with the Censys APIs."""
+
 import json
 import os
 import warnings

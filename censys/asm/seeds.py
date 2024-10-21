@@ -1,4 +1,5 @@
 """Interact with the Censys Seeds API."""
+
 from typing import List, Optional
 
 from .api import CensysAsmAPI

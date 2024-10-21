@@ -2,6 +2,7 @@
 
 For more details see: https://docs.pytest.org/en/stable/fixture.html
 """
+
 from unittest.mock import patch
 
 import pytest

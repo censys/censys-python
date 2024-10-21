@@ -1,4 +1,5 @@
 """Interact with the Censys Inventory Search API."""
+
 import warnings
 from typing import List, Optional
 

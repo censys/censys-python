@@ -1,4 +1,5 @@
 """Censys HNRI CLI."""
+
 import argparse
 import sys
 import webbrowser

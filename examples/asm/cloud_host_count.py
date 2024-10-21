@@ -1,4 +1,5 @@
 """Retrieve host counts by cloud since the first day of 2021."""
+
 from datetime import date
 
 from censys.asm import Clouds

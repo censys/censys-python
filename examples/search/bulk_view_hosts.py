@@ -1,4 +1,5 @@
 """Bulk IP Lookup Example."""
+
 from censys.search import CensysHosts
 
 h = CensysHosts()

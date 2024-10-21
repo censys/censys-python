@@ -1,4 +1,5 @@
 """Censys config CLI."""
+
 import argparse
 import sys
 

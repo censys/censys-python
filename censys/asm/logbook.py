@@ -1,4 +1,5 @@
 """Interact with the Censys Logbook API."""
+
 import datetime
 from typing import Iterator, List, Optional, Union
 

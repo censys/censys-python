@@ -1,4 +1,5 @@
 """Interact with the Censys Risks API."""
+
 from typing import Any, Dict, List, Optional
 
 from .api import CensysAsmAPI

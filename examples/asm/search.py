@@ -1,4 +1,5 @@
 """Execute a saved query by ID."""
+
 from censys.asm import InventorySearch
 
 # Create an instance of the SavedQueries class

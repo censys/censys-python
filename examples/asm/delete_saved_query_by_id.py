@@ -1,4 +1,5 @@
 """Delete a saved query by ID."""
+
 from censys.asm import SavedQueries
 
 # Create an instance of the SavedQueries class

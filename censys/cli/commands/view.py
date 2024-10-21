@@ -1,4 +1,5 @@
 """Censys view CLI."""
+
 import argparse
 import ipaddress
 import sys

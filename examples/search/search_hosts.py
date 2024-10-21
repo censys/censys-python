@@ -1,4 +1,5 @@
 """Search hosts data set."""
+
 from censys.search import CensysHosts
 
 h = CensysHosts()

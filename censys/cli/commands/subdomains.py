@@ -1,4 +1,5 @@
 """Censys subdomains CLI."""
+
 import argparse
 import json
 import sys

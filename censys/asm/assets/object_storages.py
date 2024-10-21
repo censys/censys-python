@@ -1,4 +1,5 @@
 """Interact with the Censys Object Storage Assets API."""
+
 from urllib.parse import quote
 
 from .assets import Assets

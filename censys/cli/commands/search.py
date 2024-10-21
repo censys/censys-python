@@ -1,4 +1,5 @@
 """Censys search CLI."""
+
 import argparse
 import json
 import sys

@@ -1,4 +1,5 @@
 """Interact with the Censys Saved Queries API."""
+
 from typing import Optional
 
 from .api import CensysAsmAPI

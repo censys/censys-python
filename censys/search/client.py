@@ -1,4 +1,5 @@
 """Interact with all Search APIs."""
+
 from .v1 import CensysData
 from .v2 import CensysCerts, CensysHosts
 

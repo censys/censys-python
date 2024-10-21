@@ -1,4 +1,5 @@
 """Interact with the Censys Web Entities Assets API."""
+
 from typing import Iterator, Optional
 
 from .assets import Assets

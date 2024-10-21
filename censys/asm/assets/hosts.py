@@ -1,4 +1,5 @@
 """Interact with the Censys Host Assets API."""
+
 from .assets import Assets
 
 

@@ -1,4 +1,5 @@
 """View host certificates."""
+
 from censys.search import CensysHosts
 
 h = CensysHosts()

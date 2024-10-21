@@ -1,4 +1,5 @@
 """Search certificate data set."""
+
 from censys.search import CensysCerts
 
 c = CensysCerts()

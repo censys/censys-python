@@ -1,4 +1,5 @@
 """Censys CLI utilities."""
+
 import argparse
 import datetime
 import json

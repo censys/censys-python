@@ -1,4 +1,5 @@
 """Interact with the Censys Clouds API."""
+
 from ..common.types import Datetime
 from ..common.utils import format_iso8601
 from .api import CensysAsmAPI
