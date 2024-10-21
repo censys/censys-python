@@ -1,4 +1,5 @@
 """Interact with the Censys Seeds, Assets, and Logbook APIs."""
+
 from typing import Optional
 
 from .assets import (

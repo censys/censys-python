@@ -1,4 +1,5 @@
 """Exceptions for Censys."""
+
 from typing import Dict, Optional, Type
 
 

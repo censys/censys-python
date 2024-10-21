@@ -1,4 +1,5 @@
 """Base for interacting with the Censys Assets API."""
+
 import re
 from typing import Any, Dict, Iterator, List, Optional
 

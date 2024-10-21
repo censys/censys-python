@@ -1,4 +1,5 @@
 """View specific certificate."""
+
 from censys.search import CensysCerts
 
 c = CensysCerts()

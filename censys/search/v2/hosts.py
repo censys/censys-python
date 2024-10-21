@@ -1,4 +1,5 @@
 """Interact with the Censys Search Host API."""
+
 from typing import Any, Dict, List, Optional, Union
 
 from .api import CensysSearchAPIv2

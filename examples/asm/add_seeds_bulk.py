@@ -1,4 +1,5 @@
 """Add seeds in bulk from CSV file."""
+
 import csv
 
 from censys.asm import Seeds

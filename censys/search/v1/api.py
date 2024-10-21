@@ -1,4 +1,5 @@
 """Base for interacting with the Censys Search API."""
+
 import os
 from typing import List, Optional, Type
 

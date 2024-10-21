@@ -1,4 +1,5 @@
 """List all domains and subdomains in ASM."""
+
 from censys.asm import DomainsAssets
 
 d = DomainsAssets()

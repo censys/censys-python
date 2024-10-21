@@ -1,4 +1,5 @@
 """Get the saved queries."""
+
 from censys.asm import SavedQueries
 
 # Create an instance of the SavedQueries class

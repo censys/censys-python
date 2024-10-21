@@ -1,4 +1,5 @@
 """Interact with the Censys Subdomain Assets API."""
+
 from typing import Any, Dict, Iterator, List, Optional
 
 from .assets import Assets

@@ -1,4 +1,5 @@
 """Metadata on the hosts index."""
+
 from censys.search import CensysHosts
 
 h = CensysHosts()

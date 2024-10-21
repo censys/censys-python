@@ -1,4 +1,5 @@
 """Interact with the config file."""
+
 import configparser
 import os
 from pathlib import Path

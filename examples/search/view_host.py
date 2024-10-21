@@ -1,4 +1,5 @@
 """View specific host."""
+
 from censys.search import CensysHosts
 
 h = CensysHosts()

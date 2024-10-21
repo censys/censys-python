@@ -1,4 +1,5 @@
 """Retrieve host risks and subsequent host info for each host risk."""
+
 from censys.asm import HostsAssets, Logbook
 
 logbook = Logbook()

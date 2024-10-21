@@ -1,4 +1,5 @@
 """Base for interacting with the Censys ASM API."""
+
 import os
 from math import inf
 from typing import Iterator, Optional, Type

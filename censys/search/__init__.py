@@ -1,4 +1,5 @@
 """An easy-to-use and lightweight API wrapper for Censys Search API (search.censys.io)."""
+
 from .client import SearchClient
 from .v1 import CensysData
 from .v2 import CensysCerts, CensysHosts

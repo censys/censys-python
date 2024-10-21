@@ -1,4 +1,5 @@
 """Interact with the Censys Search Data API."""
+
 from .api import CensysSearchAPIv1
 
 

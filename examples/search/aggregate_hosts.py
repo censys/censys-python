@@ -1,4 +1,5 @@
 """Aggregate hosts data set."""
+
 from censys.search import SearchClient
 
 c = SearchClient()

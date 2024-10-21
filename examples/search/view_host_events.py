@@ -1,4 +1,5 @@
 """View host events."""
+
 from censys.search import CensysHosts
 
 h = CensysHosts()

@@ -1,4 +1,5 @@
 """Base for interacting with the Censys Search API."""
+
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Type, Union

@@ -1,4 +1,5 @@
 """View all hosts for a given query."""
+
 from censys.search import CensysHosts
 
 h = CensysHosts()

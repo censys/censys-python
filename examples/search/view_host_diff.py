@@ -1,4 +1,5 @@
 """View Host Diff."""
+
 from datetime import date
 
 from censys.search import CensysHosts

@@ -1,4 +1,5 @@
 """Warns on deprecated class and functions."""
+
 import functools
 import warnings
 from typing import Callable, Optional

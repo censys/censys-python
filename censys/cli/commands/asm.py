@@ -1,4 +1,5 @@
 """Censys ASM CLI."""
+
 import argparse
 import concurrent.futures
 import csv
