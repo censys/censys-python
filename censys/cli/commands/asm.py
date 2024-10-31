@@ -558,7 +558,10 @@ def cli_execute_saved_query_by_name(args: argparse.Namespace):
     query = results[0]["query"]
 
     if args.page_size > 1000:
-        console.print("page size must be within [0,1000]. To fetch all pages, specify --pages -1 with any page size in range")
+        console.print(
+            "page size must be within [0,1000]. To fetch all pages, specify --pages -1 with any page size in range"
+        )
+
         sys.exit(1)
 
     try:
