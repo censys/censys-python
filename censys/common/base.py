@@ -100,6 +100,10 @@ class CensysAPIBase:
         if cookies:
             self._session.cookies.update(cookies)
         self.request_id = kwargs.get("request_id")
+        if kwargs.get('verify'):
+            self._session.verify = kwargs.get('verify')
+        if kwargs.get('cert'):
+            self._session.cert = kwargs.get('cert')
         self._session.headers.update(
             {
                 "accept": "application/json, */8",
