@@ -121,3 +121,13 @@ class CensysAPIBaseTests(CensysTestCase):
         base = CensysAPIBase(TEST_URL, cookies={"_ga": "GA"})
         # Assertions
         assert list(base._session.cookies.keys()) == ["_ga"]
+
+    def test_verify_and_cert(self):
+        # Mock/actual call
+        base = CensysAPIBase(
+            TEST_URL, 
+            cert=("/path/to/clientcert", "/path/to/clientkey"), 
+            verify="/path/to/cacert"
+        )
+        assert base._session.cert == ("/path/to/clientcert", "/path/to/clientkey")
+        assert base._session.verify == "/path/to/cacert"
