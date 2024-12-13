@@ -100,6 +100,9 @@ class CensysSearchAPIv2(CensysAPIBase):
         For more details, see our documentation: https://search.censys.io/api
         """
 
+        # Total number of results (Set after first query)
+        total: Optional[int] = None
+
         def __init__(
             self,
             api: "CensysSearchAPIv2",
@@ -162,8 +165,9 @@ class CensysSearchAPIv2(CensysAPIBase):
             )
             self.page += 1
             result = payload["result"]
+            self.total = result["total"]
             self.nextCursor = result["links"].get("next")
-            if result["total"] == 0 or not self.nextCursor:
+            if self.total == 0 or not self.nextCursor:
                 self.pages = 0
             return result["hits"]
 
