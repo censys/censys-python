@@ -547,6 +547,13 @@ def cli_execute_saved_query_by_name(args: argparse.Namespace):
     Args:
         args (Namespace): Argparse Namespace.
     """
+    # do some sanity checking on page size before anything else
+    if args.page_size > 1000:
+        console.print(
+            "page size must be within [0,1000]. To fetch all pages, specify --pages -1 with any legal page size"
+        )
+
+        sys.exit(1)
     s = InventorySearch(args.api_key)
     q = SavedQueries(args.api_key)
     # get query from name
@@ -557,12 +564,6 @@ def cli_execute_saved_query_by_name(args: argparse.Namespace):
         sys.exit(1)
     query = results[0]["query"]
 
-    if args.page_size > 1000:
-        console.print(
-            "page size must be within [0,1000]. To fetch all pages, specify --pages -1 with any page size in range"
-        )
-
-        sys.exit(1)
 
     try:
         res = s.search(
