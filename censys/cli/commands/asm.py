@@ -564,7 +564,6 @@ def cli_execute_saved_query_by_name(args: argparse.Namespace):
         sys.exit(1)
     query = results[0]["query"]
 
-
     try:
         res = s.search(
             None, query, args.page_size, None, args.sort, args.fields, args.pages
