@@ -2100,7 +2100,7 @@ class CensysASMCliTest(CensysTestCase):
                 "--query-name",
                 "foo domain",
                 "--page-size",
-                "1001"
+                "1001",
             ],
             asm_auth=True,
         )
@@ -2240,7 +2240,7 @@ class CensysASMCliTest(CensysTestCase):
                 "--query-id",
                 "100",
                 "--page-size",
-                "1001"
+                "1001",
             ],
             asm_auth=True,
         )
