@@ -2077,6 +2077,44 @@ class CensysASMCliTest(CensysTestCase):
         # Assertions
         assert "Failed to execute saved query." in temp_stdout.getvalue()
 
+    def test_execute_saved_query_by_name_invalid_page_size(self):
+        # Mock
+        mock_request = self.mocker.patch("censys.asm.api.CensysAsmAPI.get_workspace_id")
+        mock_request.return_value = WORKSPACE_ID
+        mock_query = self.mocker.patch("censys.asm.SavedQueries.get_saved_queries")
+        mock_query.return_value = {
+            "results": [
+                {
+                    "queryId": "1",
+                    "queryName": "foo domain",
+                    "query": "domain: foo.com",
+                    "createdAt": "2024-01-01T01:00:00.000Z",
+                }
+            ]
+        }
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "execute-saved-query-by-name",
+                "--query-name",
+                "foo domain",
+                "--page-size",
+                "1001",
+            ],
+            asm_auth=True,
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
+            temp_stdout
+        ):
+            cli_main()
+
+        # Assertions
+        assert "page size must be within [0,1000]" in temp_stdout.getvalue()
+
     def test_execute_saved_query_by_id(self):
         # Mock
         mock_request = self.mocker.patch("censys.asm.api.CensysAsmAPI.get_workspace_id")
@@ -2187,6 +2225,35 @@ class CensysASMCliTest(CensysTestCase):
 
         # Assertions
         assert "Failed to execute saved query." in temp_stdout.getvalue()
+
+    def test_execute_saved_query_by_id_invalid_page_size(self):
+        # Mock
+        mock_request = self.mocker.patch("censys.asm.api.CensysAsmAPI.get_workspace_id")
+        mock_request.return_value = WORKSPACE_ID
+        mock_query = self.mocker.patch("censys.asm.SavedQueries.get_saved_queries")
+        mock_query.return_value = SAVED_QUERY_JSON
+        self.patch_args(
+            [
+                "censys",
+                "asm",
+                "execute-saved-query-by-id",
+                "--query-id",
+                "100",
+                "--page-size",
+                "1001",
+            ],
+            asm_auth=True,
+        )
+
+        # Actual call
+        temp_stdout = StringIO()
+        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
+            temp_stdout
+        ):
+            cli_main()
+
+        # Assertions
+        assert "page size must be within [0,1000]" in temp_stdout.getvalue()
 
     def test_search(self):
         # Mock
