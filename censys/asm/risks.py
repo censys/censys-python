@@ -13,6 +13,14 @@ class Risks(CensysAsmAPI):
     risk_instances_path = f"{base_path}-instances"
     risk_types_path = f"{base_path}-types"
 
+    @staticmethod
+    def _build_params(**kwargs) -> Dict[str, Any]:
+        return {k: v for k, v in kwargs.items() if v is not None}
+
+    @staticmethod
+    def _build_headers(accept: Optional[str]) -> Optional[Dict[str, str]]:
+        return {"Accept": accept} if accept else None
+
     def get_risk_events(
         self,
         start: Optional[str] = None,
@@ -35,21 +43,11 @@ class Risks(CensysAsmAPI):
         Returns:
             dict: Risk events result.
         """
-        args: Dict[str, Any] = {}
-        if start:
-            args["start"] = start
-        if end:
-            args["end"] = end
-        if after_id:
-            args["afterID"] = after_id
-        if limit:
-            args["limit"] = limit
-        if cursor:
-            args["cursor"] = cursor
+        args = self._build_params(start=start, end=end, afterID=after_id, limit=limit, cursor=cursor)
         return self._get(
             self.risk_events_path,
             args=args,
-            headers={"Accept": accept} if accept else None,
+            headers=self._build_headers(accept),
         )
 
     def get_risk_instances(
@@ -64,11 +62,11 @@ class Risks(CensysAsmAPI):
         Returns:
             dict: Risk instances result.
         """
-        args = {"includeEvents": include_events}
+        args = self._build_params(includeEvents=include_events)
         return self._get(
             self.risk_instances_path,
             args=args,
-            headers={"Accept": accept} if accept else None,
+            headers=self._build_headers(accept),
         )
 
     def patch_risk_instances(self, data: dict) -> dict:
@@ -95,7 +93,7 @@ class Risks(CensysAsmAPI):
         return self._post(
             f"{self.risk_instances_path}/search",
             data=data,
-            headers={"Accept": accept} if accept else None,
+            headers=self._build_headers(accept),
         )
 
     def get_risk_instance(
@@ -110,7 +108,7 @@ class Risks(CensysAsmAPI):
         Returns:
             dict: Risk instance result.
         """
-        args = {"includeEvents": include_events}
+        args = self._build_params(includeEvents=include_events)
         return self._get(f"{self.risk_instances_path}/{risk_instance_id}", args=args)
 
     def patch_risk_instance(self, risk_instance_id: int, data: dict) -> dict:
@@ -145,15 +143,11 @@ class Risks(CensysAsmAPI):
         Returns:
             dict: Risk types result.
         """
-        args: Dict[str, Any] = {"sort": sort, "includeEvents": include_events}
-        if page:
-            args["page"] = page
-        if limit:
-            args["limit"] = limit
+        args = self._build_params(sort=sort, includeEvents=include_events, page=page, limit=limit)
         return self._get(
             self.risk_types_path,
             args=args,
-            headers={"Accept": accept} if accept else None,
+            headers=self._build_headers(accept),
         )
 
     def get_risk_type(
@@ -168,7 +162,7 @@ class Risks(CensysAsmAPI):
         Returns:
             dict: Risk type result.
         """
-        args = {"includeEvents": include_events}
+        args = self._build_params(includeEvents=include_events)
         return self._get(f"{self.risk_types_path}/{risk_type}", args=args)
 
     def patch_risk_type(self, risk_type: str, data: dict) -> dict:
