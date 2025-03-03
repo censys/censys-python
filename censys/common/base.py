@@ -1,6 +1,7 @@
 """Base for interacting with the Censys APIs."""
 
 import json
+import logging
 import os
 import warnings
 from functools import wraps
@@ -83,6 +84,7 @@ class CensysAPIBase:
             CensysException: Base Exception Class for the Censys API.
         """
         # Get common request settings
+        self.logger = logging.getLogger(__name__)
         self.timeout = timeout
         self.max_retries = max_retries
         self._api_url = url or os.getenv("CENSYS_API_URL")
@@ -212,6 +214,7 @@ class CensysAPIBase:
         else:
             url = f"{self._api_url}/{endpoint}"
 
+        self.logger.debug(f"Making request to {url} with args {args}")
         request_kwargs = {
             "params": args or {},
             "timeout": self.timeout,
