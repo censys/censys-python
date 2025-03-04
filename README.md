@@ -11,6 +11,10 @@ An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://
 
 > **Notice:** The Censys Search v1 endpoints are deprecated as of Nov. 30, 2021. Please begin using v2 endpoints to query hosts and certificates and check out our [support center](https://support.censys.io/hc/en-us/sections/360013076551-Censys-Search-2-0) for resources.
 
+> [!IMPORTANT]
+> This library does not support the new Censys Platform, however a new set of SDKs that do support the platform are coming soon.
+> Please refer to the [platform API refrence docs](https://docs.censys.com/reference/get-started#/) in the mean time.
+
 ## Features
 
 - [Search Censys data](https://censys-python.readthedocs.io/en/stable/usage-v2.html)
