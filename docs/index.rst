@@ -29,6 +29,7 @@ The User Guide
 
    quick-start
    usage-cli
+   usage-platform
    usage-v2
    usage-v1
    usage-asm

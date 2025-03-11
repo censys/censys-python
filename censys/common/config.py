@@ -2,6 +2,7 @@
 
 import configparser
 import os
+from contextlib import suppress
 from pathlib import Path
 
 DEFAULT = "DEFAULT"
@@ -51,13 +52,15 @@ def write_config(config: configparser.ConfigParser) -> None:
 
 
 def get_config() -> configparser.ConfigParser:
-    """Reads and returns config.
+    """Gets and parses configuration.
 
     Returns:
-        configparser.ConfigParser: Config for Censys.
+        configparser.ConfigParser: Config parser.
     """
     config = configparser.ConfigParser(defaults=default_config, default_section=DEFAULT)
+    # Attempt to read and parse configuration
     config_path = get_config_path()
     if os.path.isfile(config_path):
-        config.read(config_path)
+        with suppress(configparser.Error), open(config_path) as config_file:
+            config.read_file(config_file)
     return config

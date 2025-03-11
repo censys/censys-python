@@ -182,7 +182,7 @@ class CensysAPIBase:
     @_backoff_wrapper
     def _make_call(
         self,
-        method: Callable[..., Response],
+        method: Callable,
         endpoint: str,
         args: Optional[dict] = None,
         data: Optional[Any] = None,
@@ -190,13 +190,10 @@ class CensysAPIBase:
     ) -> dict:
         """Make API call.
 
-        Wrapper functions for all our REST API calls checking for errors
-        and decoding the responses.
-
         Args:
-            method (Callable): Method to send HTTP request.
-            endpoint (str): The path of API endpoint.
-            args (dict): Optional; URL args that are mapped to params.
+            method (Callable): Method to call.
+            endpoint (str): Endpoint to call.
+            args (dict, optional): Arguments to pass to method.
             data (Any): Optional; JSON data to serialize with request.
             **kwargs: Arbitrary keyword arguments to pass to method.
 
@@ -244,6 +241,7 @@ class CensysAPIBase:
                 "statusCode", "unknown"
             )
             details = json_data.get("details", "unknown")
+
         except (ValueError, json.decoder.JSONDecodeError) as error:
             raise CensysJSONDecodeException(
                 status_code=res.status_code,

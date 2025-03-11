@@ -4,11 +4,26 @@ CLI Usage
 .. raw:: html
     :file: cli.html
 
-Before continuing please ensure you have successfully configured your credentials.
+Configuration
+------------
 
-.. prompt:: bash
+Censys Python supports two different API endpoints, each with its own dedicated configuration command:
 
-    censys config
+1. **Legacy Search API Configuration**
+
+   The legacy Search API uses API ID and API Secret for authentication:
+
+   .. prompt:: bash
+
+       censys config
+
+2. **Platform API Configuration**
+
+   The Platform API uses Platform Token and Organization ID for authentication:
+
+   .. prompt:: bash
+
+       censys platform config
 
 The configuration file by default is written to ``~/.config/censys/censys.cfg``, but you can change this by setting the ``CENSYS_CONFIG_PATH`` environment variable.
 

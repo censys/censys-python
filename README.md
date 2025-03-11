@@ -11,16 +11,13 @@ An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://
 
 > **Notice:** The Censys Search v1 endpoints are deprecated as of Nov. 30, 2021. Please begin using v2 endpoints to query hosts and certificates and check out our [support center](https://support.censys.io/hc/en-us/sections/360013076551-Censys-Search-2-0) for resources.
 
-> [!IMPORTANT]
-> This library does not support the new Censys Platform, however a new set of SDKs that do support the platform are coming soon.
-> Please refer to the [platform API refrence docs](https://docs.censys.com/reference/get-started#/) in the mean time.
-
 ## Features
 
-- [Search Censys data](https://censys-python.readthedocs.io/en/stable/usage-v2.html)
-- [Bulk Certificate lookups](https://censys-python.readthedocs.io/en/stable/usage-v2.html#bulk-view)
-- [Download Bulk Data](https://censys-python.readthedocs.io/en/stable/usage-v1.html#data)
-- [Manage assets, events, and seeds in Censys ASM](https://censys-python.readthedocs.io/en/stable/usage-asm.html)
+- [Platform API](https://censys-python.readthedocs.io/en/stable/usage-platform.html)
+- [Legacy Search API](https://censys-python.readthedocs.io/en/stable/usage-v2.html)
+- [Helpful utilities like Bulk Certificate lookups](https://censys-python.readthedocs.io/en/stable/usage-v2.html#bulk-view)
+- [Data Download API](https://censys-python.readthedocs.io/en/stable/usage-v1.html#data)
+- [Censys ASM API](https://censys-python.readthedocs.io/en/stable/usage-asm.html)
 - [Command-line interface](https://censys-python.readthedocs.io/en/stable/cli.html)
 
 <!-- markdownlint-disable MD033 -->
@@ -59,7 +56,17 @@ Optionally, you can enable tab completion for the CLI by adding this line to you
 eval "$(register-python-argcomplete censys)"
 ```
 
-To configure your search credentials run `censys config` or set both `CENSYS_API_ID` and `CENSYS_API_SECRET` environment variables.
+To configure the platform API, run `censys platform config` or set both `CENSYS_PLATFORM_TOKEN` and `CENSYS_ORGANIZATION_ID` environment variables.
+
+```sh
+$ censys platform config
+
+Censys Platform Token: XXX
+Censys Organization ID: XXX
+Do you want color output? [y/n]: y
+```
+
+If you wish to use the legacy Censys Search API, you can configure your search credentials run `censys config` or set both `CENSYS_API_ID` and `CENSYS_API_SECRET` environment variables.
 
 ```sh
 $ censys config
@@ -99,6 +106,9 @@ The examples located in the [`examples/`](examples/) directory are a great place
 - [Discussions](https://github.com/censys/censys-python/discussions)
 - [Censys Homepage](https://censys.io/)
 - [Censys Search](https://search.censys.io/)
+  - [Censys Search API](https://search.censys.io/api)
+- [Censys Platform](https://platform.censys.io/)
+  - [Censys Platform API](https://docs.censys.io/reference/get-started#/)
 
 ## Contributing
 

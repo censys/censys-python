@@ -42,35 +42,42 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
         api_id_prompt = f"{api_id_prompt} [cyan]({redacted_id})[/cyan]"
         api_secret_prompt = f"{api_secret_prompt} [cyan]({redacted_secret})[/cyan]"
 
+    console.print("[bold]Search API Credentials[/bold]")
     api_id = Prompt.ask(api_id_prompt, console=console) or api_id
     api_secret = Prompt.ask(api_secret_prompt, console=console) or api_secret
 
     if not (api_id and api_secret):
-        console.print("Please enter valid credentials")
+        console.print("Please enter valid Search API credentials")
         sys.exit(1)
 
     api_id = api_id.strip()
     api_secret = api_secret.strip()
 
+    console.print(
+        "\n[bold]Note:[/bold] For Platform API configuration, please use [cyan]censys platform config[/cyan] command."
+    )
+
     color = Confirm.ask(
-        "Do you want color output?", default=True, show_default=False, console=console
+        "\nDo you want color output?", default=True, show_default=False, console=console
     )
     config.set(DEFAULT, "color", "auto" if color else "")
 
     try:
+        # Test Search API credentials
         client = CensysSearchAPIv2(api_id, api_secret)
         account = client.account()
         email = account.get("email")
-        console.print(f"\nSuccessfully authenticated for {email}")
+        console.print(f"\nSuccessfully authenticated for Search API: {email}")
 
-        # Assumes that login was successfully
+        # Update config
         config.set(DEFAULT, "api_id", api_id)
         config.set(DEFAULT, "api_secret", api_secret)
 
         write_config(config)
+        console.print("Configuration saved successfully")
         sys.exit(0)
     except CensysUnauthorizedException:
-        console.print("Failed to authenticate")
+        console.print("Failed to authenticate with Search API")
         sys.exit(1)
     except PermissionError as e:
         console.print(e)
@@ -91,6 +98,6 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     config_parser = parent_parser.add_parser(
         "config",
         description="Configure Censys Search API Settings",
-        help="configure Censys search API settings",
+        help="configure Censys Search API settings",
     )
     config_parser.set_defaults(func=cli_config)

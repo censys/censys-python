@@ -56,6 +56,20 @@ class CensysSearchException(CensysAPIException):
     __str__ = __repr__
 
 
+class CensysPlatformException(CensysAPIException):
+    """Base Exception for the Censys Platform API."""
+
+    def __repr__(self) -> str:
+        """Representation of CensysPlatformException.
+
+        Returns:
+            str: Printable representation.
+        """
+        return f"{self.status_code} ({self.const}): {self.message or self.body}"
+
+    __str__ = __repr__
+
+
 class CensysAsmException(CensysAPIException):
     """Base Exception for the Censys ASM API."""
 
@@ -363,3 +377,28 @@ class CensysExceptionMapper:
         500: CensysInternalServerException,
     }
     """Map of status code to Search Exception."""
+
+    PLATFORM_EXCEPTIONS: Dict[int, Type[CensysPlatformException]] = {
+        401: CensysUnauthorizedException,
+        403: CensysUnauthorizedException,
+        404: CensysNotFoundException,
+        429: CensysRateLimitExceededException,
+        500: CensysInternalServerException,
+    }
+    """Map of status code to Platform Exception."""
+
+    @staticmethod
+    def exception_for_status_code(status_code: int) -> Type[CensysAPIException]:
+        """Return the appropriate exception class for the given status code.
+
+        Args:
+            status_code (int): HTTP status code.
+
+        Returns:
+            Type[CensysAPIException]: The exception class to raise.
+        """
+        if status_code in CensysExceptionMapper.PLATFORM_EXCEPTIONS:
+            return CensysExceptionMapper.PLATFORM_EXCEPTIONS[status_code]
+        if status_code in CensysExceptionMapper.SEARCH_EXCEPTIONS:
+            return CensysExceptionMapper.SEARCH_EXCEPTIONS[status_code]
+        return CensysAPIException

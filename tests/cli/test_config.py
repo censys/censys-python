@@ -113,8 +113,8 @@ class CensysConfigCliTest(CensysTestCase):
             "censys.common.config.os.path.isfile", return_value=True
         )
         config = get_config()
-        mock_isfile.return_value = False
         mock_isfile.assert_called_with(TEST_CONFIG_PATH)
+        mock_isfile.return_value = False
         self.mock_open.assert_called_once()
         for key, value in default_config.items():
             assert value == config.get(DEFAULT, key)

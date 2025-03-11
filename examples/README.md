@@ -25,6 +25,19 @@ from censys.search import CensysCerts
 from censys.asm import AsmClient
 ```
 
+### Platform
+
+```python
+# Access the Platform API
+from censys.platform import CensysPlatform
+
+# Access specific Platform API components
+from censys.platform import CensysHosts
+from censys.platform import CensysCertificates
+from censys.platform import CensysWebProperties
+from censys.platform import CensysSearch
+```
+
 ## Available Examples
 
 ### Search Examples
@@ -54,3 +67,13 @@ from censys.asm import AsmClient
 - [Get Host Ricks](asm/get_host_risks.py)
 - [Get Domains and Subdomains](asm/get_subdomains.py)
 - [Add Seeds in Bulk (from CSV)](asm/add_seeds_bulk.py)
+
+### Platform Examples
+
+- [View Host Details](platform/view_host.py)
+- [View Host Timeline](platform/host_timeline.py)
+- [Bulk View Hosts](platform/bulk_view_hosts.py)
+- [View Certificate Details](platform/view_certificates.py)
+- [View Web Property Details](platform/view_webproperties.py)
+- [Search and Aggregate Data](platform/search.py)
+- [Manage Platform Resources](platform/resource_management.py)
