@@ -18,55 +18,39 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
     Args:
         _: Argparse Namespace.
     """
-    api_id_prompt = "Censys API ID"
-    api_secret_prompt = "Censys API Secret"
-
     config = get_config()
-    api_id = config.get(DEFAULT, "api_id")
-    api_secret = config.get(DEFAULT, "api_secret")
+    api_id = os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id")
+    api_secret = os.getenv("CENSYS_API_SECRET") or config.get(DEFAULT, "api_secret")
 
-    api_id_env = os.getenv("CENSYS_API_ID")
-    api_secret_env = os.getenv("CENSYS_API_SECRET")
-
-    if api_id_env is not None or api_secret_env is not None:
+    if os.getenv("CENSYS_API_ID") or os.getenv("CENSYS_API_SECRET"):
         console.print(
-            "Please note environment variables (CENSYS_API_ID & CENSYS_API_SECRET) "
-            "will take priority over configured credentials."
+            "Note: Environment variables (CENSYS_API_ID & CENSYS_API_SECRET) "
+            "take priority over configured credentials."
         )
-        api_id = api_id_env or api_id
-        api_secret = api_secret_env or api_secret
 
-    if api_id and api_secret:
-        redacted_id = api_id.replace(api_id[:32], 32 * "*")
-        redacted_secret = api_secret.replace(api_secret[:28], 28 * "*")
-        api_id_prompt = f"{api_id_prompt} [cyan]({redacted_id})[/cyan]"
-        api_secret_prompt = f"{api_secret_prompt} [cyan]({redacted_secret})[/cyan]"
+    def redact(value, length):
+        return value.replace(value[:length], length * "*") if value else value
 
-    api_id = Prompt.ask(api_id_prompt, console=console) or api_id
-    api_secret = Prompt.ask(api_secret_prompt, console=console) or api_secret
+    api_id_prompt = f"Censys API ID [cyan]({redact(api_id, 32)})[/cyan]" if api_id else "Censys API ID"
+    api_secret_prompt = f"Censys API Secret [cyan]({redact(api_secret, 28)})[/cyan]" if api_secret else "Censys API Secret"
+
+    api_id = (Prompt.ask(api_id_prompt, console=console) or api_id).strip()
+    api_secret = (Prompt.ask(api_secret_prompt, console=console) or api_secret).strip()
 
     if not (api_id and api_secret):
         console.print("Please enter valid credentials")
         sys.exit(1)
 
-    api_id = api_id.strip()
-    api_secret = api_secret.strip()
-
-    color = Confirm.ask(
-        "Do you want color output?", default=True, show_default=False, console=console
-    )
+    color = Confirm.ask("Do you want color output?", default=True, show_default=False, console=console)
     config.set(DEFAULT, "color", "auto" if color else "")
 
     try:
         client = CensysSearchAPIv2(api_id, api_secret)
-        account = client.account()
-        email = account.get("email")
+        email = client.account().get("email")
         console.print(f"\nSuccessfully authenticated for {email}")
 
-        # Assumes that login was successfully
         config.set(DEFAULT, "api_id", api_id)
         config.set(DEFAULT, "api_secret", api_secret)
-
         write_config(config)
         sys.exit(0)
     except CensysUnauthorizedException:
@@ -76,7 +60,7 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
         console.print(e)
         console.print(
             "Cannot write config file to directory. "
-            + "Please set the `CENSYS_CONFIG_PATH` environmental variable to a writeable location."
+            "Please set the `CENSYS_CONFIG_PATH` environmental variable to a writeable location."
         )
         sys.exit(1)
 
