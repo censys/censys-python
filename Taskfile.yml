@@ -1,0 +1,64 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  PYTHON: python
+  TEST_ARGS: ""
+
+tasks:
+  default:
+    deps:
+      - install
+    silent: true
+
+  install:
+    desc: Install project dependencies
+    cmds:
+      - poetry install
+    silent: true
+
+  test:
+    desc: Run all tests
+    cmds:
+      - poetry run  pytest {{.TEST_ARGS}}
+    silent: true
+
+  test:e2e:
+    desc: Run end-to-end tests only
+    cmds:
+      - poetry run pytest -v -m e2e --run-e2e {{.TEST_ARGS}}
+    silent: true
+
+  test:unit:
+    desc: Run unit tests only (exclude e2e tests)
+    cmds:
+      - poetry run pytest -v -m 'not e2e' {{.TEST_ARGS}}
+    silent: true
+
+  lint:
+    desc: Run linters (black, flake8, etc)
+    cmds:
+      - poetry run black .
+      - poetry run flake8
+    silent: true
+
+  format:
+    desc: Format code with black
+    cmds:
+      - poetry run black .
+    silent: true
+
+  examples:
+    desc: Run examples with platform credentials
+    cmds:
+      - poetry run python examples/platform_search_demo.py
+    silent: true
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -rf build/ dist/ *.egg-info
+      - find . -type d -name __pycache__ -exec rm -rf {} +
+      - find . -type f -name "*.pyc" -delete
+    silent: true

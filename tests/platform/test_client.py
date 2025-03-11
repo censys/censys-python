@@ -55,7 +55,11 @@ class CensysPlatformClientTests(unittest.TestCase):
 
     @patch("censys.platform.v3.search.CensysSearch.query")
     def test_search_delegation(self, mock_query):
-        """Test that search query calls are properly delegated to the appropriate API instances."""
+        """Test that search query calls are properly delegated to the appropriate API instances.
+
+        Args:
+            mock_query: Mock object for the CensysSearch.query method.
+        """
         # Setup mock return value
         mock_query.return_value = {"result": {"total": 1, "hits": [{"ip": "8.8.8.8"}]}}
 

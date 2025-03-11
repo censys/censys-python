@@ -41,33 +41,23 @@ class CensysAPIException(CensysException):
         self.details = details
         super().__init__(self.message)
 
+    def __repr__(self) -> str:
+        """Representation of CensysAPIException.
+
+        Returns:
+            str: Printable representation.
+        """
+        return f"{self.status_code} ({self.const}): {self.message or self.body}"
+
+    __str__ = __repr__
+
 
 class CensysSearchException(CensysAPIException):
     """Base Exception for the Censys search API."""
 
-    def __repr__(self) -> str:
-        """Representation of CensysSearchException.
-
-        Returns:
-            str: Printable representation.
-        """
-        return f"{self.status_code} ({self.const}): {self.message or self.body}"
-
-    __str__ = __repr__
-
 
 class CensysPlatformException(CensysAPIException):
     """Base Exception for the Censys Platform API."""
-
-    def __repr__(self) -> str:
-        """Representation of CensysPlatformException.
-
-        Returns:
-            str: Printable representation.
-        """
-        return f"{self.status_code} ({self.const}): {self.message or self.body}"
-
-    __str__ = __repr__
 
 
 class CensysAsmException(CensysAPIException):
@@ -84,30 +74,28 @@ class CensysAsmException(CensysAPIException):
             f"{self.message}. {self.details}"
         )
 
-    __str__ = __repr__
-
 
 class CensysMissingApiKeyException(CensysAsmException):
     """Exception raised when there is no provided ASM API key."""
 
 
-class CensysRateLimitExceededException(CensysSearchException):
+class CensysRateLimitExceededException(CensysAPIException):
     """Exception raised when your Censys rate limit has been exceeded."""
 
 
-class CensysNotFoundException(CensysSearchException):
+class CensysNotFoundException(CensysAPIException):
     """Exception raised when the resource requested is not found."""
 
 
-class CensysUnauthorizedException(CensysSearchException):
+class CensysUnauthorizedException(CensysAPIException):
     """Exception raised when you doesn't have access to the requested resource."""
 
 
-class CensysJSONDecodeException(CensysSearchException):
+class CensysJSONDecodeException(CensysAPIException):
     """Exception raised when the resource requested is not valid JSON."""
 
 
-class CensysInternalServerException(CensysSearchException):
+class CensysInternalServerException(CensysAPIException):
     """Exception raised when the server encountered an internal error."""
 
 
@@ -369,7 +357,7 @@ class CensysExceptionMapper:
     }
     """Map of status code to ASM Exception."""
 
-    SEARCH_EXCEPTIONS: Dict[int, Type[CensysSearchException]] = {
+    SEARCH_EXCEPTIONS: Dict[int, Type[CensysAPIException]] = {
         401: CensysUnauthorizedException,
         403: CensysUnauthorizedException,
         404: CensysNotFoundException,
@@ -378,7 +366,7 @@ class CensysExceptionMapper:
     }
     """Map of status code to Search Exception."""
 
-    PLATFORM_EXCEPTIONS: Dict[int, Type[CensysPlatformException]] = {
+    PLATFORM_EXCEPTIONS: Dict[int, Type[CensysAPIException]] = {
         401: CensysUnauthorizedException,
         403: CensysUnauthorizedException,
         404: CensysNotFoundException,
@@ -388,17 +376,31 @@ class CensysExceptionMapper:
     """Map of status code to Platform Exception."""
 
     @staticmethod
-    def exception_for_status_code(status_code: int) -> Type[CensysAPIException]:
-        """Return the appropriate exception class for the given status code.
+    def _get_exception_class(
+        status_code: int, api_type: str
+    ) -> Type[CensysAPIException]:
+        """Return the appropriate exception class for the given status code and API type.
 
         Args:
-            status_code (int): HTTP status code.
+            status_code (int): HTTP status code or error code.
+            api_type (str): The API type ('platform', 'search', or 'asm').
 
         Returns:
             Type[CensysAPIException]: The exception class to raise.
         """
-        if status_code in CensysExceptionMapper.PLATFORM_EXCEPTIONS:
+        if (
+            api_type.lower() == "platform"
+            and status_code in CensysExceptionMapper.PLATFORM_EXCEPTIONS
+        ):
             return CensysExceptionMapper.PLATFORM_EXCEPTIONS[status_code]
-        if status_code in CensysExceptionMapper.SEARCH_EXCEPTIONS:
+        elif (
+            api_type.lower() == "search"
+            and status_code in CensysExceptionMapper.SEARCH_EXCEPTIONS
+        ):
             return CensysExceptionMapper.SEARCH_EXCEPTIONS[status_code]
+        elif (
+            api_type.lower() == "asm"
+            and status_code in CensysExceptionMapper.ASM_EXCEPTIONS
+        ):
+            return CensysExceptionMapper.ASM_EXCEPTIONS[status_code]
         return CensysAPIException

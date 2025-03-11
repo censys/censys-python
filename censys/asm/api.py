@@ -9,9 +9,10 @@ from requests.models import Response
 from censys.common.base import CensysAPIBase
 from censys.common.config import DEFAULT, get_config
 from censys.common.exceptions import (
-    CensysAsmException,
+    CensysAPIException,
     CensysException,
     CensysExceptionMapper,
+    CensysInternalServerErrorException,
 )
 
 
@@ -53,10 +54,25 @@ class CensysAsmAPI(CensysAPIBase):
 
     def _get_exception_class(  # type: ignore
         self, res: Response
-    ) -> Type[CensysAsmException]:
-        return CensysExceptionMapper.ASM_EXCEPTIONS.get(
-            res.json().get("errorCode"), CensysAsmException
-        )
+    ) -> Type[CensysAPIException]:
+        try:
+            # First try to get error code from JSON response
+            json_data = res.json()
+            error_code = json_data.get("errorCode")
+            if error_code:
+                # ASM has its own error codes, use the ASM mapper
+                return CensysExceptionMapper._get_exception_class(error_code, "asm")
+
+            # Handle specific HTTP status codes for ASM
+            if res.status_code == 500:
+                return CensysInternalServerErrorException
+        except (ValueError, KeyError):
+            # If JSON parsing fails, check status code first
+            if res.status_code == 500:
+                return CensysInternalServerErrorException
+        else:  # pragma: no cover
+            # Otherwise use HTTP status code with ASM mapper
+            return CensysExceptionMapper._get_exception_class(res.status_code, "asm")
 
     def _get_page(
         self,

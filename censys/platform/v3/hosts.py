@@ -80,7 +80,7 @@ class CensysHosts(CensysPlatformAPIv3):
             self, token=token, organization_id=organization_id, **kwargs
         )
 
-    def view(
+    def view(  # type: ignore[override]
         self, host_id: str, at_time: Optional[datetime] = None, **kwargs: Any
     ) -> Dict[str, Any]:
         """Get a host by ID.

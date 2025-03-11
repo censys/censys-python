@@ -104,7 +104,7 @@ class CensysPlatformAPIv3(CensysAPIBase):
         Returns:
             Type[CensysPlatformException]: The exception class to raise.
         """
-        return CensysExceptionMapper.exception_for_status_code(res.status_code)  # type: ignore
+        return CensysExceptionMapper._get_exception_class(res.status_code, "platform")  # type: ignore
 
     def _get(self, endpoint: str, args: Optional[dict] = None, **kwargs: Any) -> dict:
         """Get data from a REST API endpoint.

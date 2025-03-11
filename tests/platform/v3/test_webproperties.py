@@ -64,7 +64,7 @@ class TestWebProperties(CensysTestCase):
             self.api.view(TEST_WEBPROPERTY, at_time=test_date)
             mock_get.assert_called_with(
                 f"v3/global/asset/webproperty/{TEST_WEBPROPERTY}",
-                params={"at_time": "2023-01-01T00:00:00Z"},
+                params={"at_time": "2023-01-01T00:00:00.000000Z"},
             )
 
     def test_view_at_time_with_org_id(self):
@@ -74,7 +74,7 @@ class TestWebProperties(CensysTestCase):
             self.api_with_org.view(TEST_WEBPROPERTY, at_time=test_date)
             mock_get.assert_called_with(
                 f"v3/global/asset/webproperty/{TEST_WEBPROPERTY}",
-                params={"at_time": "2023-01-01T00:00:00Z"},
+                params={"at_time": "2023-01-01T00:00:00.000000Z"},
             )
             # The _get method in the base class will add organization_id to the params
 

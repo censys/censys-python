@@ -66,7 +66,7 @@ class CensysCertificates(CensysPlatformAPIv3):
             self, token=token, organization_id=organization_id, **kwargs
         )
 
-    def view(self, certificate_id: str, **kwargs: Any) -> Dict[str, Any]:
+    def view(self, certificate_id: str, **kwargs: Any) -> Dict[str, Any]:  # type: ignore[override]
         """Get a certificate by ID.
 
         Args:

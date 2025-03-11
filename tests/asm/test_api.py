@@ -13,6 +13,7 @@ from censys.common.exceptions import (
     CensysAsmException,
     CensysException,
     CensysExceptionMapper,
+    CensysInternalServerErrorException,
 )
 
 
@@ -65,6 +66,34 @@ class CensysAsmAPITests(CensysTestCase):
         mock_response.return_value = {"errorCode": status_code}
         # Actual call/assertion
         assert CensysAsmAPI()._get_exception_class(response) == exception
+
+    def test_get_exception_class_http_500(self):
+        """Test that HTTP 500 errors are mapped to CensysInternalServerErrorException."""
+        # Create a response with a 500 status code
+        response = Response()
+        response.status_code = 500
+
+        # Mock the json method to raise a ValueError
+        # This simulates a non-JSON response or parsing error
+        mock_response = self.mocker.patch.object(
+            response, "json", side_effect=ValueError
+        )
+
+        # Actual call/assertion
+        assert (
+            CensysAsmAPI()._get_exception_class(response)
+            == CensysInternalServerErrorException
+        )
+
+        # Test with a valid JSON response but no error code
+        mock_response.side_effect = None
+        mock_response.return_value = {"message": "Internal Server Error"}
+
+        # Actual call/assertion
+        assert (
+            CensysAsmAPI()._get_exception_class(response)
+            == CensysInternalServerErrorException
+        )
 
     def test_exception_repr(self):
         # Actual call

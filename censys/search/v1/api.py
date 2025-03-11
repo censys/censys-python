@@ -8,9 +8,9 @@ from requests.models import Response
 from censys.common.base import CensysAPIBase
 from censys.common.config import DEFAULT, get_config
 from censys.common.exceptions import (
+    CensysAPIException,
     CensysException,
     CensysExceptionMapper,
-    CensysSearchException,
 )
 
 Fields = Optional[List[str]]
@@ -68,10 +68,8 @@ class CensysSearchAPIv1(CensysAPIBase):
 
     def _get_exception_class(  # type: ignore
         self, res: Response
-    ) -> Type[CensysSearchException]:
-        return CensysExceptionMapper.SEARCH_EXCEPTIONS.get(
-            res.status_code, CensysSearchException
-        )
+    ) -> Type[CensysAPIException]:
+        return CensysExceptionMapper._get_exception_class(res.status_code, "search")
 
     def account(self) -> dict:
         """Gets the current account information.

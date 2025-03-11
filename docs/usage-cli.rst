@@ -41,6 +41,103 @@ Optionally, you can enable tab completion for the CLI by adding this line to you
 
     Please note that autocomplete is supported for field names in the `search` command.
 
+``platform``
+------------
+
+The Platform API provides a unified interface to access all Censys data sources. The following commands allow you to interact with the Censys Platform API directly from the CLI.
+
+``platform search``
+^^^^^^^^^^^^^^^^^
+
+The ``platform search`` command allows you to search across all Censys data sources.
+
+Basic search query:
+
+.. prompt:: bash
+
+    censys platform search 'host.services.port:443'
+
+Limiting fields and results:
+
+.. prompt:: bash
+
+    censys platform search 'host.services.port:443' --fields ip,name,services.port --page-size 10
+
+Retrieving a specific number of pages of results:
+
+.. prompt:: bash
+
+    censys platform search 'host.services.port:443' --pages 2
+
+Getting all pages of results (default behavior):
+
+.. prompt:: bash
+
+    censys platform search 'host.services.port:443' --pages -1
+
+Sorting results:
+
+.. prompt:: bash
+
+    censys platform search 'host.services.port:443' --sort ip
+
+Saving results to a file:
+
+.. prompt:: bash
+
+    censys platform search 'host.services.port:443' --output results.json
+
+``platform view``
+^^^^^^^^^^^^^^^^
+
+The ``platform view`` command allows you to view details for a specific resource.
+
+Viewing a host:
+
+.. prompt:: bash
+
+    censys platform view host 8.8.8.8
+
+Viewing a certificate:
+
+.. prompt:: bash
+
+    censys platform view certificate fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426
+
+Viewing a web property:
+
+.. prompt:: bash
+
+    censys platform view webproperty example.com
+
+Saving results to a file:
+
+.. prompt:: bash
+
+    censys platform view host 8.8.8.8 --output host.json
+
+``platform aggregate``
+^^^^^^^^^^^^^^^^^^^^
+
+The ``platform aggregate`` command allows you to perform data aggregations.
+
+Basic aggregation:
+
+.. prompt:: bash
+
+    censys platform aggregate 'host.services.port:443' 'host.services.protocol'
+
+Changing the number of buckets:
+
+.. prompt:: bash
+
+    censys platform aggregate 'host.services.port:443' 'host.services.protocol' --num-buckets 20
+
+Saving results to a file:
+
+.. prompt:: bash
+
+    censys platform aggregate 'host.services.port:443' 'host.services.protocol' --output aggregate.json
 
 ``search``
 ----------

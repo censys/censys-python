@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from .api import CensysPlatformAPIv3
+from censys.common.utils import format_rfc3339
 
 
 class CensysWebProperties(CensysPlatformAPIv3):
@@ -67,7 +68,7 @@ class CensysWebProperties(CensysPlatformAPIv3):
             self, token=token, organization_id=organization_id, **kwargs
         )
 
-    def view(
+    def view(  # type: ignore[override]
         self, webproperty_id: str, at_time: Optional[datetime] = None, **kwargs: Any
     ) -> Dict[str, Any]:
         """Get a webproperty by ID.
@@ -82,7 +83,7 @@ class CensysWebProperties(CensysPlatformAPIv3):
         """
         params = {}
         if at_time:
-            params["at_time"] = at_time.isoformat() + "Z"
+            params["at_time"] = format_rfc3339(at_time)
 
         return self._get(f"{self.INDEX_NAME}/{webproperty_id}", params=params, **kwargs)
 

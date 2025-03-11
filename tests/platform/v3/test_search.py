@@ -40,7 +40,8 @@ class TestSearch(CensysTestCase):
         with patch.object(self.api, "_post") as mock_post:
             self.api.query(TEST_SEARCH_QUERY)
             mock_post.assert_called_with(
-                "v3/global/search/query", data={"q": TEST_SEARCH_QUERY, "per_page": 100}
+                "v3/global/search/query",
+                data={"query": TEST_SEARCH_QUERY, "page_size": 100},
             )
 
     def test_query_with_org_id(self):
@@ -48,7 +49,8 @@ class TestSearch(CensysTestCase):
         with patch.object(self.api_with_org, "_post") as mock_post:
             self.api_with_org.query(TEST_SEARCH_QUERY)
             mock_post.assert_called_with(
-                "v3/global/search/query", data={"q": TEST_SEARCH_QUERY, "per_page": 100}
+                "v3/global/search/query",
+                data={"query": TEST_SEARCH_QUERY, "page_size": 100},
             )
             # The _post method in the base class will add organization_id to the params
 
@@ -57,7 +59,7 @@ class TestSearch(CensysTestCase):
         with patch.object(self.api, "_post") as mock_post:
             self.api.query(
                 TEST_SEARCH_QUERY,
-                per_page=50,
+                page_size=50,
                 cursor="nextCursor",
                 fields=["ip", "services.port"],
                 sort="ip",
@@ -65,8 +67,8 @@ class TestSearch(CensysTestCase):
             mock_post.assert_called_with(
                 "v3/global/search/query",
                 data={
-                    "q": TEST_SEARCH_QUERY,
-                    "per_page": 50,
+                    "query": TEST_SEARCH_QUERY,
+                    "page_size": 50,
                     "cursor": "nextCursor",
                     "fields": ["ip", "services.port"],
                     "sort": "ip",
@@ -78,7 +80,7 @@ class TestSearch(CensysTestCase):
         with patch.object(self.api_with_org, "_post") as mock_post:
             self.api_with_org.query(
                 TEST_SEARCH_QUERY,
-                per_page=50,
+                page_size=50,
                 cursor="nextCursor",
                 fields=["ip", "services.port"],
                 sort="ip",
@@ -86,8 +88,8 @@ class TestSearch(CensysTestCase):
             mock_post.assert_called_with(
                 "v3/global/search/query",
                 data={
-                    "q": TEST_SEARCH_QUERY,
-                    "per_page": 50,
+                    "query": TEST_SEARCH_QUERY,
+                    "page_size": 50,
                     "cursor": "nextCursor",
                     "fields": ["ip", "services.port"],
                     "sort": "ip",
@@ -102,9 +104,9 @@ class TestSearch(CensysTestCase):
             mock_post.assert_called_with(
                 "v3/global/search/aggregate",
                 data={
-                    "q": TEST_SEARCH_QUERY,
+                    "query": TEST_SEARCH_QUERY,
                     "field": "services.service_name",
-                    "num_buckets": 50,
+                    "number_of_buckets": 50,
                 },
             )
 
@@ -115,9 +117,9 @@ class TestSearch(CensysTestCase):
             mock_post.assert_called_with(
                 "v3/global/search/aggregate",
                 data={
-                    "q": TEST_SEARCH_QUERY,
+                    "query": TEST_SEARCH_QUERY,
                     "field": "services.service_name",
-                    "num_buckets": 50,
+                    "number_of_buckets": 50,
                 },
             )
             # The _post method in the base class will add organization_id to the params
