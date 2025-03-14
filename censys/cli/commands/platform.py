@@ -192,7 +192,7 @@ def cli_platform_search(args: argparse.Namespace):  # pragma: no cover
 
     # Output results
     if args.output:
-        write_file(all_results, args.output)
+        write_file(all_results, "json", args.output)
         console.print(f"[green]Search results written to {args.output}[/green]")
     else:
         console.print(json.dumps(all_results, indent=2))
@@ -219,7 +219,7 @@ def cli_platform_view(args: argparse.Namespace):  # pragma: no cover
 
     # Output results
     if args.output:
-        write_file(result, args.output)
+        write_file(result, "json", args.output)
         console.print(f"[green]View results written to {args.output}[/green]")
     else:
         console.print(json.dumps(result, indent=2))
@@ -243,7 +243,7 @@ def cli_platform_aggregate(args: argparse.Namespace):  # pragma: no cover
 
     # Output results
     if args.output:
-        write_file(results, args.output)
+        write_file(results, "json", args.output)
         console.print(f"[green]Aggregate results written to {args.output}[/green]")
     else:
         console.print(json.dumps(results, indent=2))

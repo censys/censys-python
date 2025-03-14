@@ -1,4 +1,5 @@
 """Configuration for platform v3 tests."""
+
 import pytest
 
 
