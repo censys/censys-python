@@ -37,19 +37,19 @@ jobs:
         run: |
           poetry install
 
-      - name: Get all doc files that have changed
-        id: changed_docs
-        uses: tj-actions/changed-files@v41
-        with:
-          files: |
-            docs
+      #- name: Get all doc files that have changed
+        #id: changed_docs
+        #uses: tj-actions/changed-files@v41
+        #with:
+          #files: |
+            #docs
 
-      - name: Build docs
-        if: steps.changed_docs.outputs.any_changed == 'true' && startsWith(matrix.os, 'ubuntu') && startsWith(matrix.python, '3.10')
-        working-directory: docs
-        run: |
-          poetry run pip install -r requirements.txt
-          poetry run make html
+      #- name: Build docs
+        #if: steps.changed_docs.outputs.any_changed == 'true' && startsWith(matrix.os, 'ubuntu') && startsWith(matrix.python, '3.10')
+        #working-directory: docs
+        #run: |
+          #poetry run pip install -r requirements.txt
+          #poetry run make html
 
       - name: Lint with flake8
         if: startsWith(matrix.os, 'ubuntu')
