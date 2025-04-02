@@ -1,5 +1,6 @@
 """Interact with the Censys Risks API."""
 
+import urllib.parse
 from typing import Any, Dict, List, Optional
 
 from .api import CensysAsmAPI
@@ -168,8 +169,9 @@ class Risks(CensysAsmAPI):
         Returns:
             dict: Risk type result.
         """
+        escaped_risk_type = urllib.parse.quote(risk_type, safe="")
         args = {"includeEvents": include_events}
-        return self._get(f"{self.risk_types_path}/{risk_type}", args=args)
+        return self._get(f"{self.risk_types_path}/{escaped_risk_type}", args=args)
 
     def patch_risk_type(self, risk_type: str, data: dict) -> dict:
         """Patch a risk type.
@@ -181,4 +183,5 @@ class Risks(CensysAsmAPI):
         Returns:
             dict: Risk type result.
         """
-        return self._patch(f"{self.risk_types_path}/{risk_type}", data=data)
+        escaped_risk_type = urllib.parse.quote(risk_type, safe="")
+        return self._patch(f"{self.risk_types_path}/{escaped_risk_type}", data=data)
