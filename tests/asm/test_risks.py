@@ -1,3 +1,5 @@
+import urllib.parse
+
 import responses
 from parameterized import parameterized
 from responses import matchers
@@ -38,7 +40,8 @@ TEST_PATCH_RISK_INSTANCE_JSON = {
     "skips": 0,
     "userStatusChanges": 0,
 }
-TEST_RISK_TYPE = "service.authentication.http_weak_auth.http_weak_auth_encrypted"
+TEST_RISK_TYPE = "service.authentication.http_weak_auth/after-slash"
+ESCAPED_TEST_RISK_TYPE = urllib.parse.quote(TEST_RISK_TYPE, safe="")
 TEST_RISK_TYPE_JSON = {
     "config": "string",
     "contextType": "string",
@@ -236,14 +239,14 @@ class RisksTests(CensysTestCase):
 
     @parameterized.expand(
         [
-            ({"risk_type": TEST_RISK_TYPE}, TEST_RISK_TYPE),
+            ({"risk_type": TEST_RISK_TYPE}, ESCAPED_TEST_RISK_TYPE),
             (
                 {"risk_type": TEST_RISK_TYPE, "include_events": True},
-                TEST_RISK_TYPE + "?includeEvents=True",
+                ESCAPED_TEST_RISK_TYPE + "?includeEvents=True",
             ),
             (
                 {"risk_type": TEST_RISK_TYPE, "include_events": False},
-                TEST_RISK_TYPE + "?includeEvents=False",
+                ESCAPED_TEST_RISK_TYPE + "?includeEvents=False",
             ),
         ]
     )
@@ -270,7 +273,7 @@ class RisksTests(CensysTestCase):
         )
         self.responses.add(
             responses.PATCH,
-            V2_URL + f"/risk-types/{TEST_RISK_TYPE}",
+            V2_URL + f"/risk-types/{ESCAPED_TEST_RISK_TYPE}",
             status=200,
             json=TEST_PATCH_RISK_TYPE_JSON,
             match=[matchers.json_params_matcher(mock_patch)],
