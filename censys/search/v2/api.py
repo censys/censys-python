@@ -1,6 +1,7 @@
 """Base for interacting with the Censys Search API."""
 
 import os
+import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Type, Union
 
@@ -44,6 +45,16 @@ class CensysSearchAPIv2(CensysAPIBase):
         Raises:
             CensysException: Base Exception Class for the Censys API.
         """
+        warnings.warn(
+            "CensysSearchAPIv2 will be deprecated soon. "
+            "Please migrate to the new Censys Platform API. "
+            "Visit https://docs.censys.com/reference/get-started#/ for documentation "
+            "and install the new SDK with: pip install censys-platform "
+            "(https://pypi.org/project/censys-platform/)",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+
         CensysAPIBase.__init__(self, kwargs.pop("url", self.DEFAULT_URL), **kwargs)
 
         # Gets config file
