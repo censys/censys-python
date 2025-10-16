@@ -8,20 +8,16 @@
 [![License](https://img.shields.io/github/license/censys/censys-python?logo=apache)](https://github.com/censys/censys-python/blob/main/LICENSE)
 
 > [!WARNING]
-> **DEPRECATION NOTICE**: The Censys Search v1 and v2 APIs will be deprecated soon. Please migrate to the new **Censys Platform API**.
+> **DEPRECATION NOTICE**: The Censys Search v1 and v2 APIs will be deprecated soon. Please migrate to the new **Censys Platform**.
 > 
 > - 📖 **New API Documentation**: [https://docs.censys.com/reference/get-started#/](https://docs.censys.com/reference/get-started#/)
 > - 📦 **New Python SDK**: Install with `pip install censys-platform` - [https://pypi.org/project/censys-platform/](https://pypi.org/project/censys-platform/)
+> - 🖥️ **New CLI Tool** (`cencli`): [https://docs.censys.com/docs/platform-cli](https://docs.censys.com/docs/platform-cli)
+>   - ⚠️ **If you plan to use the new CLI, you will need to uninstall this package's CLI first** as both use the `censys` command name
 > 
 > The **Censys ASM APIs in this library are NOT deprecated** and will continue to be supported.
 
 An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://censys.io/)). Python 3.8+ is currently supported. This library has been tested on Python 3.8 and 3.x (Currently version 3.10).
-
-> **Notice:** The Censys Search v1 endpoints are deprecated as of Nov. 30, 2021. Please begin using v2 endpoints to query hosts and certificates and check out our [support center](https://support.censys.io/hc/en-us/sections/360013076551-Censys-Search-2-0) for resources.
-
-> [!IMPORTANT]
-> This library does not support the new Censys Platform, however a new set of SDKs that do support the platform are coming soon.
-> Please refer to the [platform API refrence docs](https://docs.censys.com/reference/get-started#/) in the mean time.
 
 ## Features
 
