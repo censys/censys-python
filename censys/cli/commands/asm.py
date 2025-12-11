@@ -896,13 +896,15 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     execute_saved_query_by_name_parser.add_argument(
         "--sort",
         help="Sort order for results",
-        type=List[str],
+        type=str,
+        nargs="+",
         default=[],
     )
     execute_saved_query_by_name_parser.add_argument(
         "--fields",
         help="Fields to include in results",
-        type=List[str],
+        type=str,
+        nargs="+",
         default=[],
     )
     execute_saved_query_by_name_parser.add_argument(
@@ -937,13 +939,15 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     execute_saved_query_by_id_parser.add_argument(
         "--sort",
         help="Sort order for results",
-        type=List[str],
+        type=str,
+        nargs="+",
         default=[],
     )
     execute_saved_query_by_id_parser.add_argument(
         "--fields",
         help="Fields to include in results",
-        type=List[str],
+        type=str,
+        nargs="+",
         default=[],
     )
     execute_saved_query_by_id_parser.add_argument(
@@ -982,13 +986,15 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
     search_parser.add_argument(
         "--sort",
         help="Sort order for results",
-        type=List[str],
+        type=str,
+        nargs="+",
         default=[],
     )
     search_parser.add_argument(
         "--fields",
         help="Fields to include in results",
-        type=List[str],
+        type=str,
+        nargs="+",
         default=[],
     )
     search_parser.add_argument(
