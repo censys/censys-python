@@ -12,7 +12,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python: ["3.x"]
-        poetry: ["1.5.1"]
+        poetry: ["2.2.1"]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
 
