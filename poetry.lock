@@ -958,14 +958,14 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "responses"
-version = "0.25.5"
+version = "0.26.1"
 description = "A utility library for mocking out the `requests` Python library."
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
 files = [
-    {file = "responses-0.25.5-py3-none-any.whl", hash = "sha256:b3e1ae252f69301b84146ff615a869a4182fbe17e8b606f1ac54142515dad5eb"},
-    {file = "responses-0.25.5.tar.gz", hash = "sha256:e53991613f76d17ba293c1e3cce8af107c5c7a6a513edf25195aafd89a870dd3"},
+    {file = "responses-0.26.1-py3-none-any.whl", hash = "sha256:8aacc4586eb08fb2208ef64a9eb4258d9b0c6e6f4260845f2f018ab847495345"},
+    {file = "responses-0.26.1.tar.gz", hash = "sha256:2eb3218553cc8f79b57d257bac23af5e1bf381f5b9390b1767816f0843e01dc2"},
 ]
 
 [package.dependencies]
@@ -1112,4 +1112,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.8,<4.0"
-content-hash = "0636bc5c37dffe33dfad83a11d4729bb86e2edfb1628d8801d5ce06fec8a52ed"
+content-hash = "90870f57415dc1970f853638de60990671da2a7c53910b17770ce91ddd2f6ce9"
