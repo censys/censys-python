@@ -1,3 +1,6 @@
+import os
+import stat
+
 import pytest
 import responses
 
@@ -9,8 +12,10 @@ from censys.common.config import (
     CENSYS_PATH,
     CONFIG_PATH,
     DEFAULT,
+    _restricted_opener,
     default_config,
     get_config,
+    write_config,
 )
 
 TEST_CONFIG_PATH = CONFIG_PATH + ".test"
@@ -45,6 +50,7 @@ class CensysConfigCliTest(CensysTestCase):
         )
         self.mocker.patch("rich.prompt.Prompt.ask", side_effect=prompt_side_effect)
         self.mocker.patch("rich.prompt.Confirm.ask", side_effect=confirm_side_effect)
+        self.mock_chmod = self.mocker.patch("censys.common.config.os.chmod")
 
     def test_search_config(self):
         # Mock
@@ -65,7 +71,9 @@ class CensysConfigCliTest(CensysTestCase):
             cli_main()
 
         # Assert that the config file was read from the right place
-        self.mock_open.assert_called_with(TEST_CONFIG_PATH, "w")
+        self.mock_open.assert_called_with(
+            TEST_CONFIG_PATH, "w", opener=_restricted_opener
+        )
 
     def test_search_config_failed(self):
         # Mock
@@ -106,7 +114,7 @@ class CensysConfigCliTest(CensysTestCase):
         with pytest.raises(SystemExit, match="0"):
             cli_main()
 
-        mock_makedirs.assert_called_with(CENSYS_PATH)
+        mock_makedirs.assert_called_with(CENSYS_PATH, mode=0o700)
 
     def test_config_default(self):
         mock_isfile = self.mocker.patch(
@@ -141,7 +149,7 @@ class CensysConfigCliTest(CensysTestCase):
             cli_main()
 
         # Assert that the config file was read from the right place
-        self.mock_open.assert_called_with("censys.cfg", "w")
+        self.mock_open.assert_called_with("censys.cfg", "w", opener=_restricted_opener)
 
     def test_search_config_perm_error(self):
         self.patch_args(
@@ -160,3 +168,29 @@ class CensysConfigCliTest(CensysTestCase):
 
         with pytest.raises(SystemExit, match="1"):
             cli_main()
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX file permissions only")
+def test_write_config_restricts_permissions(tmp_path, mocker, monkeypatch):
+    monkeypatch.delenv("CENSYS_CONFIG_PATH", raising=False)
+    censys_path = tmp_path / ".config" / "censys"
+    config_path = censys_path / "censys.cfg"
+    mocker.patch("censys.common.config.HOME_PATH", str(tmp_path))
+    mocker.patch("censys.common.config.CENSYS_PATH", str(censys_path))
+    mocker.patch("censys.common.config.CONFIG_PATH", str(config_path))
+    old_umask = os.umask(0o022)
+    try:
+        write_config(get_config())
+
+        assert stat.S_IMODE(os.stat(censys_path).st_mode) == 0o700
+        assert stat.S_IMODE(os.stat(config_path).st_mode) == 0o600
+
+        # Pre-existing loose permissions are tightened on rewrite
+        os.chmod(censys_path, 0o755)
+        os.chmod(config_path, 0o644)
+        write_config(get_config())
+
+        assert stat.S_IMODE(os.stat(censys_path).st_mode) == 0o700
+        assert stat.S_IMODE(os.stat(config_path).st_mode) == 0o600
+    finally:
+        os.umask(old_umask)
