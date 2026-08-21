@@ -1,6 +1,7 @@
 """Interact with the config file."""
 
 import configparser
+import contextlib
 import os
 from pathlib import Path
 
@@ -42,11 +43,26 @@ def _restricted_opener(path: str, flags: int) -> int:
     return os.open(path, flags, 0o600)
 
 
+def _try_chmod(path: str, mode: int) -> None:
+    """Best-effort permission tightening.
+
+    Files are already created owner-only by `_restricted_opener`, so failing to
+    tighten an existing path must never stop the config from being written.
+
+    Args:
+        path (str): Path to tighten.
+        mode (int): Desired permission bits.
+    """
+    with contextlib.suppress(OSError):
+        os.chmod(path, mode)
+
+
 def write_config(config: configparser.ConfigParser) -> None:
     """Writes config to file.
 
     The config file contains API credentials, so the directory and file are
-    restricted to the owner (0700/0600) rather than inheriting the umask.
+    created owner-only (0700/0600). Existing paths are tightened on a
+    best-effort basis; the requested modes are still subject to the umask.
 
     Args:
         config (configparser.ConfigParser): Configuration to write.
@@ -63,9 +79,9 @@ def write_config(config: configparser.ConfigParser) -> None:
         elif not os.path.isdir(CENSYS_PATH):
             os.makedirs(CENSYS_PATH, mode=0o700)
         else:
-            os.chmod(CENSYS_PATH, 0o700)
+            _try_chmod(CENSYS_PATH, 0o700)
     if os.path.isfile(config_path):
-        os.chmod(config_path, 0o600)
+        _try_chmod(config_path, 0o600)
     with open(config_path, "w", opener=_restricted_opener) as configfile:
         config.write(configfile)
 
