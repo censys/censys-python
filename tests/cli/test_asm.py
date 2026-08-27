@@ -512,8 +512,9 @@ class CensysASMCliTest(CensysTestCase):
 
         # Actual call
         temp_stdout = StringIO()
-        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
-            temp_stdout
+        with (
+            pytest.raises(SystemExit, match="1"),
+            contextlib.redirect_stdout(temp_stdout),
         ):
             cli_main()
 
@@ -559,8 +560,9 @@ class CensysASMCliTest(CensysTestCase):
 
         # Actual call
         temp_stdout = StringIO()
-        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
-            temp_stdout
+        with (
+            pytest.raises(SystemExit, match="1"),
+            contextlib.redirect_stdout(temp_stdout),
         ):
             cli_main()
 
@@ -1132,8 +1134,9 @@ class CensysASMCliTest(CensysTestCase):
 
         # Actual call
         temp_stdout = StringIO()
-        with pytest.raises(SystemExit, match="0"), contextlib.redirect_stdout(
-            temp_stdout
+        with (
+            pytest.raises(SystemExit, match="0"),
+            contextlib.redirect_stdout(temp_stdout),
         ):
             cli_main()
 
@@ -2018,8 +2021,9 @@ class CensysASMCliTest(CensysTestCase):
 
         # Actual call
         temp_stdout = StringIO()
-        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
-            temp_stdout
+        with (
+            pytest.raises(SystemExit, match="1"),
+            contextlib.redirect_stdout(temp_stdout),
         ):
             cli_main()
 
@@ -2069,8 +2073,9 @@ class CensysASMCliTest(CensysTestCase):
 
         # Actual call
         temp_stdout = StringIO()
-        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
-            temp_stdout
+        with (
+            pytest.raises(SystemExit, match="1"),
+            contextlib.redirect_stdout(temp_stdout),
         ):
             cli_main()
 
@@ -2107,8 +2112,9 @@ class CensysASMCliTest(CensysTestCase):
 
         # Actual call
         temp_stdout = StringIO()
-        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
-            temp_stdout
+        with (
+            pytest.raises(SystemExit, match="1"),
+            contextlib.redirect_stdout(temp_stdout),
         ):
             cli_main()
 
@@ -2176,8 +2182,9 @@ class CensysASMCliTest(CensysTestCase):
 
         # Actual call
         temp_stdout = StringIO()
-        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
-            temp_stdout
+        with (
+            pytest.raises(SystemExit, match="1"),
+            contextlib.redirect_stdout(temp_stdout),
         ):
             cli_main()
 
@@ -2218,8 +2225,9 @@ class CensysASMCliTest(CensysTestCase):
 
         # Actual call
         temp_stdout = StringIO()
-        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
-            temp_stdout
+        with (
+            pytest.raises(SystemExit, match="1"),
+            contextlib.redirect_stdout(temp_stdout),
         ):
             cli_main()
 
@@ -2247,8 +2255,9 @@ class CensysASMCliTest(CensysTestCase):
 
         # Actual call
         temp_stdout = StringIO()
-        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
-            temp_stdout
+        with (
+            pytest.raises(SystemExit, match="1"),
+            contextlib.redirect_stdout(temp_stdout),
         ):
             cli_main()
 
@@ -2326,8 +2335,9 @@ class CensysASMCliTest(CensysTestCase):
 
         # Actual call
         temp_stdout = StringIO()
-        with pytest.raises(SystemExit, match="1"), contextlib.redirect_stdout(
-            temp_stdout
+        with (
+            pytest.raises(SystemExit, match="1"),
+            contextlib.redirect_stdout(temp_stdout),
         ):
             cli_main()
 

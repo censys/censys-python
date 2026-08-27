@@ -30,8 +30,9 @@ class CensysCliAccountTest(CensysTestCase):
 
         temp_stdout = StringIO()
         # Actual call
-        with contextlib.redirect_stdout(temp_stdout), pytest.raises(
-            SystemExit, match="0"
+        with (
+            contextlib.redirect_stdout(temp_stdout),
+            pytest.raises(SystemExit, match="0"),
         ):
             cli_main()
 
@@ -61,8 +62,9 @@ class CensysCliAccountTest(CensysTestCase):
 
         temp_stdout = StringIO()
         # Actual call
-        with contextlib.redirect_stdout(temp_stdout), pytest.raises(
-            SystemExit, match="0"
+        with (
+            contextlib.redirect_stdout(temp_stdout),
+            pytest.raises(SystemExit, match="0"),
         ):
             cli_main()
 
