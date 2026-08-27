@@ -28,6 +28,6 @@ Install dependencies via ``pip``:
 .. prompt:: bash $
 
    cd censys-python/
-   poetry install
+   uv install
 
 Run the test suite with ``pytest``. More information about testing is available at :ref:`testing:Testing`.

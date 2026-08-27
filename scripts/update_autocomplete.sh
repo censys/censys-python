@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-USER_AGENT="censys-python/$(poetry version | cut -d ' ' -f 2)"
+USER_AGENT="censys-python/$(uv version | cut -d ' ' -f 2)"
 
 update_autocomplete() {
     echo "Updating autocomplete data for $1..."
