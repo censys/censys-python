@@ -11,9 +11,7 @@ print(events)
 # You can also pass in a date or datetime objects.
 from datetime import date
 
-events = h.view_host_events(
-    "1.1.1.1", per_page=1, start_time=date(2022, 1, 1), end_time=date(2022, 1, 31)
-)
+events = h.view_host_events("1.1.1.1", per_page=1, start_time=date(2022, 1, 1), end_time=date(2022, 1, 31))
 print(events)
 # {
 #     'ip': '1.1.1.1',

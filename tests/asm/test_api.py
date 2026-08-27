@@ -7,13 +7,14 @@ from parameterized import parameterized
 from pytest_mock import MockerFixture
 from requests.models import Response
 
-from ..utils import CensysTestCase
 from censys.asm.api import CensysAsmAPI
 from censys.common.exceptions import (
     CensysAsmException,
     CensysException,
     CensysExceptionMapper,
 )
+
+from ..utils import CensysTestCase
 
 
 class CensysAPIBaseTestsNoAsmEnv(unittest.TestCase):
@@ -31,26 +32,19 @@ class CensysAPIBaseTestsNoAsmEnv(unittest.TestCase):
         self.responses = responses.RequestsMock()
         self.responses.start()
         self.mocker.patch.dict("os.environ", {"CENSYS_ASM_API_KEY": ""})
-        self.mock_open = self.mocker.patch(
-            "builtins.open", new_callable=self.mocker.mock_open, read_data="[DEFAULT]"
-        )
+        self.mock_open = self.mocker.patch("builtins.open", new_callable=self.mocker.mock_open, read_data="[DEFAULT]")
 
         self.addCleanup(self.responses.stop)
         self.addCleanup(self.responses.reset)
 
     def test_no_env(self):
-        self.mocker.patch(
-            "builtins.open", new_callable=self.mock_open, read_data="[DEFAULT]"
-        )
+        self.mocker.patch("builtins.open", new_callable=self.mock_open, read_data="[DEFAULT]")
         with pytest.raises(CensysException, match="No ASM API key configured."):
             CensysAsmAPI()
 
 
 class CensysAsmAPITests(CensysTestCase):
-    AsmExceptionParams = [
-        (code, exception)
-        for code, exception in CensysExceptionMapper.ASM_EXCEPTIONS.items()
-    ]
+    AsmExceptionParams = [(code, exception) for code, exception in CensysExceptionMapper.ASM_EXCEPTIONS.items()]
 
     def setUp(self):
         super().setUp()
@@ -76,8 +70,7 @@ class CensysAsmAPITests(CensysTestCase):
         )
         # Assertion
         assert (
-            repr(exception)
-            == "404 (Error Code: 10014), Unable to Find Seed. [{id: 999}]"  # noqa: FS003
+            repr(exception) == "404 (Error Code: 10014), Unable to Find Seed. [{id: 999}]"  # noqa: FS003
         )
 
     @parameterized.expand([("assets")])

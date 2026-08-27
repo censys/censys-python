@@ -1,6 +1,7 @@
 """Interact with the Censys Domain Assets API."""
 
-from typing import Iterator, Optional
+from collections.abc import Iterator
+from typing import Optional
 
 from .assets import Assets
 
@@ -17,9 +18,7 @@ class DomainsAssets(Assets):
         """
         super().__init__("domains", *args, **kwargs)
 
-    def get_subdomains(
-        self, domain: str, page_number: int = 1, page_size: Optional[int] = None
-    ) -> Iterator[dict]:
+    def get_subdomains(self, domain: str, page_number: int = 1, page_size: Optional[int] = None) -> Iterator[dict]:
         """List all subdomains of the parent domain.
 
         Args:

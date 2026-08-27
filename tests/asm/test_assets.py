@@ -5,6 +5,9 @@ import pytest
 from parameterized import parameterized_class
 from pytest_mock import MockerFixture
 
+from censys.asm.client import AsmClient
+from censys.common.exceptions import CensysInvalidColorException
+
 from .utils import (
     BETA_URL,
     RESOURCE_PAGING_RESULTS,
@@ -13,8 +16,6 @@ from .utils import (
     V1_URL,
     MockResponse,
 )
-from censys.asm.client import AsmClient
-from censys.common.exceptions import CensysInvalidColorException
 
 ASSETS_URL = f"{V1_URL}/assets"
 BETA_ASSETS_URL = f"{BETA_URL}/assets"
@@ -61,9 +62,7 @@ class AssetsUnitTest(unittest.TestCase):
 
     def setUp(self):
         self.client = AsmClient()
-        self.resource_type = (
-            ASSET_TYPE if self.asset_type != "subdomains" else SUBDOMAIN_ASSET_TYPE
-        )
+        self.resource_type = ASSET_TYPE if self.asset_type != "subdomains" else SUBDOMAIN_ASSET_TYPE
 
     def get_asset_accessor(self):
         return getattr(self.client, self.asset_type)
@@ -89,14 +88,12 @@ class AssetsUnitTest(unittest.TestCase):
         else:
             # Mock
             mock_request = self.mocker.patch("censys.common.base.requests.Session.get")
-            mock_request.return_value = MockResponse(
-                TEST_SUCCESS_CODE, self.resource_type
-            )
+            mock_request.return_value = MockResponse(TEST_SUCCESS_CODE, self.resource_type)
             # Actual call
             assets = self.get_asset_accessor().get_assets()
             res = list(assets)
             # Assertions
-            assert RESOURCE_PAGING_RESULTS == res
+            assert res == RESOURCE_PAGING_RESULTS
             mock_request.assert_called_with(
                 self.asset_type_url(),
                 params={"pageNumber": 3, "pageSize": 500},
@@ -120,7 +117,7 @@ class AssetsUnitTest(unittest.TestCase):
         )
         res = list(assets)
         # Assertions
-        assert RESOURCE_PAGING_RESULTS == res
+        assert res == RESOURCE_PAGING_RESULTS
         mock_request.assert_called_with(
             self.asset_type_url(),
             params={
@@ -141,13 +138,9 @@ class AssetsUnitTest(unittest.TestCase):
 
         # Mock
         mock_request = self.mocker.patch("censys.common.base.requests.Session.get")
-        mock_request.return_value = MockResponse(
-            TEST_SUCCESS_CODE, self.resource_type, TEST_PAGE_NUMBER
-        )
+        mock_request.return_value = MockResponse(TEST_SUCCESS_CODE, self.resource_type, TEST_PAGE_NUMBER)
         # Actual call
-        assets = self.get_asset_accessor().get_assets(
-            page_number=TEST_PAGE_NUMBER, page_size=TEST_PAGE_SIZE
-        )
+        assets = self.get_asset_accessor().get_assets(page_number=TEST_PAGE_NUMBER, page_size=TEST_PAGE_SIZE)
         res = list(assets)
         # Assertions
         assert RESOURCE_PAGING_RESULTS[:6] == res
@@ -179,7 +172,7 @@ class AssetsUnitTest(unittest.TestCase):
         comments = self.get_asset_accessor().get_comments(self.test_asset_id)
         res = list(comments)
         # Assertions
-        assert RESOURCE_PAGING_RESULTS == res
+        assert res == RESOURCE_PAGING_RESULTS
         mock_request.assert_called_with(
             f"{self.asset_id_url()}/{COMMENT_TYPE}",
             params={"pageNumber": 3, "pageSize": 500},
@@ -189,13 +182,9 @@ class AssetsUnitTest(unittest.TestCase):
     def test_get_asset_comments_by_page(self):
         # Mock
         mock_request = self.mocker.patch("censys.common.base.requests.Session.get")
-        mock_request.return_value = MockResponse(
-            TEST_SUCCESS_CODE, COMMENT_TYPE, TEST_PAGE_NUMBER
-        )
+        mock_request.return_value = MockResponse(TEST_SUCCESS_CODE, COMMENT_TYPE, TEST_PAGE_NUMBER)
         # Actual call
-        comments = self.get_asset_accessor().get_comments(
-            self.test_asset_id, page_number=2, page_size=2
-        )
+        comments = self.get_asset_accessor().get_comments(self.test_asset_id, page_number=2, page_size=2)
         res = list(comments)
         # Assertions
         assert RESOURCE_PAGING_RESULTS[:6] == res
@@ -251,9 +240,7 @@ class AssetsUnitTest(unittest.TestCase):
         mock_request = self.mocker.patch("censys.common.base.requests.Session.post")
         mock_request.return_value = MockResponse(TEST_SUCCESS_CODE, self.resource_type)
         # Actual call
-        self.get_asset_accessor().add_tag(
-            self.test_asset_id, TEST_TAG_NAME, TEST_TAG_COLOR
-        )
+        self.get_asset_accessor().add_tag(self.test_asset_id, TEST_TAG_NAME, TEST_TAG_COLOR)
         # Assertions
         mock_request.assert_called_with(
             f"{self.asset_id_url()}/tags",
@@ -265,9 +252,7 @@ class AssetsUnitTest(unittest.TestCase):
     def test_add_tag_with_invalid_color(self):
         # Actual call/error raising
         with pytest.raises(CensysInvalidColorException):
-            self.get_asset_accessor().add_tag(
-                self.test_asset_id, TEST_TAG_NAME, TEST_INVALID_TAG_COLOR
-            )
+            self.get_asset_accessor().add_tag(self.test_asset_id, TEST_TAG_NAME, TEST_INVALID_TAG_COLOR)
 
     def test_add_tag_without_color(self):
         # Mock
@@ -306,7 +291,7 @@ class AssetsUnitTest(unittest.TestCase):
         subdomains = self.client.domains.get_subdomains(self.test_asset_id)
         res = list(subdomains)
         # Assertions
-        assert RESOURCE_PAGING_RESULTS == res
+        assert res == RESOURCE_PAGING_RESULTS
         mock_request.assert_called_with(
             f"{self.asset_id_url()}/subdomains",
             params={"pageNumber": 3, "pageSize": 500},
@@ -323,7 +308,7 @@ class AssetsUnitTest(unittest.TestCase):
         instances = self.client.web_entities.get_instances(self.test_asset_id)
         res = list(instances)
         # Assertions
-        assert RESOURCE_PAGING_RESULTS == res
+        assert res == RESOURCE_PAGING_RESULTS
         mock_request.assert_called_with(
             f"{self.asset_id_url()}/instances",
             params={"cursor": "test", "pageSize": None},

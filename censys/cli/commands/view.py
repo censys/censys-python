@@ -52,9 +52,7 @@ def cli_view(args: argparse.Namespace):
             ipaddress.ip_address(ip_address)
         except ValueError:
             if len(args.document_id) == 64:
-                err_console.print(
-                    "This is a SHA-256 certificate fingerprint. Switching to certificates index."
-                )
+                err_console.print("This is a SHA-256 certificate fingerprint. Switching to certificates index.")
                 index_type = "certificates"
             else:
                 raise CensysCLIException(
@@ -73,9 +71,7 @@ def cli_view(args: argparse.Namespace):
         if index_type == "hosts":
             view_args["at_time"] = args.at_time
         else:
-            err_console.print(
-                "The --at-time option is only supported for the hosts index. Ignoring."
-            )
+            err_console.print("The --at-time option is only supported for the hosts index. Ignoring.")
 
     document = index.view(args.document_id, **view_args)
 

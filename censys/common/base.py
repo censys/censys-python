@@ -4,7 +4,7 @@ import json
 import os
 import warnings
 from functools import wraps
-from typing import Any, Callable, Optional, Type
+from typing import Any, Callable, Optional
 
 import backoff
 import requests
@@ -110,9 +110,7 @@ class CensysAPIBase:
                 "User-Agent": " ".join(
                     [
                         requests.utils.default_user_agent(),
-                        user_agent
-                        or kwargs.get("user_agent_identifier")
-                        or self.DEFAULT_USER_AGENT,
+                        user_agent or kwargs.get("user_agent_identifier") or self.DEFAULT_USER_AGENT,
                     ]
                 ),
             }
@@ -142,7 +140,7 @@ class CensysAPIBase:
         self._session.headers["x-request-id"] = value
 
     @staticmethod
-    def _get_exception_class(_: Response) -> Type[CensysAPIException]:
+    def _get_exception_class(_: Response) -> type[CensysAPIException]:
         """Maps HTTP status code or ASM error code to exception.
 
         Must be implemented by child class.
@@ -157,13 +155,10 @@ class CensysAPIBase:
 
     @backoff.on_predicate(
         backoff.runtime,
-        predicate=lambda r: r.status_code in (408, 429, 502, 503)
-        and r.headers.get("Retry-After"),
+        predicate=lambda r: r.status_code in (408, 429, 502, 503) and r.headers.get("Retry-After"),
         value=lambda r: int(r.headers.get("Retry-After", 0)),
     )
-    def _call_method(
-        self, method: Callable[..., Response], url: str, request_kwargs: dict
-    ) -> Response:
+    def _call_method(self, method: Callable[..., Response], url: str, request_kwargs: dict) -> Response:
         """Make API call.
 
         Wrapper functions for all our REST API calls checking for errors
@@ -207,10 +202,7 @@ class CensysAPIBase:
         Returns:
             dict: Results from an API request.
         """
-        if endpoint.startswith("/"):
-            url = f"{self._api_url}{endpoint}"
-        else:
-            url = f"{self._api_url}/{endpoint}"
+        url = f"{self._api_url}{endpoint}" if endpoint.startswith("/") else f"{self._api_url}/{endpoint}"
 
         request_kwargs = {
             "params": args or {},
@@ -240,9 +232,7 @@ class CensysAPIBase:
             json_data = res.json()
             message = json_data.get("error") or json_data.get("message")
             const = json_data.get("error_type") or json_data.get("status") or res.reason
-            error_code = json_data.get("errorCode") or json_data.get(
-                "statusCode", "unknown"
-            )
+            error_code = json_data.get("errorCode") or json_data.get("statusCode", "unknown")
             details = json_data.get("details", "unknown")
         except (ValueError, json.decoder.JSONDecodeError) as error:
             raise CensysJSONDecodeException(

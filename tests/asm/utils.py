@@ -40,9 +40,7 @@ class MockResponse:
             self.json_data["endOfEvents"] = next(self.end_of_events_generator)
             self.json_data["pageNumber"] = next(self.number_generator)
         else:
-            self.json_data["cursor"] = (
-                "test" if not next(self.end_of_events_generator) else None
-            )
+            self.json_data["cursor"] = "test" if not next(self.end_of_events_generator) else None
             if "pageNumber" in self.json_data:
                 del self.json_data["pageNumber"]
         self.json_data[self.resource_type] = self.get_resource()

@@ -52,9 +52,7 @@ def cli_config(_: argparse.Namespace):  # pragma: no cover
     api_id = api_id.strip()
     api_secret = api_secret.strip()
 
-    color = Confirm.ask(
-        "Do you want color output?", default=True, show_default=False, console=console
-    )
+    color = Confirm.ask("Do you want color output?", default=True, show_default=False, console=console)
     config.set(DEFAULT, "color", "auto" if color else "")
 
     try:

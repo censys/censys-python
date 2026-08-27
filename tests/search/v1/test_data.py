@@ -1,8 +1,7 @@
 import responses
 
-from tests.utils import V1_URL, CensysTestCase
-
 from censys.search import SearchClient
+from tests.utils import V1_URL, CensysTestCase
 
 SERIES_JSON = {
     "primary_series": "",

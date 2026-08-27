@@ -8,12 +8,11 @@ import responses
 from responses import matchers
 from responses.matchers import json_params_matcher
 
+from censys.cli import main as cli_main
+from censys.cli.commands.asm import get_seeds_from_xml
 from tests.asm.utils import INVENTORY_URL, V1_URL, WORKSPACE_ID
 from tests.cli.test_config import TEST_CONFIG_PATH
 from tests.utils import CensysTestCase
-
-from censys.cli import main as cli_main
-from censys.cli.commands.asm import get_seeds_from_xml
 
 SEEDS_JSON = [
     {"value": 0, "type": "ASN"},
@@ -250,9 +249,7 @@ class CensysASMCliTest(CensysTestCase):
 
     def test_add_seeds(self):
         # Mock
-        self.patch_args(
-            ["censys", "asm", "add-seeds", "-j", json.dumps(SEEDS_JSON)], asm_auth=True
-        )
+        self.patch_args(["censys", "asm", "add-seeds", "-j", json.dumps(SEEDS_JSON)], asm_auth=True)
         self.responses.add(
             responses.POST,
             V1_URL + "/seeds",
@@ -270,19 +267,13 @@ class CensysASMCliTest(CensysTestCase):
 
     def test_add_seeds_no_type(self):
         # Mock
-        self.patch_args(
-            ["censys", "asm", "add-seeds", "-j", json.dumps(["1.1.1.1"])], asm_auth=True
-        )
+        self.patch_args(["censys", "asm", "add-seeds", "-j", json.dumps(["1.1.1.1"])], asm_auth=True)
         self.responses.add(
             responses.POST,
             V1_URL + "/seeds",
             status=200,
             json=ADD_SEEDS_JSON,
-            match=[
-                json_params_matcher(
-                    {"seeds": [{"value": "1.1.1.1", "type": "IP_ADDRESS", "label": ""}]}
-                )
-            ],
+            match=[json_params_matcher({"seeds": [{"value": "1.1.1.1", "type": "IP_ADDRESS", "label": ""}]})],
         )
 
         # Actual call
@@ -428,9 +419,7 @@ class CensysASMCliTest(CensysTestCase):
         self.mocker.patch(
             "builtins.open",
             new_callable=self.mocker.mock_open,
-            read_data="\n".join(
-                ["type,value", "IP_ADDRESS,1.1.1.1", "CIDR,192.168.0.15/24"]
-            ),
+            read_data="\n".join(["type,value", "IP_ADDRESS,1.1.1.1", "CIDR,192.168.0.15/24"]),
         )
         self.responses.add(
             responses.POST,
@@ -469,9 +458,7 @@ class CensysASMCliTest(CensysTestCase):
         self.mocker.patch(
             "builtins.open",
             new_callable=self.mocker.mock_open,
-            read_data="\n".join(
-                ["type,value", "IP_ADDRESS,1.1.1.1", "CIDR,192.168.0.15/24"]
-            ),
+            read_data="\n".join(["type,value", "IP_ADDRESS,1.1.1.1", "CIDR,192.168.0.15/24"]),
         )
         self.responses.add(
             responses.POST,
@@ -506,9 +493,7 @@ class CensysASMCliTest(CensysTestCase):
 
     def test_add_seeds_bad_json(self):
         # Mock
-        self.patch_args(
-            ["censys", "asm", "add-seeds", "-j", json.dumps([12345])], asm_auth=True
-        )
+        self.patch_args(["censys", "asm", "add-seeds", "-j", json.dumps([12345])], asm_auth=True)
 
         # Actual call
         temp_stdout = StringIO()
@@ -523,9 +508,7 @@ class CensysASMCliTest(CensysTestCase):
 
     def test_add_seeds_partial(self):
         # Mock
-        self.patch_args(
-            ["censys", "asm", "add-seeds", "-j", json.dumps(SEEDS_JSON)], asm_auth=True
-        )
+        self.patch_args(["censys", "asm", "add-seeds", "-j", json.dumps(SEEDS_JSON)], asm_auth=True)
         partial_json = ADD_SEEDS_JSON.copy()
         partial_json["addedSeeds"] = partial_json["addedSeeds"][1:]
         self.responses.add(
@@ -546,9 +529,7 @@ class CensysASMCliTest(CensysTestCase):
 
     def test_add_seeds_none(self):
         # Mock
-        self.patch_args(
-            ["censys", "asm", "add-seeds", "-j", json.dumps(SEEDS_JSON)], asm_auth=True
-        )
+        self.patch_args(["censys", "asm", "add-seeds", "-j", json.dumps(SEEDS_JSON)], asm_auth=True)
         partial_json = ADD_SEEDS_JSON.copy()
         partial_json["addedSeeds"] = []
         self.responses.add(
@@ -567,10 +548,7 @@ class CensysASMCliTest(CensysTestCase):
             cli_main()
 
         # Assertions
-        assert (
-            "No seeds were added. (Run with -v to get more info)"
-            in temp_stdout.getvalue()
-        )
+        assert "No seeds were added. (Run with -v to get more info)" in temp_stdout.getvalue()
 
     def test_get_seeds_from_xml(self):
         # Actual call
@@ -656,13 +634,7 @@ class CensysASMCliTest(CensysTestCase):
             responses.GET,
             V1_URL + "/seeds",
             status=200,
-            json={
-                "seeds": [
-                    item
-                    for item in GET_SEEDS_JSON["seeds"]
-                    if item["value"] == "1.2.3.4"
-                ]
-            },
+            json={"seeds": [item for item in GET_SEEDS_JSON["seeds"] if item["value"] == "1.2.3.4"]},
             match=[matchers.query_param_matcher({})],
         )
         self.responses.add(
@@ -702,13 +674,7 @@ class CensysASMCliTest(CensysTestCase):
             responses.GET,
             V1_URL + "/seeds",
             status=200,
-            json={
-                "seeds": [
-                    item
-                    for item in GET_SEEDS_JSON["seeds"]
-                    if item["type"] == "IP_ADDRESS"
-                ]
-            },
+            json={"seeds": [item for item in GET_SEEDS_JSON["seeds"] if item["type"] == "IP_ADDRESS"]},
             match=[matchers.query_param_matcher({})],
         )
         self.responses.add(
@@ -753,13 +719,7 @@ class CensysASMCliTest(CensysTestCase):
             responses.GET,
             V1_URL + "/seeds",
             status=200,
-            json={
-                "seeds": [
-                    item
-                    for item in GET_SEEDS_JSON["seeds"]
-                    if item["type"] == "IP_ADDRESS"
-                ]
-            },
+            json={"seeds": [item for item in GET_SEEDS_JSON["seeds"] if item["type"] == "IP_ADDRESS"]},
             match=[matchers.query_param_matcher({})],
         )
         self.responses.add(
@@ -774,9 +734,7 @@ class CensysASMCliTest(CensysTestCase):
             status=200,
             match=[matchers.query_param_matcher({})],
         )
-        self.mocker.patch(
-            "builtins.input", side_effect=["y"]
-        )  # answer 'y' to are you sure
+        self.mocker.patch("builtins.input", side_effect=["y"])  # answer 'y' to are you sure
 
         # Actual call
         temp_stdout = StringIO()
@@ -842,10 +800,7 @@ class CensysASMCliTest(CensysTestCase):
 
         # Assertions
         assert len(self.responses.calls) == 3  # make sure all three requests were seen
-        assert (
-            "Deleted 2 seeds.\nUnable to delete 1 seeds because they were not present.\n"
-            in temp_stdout.getvalue()
-        )
+        assert "Deleted 2 seeds.\nUnable to delete 1 seeds because they were not present.\n" in temp_stdout.getvalue()
 
     def test_delete_seed_by_id(self):
         # Mock
@@ -935,9 +890,7 @@ class CensysASMCliTest(CensysTestCase):
         self.mocker.patch(
             "builtins.open",
             new_callable=self.mocker.mock_open,
-            read_data="\n".join(
-                ["type,value", "IP_ADDRESS,1.2.3.4", "CIDR,200.200.200.0/24"]
-            ),
+            read_data="\n".join(["type,value", "IP_ADDRESS,1.2.3.4", "CIDR,200.200.200.0/24"]),
         )
 
         self.responses.add(
@@ -987,9 +940,7 @@ class CensysASMCliTest(CensysTestCase):
         self.mocker.patch(
             "builtins.open",
             new_callable=self.mocker.mock_open,
-            read_data="\n".join(
-                ["Type,Value", "IP_ADDRESS,1.2.3.4", "CIDR,200.200.200.0/24"]
-            ),
+            read_data="\n".join(["Type,Value", "IP_ADDRESS,1.2.3.4", "CIDR,200.200.200.0/24"]),
         )
 
         self.responses.add(
@@ -1055,10 +1006,7 @@ class CensysASMCliTest(CensysTestCase):
 
         # Assertions
         assert len(self.responses.calls) == 2  # make sure all three requests were seen
-        assert (
-            "Deleted 0 seeds.\nUnable to delete 1 seeds because they were not present.\n"
-            in temp_stdout.getvalue()
-        )
+        assert "Deleted 0 seeds.\nUnable to delete 1 seeds because they were not present.\n" in temp_stdout.getvalue()
 
     def test_delete_seeds_multiple_nonexistent_id(self):
         # Mock
@@ -1113,10 +1061,7 @@ class CensysASMCliTest(CensysTestCase):
 
         # Assertions
         assert len(self.responses.calls) == 3  # make sure all three requests were seen
-        assert (
-            "Deleted 0 seeds.\nUnable to delete 2 seeds because they were not present.\n"
-            in temp_stdout.getvalue()
-        )
+        assert "Deleted 0 seeds.\nUnable to delete 2 seeds because they were not present.\n" in temp_stdout.getvalue()
 
     def test_delete_seeds_no_id_or_ip(self):
         # Mock
@@ -1141,10 +1086,7 @@ class CensysASMCliTest(CensysTestCase):
             cli_main()
 
         # Assertions
-        assert (
-            "Error, no seed id or value for seed.\nNo seeds to delete.\n"
-            in temp_stdout.getvalue()
-        )
+        assert "Error, no seed id or value for seed.\nNo seeds to delete.\n" in temp_stdout.getvalue()
 
     def test_delete_seeds_id_and_value(self):
         # Mock
@@ -1182,9 +1124,7 @@ class CensysASMCliTest(CensysTestCase):
 
     def test_delete_labeled_seeds(self):
         # Mock
-        self.patch_args(
-            ["censys", "asm", "delete-labeled-seeds", "--label", "Test"], asm_auth=True
-        )
+        self.patch_args(["censys", "asm", "delete-labeled-seeds", "--label", "Test"], asm_auth=True)
         self.responses.add(
             responses.DELETE,
             V1_URL + "/seeds",
@@ -1268,10 +1208,7 @@ class CensysASMCliTest(CensysTestCase):
             cli_main()
 
         # Assertions
-        assert (
-            "Removed 0 seeds.  Added 2 seeds.  Skipped 0 reserved seeds."
-            in temp_stdout.getvalue()
-        )
+        assert "Removed 0 seeds.  Added 2 seeds.  Skipped 0 reserved seeds." in temp_stdout.getvalue()
 
     def test_replace_labeled_seeds_without_label(self):
         # Mock
@@ -1373,13 +1310,7 @@ class CensysASMCliTest(CensysTestCase):
             responses.GET,
             V1_URL + "/seeds",
             status=200,
-            json={
-                "seeds": [
-                    item
-                    for item in GET_SEEDS_JSON["seeds"]
-                    if item["type"] == "IP_ADDRESS"
-                ]
-            },
+            json={"seeds": [item for item in GET_SEEDS_JSON["seeds"] if item["type"] == "IP_ADDRESS"]},
             match=[matchers.query_param_matcher({"type": "IP_ADDRESS"})],
         )
 
@@ -1418,11 +1349,7 @@ class CensysASMCliTest(CensysTestCase):
             responses.GET,
             V1_URL + "/seeds",
             status=200,
-            json={
-                "seeds": [
-                    item for item in GET_SEEDS_JSON["seeds"] if item["label"] == "Test"
-                ]
-            },
+            json={"seeds": [item for item in GET_SEEDS_JSON["seeds"] if item["label"] == "Test"]},
             match=[matchers.query_param_matcher({"label": "Test"})],
         )
 
@@ -1609,17 +1536,9 @@ class CensysASMCliTest(CensysTestCase):
             status=200,
             json={
                 "totalResults": 2,
-                "results": [
-                    query
-                    for query in GET_SAVED_QUERIES_JSON["results"]
-                    if "foo" in query["queryName"]
-                ],
+                "results": [query for query in GET_SAVED_QUERIES_JSON["results"] if "foo" in query["queryName"]],
             },
-            match=[
-                matchers.query_param_matcher(
-                    {"pageSize": 50, "page": 1, "queryNamePrefix": "foo"}
-                )
-            ],
+            match=[matchers.query_param_matcher({"pageSize": 50, "page": 1, "queryNamePrefix": "foo"})],
         )
 
         # Actual call
@@ -1657,11 +1576,7 @@ class CensysASMCliTest(CensysTestCase):
             INVENTORY_URL + "/v1/saved-query",
             status=200,
             json=GET_SAVED_QUERIES_JSON,
-            match=[
-                matchers.query_param_matcher(
-                    {"pageSize": 50, "page": 1, "filterTerm": "domain"}
-                )
-            ],
+            match=[matchers.query_param_matcher({"pageSize": 50, "page": 1, "filterTerm": "domain"})],
         )
 
         # Actual call

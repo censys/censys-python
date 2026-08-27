@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # PYTHON_ARGCOMPLETE_OK
 """Interact with the Censys Search API through the command line."""
+
 import sys
 
 import argcomplete
 
-from .args import get_parser
 from censys.common.version import __version__
+
+from .args import get_parser
 
 
 def main():

@@ -6,14 +6,13 @@ import responses
 from parameterized import parameterized
 from requests.models import Response
 
-from tests.utils import V1_URL, CensysTestCase
-
 from censys.common.exceptions import (
     CensysException,
     CensysExceptionMapper,
     CensysSearchException,
 )
 from censys.search.v1.api import CensysSearchAPIv1
+from tests.utils import V1_URL, CensysTestCase
 
 ACCOUNT_JSON = {
     "login": "test@censys.io",
@@ -23,10 +22,7 @@ ACCOUNT_JSON = {
     "quota": {"used": 1, "resets_at": "2021-01-01 01:00:00", "allowance": 100},
 }
 
-SearchExceptionParams = [
-    (code, exception)
-    for code, exception in CensysExceptionMapper.SEARCH_EXCEPTIONS.items()
-]
+SearchExceptionParams = [(code, exception) for code, exception in CensysExceptionMapper.SEARCH_EXCEPTIONS.items()]
 
 
 class CensysSearchAPITests(CensysTestCase):
@@ -73,7 +69,5 @@ class CensysSearchAPITests(CensysTestCase):
 class CensysAPIBaseTestsNoSearchEnv(unittest.TestCase):
     @patch("builtins.open", new_callable=mock_open, read_data="[DEFAULT]")
     def test_no_env(self, mock_file):
-        with pytest.raises(
-            CensysException, match="No API ID or API secret configured."
-        ):
+        with pytest.raises(CensysException, match="No API ID or API secret configured."):
             CensysSearchAPIv1()

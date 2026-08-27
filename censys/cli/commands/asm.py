@@ -6,7 +6,7 @@ import csv
 import json
 import sys
 import threading
-from typing import Dict, List, Union
+from typing import Union
 from xml.etree import ElementTree
 
 from rich.progress import Progress, TaskID
@@ -55,9 +55,7 @@ def cli_asm_config(_: argparse.Namespace):  # pragma: no cover
         console.print("Please enter valid credentials")
         sys.exit(1)
 
-    color = Confirm.ask(
-        "Do you want color output?", default=True, show_default=False, console=console
-    )
+    color = Confirm.ask("Do you want color output?", default=True, show_default=False, console=console)
     config.set(DEFAULT, "color", "auto" if color else "")
 
     try:
@@ -72,7 +70,7 @@ def cli_asm_config(_: argparse.Namespace):  # pragma: no cover
         sys.exit(1)
 
 
-def get_seeds_from_xml(file: str) -> List[Dict[str, str]]:
+def get_seeds_from_xml(file: str) -> list[dict[str, str]]:
     """Get seeds from nmap xml.
 
     Args:
@@ -106,9 +104,7 @@ def get_seeds_from_xml(file: str) -> List[Dict[str, str]]:
     ]
 
 
-def get_seeds_from_params(
-    args: argparse.Namespace, command_name: str
-) -> List[Dict[str, Union[str, int]]]:
+def get_seeds_from_params(args: argparse.Namespace, command_name: str) -> list[dict[str, Union[str, int]]]:
     """Get seeds from params.
 
     Args:
@@ -134,9 +130,7 @@ def get_seeds_from_params(
                 csv_reader = csv.DictReader(file, delimiter=",")
                 if csv_reader.fieldnames:
                     # Lowercase the field names
-                    csv_reader.fieldnames = [
-                        string.lower() for string in csv_reader.fieldnames
-                    ]
+                    csv_reader.fieldnames = [string.lower() for string in csv_reader.fieldnames]
                 for row in csv_reader:
                     seeds.append(row)
             else:
@@ -169,11 +163,7 @@ def get_seeds_from_params(
         if command_name != "delete-seeds" and "type" not in seed:
             seed["type"] = args.default_type
 
-        if (
-            command_name != "replace-labeled-seeds"
-            and "label" not in seed
-            and "label" in args
-        ):
+        if command_name != "replace-labeled-seeds" and "label" not in seed and "label" in args:
             seed["label"] = args.label
 
         # The back end is really picky about sending extra fields, so we'll prune out anything it won't like.
@@ -219,9 +209,7 @@ def cli_add_seeds(args: argparse.Namespace):
     if added_count < to_add_count:
         console.print(f"Seeds not added: {to_add_count - added_count}")
         if args.verbose:  # pragma: no cover
-            console.print(
-                "The following seed(s) were not able to be added as they already exist or are reserved."
-            )
+            console.print("The following seed(s) were not able to be added as they already exist or are reserved.")
             for seed in seeds_to_add:
                 if not any(s for s in added_seeds if seed["value"] == s["value"]):
                     console.print(f"{seed}")
@@ -282,9 +270,7 @@ def cli_delete_seeds(args: argparse.Namespace):
 
     # Create a rich Progress instance
     with Progress() as progress:
-        progress_task_id = progress.add_task(
-            "[cyan]Deleting[/cyan]", total=len(seeds_to_delete)
-        )
+        progress_task_id = progress.add_task("[cyan]Deleting[/cyan]", total=len(seeds_to_delete))
         tasks = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
             # Submit requests using the executor
@@ -300,9 +286,7 @@ def cli_delete_seeds(args: argparse.Namespace):
 
     console.print(f"Deleted {len(seed_ids_deleted)} seeds.")
     if len(seed_ids_not_found) > 0:
-        console.print(
-            f"Unable to delete {len(seed_ids_not_found)} seeds because they were not present."
-        )
+        console.print(f"Unable to delete {len(seed_ids_not_found)} seeds because they were not present.")
 
 
 def cli_delete_all_seeds(args: argparse.Namespace):
@@ -346,9 +330,7 @@ def cli_delete_all_seeds(args: argparse.Namespace):
         with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
             # Submit requests using the executor
             for seed in seeds:
-                task = executor.submit(
-                    delete_seed, seed["id"], progress, progress_task_id
-                )
+                task = executor.submit(delete_seed, seed["id"], progress, progress_task_id)
                 tasks.append(task)
 
             # Wait for all requests to complete
@@ -395,9 +377,7 @@ def cli_replace_seeds_with_label(args: argparse.Namespace):
                 console.print(f"    {removed_seed}")
         skipped_seeds = res.get("skippedReservedSeeds", [])
         if len(skipped_seeds) > 0:
-            console.print(
-                "The following seed(s) were not added because they are reserved."
-            )
+            console.print("The following seed(s) were not added because they are reserved.")
             for skipped_seed in skipped_seeds:
                 console.print(f"    {skipped_seed}")
 
@@ -442,12 +422,8 @@ def add_seed_arguments(parser: argparse._SubParsersAction, is_delete=False) -> N
         help="input file name containing valid seeds in JSON format, unless --csv is specified (use - for stdin)",
         type=str,
     )
-    seeds_group.add_argument(
-        "--json", "-j", help="input string containing valid json seeds", type=str
-    )
-    seeds_group.add_argument(
-        "--nmap-xml", help="input file name containing valid xml nmap output", type=str
-    )
+    seeds_group.add_argument("--json", "-j", help="input string containing valid json seeds", type=str)
+    seeds_group.add_argument("--nmap-xml", help="input file name containing valid xml nmap output", type=str)
 
 
 def cli_list_saved_queries(args: argparse.Namespace):
@@ -458,9 +434,7 @@ def cli_list_saved_queries(args: argparse.Namespace):
     """
     s = SavedQueries(args.api_key)
     try:
-        res = s.get_saved_queries(
-            args.query_name_prefix, args.page_size, args.page, args.filter_term
-        )
+        res = s.get_saved_queries(args.query_name_prefix, args.page_size, args.page, args.filter_term)
 
         if args.csv:
             console.print("queryId,queryName,query,createdAt")
@@ -549,9 +523,7 @@ def cli_execute_saved_query_by_name(args: argparse.Namespace):
     """
     # do some sanity checking on page size before anything else
     if args.page_size > 1000:
-        console.print(
-            "page size must be within [0,1000]. To fetch all pages, specify --pages -1 with any legal page size"
-        )
+        console.print("page size must be within [0,1000]. To fetch all pages, specify --pages -1 with any legal page size")
 
         sys.exit(1)
     s = InventorySearch(args.api_key)
@@ -565,9 +537,7 @@ def cli_execute_saved_query_by_name(args: argparse.Namespace):
     query = results[0]["query"]
 
     try:
-        res = s.search(
-            None, query, args.page_size, None, args.sort, args.fields, args.pages
-        )
+        res = s.search(None, query, args.page_size, None, args.sort, args.fields, args.pages)
         console.print_json(json.dumps(res))
     except CensysAsmException:
         console.print("Failed to execute saved query.")
@@ -582,9 +552,7 @@ def cli_execute_saved_query_by_id(args: argparse.Namespace):
     """
     # do some sanity checking on page size before anything else
     if args.page_size > 1000:
-        console.print(
-            "page size must be within [0,1000]. To fetch all pages, specify --pages -1 with any legal page size"
-        )
+        console.print("page size must be within [0,1000]. To fetch all pages, specify --pages -1 with any legal page size")
 
         sys.exit(1)
     s = InventorySearch(args.api_key)
@@ -596,9 +564,7 @@ def cli_execute_saved_query_by_id(args: argparse.Namespace):
         console.print("No saved query found with that ID.")
         sys.exit(1)
     try:
-        res = s.search(
-            None, query, args.page_size, None, args.sort, args.fields, args.pages
-        )
+        res = s.search(None, query, args.page_size, None, args.sort, args.fields, args.pages)
         console.print_json(json.dumps(res))
     except CensysAsmException:
         console.print("Failed to execute saved query.")
@@ -636,9 +602,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         parent_parser (argparse._SubParsersAction): Parent parser.
         parents (dict): Parent arg parsers.
     """
-    asm_parser = parent_parser.add_parser(
-        "asm", description="Interact with the Censys ASM API", help="interact with ASM"
-    )
+    asm_parser = parent_parser.add_parser("asm", description="Interact with the Censys ASM API", help="interact with ASM")
 
     def add_verbose(parser):
         parser.add_argument(
@@ -755,9 +719,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         type=str,
         default="",
     )
-    list_parser.add_argument(
-        "--csv", help="output in CSV format (otherwise JSON)", action="store_true"
-    )
+    list_parser.add_argument("--csv", help="output in CSV format (otherwise JSON)", action="store_true")
     add_verbose(list_parser)
     list_parser.set_defaults(func=cli_list_seeds)
 
@@ -791,9 +753,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         type=int,
         default=1,
     )
-    list_saved_queries_parser.add_argument(
-        "--csv", help="output in CSV format (otherwise JSON)", action="store_true"
-    )
+    list_saved_queries_parser.add_argument("--csv", help="output in CSV format (otherwise JSON)", action="store_true")
     add_verbose(list_saved_queries_parser)
     list_saved_queries_parser.set_defaults(func=cli_list_saved_queries)
 
@@ -914,9 +874,7 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         default=1,
     )
     add_verbose(execute_saved_query_by_name_parser)
-    execute_saved_query_by_name_parser.set_defaults(
-        func=cli_execute_saved_query_by_name
-    )
+    execute_saved_query_by_name_parser.set_defaults(func=cli_execute_saved_query_by_name)
 
     execute_saved_query_by_id_parser = asm_subparser.add_parser(
         "execute-saved-query-by-id",

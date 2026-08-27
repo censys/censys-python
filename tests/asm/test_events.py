@@ -3,6 +3,9 @@ import unittest
 import pytest
 from pytest_mock import MockerFixture
 
+from censys.asm.client import AsmClient
+from censys.asm.logbook import Filters
+
 from .utils import (
     RESOURCE_PAGING_RESULTS,
     TEST_SUCCESS_CODE,
@@ -10,8 +13,6 @@ from .utils import (
     V1_URL,
     MockResponse,
 )
-from censys.asm.client import AsmClient
-from censys.asm.logbook import Filters
 
 EVENTS_URL = f"{V1_URL}/logbook"
 EVENTS_CURSOR_URL = f"{V1_URL}/logbook-cursor"
@@ -48,9 +49,7 @@ class EventsUnitTests(unittest.TestCase):
         # Actual call
         self.client.events.get_cursor()
         # Assertions
-        mock_request.assert_called_with(
-            EVENTS_CURSOR_URL, params={}, timeout=TEST_TIMEOUT
-        )
+        mock_request.assert_called_with(EVENTS_CURSOR_URL, params={}, timeout=TEST_TIMEOUT)
 
     def test_get_logbook_cursor_with_start_date(self):
         # Mock
@@ -128,35 +127,23 @@ class EventsUnitTests(unittest.TestCase):
     def test_get_all_events(self):
         # Mock
         mock_request = self.mocker.patch("censys.common.base.requests.Session.get")
-        mock_request.return_value = MockResponse(
-            TEST_SUCCESS_CODE, EVENTS_RESOURCE_TYPE
-        )
+        mock_request.return_value = MockResponse(TEST_SUCCESS_CODE, EVENTS_RESOURCE_TYPE)
         # Actual call
         events = self.client.events.get_events()
         res = list(events)
         # Assertions
-        assert RESOURCE_PAGING_RESULTS == res
-        mock_request.assert_any_call(
-            EVENTS_URL, params={"cursor": None}, timeout=TEST_TIMEOUT
-        )
-        mock_request.assert_any_call(
-            EVENTS_URL, params={"cursor": TEST_NEXT_CURSOR}, timeout=TEST_TIMEOUT
-        )
+        assert res == RESOURCE_PAGING_RESULTS
+        mock_request.assert_any_call(EVENTS_URL, params={"cursor": None}, timeout=TEST_TIMEOUT)
+        mock_request.assert_any_call(EVENTS_URL, params={"cursor": TEST_NEXT_CURSOR}, timeout=TEST_TIMEOUT)
 
     def test_get_events_with_cursor(self):
         # Mock
         mock_request = self.mocker.patch("censys.common.base.requests.Session.get")
-        mock_request.return_value = MockResponse(
-            TEST_SUCCESS_CODE, EVENTS_RESOURCE_TYPE
-        )
+        mock_request.return_value = MockResponse(TEST_SUCCESS_CODE, EVENTS_RESOURCE_TYPE)
         # Actual call
         events = self.client.events.get_events(TEST_CURSOR)
         res = list(events)
         # Assertions
-        assert RESOURCE_PAGING_RESULTS == res
-        mock_request.assert_any_call(
-            EVENTS_URL, params={"cursor": TEST_CURSOR}, timeout=TEST_TIMEOUT
-        )
-        mock_request.assert_any_call(
-            EVENTS_URL, params={"cursor": TEST_NEXT_CURSOR}, timeout=TEST_TIMEOUT
-        )
+        assert res == RESOURCE_PAGING_RESULTS
+        mock_request.assert_any_call(EVENTS_URL, params={"cursor": TEST_CURSOR}, timeout=TEST_TIMEOUT)
+        mock_request.assert_any_call(EVENTS_URL, params={"cursor": TEST_NEXT_CURSOR}, timeout=TEST_TIMEOUT)

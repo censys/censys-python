@@ -1,5 +1,5 @@
 import unittest
-from typing import List, Optional
+from typing import Optional
 
 import pytest
 import responses
@@ -55,7 +55,7 @@ class CensysTestCase(unittest.TestCase):
 
     def patch_args(
         self,
-        args: List[str],
+        args: list[str],
         search_auth: Optional[bool] = False,
         asm_auth: Optional[bool] = False,
     ):

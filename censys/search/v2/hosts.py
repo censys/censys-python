@@ -1,10 +1,11 @@
 """Interact with the Censys Search Host API."""
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional, Union
 
-from .api import CensysSearchAPIv2
 from censys.common.types import Datetime
 from censys.common.utils import format_rfc3339
+
+from .api import CensysSearchAPIv2
 
 
 class CensysHosts(CensysSearchAPIv2):
@@ -73,9 +74,7 @@ class CensysHosts(CensysSearchAPIv2):
     INDEX_NAME = "hosts"
     """Name of Censys Index."""
 
-    def __init__(
-        self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
-    ):
+    def __init__(self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs):
         """Inits CensysHosts.
 
         See CensysSearchAPIv2 for additional arguments.
@@ -116,11 +115,11 @@ class CensysHosts(CensysSearchAPIv2):
 
     def bulk_view(
         self,
-        document_ids: List[str],
+        document_ids: list[str],
         max_workers: int = 20,
         at_time: Optional[Datetime] = None,
         **kwargs: Any,
-    ) -> Dict[str, dict]:
+    ) -> dict[str, dict]:
         """Bulk view documents from current index.
 
         View the current structured data we have on a list of documents.
@@ -145,8 +144,8 @@ class CensysHosts(CensysSearchAPIv2):
         per_page: int = 100,
         cursor: Optional[str] = None,
         pages: int = 1,
-        fields: Optional[List[str]] = None,
-        sort: Optional[Union[str, List[str]]] = None,
+        fields: Optional[list[str]] = None,
+        sort: Optional[Union[str, list[str]]] = None,
         virtual_hosts: Optional[str] = None,
         **kwargs: Any,
     ) -> CensysSearchAPIv2.Query:
@@ -207,9 +206,7 @@ class CensysHosts(CensysSearchAPIv2):
         """
         return self._get(self.metadata_path)["result"]
 
-    def view_host_names(
-        self, ip: str, per_page: Optional[int] = None, cursor: Optional[str] = None
-    ) -> List[str]:
+    def view_host_names(self, ip: str, per_page: Optional[int] = None, cursor: Optional[str] = None) -> list[str]:
         """Fetches a list of host names for the specified IP address.
 
         Args:
@@ -243,7 +240,7 @@ class CensysHosts(CensysSearchAPIv2):
         Returns:
             dict: A diff of the hosts.
         """
-        args: Dict[str, Any] = {}
+        args: dict[str, Any] = {}
         if ip_b:
             args["ip_b"] = ip_b
         if at_time:
@@ -284,9 +281,7 @@ class CensysHosts(CensysSearchAPIv2):
         if end_time:
             args["end_time"] = format_rfc3339(end_time)
 
-        return self._get(f"/v2/experimental/{self.INDEX_NAME}/{ip}/events", args)[
-            "result"
-        ]
+        return self._get(f"/v2/experimental/{self.INDEX_NAME}/{ip}/events", args)["result"]
 
     def view_host_certificates(
         self,
@@ -312,7 +307,7 @@ class CensysHosts(CensysSearchAPIv2):
             args["start_time"] = format_rfc3339(start_time)
         return self._get(f"/v2/{self.INDEX_NAME}/{ip}/certificates", args)["result"]
 
-    def list_hosts_with_tag(self, tag_id: str) -> List[str]:
+    def list_hosts_with_tag(self, tag_id: str) -> list[str]:
         """Returns a list of hosts which are tagged with the specified tag.
 
         Args:

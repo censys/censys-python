@@ -4,12 +4,11 @@ from io import StringIO
 import pytest
 import responses
 
-from tests.search.v2.test_hosts import VIEW_HOST_JSON
-from tests.utils import V2_URL, CensysTestCase
-
 from censys.cli import main as cli_main
 from censys.cli.commands.hnri import CensysHNRI
 from censys.common.exceptions import CensysCLIException
+from tests.search.v2.test_hosts import VIEW_HOST_JSON
+from tests.utils import V2_URL, CensysTestCase
 
 
 class CensysCliHNRITest(CensysTestCase):

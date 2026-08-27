@@ -2,8 +2,9 @@
 
 import os
 import warnings
+from collections.abc import Iterable, Iterator
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any, Dict, Iterable, Iterator, List, Optional, Type, Union
+from typing import Any, Optional, Union
 
 from requests.models import Response
 
@@ -30,9 +31,7 @@ class CensysSearchAPIv2(CensysAPIBase):
     INDEX_NAME: str = ""
     """Name of Censys Index."""
 
-    def __init__(
-        self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
-    ):
+    def __init__(self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs):
         """Inits CensysSearchAPIv2.
 
         See CensysAPIBase for additional arguments.
@@ -61,14 +60,8 @@ class CensysSearchAPIv2(CensysAPIBase):
         config = get_config()
 
         # Try to get credentials
-        self._api_id = (
-            api_id or os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id")
-        )
-        self._api_secret = (
-            api_secret
-            or os.getenv("CENSYS_API_SECRET")
-            or config.get(DEFAULT, "api_secret")
-        )
+        self._api_id = api_id or os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id")
+        self._api_secret = api_secret or os.getenv("CENSYS_API_SECRET") or config.get(DEFAULT, "api_secret")
         if not self._api_id or not self._api_secret:
             raise CensysException("No API ID or API secret configured.")
 
@@ -83,10 +76,8 @@ class CensysSearchAPIv2(CensysAPIBase):
 
     def _get_exception_class(  # type: ignore
         self, res: Response
-    ) -> Type[CensysSearchException]:
-        return CensysExceptionMapper.SEARCH_EXCEPTIONS.get(
-            res.status_code, CensysSearchException
-        )
+    ) -> type[CensysSearchException]:
+        return CensysExceptionMapper.SEARCH_EXCEPTIONS.get(res.status_code, CensysSearchException)
 
     def account(self) -> dict:
         """Gets the current account's query quota.
@@ -121,8 +112,8 @@ class CensysSearchAPIv2(CensysAPIBase):
             per_page: Optional[int] = None,
             cursor: Optional[str] = None,
             pages: int = 1,
-            fields: Optional[List[str]] = None,
-            sort: Optional[Union[str, List[str]]] = None,
+            fields: Optional[list[str]] = None,
+            sort: Optional[Union[str, list[str]]] = None,
             **kwargs: Any,
         ):
             """Inits Query.
@@ -151,7 +142,7 @@ class CensysSearchAPIv2(CensysAPIBase):
             self.sort = sort
             self.extra_args = kwargs
 
-        def __call__(self, per_page: Optional[int] = None) -> List[dict]:
+        def __call__(self, per_page: Optional[int] = None) -> list[dict]:
             """Search current index.
 
             Args:
@@ -182,7 +173,7 @@ class CensysSearchAPIv2(CensysAPIBase):
                 self.pages = 0
             return result["hits"]
 
-        def __next__(self) -> List[dict]:
+        def __next__(self) -> list[dict]:
             """Gets next page of search results.
 
             Returns:
@@ -190,7 +181,7 @@ class CensysSearchAPIv2(CensysAPIBase):
             """
             return self.__call__()
 
-        def __iter__(self) -> Iterator[List[dict]]:
+        def __iter__(self) -> Iterator[list[dict]]:
             """Gets Iterator.
 
             Returns:
@@ -198,7 +189,7 @@ class CensysSearchAPIv2(CensysAPIBase):
             """
             return self
 
-        def view_all(self, max_workers: int = 20) -> Dict[str, dict]:
+        def view_all(self, max_workers: int = 20) -> dict[str, dict]:
             """View each document returned from query.
 
             Please note that each result returned by the query will be looked up using the view method.
@@ -237,8 +228,8 @@ class CensysSearchAPIv2(CensysAPIBase):
         per_page: int = 100,
         cursor: Optional[str] = None,
         pages: int = 1,
-        fields: Optional[List[str]] = None,
-        sort: Optional[Union[str, List[str]]] = None,
+        fields: Optional[list[str]] = None,
+        sort: Optional[Union[str, list[str]]] = None,
         **kwargs: Any,
     ) -> Query:
         """Search current index.
@@ -265,8 +256,8 @@ class CensysSearchAPIv2(CensysAPIBase):
         query: str,
         per_page: int = 100,
         cursor: Optional[str] = None,
-        fields: Optional[List[str]] = None,
-        sort: Optional[Union[str, List[str]]] = None,
+        fields: Optional[list[str]] = None,
+        sort: Optional[Union[str, list[str]]] = None,
         **kwargs,
     ) -> dict:
         """Searches the given index for all records that match the given query.
@@ -300,8 +291,8 @@ class CensysSearchAPIv2(CensysAPIBase):
         query: str,
         per_page: int = 100,
         cursor: Optional[str] = None,
-        fields: Optional[List[str]] = None,
-        sort: Optional[Union[str, List[str]]] = None,
+        fields: Optional[list[str]] = None,
+        sort: Optional[Union[str, list[str]]] = None,
         **kwargs,
     ) -> dict:
         """Searches the Certs index using the POST method.
@@ -334,8 +325,8 @@ class CensysSearchAPIv2(CensysAPIBase):
         query: str,
         per_page: int = 100,
         cursor: Optional[str] = None,
-        fields: Optional[List[str]] = None,
-        sort: Optional[Union[str, List[str]]] = None,
+        fields: Optional[list[str]] = None,
+        sort: Optional[Union[str, list[str]]] = None,
         **kwargs: Any,
     ) -> dict:
         """Search current index using GET method.
@@ -366,8 +357,8 @@ class CensysSearchAPIv2(CensysAPIBase):
         query: str,
         per_page: int = 100,
         cursor: Optional[str] = None,
-        fields: Optional[List[str]] = None,
-        sort: Optional[Union[str, List[str]]] = None,
+        fields: Optional[list[str]] = None,
+        sort: Optional[Union[str, list[str]]] = None,
         **kwargs: Any,
     ) -> dict:
         """Search current index using GET method.
@@ -397,8 +388,8 @@ class CensysSearchAPIv2(CensysAPIBase):
         query: str,
         per_page: int = 100,
         cursor: Optional[str] = None,
-        fields: Optional[List[str]] = None,
-        sort: Optional[Union[str, List[str]]] = None,
+        fields: Optional[list[str]] = None,
+        sort: Optional[Union[str, list[str]]] = None,
         **kwargs: Any,
     ) -> dict:
         """Search current index.
@@ -443,10 +434,10 @@ class CensysSearchAPIv2(CensysAPIBase):
 
     def bulk_view(
         self,
-        document_ids: List[str],
+        document_ids: list[str],
         max_workers: int = 20,
         **kwargs: Any,
-    ) -> Dict[str, dict]:
+    ) -> dict[str, dict]:
         """Bulk view documents from current index.
 
         View the current structured data we have on a list of documents.
@@ -462,10 +453,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         """
         documents = {}
         with ThreadPoolExecutor(max_workers) as executor:
-            threads = {
-                executor.submit(self.view, document_id, **kwargs): document_id
-                for document_id in document_ids
-            }
+            threads = {executor.submit(self.view, document_id, **kwargs): document_id for document_id in document_ids}
 
             for task in as_completed(threads):
                 document_id = threads[task]
@@ -476,9 +464,7 @@ class CensysSearchAPIv2(CensysAPIBase):
 
         return documents
 
-    def aggregate(
-        self, query: str, field: str, num_buckets: int = 50, **kwargs: Any
-    ) -> dict:
+    def aggregate(self, query: str, field: str, num_buckets: int = 50, **kwargs: Any) -> dict:
         """Aggregate current index.
 
         Creates a report on the breakdown of the values of a field in a result set.
@@ -498,7 +484,7 @@ class CensysSearchAPIv2(CensysAPIBase):
 
     # Comments
 
-    def get_comments(self, document_id: str) -> List[dict]:
+    def get_comments(self, document_id: str) -> list[dict]:
         """Get comments for a document.
 
         Args:
@@ -507,9 +493,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         Returns:
             List[dict]: The list of comments.
         """
-        return self._get(self.view_path + document_id + "/comments")["result"][
-            "comments"
-        ]
+        return self._get(self.view_path + document_id + "/comments")["result"]["comments"]
 
     def get_comment(self, document_id: str, comment_id: str) -> dict:
         """Get comment for a document.
@@ -521,9 +505,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
-        return self._get(self.view_path + document_id + "/comments/" + comment_id)[
-            "result"
-        ]
+        return self._get(self.view_path + document_id + "/comments/" + comment_id)["result"]
 
     def add_comment(self, document_id: str, contents: str) -> dict:
         """Add comment to a document.
@@ -535,9 +517,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
-        return self._post(
-            self.view_path + document_id + "/comments", data={"contents": contents}
-        )["result"]
+        return self._post(self.view_path + document_id + "/comments", data={"contents": contents})["result"]
 
     def delete_comment(self, document_id: str, comment_id: str) -> dict:
         """Delete comment from a document.
@@ -569,7 +549,7 @@ class CensysSearchAPIv2(CensysAPIBase):
 
     # Tags
 
-    def list_all_tags(self) -> List[dict]:
+    def list_all_tags(self) -> list[dict]:
         """List all tags.
 
         Returns:
@@ -587,7 +567,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
-        tag_def: Dict[str, Any] = {"name": name}
+        tag_def: dict[str, Any] = {"name": name}
         if color:
             tag_def["metadata"] = {"color": color}
         return self._post(self.tags_path, data=tag_def)["result"]
@@ -614,7 +594,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         Returns:
             dict: The result set returned.
         """
-        tag_def: Dict[str, Any] = {"name": name}
+        tag_def: dict[str, Any] = {"name": name}
         if color:
             tag_def["metadata"] = {"color": color}
         return self._put(
@@ -630,9 +610,7 @@ class CensysSearchAPIv2(CensysAPIBase):
         """
         self._delete(self.tags_path + "/" + tag_id)
 
-    def _list_documents_with_tag(
-        self, tag_id: str, endpoint: str, keyword: str
-    ) -> List[dict]:
+    def _list_documents_with_tag(self, tag_id: str, endpoint: str, keyword: str) -> list[dict]:
         """List documents by tag.
 
         Args:
@@ -643,11 +621,9 @@ class CensysSearchAPIv2(CensysAPIBase):
         Returns:
             List[dict]: The list of documents.
         """
-        return self._get(self.tags_path + "/" + tag_id + "/" + endpoint)["result"][
-            keyword
-        ]
+        return self._get(self.tags_path + "/" + tag_id + "/" + endpoint)["result"][keyword]
 
-    def list_tags_on_document(self, document_id: str) -> List[dict]:
+    def list_tags_on_document(self, document_id: str) -> list[dict]:
         """List tags on a document.
 
         Args:

@@ -3,7 +3,7 @@
 import argparse
 import sys
 import webbrowser
-from typing import Any, List, Optional, Tuple
+from typing import Any, Optional
 
 import requests
 from rich import box
@@ -17,8 +17,8 @@ from censys.search import CensysHosts
 class CensysHNRI:
     """Searches the Censys API for the user's current IP to scan for risks."""
 
-    HIGH_RISK_DEFINITION: List[str] = ["TELNET", "REDIS", "POSTGRES", "VNC"]
-    MEDIUM_RISK_DEFINITION: List[str] = ["SSH", "HTTP", "HTTPS"]
+    HIGH_RISK_DEFINITION: list[str] = ["TELNET", "REDIS", "POSTGRES", "VNC"]
+    MEDIUM_RISK_DEFINITION: list[str] = ["SSH", "HTTP", "HTTPS"]
 
     def __init__(self, api_id: Optional[str] = None, api_secret: Optional[str] = None):
         """Inits CensysHNRI.
@@ -40,7 +40,7 @@ class CensysHNRI:
         current_ip = str(response.json().get("ip"))
         return current_ip
 
-    def translate_risk(self, services: List[dict]) -> Tuple[List[dict], List[dict]]:
+    def translate_risk(self, services: list[dict]) -> tuple[list[dict], list[dict]]:
         """Interpret protocols to risks.
 
         Args:
@@ -63,7 +63,7 @@ class CensysHNRI:
 
         return high_risk, medium_risk
 
-    def make_risks_into_table(self, title: str, risks: List[dict]) -> Table:
+    def make_risks_into_table(self, title: str, risks: list[dict]) -> Table:
         """Creates a table of risks.
 
         Args:
@@ -78,7 +78,7 @@ class CensysHNRI:
             table.add_row(str(risk.get("port")), risk.get("service_name"))
         return table
 
-    def risks_to_string(self, high_risks: list, medium_risks: list) -> List[Any]:
+    def risks_to_string(self, high_risks: list, medium_risks: list) -> list[Any]:
         """Risks to printable string.
 
         Args:
@@ -97,7 +97,7 @@ class CensysHNRI:
         if len_high_risk + len_medium_risk == 0:
             raise CensysCLIException
 
-        response: List[Any] = []
+        response: list[Any] = []
         if len_high_risk > 0:
             response.append(
                 self.make_risks_into_table(
@@ -133,9 +133,7 @@ class CensysHNRI:
                 f"\nFor more information, please visit: https://search.censys.io/hosts/{current_ip}"  # noqa: E231
             )
         except (CensysNotFoundException, CensysCLIException):
-            console.print(
-                "[green]:white_check_mark: No Risks were found on your network[/green]"
-            )
+            console.print("[green]:white_check_mark: No Risks were found on your network[/green]")
 
 
 def cli_hnri(args: argparse.Namespace):

@@ -3,8 +3,9 @@ import unittest
 import pytest
 from pytest_mock import MockerFixture
 
-from .utils import TEST_SUCCESS_CODE, TEST_TIMEOUT, V1_URL, MockResponse
 from censys.asm.client import AsmClient
+
+from .utils import TEST_SUCCESS_CODE, TEST_TIMEOUT, V1_URL, MockResponse
 
 SEEDS_URL = f"{V1_URL}/seeds"
 SEED_RESOURCE_TYPE = "seeds"
@@ -77,9 +78,7 @@ class SeedsUnitTests(unittest.TestCase):
         # Actual call
         self.client.seeds.get_seeds(seed_type=TEST_SEED_TYPE)
         # Assertions
-        mock_request.assert_called_with(
-            SEEDS_URL, params={"type": TEST_SEED_TYPE}, timeout=TEST_TIMEOUT
-        )
+        mock_request.assert_called_with(SEEDS_URL, params={"type": TEST_SEED_TYPE}, timeout=TEST_TIMEOUT)
 
     def test_get_seed_by_id(self):
         # Mock
@@ -88,9 +87,7 @@ class SeedsUnitTests(unittest.TestCase):
         # Actual call
         self.client.seeds.get_seed_by_id(TEST_SEED_ID)
         # Assertions
-        mock_request.assert_called_with(
-            f"{SEEDS_URL}/{TEST_SEED_ID}", params={}, timeout=TEST_TIMEOUT
-        )
+        mock_request.assert_called_with(f"{SEEDS_URL}/{TEST_SEED_ID}", params={}, timeout=TEST_TIMEOUT)
 
     def test_add_seed(self):
         # Mock
@@ -153,9 +150,7 @@ class SeedsUnitTests(unittest.TestCase):
         mock_request = self.mocker.patch("censys.common.base.requests.Session.put")
         mock_request.return_value = MockResponse(TEST_SUCCESS_CODE, SEED_RESOURCE_TYPE)
         # Actual call
-        self.client.seeds.replace_seeds_by_label(
-            TEST_SEED_LABEL, TEST_SEED_LIST_NO_LABEL, force=True
-        )
+        self.client.seeds.replace_seeds_by_label(TEST_SEED_LABEL, TEST_SEED_LIST_NO_LABEL, force=True)
         # Assertions
         mock_request.assert_called_with(
             SEEDS_URL,
@@ -171,9 +166,7 @@ class SeedsUnitTests(unittest.TestCase):
         # Actual call
         self.client.seeds.delete_seeds_by_label(TEST_SEED_LABEL)
         # Assertions
-        mock_request.assert_called_with(
-            SEEDS_URL, params={"label": TEST_SEED_LABEL}, timeout=TEST_TIMEOUT
-        )
+        mock_request.assert_called_with(SEEDS_URL, params={"label": TEST_SEED_LABEL}, timeout=TEST_TIMEOUT)
 
     def test_delete_seed_by_id(self):
         # Mock
@@ -182,6 +175,4 @@ class SeedsUnitTests(unittest.TestCase):
         # Actual call
         self.client.seeds.delete_seed_by_id(TEST_SEED_ID)
         # Assertions
-        mock_request.assert_called_with(
-            f"{SEEDS_URL}/{TEST_SEED_ID}", params={}, timeout=TEST_TIMEOUT
-        )
+        mock_request.assert_called_with(f"{SEEDS_URL}/{TEST_SEED_ID}", params={}, timeout=TEST_TIMEOUT)

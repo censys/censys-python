@@ -37,10 +37,11 @@ jobs:
         run: |
           poetry install
 
-      - name: Lint with flake8
+      - name: Lint with ruff
         if: startsWith(matrix.os, 'ubuntu')
         run: |
-          poetry run flake8 --max-line-length=127
+          poetry run ruff check .
+          poetry run ruff format --check .
 
       - name: Type checking with mypy
         if: startsWith(matrix.os, 'ubuntu')

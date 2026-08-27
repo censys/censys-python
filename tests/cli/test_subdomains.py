@@ -1,14 +1,12 @@
 import contextlib
 from io import StringIO
-from typing import Set
 
 import responses
 from parameterized import parameterized
 
-from tests.utils import V2_URL, CensysTestCase
-
 from censys.cli import main as cli_main
 from censys.cli.commands import subdomains
+from tests.utils import V2_URL, CensysTestCase
 
 TEST_DOMAINS = {
     "help.censys.io",
@@ -36,7 +34,7 @@ class CensysCliSubdomainsTest(CensysTestCase):
     def test_print_subdomains(
         self,
         test_json_bool: bool,
-        test_subdomains: Set[str] = TEST_DOMAINS,
+        test_subdomains: set[str] = TEST_DOMAINS,
     ):
         # Mock
         mock_print_json = self.mocker.patch("censys.cli.utils.console.print_json")
@@ -58,11 +56,7 @@ class CensysCliSubdomainsTest(CensysTestCase):
             responses.POST,
             V2_URL + "/certificates/search",
             json=CERT_SEARCH_RESPONSE,
-            match=[
-                responses.matchers.json_params_matcher(
-                    {"per_page": 100, "q": "names: censys.io"}
-                )
-            ],
+            match=[responses.matchers.json_params_matcher({"per_page": 100, "q": "names: censys.io"})],
         )
         self.mocker.patch(
             "argparse._sys.argv",

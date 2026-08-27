@@ -1,6 +1,6 @@
 """Interact with the Censys Seeds API."""
 
-from typing import List, Optional
+from typing import Optional
 
 from .api import CensysAsmAPI
 
@@ -12,9 +12,7 @@ class Seeds(CensysAsmAPI):
 
     base_path = "/v1/seeds"
 
-    def get_seeds(
-        self, seed_type: Optional[str] = None, label: Optional[str] = None
-    ) -> List[dict]:
+    def get_seeds(self, seed_type: Optional[str] = None, label: Optional[str] = None) -> list[dict]:
         """Requests seed data.
 
         Args:
@@ -60,9 +58,7 @@ class Seeds(CensysAsmAPI):
 
         return self._post(self.base_path, args=args, data=data)
 
-    def replace_seeds_by_label(
-        self, label: str, seeds: list, force: Optional[bool] = None
-    ) -> dict:
+    def replace_seeds_by_label(self, label: str, seeds: list, force: Optional[bool] = None) -> dict:
         """Replace seeds in the ASM platform by label.
 
         Args:

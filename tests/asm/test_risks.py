@@ -4,9 +4,10 @@ import responses
 from parameterized import parameterized
 from responses import matchers
 
+from censys.asm.risks import Risks
+
 from ..utils import CensysTestCase
 from .utils import V2_URL
-from censys.asm.risks import Risks
 
 TEST_EVENT_JSON = {
     "delta": "string",

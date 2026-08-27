@@ -3,7 +3,6 @@
 import argparse
 import json
 import sys
-from typing import List, Set
 
 from censys.cli.utils import console, err_console
 from censys.common.exceptions import (
@@ -14,7 +13,7 @@ from censys.common.exceptions import (
 from censys.search import CensysCerts
 
 
-def print_subdomains(subdomains: Set[str], as_json: bool = False):
+def print_subdomains(subdomains: set[str], as_json: bool = False):
     """Print subdomains.
 
     Args:
@@ -40,30 +39,20 @@ def cli_subdomains(args: argparse.Namespace):  # pragma: no cover
         certificate_query = f"names: {args.domain}"
 
         with err_console.status(f"Querying {args.domain} subdomains"):
-            query = client.search(
-                certificate_query, per_page=100, pages=args.pages
-            )  # 100 is the max per page
+            query = client.search(certificate_query, per_page=100, pages=args.pages)  # 100 is the max per page
 
             # Flatten the result, and remove duplicates
             for hits in query:
                 for cert in hits:
-                    new_subdomains: List[str] = cert.get("names", [])
-                    subdomains.update(
-                        [
-                            subdomain
-                            for subdomain in new_subdomains
-                            if subdomain.endswith(args.domain)
-                        ]
-                    )
+                    new_subdomains: list[str] = cert.get("names", [])
+                    subdomains.update([subdomain for subdomain in new_subdomains if subdomain.endswith(args.domain)])
 
         # Don't make console prints if we're in json mode
         if not args.json:
             if len(subdomains) == 0:
                 err_console.print(f"No subdomains found for {args.domain}")
                 return
-            console.print(
-                f"Found {len(subdomains)} unique subdomain(s) of {args.domain}"
-            )
+            console.print(f"Found {len(subdomains)} unique subdomain(s) of {args.domain}")
         print_subdomains(subdomains, args.json)
     except CensysRateLimitExceededException:
         err_console.print("Censys API rate limit exceeded")
@@ -95,10 +84,6 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         parents=[parents["auth"]],
     )
     subdomains_parser.add_argument("domain", help="The base domain to search for")
-    subdomains_parser.add_argument(
-        "--pages", type=int, default=1, help="Max records to query"
-    )
-    subdomains_parser.add_argument(
-        "-j", "--json", action="store_true", help="Output in JSON format"
-    )
+    subdomains_parser.add_argument("--pages", type=int, default=1, help="Max records to query")
+    subdomains_parser.add_argument("-j", "--json", action="store_true", help="Output in JSON format")
     subdomains_parser.set_defaults(func=cli_subdomains)

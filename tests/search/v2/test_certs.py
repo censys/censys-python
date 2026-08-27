@@ -1,13 +1,12 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 import responses
 from parameterized import parameterized
 from responses import matchers
 
-from tests.utils import V2_URL, CensysTestCase
-
 from censys.search import SearchClient
+from tests.utils import V2_URL, CensysTestCase
 
 TEST_CERT = "fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426"
 ALTERNATE_CERT = "9b00121b4e85d50667ded1a8aa39855771bdb67ceca6f18726b49374b41f0041"
@@ -296,8 +295,8 @@ class TestCerts(CensysTestCase):
     )
     def test_search(
         self,
-        fields: Optional[List[str]] = None,
-        sort: Optional[List[str]] = None,
+        fields: Optional[list[str]] = None,
+        sort: Optional[list[str]] = None,
         cursor: Optional[str] = None,
     ):
         self.responses.add(
@@ -306,9 +305,7 @@ class TestCerts(CensysTestCase):
             status=200,
             json=SEARCH_CERTS_JSON,
         )
-        query = self.api.search(
-            TEST_SEARCH_QUERY, fields=fields, sort=sort, cursor=cursor
-        )
+        query = self.api.search(TEST_SEARCH_QUERY, fields=fields, sort=sort, cursor=cursor)
         assert next(query) == SEARCH_CERTS_JSON["result"]["hits"]
 
     @parameterized.expand(
@@ -361,7 +358,7 @@ class TestCerts(CensysTestCase):
             ),
         ]
     )
-    def test_search_get(self, params: Dict[str, Any], expected_params: Dict[str, Any]):
+    def test_search_get(self, params: dict[str, Any], expected_params: dict[str, Any]):
         self.responses.add(
             responses.GET,
             f"{V2_URL}/certificates/search",

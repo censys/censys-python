@@ -1,9 +1,10 @@
 import responses
 from parameterized import parameterized
 
+from censys.asm.inventory import InventorySearch
+
 from ..utils import CensysTestCase
 from .utils import BASE_URL, WORKSPACE_ID
-from censys.asm.inventory import InventorySearch
 
 INVENTORY_BASE_PATH = f"{BASE_URL}/inventory/v1"
 INVENTORY_SEARCH_PATH = INVENTORY_BASE_PATH
@@ -29,11 +30,7 @@ TEST_INVENTORY_AGGREGATE_JSON = {
         "cardinality": {"field": "string"},
     },
 }
-TEST_INVENTORY_FIELDS_JSON = {
-    "fields": [
-        {"path": "string", "type": "string", "description": "string", "repeated": True}
-    ]
-}
+TEST_INVENTORY_FIELDS_JSON = {"fields": [{"path": "string", "type": "string", "description": "string", "repeated": True}]}
 
 
 class InventoryTests(CensysTestCase):
