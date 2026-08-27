@@ -5,13 +5,13 @@ import datetime
 import json
 import os.path
 import sys
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional, Union
 
 from rich.console import Console
 
 from censys.common.config import DEFAULT, get_config
 
-Results = Union[List[dict], Dict[str, Any]]
+Results = Union[list[dict], dict[str, Any]]
 
 V2_INDEXES = ["hosts", "certificates"]
 
@@ -63,7 +63,7 @@ def write_file(
     results_list: Results,
     file_format: Optional[str] = None,
     file_path: Optional[str] = None,
-    csv_fields: Optional[List[str]] = None,
+    csv_fields: Optional[list[str]] = None,
 ):
     """Maps formats and writes results.
 

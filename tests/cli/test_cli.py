@@ -3,11 +3,10 @@ from io import StringIO
 
 import pytest
 
-from tests.utils import CensysTestCase
-
 from censys.cli import main as cli_main
 from censys.cli.commands import __all__ as cli_commands
 from censys.common import __version__
+from tests.utils import CensysTestCase
 
 
 class CensysCliTest(CensysTestCase):

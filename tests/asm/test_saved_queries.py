@@ -1,9 +1,10 @@
 import responses
 from parameterized import parameterized
 
+from censys.asm.saved_queries import SavedQueries
+
 from ..utils import CensysTestCase
 from .utils import BASE_URL
-from censys.asm.saved_queries import SavedQueries
 
 SAVED_QUERIES_BASE_PATH = f"{BASE_URL}/inventory/v1/saved-query"
 

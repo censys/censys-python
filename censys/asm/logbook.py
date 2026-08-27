@@ -1,7 +1,8 @@
 """Interact with the Censys Logbook API."""
 
 import datetime
-from typing import Iterator, List, Optional, Union
+from collections.abc import Iterator
+from typing import Optional, Union
 
 from .api import CensysAsmAPI
 
@@ -14,7 +15,7 @@ class Logbook(CensysAsmAPI):
     def get_cursor(
         self,
         start: Optional[Union[datetime.datetime, int]] = None,
-        filters: Optional[List[str]] = None,
+        filters: Optional[list[str]] = None,
     ) -> str:
         """Requests a logbook cursor.
 
@@ -71,7 +72,7 @@ class Filters:
 
 def format_data(
     start: Optional[Union[datetime.datetime, int]] = None,
-    filters: Optional[List[str]] = None,
+    filters: Optional[list[str]] = None,
 ) -> dict:
     """Formats cursor request data into a start date/id and filter list.
 

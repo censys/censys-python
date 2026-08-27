@@ -1,6 +1,6 @@
 """Exceptions for Censys."""
 
-from typing import Dict, Optional, Type
+from typing import Optional
 
 
 class CensysException(Exception):
@@ -65,10 +65,7 @@ class CensysAsmException(CensysAPIException):
         Returns:
             str: Printable representation.
         """
-        return (
-            f"{self.status_code} (Error Code: {self.error_code}), "
-            f"{self.message}. {self.details}"
-        )
+        return f"{self.status_code} (Error Code: {self.error_code}), {self.message}. {self.details}"
 
     __str__ = __repr__
 
@@ -300,7 +297,7 @@ class CensysTooSoonToResendInviteException(CensysAsmException):
 class CensysExceptionMapper:
     """Map status code to Exception for the ASM and Search API."""
 
-    ASM_EXCEPTIONS: Dict[int, Type[CensysAsmException]] = {
+    ASM_EXCEPTIONS: dict[int, type[CensysAsmException]] = {
         10000: CensysMissingApiKeyException,
         10001: CensysInvalidAPIKeyException,
         10002: CensysInvalidAuthTokenException,
@@ -355,7 +352,7 @@ class CensysExceptionMapper:
     }
     """Map of status code to ASM Exception."""
 
-    SEARCH_EXCEPTIONS: Dict[int, Type[CensysSearchException]] = {
+    SEARCH_EXCEPTIONS: dict[int, type[CensysSearchException]] = {
         401: CensysUnauthorizedException,
         403: CensysUnauthorizedException,
         404: CensysNotFoundException,

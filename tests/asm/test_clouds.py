@@ -1,17 +1,16 @@
 import responses
 
+from censys.asm.client import AsmClient
+
 from ..utils import CensysTestCase
 from .utils import V1_URL
-from censys.asm.client import AsmClient
 
 TEST_COUNT_JSON = {
     "totalAssetCount": 0,
     "totalNewAssetCount": 0,
     "totalCloudAssetCount": 0,
     "totalCloudNewAssetCount": 0,
-    "assetCountByProvider": [
-        {"cloudProvider": "string", "assetCount": 0, "newAssetCount": 0}
-    ],
+    "assetCountByProvider": [{"cloudProvider": "string", "assetCount": 0, "newAssetCount": 0}],
 }
 
 

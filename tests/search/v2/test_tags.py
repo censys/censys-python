@@ -2,10 +2,9 @@ import pytest
 import responses
 from parameterized import parameterized_class
 
-from tests.utils import BASE_URL, CensysTestCase
-
 from censys.search.v2 import CensysCerts, CensysHosts
 from censys.search.v2.api import CensysSearchAPIv2
+from tests.utils import BASE_URL, CensysTestCase
 
 TEST_TAG_NAME = "is-honeypot"
 TEST_TAG_COLOR = "#ff0000"
@@ -39,9 +38,7 @@ CREATE_TAG_RESPONSE = {
 LIST_HOSTS_RESPONSE = {
     "code": 200,
     "status": "OK",
-    "result": {
-        "hosts": [{"ip": "1.1.1.1", "tagged_at": "2021-01-01T12:00:00.000000Z"}]
-    },
+    "result": {"hosts": [{"ip": "1.1.1.1", "tagged_at": "2021-01-01T12:00:00.000000Z"}]},
 }
 LIST_CERTS_RESPONSE = {
     "code": 200,
@@ -93,11 +90,7 @@ class CensysTagsTests(CensysTestCase):
             BASE_URL + self.api.tags_path,
             status=200,
             json=CREATE_TAG_RESPONSE,
-            match=[
-                responses.json_params_matcher(
-                    {"name": TEST_TAG_NAME, "metadata": {"color": TEST_TAG_COLOR}}
-                )
-            ],
+            match=[responses.json_params_matcher({"name": TEST_TAG_NAME, "metadata": {"color": TEST_TAG_COLOR}})],
         )
         results = self.api.create_tag(TEST_TAG_NAME, TEST_TAG_COLOR)
         assert results == CREATE_TAG_RESPONSE["result"]
@@ -118,11 +111,7 @@ class CensysTagsTests(CensysTestCase):
             BASE_URL + self.api.tags_path + "/" + TEST_TAG_ID,
             status=200,
             json=CREATE_TAG_RESPONSE,
-            match=[
-                responses.json_params_matcher(
-                    {"name": TEST_TAG_NAME, "metadata": {"color": TEST_TAG_COLOR}}
-                )
-            ],
+            match=[responses.json_params_matcher({"name": TEST_TAG_NAME, "metadata": {"color": TEST_TAG_COLOR}})],
         )
         results = self.api.update_tag(TEST_TAG_ID, TEST_TAG_NAME, TEST_TAG_COLOR)
         assert results == CREATE_TAG_RESPONSE["result"]
@@ -174,9 +163,7 @@ class CensysTagsTests(CensysTestCase):
             json=LIST_HOSTS_RESPONSE,
         )
         results = self.api.list_hosts_with_tag(TEST_TAG_ID)
-        assert results == [
-            host["ip"] for host in LIST_HOSTS_RESPONSE["result"]["hosts"]
-        ]
+        assert results == [host["ip"] for host in LIST_HOSTS_RESPONSE["result"]["hosts"]]
 
     def test_list_certs_with_tag(self):
         if self.index == "hosts":

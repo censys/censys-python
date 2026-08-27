@@ -1,10 +1,12 @@
 """Base for interacting with the Censys Assets API."""
 
 import re
-from typing import Any, Dict, Iterator, List, Optional
+from collections.abc import Iterator
+from typing import Any, Optional
+
+from censys.common.exceptions import CensysInvalidColorException
 
 from ..api import CensysAsmAPI
-from censys.common.exceptions import CensysInvalidColorException
 
 HEX_REGEX = re.compile(r"^#(?:[0-9a-fA-F]{3}){1,2}$")
 
@@ -42,9 +44,9 @@ class Assets(CensysAsmAPI):
         self,
         page_number: int = 1,
         page_size: Optional[int] = None,
-        tag: Optional[List[str]] = None,
+        tag: Optional[list[str]] = None,
         tag_operator: Optional[str] = None,
-        source: Optional[List[str]] = None,
+        source: Optional[list[str]] = None,
         discovery_trail: Optional[bool] = None,
     ) -> Iterator[dict]:
         """Requests assets data.
@@ -60,7 +62,7 @@ class Assets(CensysAsmAPI):
         Yields:
             dict: The assets result returned.
         """
-        args: Dict[str, Any] = {}
+        args: dict[str, Any] = {}
         if tag:
             args["tag"] = tag
         if tag_operator:
@@ -69,9 +71,7 @@ class Assets(CensysAsmAPI):
             args["source"] = source
         if discovery_trail:
             args["discoveryTrail"] = discovery_trail
-        yield from self._get_page(
-            self.base_path, page_number=page_number, page_size=page_size, args=args
-        )
+        yield from self._get_page(self.base_path, page_number=page_number, page_size=page_size, args=args)
 
     def get_asset_by_id(self, asset_id: str) -> dict:
         """Requests asset data by ID.
@@ -104,9 +104,7 @@ class Assets(CensysAsmAPI):
         """
         path = f"{self.base_path}/{self._format_asset_id(asset_id)}/comments"
 
-        return self._get_page(
-            path, page_number=page_number, page_size=page_size, keyword="comments"
-        )
+        return self._get_page(path, page_number=page_number, page_size=page_size, keyword="comments")
 
     def get_comment_by_id(self, asset_id: str, comment_id: int) -> dict:
         """Requests a comment on a specified asset by comment ID.
@@ -118,9 +116,7 @@ class Assets(CensysAsmAPI):
         Returns:
             dict: Comment search result.
         """
-        path = (
-            f"{self.base_path}/{self._format_asset_id(asset_id)}/comments/{comment_id}"
-        )
+        path = f"{self.base_path}/{self._format_asset_id(asset_id)}/comments/{comment_id}"
 
         return self._get(path)
 
@@ -149,9 +145,7 @@ class Assets(CensysAsmAPI):
         Returns:
             dict: Deleted comment results.
         """
-        path = (
-            f"{self.base_path}/{self._format_asset_id(asset_id)}/comments/{comment_id}"
-        )
+        path = f"{self.base_path}/{self._format_asset_id(asset_id)}/comments/{comment_id}"
 
         return self._delete(path)
 

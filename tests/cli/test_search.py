@@ -4,7 +4,7 @@ import json
 import os
 from io import StringIO
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Optional
 from urllib.parse import urlencode
 
 import pytest
@@ -13,6 +13,13 @@ from parameterized import parameterized
 from requests import PreparedRequest
 from responses import matchers
 
+from censys.cli import main as cli_main
+from censys.cli.commands.search import (
+    CERTIFICATES_AUTOCOMPLETE,
+    HOSTS_AUTOCOMPLETE,
+    fields_completer,
+)
+from censys.common.exceptions import CensysCLIException, CensysException
 from tests.search.v2.test_certs import SEARCH_CERTS_JSON
 from tests.search.v2.test_hosts import (
     SEARCH_HOSTS_JSON,
@@ -21,18 +28,10 @@ from tests.search.v2.test_hosts import (
 )
 from tests.utils import V2_URL, CensysTestCase
 
-from censys.cli import main as cli_main
-from censys.cli.commands.search import (
-    CERTIFICATES_AUTOCOMPLETE,
-    HOSTS_AUTOCOMPLETE,
-    fields_completer,
-)
-from censys.common.exceptions import CensysCLIException, CensysException
-
 WROTE_PREFIX = "Wrote results to file"
 
 
-def search_callback(request: PreparedRequest) -> Tuple[int, Dict[str, str], str]:
+def search_callback(request: PreparedRequest) -> tuple[int, dict[str, str], str]:
     payload = json.loads(request.body)  # type: ignore
     resp_body = {
         "result": {
@@ -63,16 +62,10 @@ class CensysCliSearchTest(CensysTestCase):
     def test_no_creds(self):
         # Mock
         self.patch_args(["censys", "search", "test"])
-        self.mocker.patch(
-            "builtins.open", new_callable=self.mocker.mock_open, read_data="[DEFAULT]"
-        )
-        self.mocker.patch.dict(
-            "os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""}
-        )
+        self.mocker.patch("builtins.open", new_callable=self.mocker.mock_open, read_data="[DEFAULT]")
+        self.mocker.patch.dict("os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""})
         # Actual Call/Assertion
-        with pytest.raises(
-            CensysException, match="No API ID or API secret configured."
-        ):
+        with pytest.raises(CensysException, match="No API ID or API secret configured."):
             cli_main()
 
     def test_invalid_timeout(self):
@@ -430,9 +423,7 @@ class CensysCliSearchTest(CensysTestCase):
         # Actual call/error raising
         with pytest.raises(SystemExit, match="0"):
             cli_main()
-        query_str = urlencode(
-            {"q": "domain: censys.io AND ports: 443", "resource": "certificates"}
-        )
+        query_str = urlencode({"q": "domain: censys.io AND ports: 443", "resource": "certificates"})
         # Assertions
         mock_open.assert_called_with(
             f"https://search.censys.io/search?{query_str}"  # noqa: E231
@@ -480,15 +471,11 @@ class CensysCliSearchTest(CensysTestCase):
         else:
             expected_fields = json.load(autocomplete_file.open())["data"]
             expected_fields = [
-                field_value
-                for field in expected_fields
-                if not (field_value := field["value"]).endswith(".type")
+                field_value for field in expected_fields if not (field_value := field["value"]).endswith(".type")
             ]
             if prefix == "":
                 expected_fields = expected_fields[:20]
-        assert (
-            fields_completer(prefix=prefix, parsed_args=parsed_args) == expected_fields
-        )
+        assert fields_completer(prefix=prefix, parsed_args=parsed_args) == expected_fields
 
 
 if __name__ == "__main__":

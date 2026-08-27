@@ -11,9 +11,7 @@ certificates = h.view_host_certificates("1.1.1.1")
 # You can also pass in a date or datetime objects.
 from datetime import date
 
-certificates = h.view_host_certificates(
-    "1.1.1.1", per_page=1, start_time=date(2023, 1, 1)
-)
+certificates = h.view_host_certificates("1.1.1.1", per_page=1, start_time=date(2023, 1, 1))
 print(certificates)
 # {
 #     "ip": "1.1.1.1",

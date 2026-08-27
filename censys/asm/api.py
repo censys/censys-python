@@ -1,8 +1,9 @@
 """Base for interacting with the Censys ASM API."""
 
 import os
+from collections.abc import Iterator
 from math import inf
-from typing import Iterator, Optional, Type
+from typing import Optional
 
 from requests.models import Response
 
@@ -38,25 +39,17 @@ class CensysAsmAPI(CensysAPIBase):
         config = get_config()
 
         # Try to get credentials
-        self._api_key = (
-            api_key
-            or os.getenv("CENSYS_ASM_API_KEY")
-            or config.get(DEFAULT, "asm_api_key")
-        )
+        self._api_key = api_key or os.getenv("CENSYS_ASM_API_KEY") or config.get(DEFAULT, "asm_api_key")
 
         if not self._api_key:
             raise CensysException("No ASM API key configured.")
 
-        self._session.headers.update(
-            {"Content-Type": "application/json", "Censys-Api-Key": self._api_key}
-        )
+        self._session.headers.update({"Content-Type": "application/json", "Censys-Api-Key": self._api_key})
 
     def _get_exception_class(  # type: ignore
         self, res: Response
-    ) -> Type[CensysAsmException]:
-        return CensysExceptionMapper.ASM_EXCEPTIONS.get(
-            res.json().get("errorCode"), CensysAsmException
-        )
+    ) -> type[CensysAsmException]:
+        return CensysExceptionMapper.ASM_EXCEPTIONS.get(res.json().get("errorCode"), CensysAsmException)
 
     def _get_page(
         self,
@@ -91,9 +84,7 @@ class CensysAsmAPI(CensysAPIBase):
 
             yield from res[keyword]
 
-    def _get_logbook_page(
-        self, path: str, args: Optional[dict] = None
-    ) -> Iterator[dict]:
+    def _get_logbook_page(self, path: str, args: Optional[dict] = None) -> Iterator[dict]:
         """Fetches paginated ASM logbook API events.
 
         Args:

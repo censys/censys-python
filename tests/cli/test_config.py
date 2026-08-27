@@ -1,9 +1,6 @@
 import pytest
 import responses
 
-from tests.search.v1.test_api import ACCOUNT_JSON
-from tests.utils import V1_URL, CensysTestCase
-
 from censys.cli import main as cli_main
 from censys.common.config import (
     CENSYS_PATH,
@@ -12,6 +9,8 @@ from censys.common.config import (
     default_config,
     get_config,
 )
+from tests.search.v1.test_api import ACCOUNT_JSON
+from tests.utils import V1_URL, CensysTestCase
 
 TEST_CONFIG_PATH = CONFIG_PATH + ".test"
 
@@ -29,9 +28,7 @@ def prompt_side_effect(arg, **kwargs):
 
 
 def confirm_side_effect(arg, **kwargs):
-    if arg == "Do you want color output?":
-        return True
-    return False
+    return arg == "Do you want color output?"
 
 
 class CensysConfigCliTest(CensysTestCase):
@@ -109,9 +106,7 @@ class CensysConfigCliTest(CensysTestCase):
         mock_makedirs.assert_called_with(CENSYS_PATH)
 
     def test_config_default(self):
-        mock_isfile = self.mocker.patch(
-            "censys.common.config.os.path.isfile", return_value=True
-        )
+        mock_isfile = self.mocker.patch("censys.common.config.os.path.isfile", return_value=True)
         config = get_config()
         mock_isfile.return_value = False
         mock_isfile.assert_called_with(TEST_CONFIG_PATH)
@@ -126,9 +121,7 @@ class CensysConfigCliTest(CensysTestCase):
                 "config",
             ]
         )
-        self.mocker.patch.dict(
-            "censys.common.config.os.environ", {"CENSYS_CONFIG_PATH": "censys.cfg"}
-        )
+        self.mocker.patch.dict("censys.common.config.os.environ", {"CENSYS_CONFIG_PATH": "censys.cfg"})
 
         self.responses.add(
             responses.GET,

@@ -4,9 +4,8 @@ from datetime import datetime
 import pytest
 from parameterized import parameterized
 
-from tests.utils import CensysTestCase
-
 from censys.cli.utils import valid_datetime_type
+from tests.utils import CensysTestCase
 
 
 class CensysCliUtilsTest(CensysTestCase):

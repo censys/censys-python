@@ -1,6 +1,6 @@
 """Interact with miscellaneous Censys Beta APIs."""
 
-from typing import List, Optional
+from typing import Optional
 
 from ..common.types import Datetime
 from ..common.utils import format_iso8601
@@ -12,9 +12,7 @@ class Beta(CensysAsmAPI):
 
     base_path = "/beta"
 
-    def get_logbook_data(
-        self, filters: Optional[dict] = None, cursor: Optional[str] = None
-    ):
+    def get_logbook_data(self, filters: Optional[dict] = None, cursor: Optional[str] = None):
         """Retrieve logbook data.
 
         Args:
@@ -30,7 +28,7 @@ class Beta(CensysAsmAPI):
     def add_cloud_assets(
         self,
         cloud_connector_uid: str,
-        cloud_assets: List[dict],
+        cloud_assets: list[dict],
     ):
         """Add cloud assets.
 

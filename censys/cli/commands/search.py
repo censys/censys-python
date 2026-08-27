@@ -5,7 +5,7 @@ import json
 import sys
 import webbrowser
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 from urllib.parse import urlencode
 
 from censys.cli.utils import V2_INDEXES, err_console, write_file
@@ -13,16 +13,14 @@ from censys.common.exceptions import CensysCLIException
 from censys.search import SearchClient
 from censys.search.v2.api import CensysSearchAPIv2
 
-Results = List[dict]
+Results = list[dict]
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 HOSTS_AUTOCOMPLETE = DATA_DIR / "hosts_autocomplete.json"
 CERTIFICATES_AUTOCOMPLETE = DATA_DIR / "certificates_autocomplete.json"
 
 
-def fields_completer(
-    prefix: str, parsed_args: argparse.Namespace, **kwargs
-) -> List[str]:
+def fields_completer(prefix: str, parsed_args: argparse.Namespace, **kwargs) -> list[str]:
     """Fields completer.
 
     Args:
@@ -45,11 +43,7 @@ def fields_completer(
         return []
 
     autocomplete_data = autocomplete_json.get("data", [])
-    fields = [
-        field_value
-        for field in autocomplete_data
-        if not (field_value := field["value"]).endswith(".type")
-    ]
+    fields = [field_value for field in autocomplete_data if not (field_value := field["value"]).endswith(".type")]
 
     if not prefix:
         # Returns first 20 fields if no prefix is provided
@@ -92,7 +86,7 @@ def cli_search(args: argparse.Namespace):
 
     search_args = {}
     write_args = {"file_format": args.format, "file_path": args.output}
-    results: List[Dict[str, Any]] = []
+    results: list[dict[str, Any]] = []
 
     index: CensysSearchAPIv2 = getattr(c.v2, index_type)
 
@@ -114,9 +108,7 @@ def cli_search(args: argparse.Namespace):
         search_args.update({"sort": args.sort})
 
     if args.output and not args.output.endswith(".json"):
-        raise CensysCLIException(
-            "JSON is the only valid file format for Search 2.0 responses."
-        )
+        raise CensysCLIException("JSON is the only valid file format for Search 2.0 responses.")
     write_args.update(
         {
             "file_format": "json" if args.output else "screen",

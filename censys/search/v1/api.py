@@ -2,7 +2,7 @@
 
 import os
 import warnings
-from typing import List, Optional, Type
+from typing import Optional
 
 from requests.models import Response
 
@@ -14,7 +14,7 @@ from censys.common.exceptions import (
     CensysSearchException,
 )
 
-Fields = Optional[List[str]]
+Fields = Optional[list[str]]
 
 
 class CensysSearchAPIv1(CensysAPIBase):
@@ -25,9 +25,7 @@ class CensysSearchAPIv1(CensysAPIBase):
     INDEX_NAME: Optional[str] = None
     """Name of Censys Index."""
 
-    def __init__(
-        self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs
-    ):
+    def __init__(self, api_id: Optional[str] = None, api_secret: Optional[str] = None, **kwargs):
         """Inits CensysSearchAPIv1.
 
         See CensysAPIBase for additional arguments.
@@ -56,14 +54,8 @@ class CensysSearchAPIv1(CensysAPIBase):
         config = get_config()
 
         # Try to get credentials
-        self._api_id = (
-            api_id or os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id")
-        )
-        self._api_secret = (
-            api_secret
-            or os.getenv("CENSYS_API_SECRET")
-            or config.get(DEFAULT, "api_secret")
-        )
+        self._api_id = api_id or os.getenv("CENSYS_API_ID") or config.get(DEFAULT, "api_id")
+        self._api_secret = api_secret or os.getenv("CENSYS_API_SECRET") or config.get(DEFAULT, "api_secret")
         if not self._api_id or not self._api_secret:
             raise CensysException("No API ID or API secret configured.")
 
@@ -79,10 +71,8 @@ class CensysSearchAPIv1(CensysAPIBase):
 
     def _get_exception_class(  # type: ignore
         self, res: Response
-    ) -> Type[CensysSearchException]:
-        return CensysExceptionMapper.SEARCH_EXCEPTIONS.get(
-            res.status_code, CensysSearchException
-        )
+    ) -> type[CensysSearchException]:
+        return CensysExceptionMapper.SEARCH_EXCEPTIONS.get(res.status_code, CensysSearchException)
 
     def account(self) -> dict:
         """Gets the current account information.

@@ -1,6 +1,7 @@
 """Interact with the Censys Subdomain Assets API."""
 
-from typing import Any, Dict, Iterator, List, Optional
+from collections.abc import Iterator
+from typing import Any, Optional
 
 from .assets import Assets
 
@@ -21,9 +22,9 @@ class SubdomainsAssets(Assets):
         self,
         page_number: int = 1,
         page_size: Optional[int] = None,
-        tag: Optional[List[str]] = None,
+        tag: Optional[list[str]] = None,
         tag_operator: Optional[str] = None,
-        source: Optional[List[str]] = None,
+        source: Optional[list[str]] = None,
         discovery_trail: Optional[bool] = None,
     ) -> Iterator[dict]:
         """Requests assets data.
@@ -41,7 +42,7 @@ class SubdomainsAssets(Assets):
         Yields:
             dict: The assets result returned.
         """
-        args: Dict[str, Any] = {}
+        args: dict[str, Any] = {}
         if tag:
             args["tag"] = tag
         if tag_operator:

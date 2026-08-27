@@ -5,10 +5,9 @@ from io import StringIO
 import pytest
 import responses
 
+from censys.cli import main as cli_main
 from tests.search.v1.test_api import ACCOUNT_JSON
 from tests.utils import V1_URL, CensysTestCase
-
-from censys.cli import main as cli_main
 
 
 class CensysCliAccountTest(CensysTestCase):
@@ -70,4 +69,4 @@ class CensysCliAccountTest(CensysTestCase):
 
         cli_response = temp_stdout.getvalue().strip()
         # Assertions
-        assert ACCOUNT_JSON == json.loads(cli_response)
+        assert json.loads(cli_response) == ACCOUNT_JSON

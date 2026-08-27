@@ -1,8 +1,9 @@
 import responses
 
+from censys.asm import Beta
+
 from ..utils import CensysTestCase
 from .utils import BETA_URL
-from censys.asm import Beta
 
 TEST_LOGBOOK_DATA = {
     "nextWindowCursor": "string",
@@ -35,9 +36,7 @@ TEST_ASSET_COUNTS = {
     "requestCompleteTime": "string",
     "totalCount": 0,
     "totalNewCount": 0,
-    "totalCountsBySubEnvironment": [
-        {"environment": "string", "totalCount": 0, "totalNewCount": 0}
-    ],
+    "totalCountsBySubEnvironment": [{"environment": "string", "totalCount": 0, "totalNewCount": 0}],
 }
 TEST_HOST_COUNTS_BY_COUNTRY = {
     "environment": "ALL",
@@ -89,9 +88,7 @@ class BetaUnitTest(CensysTestCase):
             json=TEST_CLOUD_ASSETS,
         )
         # Actual call
-        res = self.client.add_cloud_assets(
-            cloud_connector_uid="uid", cloud_assets=[{"key": "value"}]
-        )
+        res = self.client.add_cloud_assets(cloud_connector_uid="uid", cloud_assets=[{"key": "value"}])
         # Assertions
         assert res == TEST_CLOUD_ASSETS
 
@@ -117,9 +114,7 @@ class BetaUnitTest(CensysTestCase):
             json=TEST_ASSET_COUNTS,
         )
         # Actual call
-        res = self.client.get_asset_counts(
-            since="2021-01-01T00:00:00Z", environment="env", asset_type="type"
-        )
+        res = self.client.get_asset_counts(since="2021-01-01T00:00:00Z", environment="env", asset_type="type")
         # Assertions
         assert res == TEST_ASSET_COUNTS
 
@@ -132,9 +127,7 @@ class BetaUnitTest(CensysTestCase):
             json=TEST_HOST_COUNTS_BY_COUNTRY,
         )
         # Actual call
-        res = self.client.get_host_counts_by_country(
-            since="2021-01-01T00:00:00Z", environment="env"
-        )
+        res = self.client.get_host_counts_by_country(since="2021-01-01T00:00:00Z", environment="env")
         # Assertions
         assert res == TEST_HOST_COUNTS_BY_COUNTRY
 

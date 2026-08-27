@@ -3,8 +3,9 @@
 import argparse
 import os
 
-from . import commands
 from censys.common.config import DEFAULT, get_config
+
+from . import commands
 
 
 def get_parser() -> argparse.ArgumentParser:

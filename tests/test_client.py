@@ -1,5 +1,6 @@
-from .utils import CensysTestCase
 from censys.search import SearchClient
+
+from .utils import CensysTestCase
 
 ALL_INDEXES = {
     "v1": ["data"],

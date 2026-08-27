@@ -3,10 +3,11 @@ import requests.utils
 import responses
 from requests.models import Response
 
-from .utils import CensysTestCase
 from censys.common import __version__
 from censys.common.base import CensysAPIBase
 from censys.common.exceptions import CensysAPIException, CensysException
+
+from .utils import CensysTestCase
 
 TEST_URL = "https://url"
 TEST_ENDPOINT = "/endpoint"
@@ -73,28 +74,20 @@ class CensysAPIBaseTests(CensysTestCase):
         # Actual call
         base = CensysAPIBase(TEST_URL)
         # Assertion/error raising
-        with pytest.raises(
-            CensysAPIException, match="is not valid JSON and cannot be decoded"
-        ):
+        with pytest.raises(CensysAPIException, match="is not valid JSON and cannot be decoded"):
             base._get(TEST_ENDPOINT)
 
     def test_default_user_agent(self):
         # Mock/actual call
         base = CensysAPIBase(TEST_URL)
         # Assertions
-        assert (
-            base._session.headers["User-Agent"]
-            == f"{requests.utils.default_user_agent()} censys-python/{__version__}"
-        )
+        assert base._session.headers["User-Agent"] == f"{requests.utils.default_user_agent()} censys-python/{__version__}"
 
     def test_user_agent(self):
         # Mock/actual call
         base = CensysAPIBase(TEST_URL, user_agent="test")
         # Assertions
-        assert (
-            base._session.headers["User-Agent"]
-            == requests.utils.default_user_agent() + " test"
-        )
+        assert base._session.headers["User-Agent"] == requests.utils.default_user_agent() + " test"
 
     def test_request_id(self):
         id_value = "my-request-id"

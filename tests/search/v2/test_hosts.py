@@ -1,17 +1,16 @@
 import datetime
 import json
 from copy import deepcopy
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 import pytest
 import responses
 from parameterized import parameterized
 from responses import matchers
 
-from tests.utils import V2_URL, CensysTestCase
-
 from censys.common.exceptions import CensysInternalServerException
 from censys.search import CensysHosts, SearchClient
+from tests.utils import V2_URL, CensysTestCase
 
 TEST_HOST = "8.8.8.8"
 TEST_SEARCH_QUERY = "services.service_name: HTTP"
@@ -161,8 +160,7 @@ VIEW_HOST_EVENTS_JSON = {
     },
 }
 RATE_LIMIT_ERROR_JSON = {
-    "error": "Rate limit exceeded. See https://search.censys.io/account "
-    "for rate limit details.",
+    "error": "Rate limit exceeded. See https://search.censys.io/account for rate limit details.",
     "status": "error",
     "error_type": "rate_limit_exceeded",
 }
@@ -324,7 +322,7 @@ class TestHosts(CensysTestCase):
     )
     def test_search(
         self,
-        fields: Optional[List[str]] = None,
+        fields: Optional[list[str]] = None,
         sort: Optional[str] = None,
         cursor: Optional[str] = None,
         virtual_hosts: Optional[str] = None,
@@ -351,11 +349,7 @@ class TestHosts(CensysTestCase):
             V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
-            match=[
-                matchers.json_params_matcher(
-                    {"q": "services.service_name: HTTP", "per_page": test_per_page}
-                )
-            ],
+            match=[matchers.json_params_matcher({"q": "services.service_name: HTTP", "per_page": test_per_page})],
         )
 
         query = self.api.search("services.service_name: HTTP", per_page=test_per_page)
@@ -401,7 +395,7 @@ class TestHosts(CensysTestCase):
             ),
         ]
     )
-    def test_search_get(self, params: Dict[str, Any], expected_params: Dict[str, Any]):
+    def test_search_get(self, params: dict[str, Any], expected_params: dict[str, Any]):
         self.responses.add(
             responses.GET,
             f"{V2_URL}/hosts/search",
@@ -458,11 +452,7 @@ class TestHosts(CensysTestCase):
             V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
-            match=[
-                matchers.json_params_matcher(
-                    {"q": "services.service_name: HTTP", "per_page": 100}
-                )
-            ],
+            match=[matchers.json_params_matcher({"q": "services.service_name: HTTP", "per_page": 100})],
         )
         page_2_json = deepcopy(SEARCH_HOSTS_JSON)
         hits = page_2_json["result"]["hits"]
@@ -515,11 +505,7 @@ class TestHosts(CensysTestCase):
             V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
-            match=[
-                matchers.json_params_matcher(
-                    {"q": "services.service_name: HTTP", "per_page": 100}
-                )
-            ],
+            match=[matchers.json_params_matcher({"q": "services.service_name: HTTP", "per_page": 100})],
         )
         self.responses.add_callback(
             responses.POST,
@@ -538,11 +524,7 @@ class TestHosts(CensysTestCase):
             V2_URL + "/hosts/search",
             status=200,
             json=SEARCH_HOSTS_JSON,
-            match=[
-                matchers.json_params_matcher(
-                    {"q": "services.service_name: HTTP", "per_page": 100}
-                )
-            ],
+            match=[matchers.json_params_matcher({"q": "services.service_name: HTTP", "per_page": 100})],
         )
         self.responses.add(
             responses.POST,
@@ -602,23 +584,18 @@ class TestHosts(CensysTestCase):
             ],
         )
 
-        query = self.api.search(
-            "services.service_name: HTTP", fields=["ip", "services.port"]
-        )
+        query = self.api.search("services.service_name: HTTP", fields=["ip", "services.port"])
         assert query() == SEARCH_HOSTS_JSON["result"]["hits"]
 
     def test_aggregate(self):
         self.responses.add(
             responses.GET,
-            V2_URL
-            + "/hosts/aggregate?field=services.port&q=services.service_name: HTTP&num_buckets=4",
+            V2_URL + "/hosts/aggregate?field=services.port&q=services.service_name: HTTP&num_buckets=4",
             status=200,
             json=AGGREGATE_HOSTS_JSON,
         )
         self.maxDiff = None
-        res = self.api.aggregate(
-            "services.service_name: HTTP", "services.port", num_buckets=4
-        )
+        res = self.api.aggregate("services.service_name: HTTP", "services.port", num_buckets=4)
 
         assert res == AGGREGATE_HOSTS_JSON["result"]
 

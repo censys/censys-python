@@ -1,7 +1,7 @@
 """Interact with the Censys Risks API."""
 
 import urllib.parse
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from .api import CensysAsmAPI
 
@@ -36,7 +36,7 @@ class Risks(CensysAsmAPI):
         Returns:
             dict: Risk events result.
         """
-        args: Dict[str, Any] = {}
+        args: dict[str, Any] = {}
         if start:
             args["start"] = start
         if end:
@@ -53,9 +53,7 @@ class Risks(CensysAsmAPI):
             headers={"Accept": accept} if accept else None,
         )
 
-    def get_risk_instances(
-        self, include_events: Optional[bool] = None, accept: Optional[str] = None
-    ) -> dict:
+    def get_risk_instances(self, include_events: Optional[bool] = None, accept: Optional[str] = None) -> dict:
         """Retrieve risk instances.
 
         Args:
@@ -99,9 +97,7 @@ class Risks(CensysAsmAPI):
             headers={"Accept": accept} if accept else None,
         )
 
-    def get_risk_instance(
-        self, risk_instance_id: int, include_events: Optional[bool] = None
-    ) -> dict:
+    def get_risk_instance(self, risk_instance_id: int, include_events: Optional[bool] = None) -> dict:
         """Retrieve a risk instance.
 
         Args:
@@ -130,7 +126,7 @@ class Risks(CensysAsmAPI):
         self,
         limit: Optional[int] = None,
         page: Optional[int] = None,
-        sort: Optional[List[str]] = None,
+        sort: Optional[list[str]] = None,
         include_events: Optional[bool] = None,
         accept: Optional[str] = None,
     ) -> dict:
@@ -146,7 +142,7 @@ class Risks(CensysAsmAPI):
         Returns:
             dict: Risk types result.
         """
-        args: Dict[str, Any] = {"sort": sort, "includeEvents": include_events}
+        args: dict[str, Any] = {"sort": sort, "includeEvents": include_events}
         if page:
             args["page"] = page
         if limit:
@@ -157,9 +153,7 @@ class Risks(CensysAsmAPI):
             headers={"Accept": accept} if accept else None,
         )
 
-    def get_risk_type(
-        self, risk_type: str, include_events: Optional[bool] = None
-    ) -> dict:
+    def get_risk_type(self, risk_type: str, include_events: Optional[bool] = None) -> dict:
         """Retrieve a risk type.
 
         Args:

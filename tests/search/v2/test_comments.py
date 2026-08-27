@@ -1,10 +1,9 @@
 import responses
 from parameterized import parameterized_class
 
-from tests.utils import V2_URL, CensysTestCase
-
 from censys.search.v2 import CensysCerts, CensysHosts
 from censys.search.v2.api import CensysSearchAPIv2
+from tests.utils import V2_URL, CensysTestCase
 
 TEST_COMMENT = "**This is a comment.**"
 GET_COMMENTS_RESPONSE = {

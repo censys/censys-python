@@ -1,7 +1,7 @@
 """Interact with the Censys Inventory Search API."""
 
 import warnings
-from typing import List, Optional
+from typing import Optional
 
 from .api import CensysAsmAPI
 
@@ -13,12 +13,12 @@ class InventorySearch(CensysAsmAPI):
 
     def search(
         self,
-        workspaces: Optional[List[str]] = None,
+        workspaces: Optional[list[str]] = None,
         query: Optional[str] = None,
         page_size: Optional[int] = None,
         cursor: Optional[str] = None,
-        sort: Optional[List[str]] = None,
-        fields: Optional[List[str]] = None,
+        sort: Optional[list[str]] = None,
+        fields: Optional[list[str]] = None,
         pages: Optional[int] = None,
     ) -> dict:
         """Search inventory data.
@@ -75,10 +75,7 @@ class InventorySearch(CensysAsmAPI):
         while next_cursor and (pages == -1 or page < pages):
             args["cursor"] = next_cursor
             resp = self._get(self.base_path, args=args)
-            if "nextCursor" in resp:
-                next_cursor = resp.get("nextCursor")
-            else:
-                next_cursor = None
+            next_cursor = resp.get("nextCursor") if "nextCursor" in resp else None
             hits.extend(resp.get("hits", []))
             page += 1
 
@@ -87,7 +84,7 @@ class InventorySearch(CensysAsmAPI):
 
     def aggregate(
         self,
-        workspaces: List[str],
+        workspaces: list[str],
         query: Optional[str] = None,
         aggregation: Optional[dict] = None,
     ) -> dict:
@@ -109,7 +106,7 @@ class InventorySearch(CensysAsmAPI):
 
         return self._post(f"{self.base_path}/aggregate", data=body)
 
-    def fields(self, fields: Optional[List[str]] = None) -> dict:
+    def fields(self, fields: Optional[list[str]] = None) -> dict:
         """List inventory fields.
 
         If no fields are specified, all fields will be returned.

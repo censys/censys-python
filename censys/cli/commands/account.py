@@ -23,9 +23,7 @@ def cli_account(args: argparse.Namespace):  # pragma: no cover
         if args.json:
             console.print_json(data=account)
         else:
-            table = Table(
-                "Key", "Value", show_header=False, box=box.SQUARE, highlight=True
-            )
+            table = Table("Key", "Value", show_header=False, box=box.SQUARE, highlight=True)
             table.add_row("Email", account["email"])
             table.add_row("Login ID", account["login"])
             table.add_row("First Login", account["first_login"])
@@ -33,7 +31,7 @@ def cli_account(args: argparse.Namespace):  # pragma: no cover
             quota = account["quota"]
             table.add_row(
                 "Query Quota",
-                f"{quota['used']} / {quota['allowance']} ({quota['used']/quota['allowance'] * 100 :.2f}%)",  # noqa
+                f"{quota['used']} / {quota['allowance']} ({quota['used'] / quota['allowance'] * 100:.2f}%)",  # noqa
             )
             table.add_row("Quota Resets At", quota["resets_at"])
             console.print(table)
@@ -56,7 +54,5 @@ def include(parent_parser: argparse._SubParsersAction, parents: dict):
         help="check Censys account details and quota",
         parents=[parents["auth"]],
     )
-    account_parser.add_argument(
-        "-j", "--json", action="store_true", help="Output in JSON format"
-    )
+    account_parser.add_argument("-j", "--json", action="store_true", help="Output in JSON format")
     account_parser.set_defaults(func=cli_account)

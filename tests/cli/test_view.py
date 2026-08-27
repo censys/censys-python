@@ -7,13 +7,12 @@ from unittest.mock import mock_open
 import pytest
 import responses
 
+from censys.cli import main as cli_main
+from censys.common.exceptions import CensysCLIException, CensysException
 from tests.cli.test_search import WROTE_PREFIX
 from tests.search.v2.test_certs import VIEW_CERT_JSON
 from tests.search.v2.test_hosts import VIEW_HOST_JSON
 from tests.utils import V2_URL, CensysTestCase
-
-from censys.cli import main as cli_main
-from censys.common.exceptions import CensysCLIException, CensysException
 
 
 class CensysCliViewTest(CensysTestCase):
@@ -30,16 +29,10 @@ class CensysCliViewTest(CensysTestCase):
     def test_no_creds(self):
         # Mock
         self.patch_args(["censys", "view", "test"])
-        self.mocker.patch(
-            "builtins.open", new_callable=mock_open, read_data="[DEFAULT]"
-        )
-        self.mocker.patch.dict(
-            "os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""}
-        )
+        self.mocker.patch("builtins.open", new_callable=mock_open, read_data="[DEFAULT]")
+        self.mocker.patch.dict("os.environ", {"CENSYS_API_ID": "", "CENSYS_API_SECRET": ""})
         # Actual call
-        with pytest.raises(
-            CensysException, match="No API ID or API secret configured."
-        ):
+        with pytest.raises(CensysException, match="No API ID or API secret configured."):
             cli_main()
 
     def test_write_json(self):
@@ -247,8 +240,7 @@ class CensysCliViewTest(CensysTestCase):
         )
         self.responses.add(
             responses.GET,
-            V2_URL
-            + "/certificates/9b00121b4e85d50667ded1a8aa39855771bdb67ceca6f18726b49374b41f0041",
+            V2_URL + "/certificates/9b00121b4e85d50667ded1a8aa39855771bdb67ceca6f18726b49374b41f0041",
             status=200,
             json=VIEW_CERT_JSON,
         )
@@ -292,8 +284,7 @@ class CensysCliViewTest(CensysTestCase):
         )
         self.responses.add(
             responses.GET,
-            V2_URL
-            + "/certificates/9b00121b4e85d50667ded1a8aa39855771bdb67ceca6f18726b49374b41f0041",
+            V2_URL + "/certificates/9b00121b4e85d50667ded1a8aa39855771bdb67ceca6f18726b49374b41f0041",
             status=200,
             json=VIEW_CERT_JSON,
         )
