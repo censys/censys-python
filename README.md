@@ -1,7 +1,7 @@
 # Censys Python Library
 
 [![PyPI](https://img.shields.io/pypi/v/censys?color=orange&logo=pypi&logoColor=orange)](https://pypi.org/project/censys/)
-[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue?logo=python)](https://www.python.org/downloads/)
+[![Python Version](https://img.shields.io/badge/python-3.9%2B-blue?logo=python)](https://www.python.org/downloads/)
 [![Read the Docs (version)](https://img.shields.io/readthedocs/censys-python/latest?logo=read%20the%20docs)](https://censys-python.readthedocs.io/en/stable/?badge=stable)
 [![GitHub Discussions](https://img.shields.io/badge/GitHub-Discussions-brightgreen?logo=github)](https://github.com/censys/censys-python/discussions)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-organge.svg?logo=git&logoColor=organge)](http://makeapullrequest.com)
@@ -9,15 +9,15 @@
 
 > [!WARNING]
 > **DEPRECATION NOTICE**: The Censys Search v1 and v2 APIs will be deprecated soon. Please migrate to the new **Censys Platform**.
-> 
+>
 > - 📖 **New API Documentation**: [https://docs.censys.com/reference/get-started#/](https://docs.censys.com/reference/get-started#/)
 > - 📦 **New Python SDK**: Install with `pip install censys-platform` - [https://pypi.org/project/censys-platform/](https://pypi.org/project/censys-platform/)
 > - 🖥️ **New CLI Tool** (`cencli`): [https://docs.censys.com/docs/platform-cli](https://docs.censys.com/docs/platform-cli)
 >   - ⚠️ **If you plan to use the new CLI, you will need to uninstall this package's CLI first** as both use the `censys` command name
-> 
+>
 > The **Censys ASM APIs in this library are NOT deprecated** and will continue to be supported.
 
-An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://censys.io/)). Python 3.8+ is currently supported. This library has been tested on Python 3.8 and 3.x (Currently version 3.10).
+An easy-to-use and lightweight API wrapper for Censys APIs ([censys.io](https://censys.io/)). Python 3.9+ is currently supported. This library has been tested on Python 3.9 and 3.x (Currently version 3.13).
 
 ## Features
 
