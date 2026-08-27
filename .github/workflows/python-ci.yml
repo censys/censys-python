@@ -16,7 +16,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python: ["3.9", "3.13"]
-        poetry: ["2.2.1"]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
 
@@ -24,30 +23,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install poetry
-        run: pipx install poetry==${{ matrix.poetry }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
+          enable-cache: true
           python-version: ${{ matrix.python }}
-          cache: "poetry"
 
       - name: Install dependencies
-        run: |
-          poetry install
+        run: uv sync --group dev
 
       - name: Lint with ruff
         if: startsWith(matrix.os, 'ubuntu')
         run: |
-          poetry run ruff check .
-          poetry run ruff format --check .
+          uv run ruff check .
+          uv run ruff format --check .
 
       - name: Type checking with mypy
         if: startsWith(matrix.os, 'ubuntu')
         run: |
-          poetry run mypy censys
+          uv run mypy censys
 
       - name: Test with pytest
         run: |
-          poetry run pytest --cov --cov-fail-under=100
+          uv run pytest --cov --cov-fail-under=100
