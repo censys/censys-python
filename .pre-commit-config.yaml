@@ -19,26 +19,26 @@ repos:
     hooks:
       - id: system
         name: ruff
-        entry: poetry run ruff check . --fix
+        entry: uv run ruff check . --fix
         pass_filenames: false
         language: system
         types: [python]
         require_serial: true
       - id: system
         name: ruff-format
-        entry: poetry run ruff format .
+        entry: uv run ruff format .
         pass_filenames: false
         language: system
         types: [python]
       - id: system
         name: pytest
-        entry: poetry run pytest --cov --cov-fail-under=100
+        entry: uv run pytest --cov --cov-fail-under=100
         pass_filenames: false
         language: system
         types: [python]
       - id: system
         name: mypy
-        entry: poetry run mypy censys
+        entry: uv run mypy censys
         pass_filenames: false
         language: system
         types: [python]

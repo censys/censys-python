@@ -1,11 +1,10 @@
-[tool.poetry]
+[project]
 name = "censys"
 version = "2.2.19"
 description = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
-authors = ["Censys, Inc. <support@censys.io>"]
+authors = [{ name = "Censys, Inc.", email = "support@censys.io" }]
 license = "Apache-2.0"
 readme = "README.md"
-include = ["censys/py.typed"]
 keywords = ["censys", "api", "search", "attack surface management"]
 classifiers = [
     "Typing :: Typed",
@@ -37,8 +36,16 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.29.0",
+    "urllib3<3.0.0",
+    "backoff>=2.0.0,<3.0.0",
+    "rich>=10.16.2",
+    "argcomplete>=2.0.0,<4.0.0",
+]
 
-[tool.poetry.urls]
+[project.urls]
 "Censys Homepage" = "https://censys.io/"
 "Censys Search" = "https://search.censys.io/"
 "Discussions" = "https://github.com/censys/censys-python/discussions"
@@ -47,29 +54,27 @@ classifiers = [
 "Tracker" = "https://github.com/censys/censys-python/issues"
 "Source" = "https://github.com/censys/censys-python"
 
-[tool.poetry.scripts]
+[project.scripts]
 censys = "censys.cli:main"
 
-[tool.poetry.dependencies]
-python = ">=3.9,<4.0"
-requests = ">=2.29.0"
-urllib3 = "<3.0.0"
-backoff = ">=2.0.0,<3.0.0"
-rich = ">=10.16.2"
-argcomplete = ">=2.0.0,<4.0.0"
+[dependency-groups]
+dev = [
+    "ruff>=0.9.0",
+    "pytest>=7.3,<9",
+    "pytest-cov>=4,<6",
+    "pytest-mock>=3.10.0,<4",
+    "responses>=0.23.1,<0.26.0",
+    "parameterized>=0.9.0,<1",
+    "mypy>=1.5.1,<2",
+    "types-requests>=2.29.0.0,<3",
+]
 
-[tool.poetry.group.dev.dependencies]
-# Lint
-ruff = ">=0.9.0"
-# Tests
-pytest = ">=7.3,<9.0"
-pytest-cov = ">=4,<6"
-pytest-mock = "^3.10.0"
-responses = ">=0.23.1,<0.26.0"
-parameterized = "^0.9.0"
-# Types
-mypy = "^1.5.1"
-types-requests = "^2.29.0.0"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["censys"]
 
 [tool.ruff]
 line-length = 127
@@ -107,7 +112,3 @@ explicit_package_bases = true
 [[tool.mypy.overrides]]
 module = ["parameterized", "rich", "attr"]
 ignore_missing_imports = true
-
-[build-system]
-requires = ["poetry-core>=1.2.0"]
-build-backend = "poetry.core.masonry.api"
