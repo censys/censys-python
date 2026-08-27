@@ -47,12 +47,12 @@ To upgraded using `pip`.
 pip install --upgrade censys
 ```
 
-Alternatively, you can install the library using `poetry`.
+Alternatively, you can install the library using `uv`.
 
 ```sh
 git clone https://github.com/censys/censys-python.git
 cd censys-python/
-poetry install
+uv install
 ```
 
 Optionally, you can enable tab completion for the CLI by adding this line to your `~/.bashrc`, `~/.zshrc`, or equivalent.
@@ -101,7 +101,7 @@ The examples located in the [`examples/`](examples/) directory are a great place
 - [Changelog](https://github.com/censys/censys-python/releases)
 - [Documentation](https://censys-python.rtfd.io)
 - [Discussions](https://github.com/censys/censys-python/discussions)
-- [Censys Homepage](https://censys.io/)
+- [Censys Homepage](https://censys.com/)
 - [Censys Search](https://search.censys.io/)
 
 ## Contributing
@@ -110,25 +110,25 @@ All contributions (no matter how small) are always welcome. See [Contributing to
 
 ## Development
 
-This project uses [poetry](https://python-poetry.org/) for dependency management. Please ensure you have [installed the latest version](https://python-poetry.org/docs/#installation).
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management. Please ensure you have [installed the latest version](https://docs.astral.sh/uv/getting-started/installation/).
 
 ```sh
 git clone git@github.com:censys/censys-python.git
 cd censys-python/
-poetry install
+uv install
 ```
 
 ## Testing
 
 ```sh
 # Run tests
-poetry run pytest
+uv run pytest
 # With coverage report
-poetry run pytest --cov-report html
+uv run pytest --cov-report html
 ```
 
 ## License
 
 This software is licensed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-- Copyright (C) 2024 Censys, Inc.
+- Copyright (C) 2026 Censys, Inc.
