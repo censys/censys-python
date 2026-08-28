@@ -1,6 +1,6 @@
 [project]
 name = "censys"
-version = "2.2.19"
+version = "2.3.0"
 description = "An easy-to-use and lightweight API wrapper for Censys APIs (censys.io)."
 authors = [{ name = "Censys, Inc.", email = "support@censys.io" }]
 license = "Apache-2.0"
@@ -38,7 +38,7 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = [
-    "requests>=2.29.0",
+    "requests>=2.32.0",
     "backoff>=2.0.0,<3.0.0",
     "rich>=10.16.2",
     "argcomplete>=2.0.0,<4.0.0",

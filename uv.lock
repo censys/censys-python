@@ -83,7 +83,7 @@ wheels = [
 
 [[package]]
 name = "censys"
-version = "2.2.19"
+version = "2.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "argcomplete", version = "3.7.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -125,14 +125,14 @@ docs = [
 requires-dist = [
     { name = "argcomplete", specifier = ">=2.0.0,<4.0.0" },
     { name = "backoff", specifier = ">=2.0.0,<3.0.0" },
-    { name = "requests", specifier = ">=2.29.0" },
+    { name = "requests", specifier = ">=2.32.0" },
     { name = "rich", specifier = ">=10.16.2" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "mypy", specifier = ">=1.5.1,<2" },
-    { name = "pytest", specifier = ">=7.3,<9" },
+    { name = "mypy", specifier = ">=1.5.1,<3" },
+    { name = "pytest", specifier = ">=7.3,<10" },
     { name = "pytest-cov", specifier = ">=4" },
     { name = "pytest-mock", specifier = ">=3.10.0,<4" },
     { name = "responses", specifier = ">=0.23.1" },
