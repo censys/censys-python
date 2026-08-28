@@ -34,7 +34,6 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: Implementation :: PyPy",
 ]
 requires-python = ">=3.9"
 dependencies = [
@@ -123,9 +122,6 @@ no_implicit_reexport = true
 check_untyped_defs = true
 disallow_untyped_decorators = true
 
-[[tool.mypy.overrides]]
-module = ["rich", "attr"]
-ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
