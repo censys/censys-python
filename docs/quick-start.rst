@@ -1,6 +1,15 @@
 Quick Start
 ===========
 
+.. warning::
+
+   **This library is deprecated.** Please migrate to the official replacements:
+
+   - **Python SDK:** `censys/censys-sdk-python <https://github.com/censys/censys-sdk-python>`_
+   - **CLI (Go):** `censys/cencli <https://github.com/censys/cencli>`_
+
+   See the `Censys Platform API documentation <https://docs.censys.com/reference/get-started>`_ for details.
+
 Assuming you have Python already, install the package:
 
 .. prompt:: bash

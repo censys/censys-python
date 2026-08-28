@@ -11,11 +11,20 @@ Release v\ |version|. (:ref:`quick-start:Quick Start`)
 .. image:: https://img.shields.io/pypi/v/censys?color=orange&logo=pypi&logoColor=orange
    :target: https://pypi.org/project/censys/
 
-.. image:: https://img.shields.io/badge/python-3.8%2B-blue?logo=python
+.. image:: https://img.shields.io/badge/python-3.9%2B-blue?logo=python
    :target: https://www.python.org/downloads/
 
 .. image:: https://img.shields.io/github/license/censys/censys-python?logo=apache
    :target: https://github.com/censys/censys-python/blob/main/LICENSE
+
+.. warning::
+
+   **This library is deprecated.** Please migrate to the official replacements:
+
+   - **Python SDK:** `censys/censys-sdk-python <https://github.com/censys/censys-sdk-python>`_
+   - **CLI (Go):** `censys/cencli <https://github.com/censys/cencli>`_
+
+   See the `Censys Platform API documentation <https://docs.censys.com/reference/get-started>`_ for details.
 
 **Censys Python** is an easy-to-use and lightweight API wrapper for Censys APIs.
 

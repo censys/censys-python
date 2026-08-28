@@ -10,9 +10,9 @@
 > [!WARNING]
 > **DEPRECATION NOTICE**: The Censys Search v1 and v2 APIs will be deprecated soon. Please migrate to the new **Censys Platform**.
 >
-> - 📖 **New API Documentation**: [https://docs.censys.com/reference/get-started#/](https://docs.censys.com/reference/get-started#/)
-> - 📦 **New Python SDK**: Install with `pip install censys-platform` - [https://pypi.org/project/censys-platform/](https://pypi.org/project/censys-platform/)
-> - 🖥️ **New CLI Tool** (`cencli`): [https://docs.censys.com/docs/platform-cli](https://docs.censys.com/docs/platform-cli)
+> - 📖 **New API Documentation**: [https://docs.censys.com/reference/get-started](https://docs.censys.com/reference/get-started)
+> - 📦 **New Python SDK**: [censys/censys-sdk-python](https://github.com/censys/censys-sdk-python)
+> - 🖥️ **New CLI Tool** (`cencli`): [censys/cencli](https://github.com/censys/cencli)
 >   - ⚠️ **If you plan to use the new CLI, you will need to uninstall this package's CLI first** as both use the `censys` command name
 >
 > The **Censys ASM APIs in this library are NOT deprecated** and will continue to be supported.

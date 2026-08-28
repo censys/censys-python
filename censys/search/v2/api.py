@@ -47,9 +47,9 @@ class CensysSearchAPIv2(CensysAPIBase):
         warnings.warn(
             "CensysSearchAPIv2 will be deprecated soon. "
             "Please migrate to the new Censys Platform API. "
-            "Visit https://docs.censys.com/reference/get-started#/ for documentation "
-            "and install the new SDK with: pip install censys-platform "
-            "(https://pypi.org/project/censys-platform/)",
+            "Python SDK: https://github.com/censys/censys-sdk-python "
+            "CLI: https://github.com/censys/cencli "
+            "Docs: https://docs.censys.com/reference/get-started",
             category=DeprecationWarning,
             stacklevel=2,
         )
