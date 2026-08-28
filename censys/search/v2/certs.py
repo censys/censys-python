@@ -251,7 +251,7 @@ class CensysCerts(CensysSearchAPIv2):
             **kwargs,
         )
 
-    def search(  # type: ignore[override]
+    def search(
         self,
         query: str,
         per_page: int = 50,

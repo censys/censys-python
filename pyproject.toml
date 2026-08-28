@@ -114,6 +114,14 @@ python_version = "3.9"
 files = ["censys"]
 namespace_packages = true
 explicit_package_bases = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+strict_equality = true
+extra_checks = true
+no_implicit_reexport = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
 
 [[tool.mypy.overrides]]
 module = ["rich", "attr"]
