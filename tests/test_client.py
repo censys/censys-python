@@ -9,8 +9,7 @@ ALL_INDEXES = {
 
 
 class CensysSearchClientTest(CensysTestCase):
-    def setUp(self):
-        super().setUp()
+    def setup_method(self):
         self.expected_auth = (self.api_id, self.api_secret)
 
     def test_api_creds_args(self):

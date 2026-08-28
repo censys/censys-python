@@ -1,5 +1,5 @@
+import pytest
 import responses
-from parameterized import parameterized_class
 
 from censys.search.v2 import CensysCerts, CensysHosts
 from censys.search.v2.api import CensysSearchAPIv2
@@ -45,25 +45,27 @@ GET_COMMENT_RESPONSE = {
     },
 }
 
+INDEX_PARAMS = [
+    {"index": "hosts", "index_cls": CensysHosts, "document_id": "1.0.0.0"},
+    {
+        "index": "certificates",
+        "index_cls": CensysCerts,
+        "document_id": "fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426",
+    },
+]
 
-@parameterized_class(
-    [
-        {"index": "hosts", "index_cls": CensysHosts, "document_id": "1.0.0.0"},
-        {
-            "index": "certificates",
-            "index_cls": CensysCerts,
-            "document_id": "fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426",
-        },
-    ]
-)
+
 class CensysCommentsTests(CensysTestCase):
     index: str
     index_cls: CensysSearchAPIv2
     document_id: str
     api: CensysSearchAPIv2
 
-    def setUp(self):
-        super().setUp()
+    @pytest.fixture(autouse=True, params=INDEX_PARAMS, ids=["hosts", "certificates"])
+    def _index_config(self, request):
+        self.index = request.param["index"]
+        self.index_cls = request.param["index_cls"]
+        self.document_id = request.param["document_id"]
         self.setUpApi(self.index_cls(self.api_id, self.api_secret))
 
     def test_get_comments(self):

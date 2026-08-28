@@ -15,8 +15,7 @@ class CensysCliHNRITest(CensysTestCase):
     IPIFY_URL = "https://api.ipify.org?format=json"
     IP_ADDRESS = "8.8.8.8"
 
-    def setUp(self):
-        super().setUp()
+    def setup_method(self):
         self.api = CensysHNRI(self.api_id, self.api_secret)
 
     def test_hnri_medium(self):

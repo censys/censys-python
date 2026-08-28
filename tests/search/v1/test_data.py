@@ -20,8 +20,7 @@ RESULT = "20200818"
 
 
 class CensysDataTest(CensysTestCase):
-    def setUp(self):
-        super().setUp()
+    def setup_method(self):
         self.setUpApi(SearchClient(self.api_id, self.api_secret).v1.data)
 
     def test_get_series(self):

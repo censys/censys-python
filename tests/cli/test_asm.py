@@ -244,9 +244,6 @@ TEST_XML_PATH = os.path.join(os.path.dirname(__file__), "test.xml")
 
 
 class CensysASMCliTest(CensysTestCase):
-    def setUp(self):
-        super().setUp()
-
     def test_add_seeds(self):
         # Mock
         self.patch_args(["censys", "asm", "add-seeds", "-j", json.dumps(SEEDS_JSON)], asm_auth=True)

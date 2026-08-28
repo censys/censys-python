@@ -62,8 +62,7 @@ TEST_USER_WORKSPACES = [{"workspace": "string", "roles": ["string"]}]
 
 
 class BetaUnitTest(CensysTestCase):
-    def setUp(self):
-        super().setUp()
+    def setup_method(self):
         self.client = Beta(self.api_key)
 
     def test_get_logbook_data(self):

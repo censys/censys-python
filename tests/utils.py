@@ -1,4 +1,3 @@
-import unittest
 from typing import Optional
 
 import pytest
@@ -12,7 +11,7 @@ V1_URL = BASE_URL + "/v1"
 V2_URL = BASE_URL + "/v2"
 
 
-class CensysTestCase(unittest.TestCase):
+class CensysTestCase:
     api_id = "test-api-id"
     api_secret = "test-api-secret"
     api_key = "test-api-key"
@@ -30,24 +29,15 @@ class CensysTestCase(unittest.TestCase):
     mocker: MockerFixture
 
     @pytest.fixture(autouse=True)
-    def __inject_fixtures(self, mocker: MockerFixture):
-        """Injects fixtures into the test case.
-
-        Args:
-            mocker (MockerFixture): pytest-mock fixture.
-        """
-        # Inject mocker fixture
+    def _setup(self, mocker: MockerFixture):
         self.mocker = mocker
-
-    def setUp(self):
-        self.responses = responses.RequestsMock()
-        self.responses.start()
-
-        self.addCleanup(self.responses.stop)
-        self.addCleanup(self.responses.reset)
-
-        # Mock time.sleep so we don't have to wait in tests
-        self.mocker.patch("time.sleep", return_value=None)
+        mocker.patch("time.sleep", return_value=None)
+        rsps = responses.RequestsMock(assert_all_requests_are_fired=False)
+        rsps.start()
+        self.responses = rsps
+        yield
+        rsps.stop()
+        rsps.reset()
 
     def setUpApi(self, api: CensysAPIBase):  # noqa: N802
         self.api = api
@@ -59,13 +49,6 @@ class CensysTestCase(unittest.TestCase):
         search_auth: Optional[bool] = False,
         asm_auth: Optional[bool] = False,
     ):
-        """Patches the arguments of the API.
-
-        Args:
-            args (List[str]): List of arguments to patch.
-            search_auth (bool, optional): Whether to patch the search API key. Defaults to False.
-            asm_auth (bool, optional): Whether to patch the ASM API key. Defaults to False.
-        """
         if search_auth:
             args.extend(self.cli_args)
         if asm_auth:

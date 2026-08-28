@@ -1,8 +1,6 @@
-import unittest
 from urllib.parse import quote
 
 import pytest
-from parameterized import parameterized_class
 from pytest_mock import MockerFixture
 
 from censys.asm.client import AsmClient
@@ -32,37 +30,30 @@ TEST_TAG_NAME = "asset-test-tag"
 TEST_TAG_COLOR = "#4287f5"
 TEST_INVALID_TAG_COLOR = "4287f5"
 
+ASSET_PARAMS = [
+    ("hosts", "3.12.122.3"),
+    (
+        "certificates",
+        "0006afc1ddc8431aa57c812adf028ab4f168b25bf5f06e94af86edbafa88dfe0",
+    ),
+    ("domains", "amazonaws.com"),
+    ("subdomains", "s3.amazonaws.com"),
+    ("web_entities", "www.amazon.com:443"),
+    ("object_storages", "https://censys-python.s3.us-east-2.amazonaws.com/"),
+]
 
-@parameterized_class(
-    ("asset_type", "test_asset_id"),
-    [
-        ("hosts", "3.12.122.3"),
-        (
-            "certificates",
-            "0006afc1ddc8431aa57c812adf028ab4f168b25bf5f06e94af86edbafa88dfe0",
-        ),
-        ("domains", "amazonaws.com"),
-        ("subdomains", "s3.amazonaws.com"),
-        ("web_entities", "www.amazon.com:443"),
-        ("object_storages", "https://censys-python.s3.us-east-2.amazonaws.com/"),
-    ],
-)
-class AssetsUnitTest(unittest.TestCase):
-    @pytest.fixture(autouse=True)
-    def __inject_fixtures(self, mocker: MockerFixture):
-        """Injects fixtures into the test case.
 
-        Args:
-            mocker (MockerFixture): pytest-mock fixture.
-        """
-        # Inject mocker fixture
-        self.mocker = mocker
-
+class AssetsUnitTest:
     """Unit tests for Host, Certificate, and Domain APIs."""
 
-    def setUp(self):
+    @pytest.fixture(autouse=True, params=ASSET_PARAMS, ids=[p[0] for p in ASSET_PARAMS])
+    def _setup(self, request, mocker: MockerFixture):
+        self.asset_type, self.test_asset_id = request.param
+        self.mocker = mocker
+        mocker.patch("time.sleep", return_value=None)
         self.client = AsmClient()
         self.resource_type = ASSET_TYPE if self.asset_type != "subdomains" else SUBDOMAIN_ASSET_TYPE
+        return
 
     def get_asset_accessor(self):
         return getattr(self.client, self.asset_type)

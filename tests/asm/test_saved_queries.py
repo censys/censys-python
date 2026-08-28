@@ -1,5 +1,5 @@
+import pytest
 import responses
-from parameterized import parameterized
 
 from censys.asm.saved_queries import SavedQueries
 
@@ -53,11 +53,11 @@ TEST_DELETE_SAVED_QUERY_BY_ID_JSON = {}
 class SavedQueriesTests(CensysTestCase):
     api: SavedQueries
 
-    def setUp(self):
-        super().setUp()
+    def setup_method(self):
         self.setUpApi(SavedQueries(self.api_key))
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "params"),
         [
             (
                 {
@@ -101,7 +101,7 @@ class SavedQueriesTests(CensysTestCase):
                 "?queryNamePrefix=test-query-name-prefix-6&pageSize=50&page=1",
             ),
             ({}, "?pageSize=50&page=1"),
-        ]
+        ],
     )
     def test_get_saved_queries(self, kwargs, params):
         # Setup response
@@ -118,13 +118,14 @@ class SavedQueriesTests(CensysTestCase):
         # Assertions
         assert res == TEST_GET_SAVED_QUERIES_JSON
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "body"),
         [
             (
                 {"query": "test-query-1", "query_name": "test-query-name-1"},
                 {"query": "test-query-1", "queryName": "test-query-name-1"},
             ),
-        ]
+        ],
     )
     def test_add_saved_query(self, kwargs, body):
         # Setup response
@@ -142,10 +143,11 @@ class SavedQueriesTests(CensysTestCase):
         # Assertions
         assert res == TEST_ADD_SAVED_QUERY_JSON
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "path"),
         [
             ({"query_id": "test-query-id-1"}, "/test-query-id-1"),
-        ]
+        ],
     )
     def test_get_saved_query_by_id(self, kwargs, path):
         # Setup response
@@ -162,7 +164,8 @@ class SavedQueriesTests(CensysTestCase):
         # Assertions
         assert res == TEST_GET_SAVED_QUERY_BY_ID_JSON
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "body", "path"),
         [
             (
                 {
@@ -173,7 +176,7 @@ class SavedQueriesTests(CensysTestCase):
                 {"query": "test-query-1", "queryName": "test-query-name-1"},
                 "/test-query-id-1",
             ),
-        ]
+        ],
     )
     def test_edit_saved_query_by_id(self, kwargs, body, path):
         # Setup response
@@ -191,10 +194,11 @@ class SavedQueriesTests(CensysTestCase):
         # Assertions
         assert res == TEST_EDIT_SAVED_QUERY_BY_ID_JSON
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "path"),
         [
             ({"query_id": "test-query-id-1"}, "/test-query-id-1"),
-        ]
+        ],
     )
     def test_delete_saved_query_by_id(self, kwargs, path):
         # Setup response

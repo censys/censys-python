@@ -64,7 +64,6 @@ dev = [
     "pytest-cov>=4",
     "pytest-mock>=3.10.0,<4",
     "responses>=0.23.1",
-    "parameterized>=0.9.0,<1",
     "mypy>=1.5.1,<2",
     "types-requests>=2.29.0.0,<3",
 ]
@@ -118,5 +117,11 @@ namespace_packages = true
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
-module = ["parameterized", "rich", "attr"]
+module = ["rich", "attr"]
 ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov -rs"
+filterwarnings = ["ignore:.*:DeprecationWarning:.*"]
+python_classes = ["Test*", "*Tests", "*Test"]
