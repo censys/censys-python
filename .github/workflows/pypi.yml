@@ -20,5 +20,8 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Build and publish
+      - name: Build
+        run: uv build
+
+      - name: Publish
         run: uv publish --token ${{ secrets.PYPI_TOKEN }}
