@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Any, Optional
 
+import pytest
 import responses
-from parameterized import parameterized
 from responses import matchers
 
 from censys.search import SearchClient
@@ -202,8 +202,7 @@ OBSERVATIONS_CERT_JSON = {
 
 
 class TestCerts(CensysTestCase):
-    def setUp(self):
-        super().setUp()
+    def setup_method(self):
         self.setUpApi(SearchClient(self.api_id, self.api_secret).v2.certs)
 
     def test_view(self):
@@ -216,13 +215,7 @@ class TestCerts(CensysTestCase):
         result = self.api.view(TEST_CERT)
         assert result == VIEW_CERT_JSON["result"]
 
-    @parameterized.expand(
-        [
-            ("bulk_post"),
-            ("bulk"),
-            ("bulk_view"),
-        ]
-    )
+    @pytest.mark.parametrize("method_name", ["bulk_post", "bulk", "bulk_view"])
     def test_bulk_post(self, method_name: str):
         self.responses.add(
             responses.POST,
@@ -259,14 +252,15 @@ class TestCerts(CensysTestCase):
         result = self.api.bulk_get(TEST_CERT)
         assert result == BULK_VIEW_CERTS_JSON["result"]
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("method_name", "raw"),
         [
             ("search_post_raw", True),
             ("raw_search", True),
-            ("search_post"),
-        ]
+            ("search_post", False),
+        ],
     )
-    def test_search_post(self, method_name: str, raw: bool = False):
+    def test_search_post(self, method_name: str, raw: bool):
         self.responses.add(
             responses.POST,
             f"{V2_URL}/certificates/search",
@@ -280,7 +274,8 @@ class TestCerts(CensysTestCase):
         else:
             assert result == SEARCH_CERTS_JSON["result"]
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("fields", "sort", "cursor"),
         [
             (None, None, None),
             (["names", "fingerprint_sha256"], None, None),
@@ -291,13 +286,13 @@ class TestCerts(CensysTestCase):
                 None,
             ),
             (None, None, "nextCursorToken"),
-        ]
+        ],
     )
     def test_search(
         self,
-        fields: Optional[list[str]] = None,
-        sort: Optional[list[str]] = None,
-        cursor: Optional[str] = None,
+        fields: Optional[list[str]],
+        sort: Optional[list[str]],
+        cursor: Optional[str],
     ):
         self.responses.add(
             responses.POST,
@@ -308,7 +303,8 @@ class TestCerts(CensysTestCase):
         query = self.api.search(TEST_SEARCH_QUERY, fields=fields, sort=sort, cursor=cursor)
         assert next(query) == SEARCH_CERTS_JSON["result"]["hits"]
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("params", "expected_params"),
         [
             ({}, {"q": TEST_SEARCH_QUERY, "per_page": 50}),
             ({"per_page": 1}, {"q": TEST_SEARCH_QUERY, "per_page": 1}),
@@ -356,7 +352,7 @@ class TestCerts(CensysTestCase):
                     "per_page": 50,
                 },
             ),
-        ]
+        ],
     )
     def test_search_get(self, params: dict[str, Any], expected_params: dict[str, Any]):
         self.responses.add(

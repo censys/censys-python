@@ -3,7 +3,6 @@ import unittest
 
 import pytest
 import responses
-from parameterized import parameterized
 from pytest_mock import MockerFixture
 from requests.models import Response
 
@@ -20,12 +19,6 @@ from ..utils import CensysTestCase
 class CensysAPIBaseTestsNoAsmEnv(unittest.TestCase):
     @pytest.fixture(autouse=True)
     def __inject_fixtures(self, mocker: MockerFixture):
-        """Injects fixtures into the test case.
-
-        Args:
-            mocker (MockerFixture): pytest-mock fixture.
-        """
-        # Inject mocker fixture
         self.mocker = mocker
 
     def setUp(self):
@@ -43,14 +36,14 @@ class CensysAPIBaseTestsNoAsmEnv(unittest.TestCase):
             CensysAsmAPI()
 
 
-class CensysAsmAPITests(CensysTestCase):
-    AsmExceptionParams = [(code, exception) for code, exception in CensysExceptionMapper.ASM_EXCEPTIONS.items()]
+AsmExceptionParams = [(code, exception) for code, exception in CensysExceptionMapper.ASM_EXCEPTIONS.items()]
 
-    def setUp(self):
-        super().setUp()
+
+class CensysAsmAPITests(CensysTestCase):
+    def setup_method(self):
         self.setUpApi(CensysAsmAPI(self.api_id))
 
-    @parameterized.expand(AsmExceptionParams)
+    @pytest.mark.parametrize(("status_code", "exception"), AsmExceptionParams)
     def test_get_exception_class(self, status_code, exception):
         # Mock
         mock_response = self.mocker.patch("requests.models.Response.json")
@@ -73,7 +66,7 @@ class CensysAsmAPITests(CensysTestCase):
             repr(exception) == "404 (Error Code: 10014), Unable to Find Seed. [{id: 999}]"  # noqa: FS003
         )
 
-    @parameterized.expand([("assets")])
+    @pytest.mark.parametrize("keyword", ["assets"])
     def test_page_keywords(self, keyword):
         # Mock
         page_json = {

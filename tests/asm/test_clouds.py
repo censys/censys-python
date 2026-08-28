@@ -15,8 +15,7 @@ TEST_COUNT_JSON = {
 
 
 class CloudsUnitTest(CensysTestCase):
-    def setUp(self):
-        super().setUp()
+    def setup_method(self):
         self.client = AsmClient(self.api_key)
 
     def test_get_host_counts(self):

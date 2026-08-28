@@ -1,8 +1,8 @@
 import contextlib
 from io import StringIO
 
+import pytest
 import responses
-from parameterized import parameterized
 
 from censys.cli import main as cli_main
 from censys.cli.commands import subdomains
@@ -25,11 +25,9 @@ CERT_SEARCH_RESPONSE = {
 
 
 class CensysCliSubdomainsTest(CensysTestCase):
-    @parameterized.expand(
-        [
-            (True,),
-            (False,),
-        ]
+    @pytest.mark.parametrize(
+        "test_json_bool",
+        [True, False],
     )
     def test_print_subdomains(
         self,

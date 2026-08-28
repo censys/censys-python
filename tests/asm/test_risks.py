@@ -1,7 +1,7 @@
 import urllib.parse
 
+import pytest
 import responses
-from parameterized import parameterized
 from responses import matchers
 
 from censys.asm.risks import Risks
@@ -76,11 +76,11 @@ TEST_PATCH_RISK_TYPE_JSON = {
 class RisksTests(CensysTestCase):
     api: Risks
 
-    def setUp(self):
-        super().setUp()
+    def setup_method(self):
         self.setUpApi(Risks(self.api_key))
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "params"),
         [
             ({}, ""),
             (
@@ -92,7 +92,7 @@ class RisksTests(CensysTestCase):
                 {"cursor": "eyJhZnRlcklEIjo3NzQwLCJsaW1pdCI6MTAwfQ=="},
                 "?cursor=eyJhZnRlcklEIjo3NzQwLCJsaW1pdCI6MTAwfQ==",
             ),
-        ]
+        ],
     )
     def test_get_risk_events(self, kwargs, params):
         # Setup response
@@ -107,12 +107,13 @@ class RisksTests(CensysTestCase):
         # Assertions
         assert res == TEST_RISK_EVENTS_JSON
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "params"),
         [
             ({}, ""),
             ({"include_events": True}, "?includeEvents=True"),
             ({"include_events": False}, "?includeEvents=False"),
-        ]
+        ],
     )
     def test_get_risk_instances(self, kwargs, params):
         # Setup response
@@ -174,12 +175,13 @@ class RisksTests(CensysTestCase):
         # Assertions
         assert res == TEST_RISK_TYPE_JSON
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "params"),
         [
             ({"risk_instance_id": 0}, "0"),
             ({"risk_instance_id": 1, "include_events": True}, "1?includeEvents=True"),
             ({"risk_instance_id": 2, "include_events": False}, "2?includeEvents=False"),
-        ]
+        ],
     )
     def test_get_risk_instance(self, kwargs, params):
         # Setup response
@@ -215,7 +217,8 @@ class RisksTests(CensysTestCase):
         # Assertions
         assert res == TEST_PATCH_RISK_INSTANCE_JSON
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "params"),
         [
             ({}, ""),
             ({"include_events": True}, "?includeEvents=True"),
@@ -223,7 +226,7 @@ class RisksTests(CensysTestCase):
             ({"sort": ["severity", "type:asc"]}, "?sort=severity&sort=type:asc"),
             ({"page": 1, "limit": 10000}, "?page=1&limit=10000"),
             ({"page": 10}, "?page=10"),
-        ]
+        ],
     )
     def test_get_risk_types(self, kwargs, params):
         # Setup response
@@ -238,7 +241,8 @@ class RisksTests(CensysTestCase):
         # Assertions
         assert res == TEST_RISK_TYPES_JSON
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "params"),
         [
             ({"risk_type": TEST_RISK_TYPE}, ESCAPED_TEST_RISK_TYPE),
             (
@@ -249,7 +253,7 @@ class RisksTests(CensysTestCase):
                 {"risk_type": TEST_RISK_TYPE, "include_events": False},
                 ESCAPED_TEST_RISK_TYPE + "?includeEvents=False",
             ),
-        ]
+        ],
     )
     def test_get_risk_type(self, kwargs, params):
         # Setup respnonse

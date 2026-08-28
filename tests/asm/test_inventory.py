@@ -1,5 +1,5 @@
+import pytest
 import responses
-from parameterized import parameterized
 
 from censys.asm.inventory import InventorySearch
 
@@ -36,11 +36,11 @@ TEST_INVENTORY_FIELDS_JSON = {"fields": [{"path": "string", "type": "string", "d
 class InventoryTests(CensysTestCase):
     api: InventorySearch
 
-    def setUp(self):
-        super().setUp()
+    def setup_method(self):
         self.setUpApi(InventorySearch(self.api_key))
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "params"),
         [
             (
                 {
@@ -59,7 +59,7 @@ class InventoryTests(CensysTestCase):
                 },
                 "?workspaces=1&workspaces=2&query=test&pageSize=50",
             ),
-        ]
+        ],
     )
     def test_search(self, kwargs, params):
         mock_request = self.mocker.patch("censys.asm.api.CensysAsmAPI.get_workspace_id")
@@ -79,21 +79,20 @@ class InventoryTests(CensysTestCase):
         # Assertions
         assert res == TEST_INVENTORY_SEARCH_JSON
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        "kwargs",
         [
-            (
-                {
-                    "workspaces": ["1", "2"],
-                    "query": "test",
-                    "aggregation": {
-                        "field": "test",
-                        "size": 50,
-                        "sort": "test",
-                        "order": "test",
-                    },
+            {
+                "workspaces": ["1", "2"],
+                "query": "test",
+                "aggregation": {
+                    "field": "test",
+                    "size": 50,
+                    "sort": "test",
+                    "order": "test",
                 },
-            ),
-        ]
+            },
+        ],
     )
     def test_aggregate(self, kwargs):
         # Setup response
@@ -111,7 +110,8 @@ class InventoryTests(CensysTestCase):
         # Assertions
         assert res == TEST_INVENTORY_AGGREGATE_JSON
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "params"),
         [
             (
                 {
@@ -119,7 +119,7 @@ class InventoryTests(CensysTestCase):
                 },
                 "?fields=host.services.name&fields=host.services.port",
             ),
-        ]
+        ],
     )
     def test_fields(self, kwargs, params):
         # Setup response

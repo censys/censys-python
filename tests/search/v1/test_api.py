@@ -3,7 +3,6 @@ from unittest.mock import mock_open, patch
 
 import pytest
 import responses
-from parameterized import parameterized
 from requests.models import Response
 
 from censys.common.exceptions import (
@@ -26,8 +25,7 @@ SearchExceptionParams = [(code, exception) for code, exception in CensysExceptio
 
 
 class CensysSearchAPITests(CensysTestCase):
-    def setUp(self):
-        super().setUp()
+    def setup_method(self):
         self.setUpApi(CensysSearchAPIv1(self.api_id, self.api_secret))
 
     def test_account(self):
@@ -52,7 +50,7 @@ class CensysSearchAPITests(CensysTestCase):
 
         assert res == ACCOUNT_JSON["quota"]
 
-    @parameterized.expand(SearchExceptionParams)
+    @pytest.mark.parametrize(("status_code", "exception"), SearchExceptionParams)
     def test_get_exception_class(self, status_code, exception):
         response = Response()
         response.status_code = status_code

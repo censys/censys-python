@@ -5,7 +5,6 @@ from typing import Any, Optional
 
 import pytest
 import responses
-from parameterized import parameterized
 from responses import matchers
 
 from censys.common.exceptions import CensysInternalServerException
@@ -179,8 +178,7 @@ SERVER_ERROR_JSON = {
 class TestHosts(CensysTestCase):
     api: CensysHosts
 
-    def setUp(self):
-        super().setUp()
+    def setup_method(self):
         self.setUpApi(SearchClient(self.api_id, self.api_secret).v2.hosts)
 
     def test_view(self):
@@ -272,14 +270,15 @@ class TestHosts(CensysTestCase):
         results = self.api.bulk_view(ips)
         assert results == expected
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("method_name", "raw"),
         [
             ("search_post_raw", True),
             ("raw_search", True),
-            ("search_post"),
-        ]
+            ("search_post", False),
+        ],
     )
-    def test_search_post(self, method_name: str, raw: bool = False):
+    def test_search_post(self, method_name: str, raw: bool):
         self.responses.add(
             responses.POST,
             f"{V2_URL}/hosts/search",
@@ -301,31 +300,23 @@ class TestHosts(CensysTestCase):
         else:
             assert result == SEARCH_HOSTS_JSON["result"]
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("fields", "sort", "cursor", "virtual_hosts"),
         [
-            (None, None, None),
-            (["ip", "services.port"], None, None),
-            (None, "RELEVANCE", None),
-            (
-                ["ip", "services.port"],
-                "RELEVANCE",
-                None,
-            ),
-            (
-                None,
-                None,
-                None,
-                "ONLY",
-            ),
-            (None, None, "nextCursorToken"),
-        ]
+            (None, None, None, None),
+            (["ip", "services.port"], None, None, None),
+            (None, "RELEVANCE", None, None),
+            (["ip", "services.port"], "RELEVANCE", None, None),
+            (None, None, None, "ONLY"),
+            (None, None, "nextCursorToken", None),
+        ],
     )
     def test_search(
         self,
-        fields: Optional[list[str]] = None,
-        sort: Optional[str] = None,
-        cursor: Optional[str] = None,
-        virtual_hosts: Optional[str] = None,
+        fields: Optional[list[str]],
+        sort: Optional[str],
+        cursor: Optional[str],
+        virtual_hosts: Optional[str],
     ):
         self.responses.add(
             responses.POST,
@@ -355,7 +346,8 @@ class TestHosts(CensysTestCase):
         query = self.api.search("services.service_name: HTTP", per_page=test_per_page)
         assert next(query) == SEARCH_HOSTS_JSON["result"]["hits"]
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("params", "expected_params"),
         [
             ({}, {"q": TEST_SEARCH_QUERY, "per_page": 100}),
             ({"per_page": 1}, {"q": TEST_SEARCH_QUERY, "per_page": 1}),
@@ -393,7 +385,7 @@ class TestHosts(CensysTestCase):
                     "per_page": 100,
                 },
             ),
-        ]
+        ],
     )
     def test_search_get(self, params: dict[str, Any], expected_params: dict[str, Any]):
         self.responses.add(
@@ -785,7 +777,8 @@ class TestHosts(CensysTestCase):
         results = self.api.view_host_diff(TEST_HOST)
         assert results == VIEW_HOST_DIFF_JSON["result"]
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "query_params"),
         [
             ({"ip_b": "1.1.1.2"}, "ip_b=1.1.1.2"),
             (
@@ -795,7 +788,7 @@ class TestHosts(CensysTestCase):
                 },
                 "at_time=2021-07-01T00%3A00%3A00.000000Z&at_time_b=2021-07-31T00%3A00%3A00.000000Z",
             ),
-        ]
+        ],
     )
     def test_view_host_diff_params(self, kwargs: dict, query_params: str):
         self.responses.add(
@@ -807,7 +800,8 @@ class TestHosts(CensysTestCase):
         results = self.api.view_host_diff(TEST_HOST, **kwargs)
         assert results == VIEW_HOST_DIFF_JSON["result"]
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "query_params"),
         [
             ({}, ""),
             ({"per_page": 50}, "per_page=50"),
@@ -822,7 +816,7 @@ class TestHosts(CensysTestCase):
                 {"cursor": "nextCursor", "reversed": True},
                 "cursor=nextCursor&reversed=True",
             ),
-        ]
+        ],
     )
     def test_view_host_events_params(self, kwargs: dict, query_params: str):
         url = f"{V2_URL}/experimental/hosts/{TEST_HOST}/events"
@@ -837,7 +831,8 @@ class TestHosts(CensysTestCase):
         results = self.api.view_host_events(TEST_HOST, **kwargs)
         assert results == VIEW_HOST_EVENTS_JSON["result"]
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("kwargs", "query_params"),
         [
             ({}, {"per_page": 100}),
             ({"per_page": 50}, {"per_page": 50}),
@@ -851,7 +846,7 @@ class TestHosts(CensysTestCase):
                 {"cursor": "nextCursor"},
                 {"per_page": 100, "cursor": "nextCursor"},
             ),
-        ]
+        ],
     )
     def test_view_host_certificates(self, kwargs: dict, query_params: dict):
         self.responses.add(

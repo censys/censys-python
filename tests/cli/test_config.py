@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 import responses
+from pytest_mock import MockerFixture
 
 from censys.cli import main as cli_main
 from censys.common.config import (
@@ -38,17 +39,17 @@ def confirm_side_effect(arg, **kwargs):
 
 
 class CensysConfigCliTest(CensysTestCase):
-    def setUp(self):
-        super().setUp()
-        self.mocker.patch("censys.common.config.CONFIG_PATH", TEST_CONFIG_PATH)
-        self.mock_open = self.mocker.patch(
+    @pytest.fixture(autouse=True)
+    def _config_setup(self, mocker: MockerFixture):
+        mocker.patch("censys.common.config.CONFIG_PATH", TEST_CONFIG_PATH)
+        self.mock_open = mocker.patch(
             "builtins.open",
-            new_callable=self.mocker.mock_open,
+            new_callable=mocker.mock_open,
             read_data="[DEFAULT]\napi_id =\napi_secret =\nasm_api_key =",
         )
-        self.mocker.patch("rich.prompt.Prompt.ask", side_effect=prompt_side_effect)
-        self.mocker.patch("rich.prompt.Confirm.ask", side_effect=confirm_side_effect)
-        self.mock_chmod = self.mocker.patch("censys.common.config._try_chmod")
+        mocker.patch("rich.prompt.Prompt.ask", side_effect=prompt_side_effect)
+        mocker.patch("rich.prompt.Confirm.ask", side_effect=confirm_side_effect)
+        self.mock_chmod = mocker.patch("censys.common.config._try_chmod")
 
     def test_search_config(self):
         # Mock

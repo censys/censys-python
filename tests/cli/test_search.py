@@ -9,7 +9,6 @@ from urllib.parse import urlencode
 
 import pytest
 import responses
-from parameterized import parameterized
 from requests import PreparedRequest
 from responses import matchers
 
@@ -326,11 +325,12 @@ class CensysCliSearchTest(CensysTestCase):
         ):
             cli_main()
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("status_code", "json_response"),
         [
             (429, TOO_MANY_REQUESTS_ERROR_JSON),
             (500, SERVER_ERROR_JSON),
-        ]
+        ],
     )
     def test_midway_fail(self, status_code: int, json_response: dict):
         # Setup response
@@ -451,19 +451,20 @@ class CensysCliSearchTest(CensysTestCase):
             f"https://search.censys.io/search?{query_str}"  # noqa: E231
         )
 
-    @parameterized.expand(
+    @pytest.mark.parametrize(
+        ("index_type", "autocomplete_file", "prefix"),
         [
-            ("hosts", HOSTS_AUTOCOMPLETE),
+            ("hosts", HOSTS_AUTOCOMPLETE, ""),
             ("hosts", HOSTS_AUTOCOMPLETE, "service"),
-            ("certificates", CERTIFICATES_AUTOCOMPLETE),
-            ("invalid"),
-        ]
+            ("certificates", CERTIFICATES_AUTOCOMPLETE, ""),
+            ("invalid", None, ""),
+        ],
     )
     def test_fields_completer(
         self,
         index_type: str,
-        autocomplete_file: Optional[Path] = None,
-        prefix: str = "",
+        autocomplete_file: Optional[Path],
+        prefix: str,
     ):
         parsed_args = argparse.Namespace(index_type=index_type)
         if autocomplete_file is None:
