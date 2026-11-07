@@ -4,6 +4,8 @@ import datetime
 from collections.abc import Iterator
 from typing import Optional, Union
 
+from censys.common.utils import format_rfc3339
+
 from .api import CensysAsmAPI
 
 
@@ -14,13 +16,13 @@ class Logbook(CensysAsmAPI):
 
     def get_cursor(
         self,
-        start: Optional[Union[datetime.datetime, int]] = None,
+        start: Optional[Union[str, datetime.datetime, int]] = None,
         filters: Optional[list[str]] = None,
     ) -> str:
         """Requests a logbook cursor.
 
         Args:
-            start ([datetime.datetime, int]): Optional; Timestamp or event ID to begin searching.
+            start ([str, datetime.datetime, int]): Optional; Timestamp or event ID. Naive datetimes use UTC.
             filters (list): Optional; List of filters applied to logbook search results.
 
         Returns:
@@ -71,13 +73,13 @@ class Filters:
 
 
 def format_data(
-    start: Optional[Union[datetime.datetime, int]] = None,
+    start: Optional[Union[str, datetime.datetime, int]] = None,
     filters: Optional[list[str]] = None,
 ) -> dict:
     """Formats cursor request data into a start date/id and filter list.
 
     Args:
-        start ([datetime.datetime, int]): Optional; Timestamp or event ID to begin searching.
+        start ([str, datetime.datetime, int]): Optional; Timestamp or event ID. Naive datetimes use UTC.
         filters (list): Optional; List of filters applied to logbook search results.
 
     Returns:
@@ -89,6 +91,10 @@ def format_data(
         data["filter"] = {"type": filters}
     if isinstance(start, int):
         data["idFrom"] = start
+    elif isinstance(start, datetime.datetime):
+        if start.utcoffset() is not None:
+            start = start.astimezone(datetime.timezone.utc)
+        data["dateFrom"] = format_rfc3339(start)
     elif start:
         data["dateFrom"] = start
 

@@ -1,10 +1,12 @@
+import datetime
 import unittest
 
 import pytest
+import responses
 from pytest_mock import MockerFixture
 
 from censys.asm.client import AsmClient
-from censys.asm.logbook import Filters
+from censys.asm.logbook import Filters, Logbook
 
 from .utils import (
     RESOURCE_PAGING_RESULTS,
@@ -22,6 +24,33 @@ TEST_CURSOR = "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MH0"
 TEST_NEXT_CURSOR = "eyJmaWx0ZXIiOnt9LCJzdGFydCI6MjA3MTJ9"
 TEST_START_DATE = "2020-10-29T19:26:34.371Z"
 TEST_START_ID = 20712
+
+
+@pytest.mark.parametrize(
+    ("start", "expected"),
+    [
+        (datetime.datetime(2020, 10, 29, 19, 26, 34, 371000), {"dateFrom": "2020-10-29T19:26:34.371000Z"}),
+        (
+            datetime.datetime(
+                2020, 10, 30, 0, 56, 34, 371000, tzinfo=datetime.timezone(datetime.timedelta(hours=5, minutes=30))
+            ),
+            {"dateFrom": "2020-10-29T19:26:34.371000Z"},
+        ),
+        (TEST_START_DATE, {"dateFrom": TEST_START_DATE}),
+        (0, {"idFrom": 0}),
+        (None, {}),
+    ],
+)
+@responses.activate
+def test_logbook_cursor_serializes_start(start, expected):
+    body = {"filter": {"type": [Filters.HOST]}, **expected}
+    responses.add(
+        responses.POST,
+        EVENTS_CURSOR_URL,
+        json={"cursor": TEST_CURSOR},
+        match=[responses.matchers.json_params_matcher(body)],
+    )
+    assert Logbook(api_key="test-api-key").get_cursor(start=start, filters=[Filters.HOST]) == TEST_CURSOR
 
 
 class EventsUnitTests(unittest.TestCase):
