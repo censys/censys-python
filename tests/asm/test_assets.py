@@ -293,6 +293,15 @@ class AssetsUnitTest:
             )
             assert self.get_asset_accessor().delete_tag(self.test_asset_id, name) == {"name": name}
 
+    @pytest.mark.parametrize("name", [".", ".."])
+    def test_delete_tag_rejects_dot_segments(self, name):
+        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+            rsps.delete(f"{self.asset_id_url()}/tags/", json={})
+            rsps.delete(f"{self.asset_id_url()}/", json={})
+            with pytest.raises(ValueError, match="Tag name cannot be a URL dot segment"):
+                self.get_asset_accessor().delete_tag(self.test_asset_id, name)
+            assert not rsps.calls
+
     def test_get_subdomains(self):
         # Mock
         mock_request = self.mocker.patch("censys.common.base.requests.Session.get")
