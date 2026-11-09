@@ -3,6 +3,7 @@
 import re
 from collections.abc import Iterator
 from typing import Any, Optional
+from urllib.parse import quote
 
 from censys.common.exceptions import CensysInvalidColorException
 
@@ -172,10 +173,16 @@ class Assets(CensysAsmAPI):
             asset_id (str): Asset ID to delete tag from.
             name (str): Tag name to delete.
 
+        Raises:
+            ValueError: If name is a URL dot segment ("." or "..").
+
         Returns:
             dict: Deleted tag results.
         """
-        path = f"{self.base_path}/{self._format_asset_id(asset_id)}/tags/{name}"
+        if name in (".", ".."):
+            raise ValueError('Tag name cannot be a URL dot segment ("." or "..").')
+        escaped_name = quote(name, safe="")
+        path = f"{self.base_path}/{self._format_asset_id(asset_id)}/tags/{escaped_name}"
 
         return self._delete(path)
 
