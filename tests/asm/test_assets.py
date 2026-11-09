@@ -1,6 +1,7 @@
 from urllib.parse import quote
 
 import pytest
+import responses
 from pytest_mock import MockerFixture
 
 from censys.asm.client import AsmClient
@@ -271,6 +272,26 @@ class AssetsUnitTest:
             params={},
             timeout=TEST_TIMEOUT,
         )
+
+    @pytest.mark.parametrize(
+        ("name", "encoded"),
+        [
+            (TEST_TAG_NAME, TEST_TAG_NAME),
+            ("\u00e9quipe", "%C3%A9quipe"),
+            ("team#1", "team%231"),
+            ("team?env=prod", "team%3Fenv%3Dprod"),
+            ("team/infra", "team%2Finfra"),
+            ("team%2F1", "team%252F1"),
+        ],
+    )
+    def test_delete_tag_preserves_name(self, name, encoded):
+        with responses.RequestsMock() as rsps:
+            rsps.delete(
+                f"{self.asset_id_url()}/tags/{encoded}",
+                json={"name": name},
+                match=[responses.matchers.query_param_matcher({})],
+            )
+            assert self.get_asset_accessor().delete_tag(self.test_asset_id, name) == {"name": name}
 
     def test_get_subdomains(self):
         # Mock

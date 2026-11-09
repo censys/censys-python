@@ -3,6 +3,7 @@
 import re
 from collections.abc import Iterator
 from typing import Any, Optional
+from urllib.parse import quote
 
 from censys.common.exceptions import CensysInvalidColorException
 
@@ -175,7 +176,8 @@ class Assets(CensysAsmAPI):
         Returns:
             dict: Deleted tag results.
         """
-        path = f"{self.base_path}/{self._format_asset_id(asset_id)}/tags/{name}"
+        escaped_name = quote(name, safe="")
+        path = f"{self.base_path}/{self._format_asset_id(asset_id)}/tags/{escaped_name}"
 
         return self._delete(path)
 
