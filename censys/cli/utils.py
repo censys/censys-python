@@ -39,9 +39,12 @@ def _write_json(file_path: str, search_results: Results):
         file_path (str): Name of the file to write to on the disk.
         search_results (Results): A list of results from the query.
     """
-    with open(file_path, "w") as output_file:
-        # Since the results are already in JSON, just write them to a file.
-        json.dump(search_results, output_file, indent=4)
+    try:
+        with open(file_path, "w") as output_file:
+            # Since the results are already in JSON, just write them to a file.
+            json.dump(search_results, output_file, indent=4)
+    except OSError as error:
+        raise ValueError(f"Could not write results to file {file_path}: {error}") from error
 
     print_wrote_file(file_path)
 
